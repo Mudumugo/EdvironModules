@@ -77,6 +77,12 @@ export type UserSettings = typeof userSettings.$inferSelect;
 export const insertUserSettingsSchema = createInsertSchema(userSettings);
 
 // Temporary simplified schemas to prevent compilation errors
+// Re-export xAPI schemas
+export * from "./schemas/xapi.schema";
+export * from "./schemas/education.schema";
+export * from "./schemas/mdm.schema";
+export * from "./schemas/activity.schema";
+
 export const insertStudentSchema = z.object({});
 export const insertTeacherSchema = z.object({});
 export const insertClassSchema = z.object({});
