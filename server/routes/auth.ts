@@ -30,8 +30,8 @@ export async function registerAuthRoutes(app: Express) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      // Generate a demo user ID based on role
-      const demoUserId = `demo_${role}_${Date.now()}`;
+      // Use consistent demo user ID based on role
+      const demoUserId = `demo_${role}`;
       
       // Create or update demo user in database
       const user = await storage.upsertUser({
@@ -88,6 +88,34 @@ export async function registerAuthRoutes(app: Express) {
       }
       res.json({ success: true });
     });
+  });
+
+  // Auth user endpoint for frontend authentication checks
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const sessionUser = (req.session as any)?.user;
+      if (sessionUser) {
+        // Return demo user data
+        const user = await storage.getUser(sessionUser.id);
+        if (user) {
+          res.json(user);
+        } else {
+          res.status(401).json({ message: "User not found" });
+        }
+      } else {
+        // Fallback to Replit auth user if available
+        const userId = req.user?.claims?.sub;
+        if (userId) {
+          const user = await storage.getUser(userId);
+          res.json(user);
+        } else {
+          res.status(401).json({ message: "Unauthorized" });
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
   });
 
   // Protected route example
