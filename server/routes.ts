@@ -19,12 +19,9 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Initialize MinIO buckets on startup
-  try {
-    await initializeBuckets();
-  } catch (error) {
-    console.error('Failed to initialize MinIO buckets:', error);
-  }
+  // Temporarily disable MinIO initialization for demonstration
+  // MinIO object storage can be enabled later when the service is available
+  console.log('MinIO initialization disabled for demonstration mode');
 
   // Multi-tenant middleware - extract tenant from subdomain
   app.use(extractTenant);

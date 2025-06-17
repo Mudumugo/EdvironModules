@@ -35,9 +35,18 @@ export default function Landing() {
               <h1 className="text-xl font-bold text-gray-900">Edvirons</h1>
               <span className="text-sm text-gray-500 border-l border-gray-200 pl-4">Learning Portal</span>
             </div>
-            <Button onClick={handleLogin} className="bg-primary-600 hover:bg-primary-700">
-              Sign In
-            </Button>
+            <div className="flex space-x-3">
+              <Button 
+                onClick={() => window.location.href = "/school"} 
+                variant="outline"
+                className="border-primary-600 text-primary-600 hover:bg-primary-50"
+              >
+                School Management
+              </Button>
+              <Button onClick={handleLogin} className="bg-primary-600 hover:bg-primary-700">
+                Sign In
+              </Button>
+            </div>
           </div>
         </div>
       </header>

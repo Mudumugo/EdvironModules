@@ -235,7 +235,7 @@ export default function SchoolManagement() {
       student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesGrade = selectedGrade === "" || student.grade === selectedGrade;
+    const matchesGrade = selectedGrade === "" || selectedGrade === "all" || student.grade === selectedGrade;
     return matchesSearch && matchesGrade;
   }) : [];
 
@@ -344,7 +344,7 @@ export default function SchoolManagement() {
                   <SelectValue placeholder="All Grades" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Grades</SelectItem>
+                  <SelectItem value="all">All Grades</SelectItem>
                   <SelectItem value="1">Grade 1</SelectItem>
                   <SelectItem value="2">Grade 2</SelectItem>
                   <SelectItem value="3">Grade 3</SelectItem>
@@ -848,8 +848,8 @@ export default function SchoolManagement() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={createClass.isPending}>
-                      {createClass.isPending ? "Creating..." : "Create Class"}
+                    <Button type="submit" className="w-full">
+                      Create Class
                     </Button>
                   </form>
                 </Form>
