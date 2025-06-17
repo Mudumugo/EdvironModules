@@ -196,7 +196,7 @@ export class DatabaseStorage implements IStorage {
   async createInstitution(institutionData: InsertInstitution): Promise<Institution> {
     const [institution] = await db
       .insert(institutions)
-      .values(institutionData)
+      .values([institutionData])
       .returning();
     return institution;
   }
