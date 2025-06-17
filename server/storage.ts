@@ -115,6 +115,20 @@ export interface IStorage {
     totalResources: number;
     activeSubscriptions: number;
   }>;
+  
+  // My Locker operations
+  getLockerItem(id: number): Promise<LockerItem | undefined>;
+  getLockerItemsByUser(userId: string): Promise<LockerItem[]>;
+  createLockerItem(item: InsertLockerItem): Promise<LockerItem>;
+  updateLockerItem(id: number, updates: Partial<LockerItem>): Promise<LockerItem>;
+  deleteLockerItem(id: number): Promise<void>;
+  
+  // Locker Collection operations
+  getLockerCollection(id: number): Promise<LockerCollection | undefined>;
+  getLockerCollectionsByUser(userId: string): Promise<LockerCollection[]>;
+  createLockerCollection(collection: InsertLockerCollection): Promise<LockerCollection>;
+  updateLockerCollection(id: number, updates: Partial<LockerCollection>): Promise<LockerCollection>;
+  deleteLockerCollection(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -457,6 +471,68 @@ export class DatabaseStorage implements IStorage {
       totalResources: resourcesResult.length,
       activeSubscriptions: subscriptionsResult.length,
     };
+  }
+
+  // My Locker operations
+  async getLockerItem(id: number): Promise<LockerItem | undefined> {
+    const [item] = await db.select().from(lockerItems).where(eq(lockerItems.id, id));
+    return item;
+  }
+
+  async getLockerItemsByUser(userId: string): Promise<LockerItem[]> {
+    return await db.select().from(lockerItems).where(eq(lockerItems.userId, userId));
+  }
+
+  async createLockerItem(itemData: InsertLockerItem): Promise<LockerItem> {
+    const [item] = await db
+      .insert(lockerItems)
+      .values(itemData)
+      .returning();
+    return item;
+  }
+
+  async updateLockerItem(id: number, updates: Partial<LockerItem>): Promise<LockerItem> {
+    const [item] = await db
+      .update(lockerItems)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(lockerItems.id, id))
+      .returning();
+    return item;
+  }
+
+  async deleteLockerItem(id: number): Promise<void> {
+    await db.delete(lockerItems).where(eq(lockerItems.id, id));
+  }
+
+  // Locker Collection operations
+  async getLockerCollection(id: number): Promise<LockerCollection | undefined> {
+    const [collection] = await db.select().from(lockerCollections).where(eq(lockerCollections.id, id));
+    return collection;
+  }
+
+  async getLockerCollectionsByUser(userId: string): Promise<LockerCollection[]> {
+    return await db.select().from(lockerCollections).where(eq(lockerCollections.userId, userId));
+  }
+
+  async createLockerCollection(collectionData: InsertLockerCollection): Promise<LockerCollection> {
+    const [collection] = await db
+      .insert(lockerCollections)
+      .values(collectionData)
+      .returning();
+    return collection;
+  }
+
+  async updateLockerCollection(id: number, updates: Partial<LockerCollection>): Promise<LockerCollection> {
+    const [collection] = await db
+      .update(lockerCollections)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(lockerCollections.id, id))
+      .returning();
+    return collection;
+  }
+
+  async deleteLockerCollection(id: number): Promise<void> {
+    await db.delete(lockerCollections).where(eq(lockerCollections.id, id));
   }
 }
 

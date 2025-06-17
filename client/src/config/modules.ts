@@ -27,6 +27,16 @@ export const MODULE_REGISTRY: ModuleConfig[] = [
     permissions: ['*'] // All roles
   },
   {
+    id: 'my-locker',
+    name: 'My Locker',
+    description: 'Personal workspace for saved resources, notes, and offline learning',
+    enabled: true,
+    route: '/my-locker',
+    icon: 'FolderOpen',
+    category: 'core',
+    permissions: ['*'] // Available to all users
+  },
+  {
     id: 'school-management',
     name: 'School Management',
     description: 'Student, teacher, and class management system',
