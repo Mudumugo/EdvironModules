@@ -1109,10 +1109,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // xAPI and Learning Analytics endpoints
-  app.post('/api/xapi/statements', isAuthenticated, async (req: any, res) => {
+  app.post('/api/xapi/statements', async (req: any, res) => {
     try {
       const statement = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub || 'anonymous';
       const tenantId = req.tenant?.id || 'default';
       
       // Generate unique statement ID if not provided
