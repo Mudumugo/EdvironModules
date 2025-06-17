@@ -10,6 +10,7 @@ import {
   boolean,
   decimal,
   date,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -26,10 +27,26 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+// Tenants table for multi-tenant support
+export const tenants = pgTable("tenants", {
+  id: varchar("id").primaryKey().notNull(),
+  subdomain: varchar("subdomain").unique().notNull(),
+  name: varchar("name").notNull(),
+  logo: varchar("logo"),
+  primaryColor: varchar("primary_color").default("#3B82F6"),
+  customDomain: varchar("custom_domain"),
+  features: text("features").array().default(["dashboard", "settings"]),
+  subscription: varchar("subscription").notNull().default("basic"), // basic, premium, enterprise
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // User storage table for authentication
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  email: varchar("email"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),

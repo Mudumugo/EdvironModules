@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { extractTenant, requireTenantFeature, type TenantRequest } from "./tenantMiddleware";
 import { insertUserSettingsSchema } from "@shared/schema";
 import { 
   insertStudentSchema,
