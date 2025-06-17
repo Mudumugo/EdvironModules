@@ -8,6 +8,7 @@ import {
   decimal,
   jsonb,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 import { users } from "./user.schema";
 import { institutions } from "./education.schema";
 
@@ -106,3 +107,6 @@ export type InsertLockerItem = typeof lockerItems.$inferInsert;
 export type LockerItem = typeof lockerItems.$inferSelect;
 export type InsertLockerCollection = typeof lockerCollections.$inferInsert;
 export type LockerCollection = typeof lockerCollections.$inferSelect;
+
+// Insert schemas for validation
+export const insertNotificationSchema = createInsertSchema(notifications);

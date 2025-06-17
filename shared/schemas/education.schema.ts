@@ -161,3 +161,12 @@ export type InsertSchedule = typeof schedules.$inferInsert;
 export type Schedule = typeof schedules.$inferSelect;
 export type InsertAttendance = typeof attendance.$inferInsert;
 export type Attendance = typeof attendance.$inferSelect;
+
+// Insert schemas for validation
+export const insertStudentSchema = createInsertSchema(students);
+export const insertTeacherSchema = createInsertSchema(teachers);
+export const insertClassSchema = createInsertSchema(classes);
+export const insertSubjectSchema = createInsertSchema(subjects);
+export const insertLibraryResourceSchema = createInsertSchema(libraryResources);
+export const insertScheduleSchema = createInsertSchema(schedules);
+export const insertAttendanceSchema = createInsertSchema(attendance);
