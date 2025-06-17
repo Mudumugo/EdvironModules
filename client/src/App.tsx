@@ -47,10 +47,10 @@ function Router() {
           <Route path="/" component={Landing} />
           <Route path="/school" component={SchoolManagement} />
           <Route path="/tutor-hub" component={TutorHub} />
+          <Route path="/my-locker" component={MyLocker} />
           <Route path="/library" component={DigitalLibrary} />
           <Route path="/analytics" component={Analytics} />
           <Route path="/settings" component={Settings} />
-          <Route path="/my-locker" component={MyLocker} />
         </>
       ) : (
         <>

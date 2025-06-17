@@ -50,6 +50,13 @@ export default function Landing() {
               >
                 Tutor Hub
               </Button>
+              <Button 
+                onClick={() => window.location.href = "/my-locker"} 
+                variant="outline"
+                className="border-secondary-600 text-secondary-600 hover:bg-secondary-50"
+              >
+                My Locker
+              </Button>
               <Button onClick={handleLogin} className="bg-primary-600 hover:bg-primary-700">
                 Sign In
               </Button>
