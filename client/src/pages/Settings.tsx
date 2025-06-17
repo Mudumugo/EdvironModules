@@ -5,10 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { MODULE_REGISTRY, toggleModule, type ModuleConfig } from "@/config/modules";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -22,7 +25,9 @@ import {
   Key,
   Check,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Puzzle,
+  Crown
 } from "lucide-react";
 
 const paymentSettingsSchema = z.object({
@@ -181,7 +186,7 @@ export default function Settings() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             Profile
@@ -193,6 +198,10 @@ export default function Settings() {
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
             Notifications
+          </TabsTrigger>
+          <TabsTrigger value="modules" className="flex items-center gap-2">
+            <Puzzle className="h-4 w-4" />
+            Modules
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
@@ -433,6 +442,87 @@ export default function Settings() {
                   {updateNotificationSettings.isPending ? "Saving..." : "Save Notification Settings"}
                 </Button>
               </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="modules" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Puzzle className="h-5 w-5" />
+                Module Management
+              </CardTitle>
+              <CardDescription>
+                Enable or disable platform modules. Changes take effect immediately.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {['core', 'management', 'analytics', 'system'].map((category) => {
+                const categoryModules = MODULE_REGISTRY.filter(m => m.category === category);
+                return (
+                  <div key={category} className="space-y-4">
+                    <h3 className="text-lg font-semibold capitalize flex items-center gap-2">
+                      {category === 'core' && <Crown className="h-4 w-4 text-yellow-500" />}
+                      {category} Modules
+                    </h3>
+                    <div className="grid gap-4">
+                      {categoryModules.map((module) => (
+                        <div key={module.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <h4 className="font-medium">{module.name}</h4>
+                              {module.isPremium && (
+                                <Badge variant="secondary" className="text-xs">
+                                  <Crown className="h-3 w-3 mr-1" />
+                                  Premium
+                                </Badge>
+                              )}
+                              <Badge 
+                                variant={module.enabled ? "default" : "secondary"}
+                                className="text-xs"
+                              >
+                                {module.enabled ? "Active" : "Disabled"}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {module.description}
+                            </p>
+                            {module.permissions && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Available to: {module.permissions.includes('*') ? 'All users' : module.permissions.join(', ')}
+                              </p>
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <Switch
+                              checked={module.enabled}
+                              onCheckedChange={(checked) => {
+                                toggleModule(module.id, checked);
+                                toast({
+                                  title: checked ? "Module Enabled" : "Module Disabled",
+                                  description: `${module.name} has been ${checked ? 'enabled' : 'disabled'}`,
+                                });
+                                // Force re-render by updating state
+                                setActiveTab('modules');
+                              }}
+                              disabled={module.id === 'dashboard' || module.id === 'settings'} // Core modules cannot be disabled
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Note:</strong> Dashboard and Settings modules cannot be disabled as they are core to the platform. 
+                  Premium modules require an active subscription to function properly.
+                </AlertDescription>
+              </Alert>
             </CardContent>
           </Card>
         </TabsContent>
