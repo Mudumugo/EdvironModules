@@ -1,14 +1,7 @@
 import type { Express } from "express";
 import { storage } from "../storage";
 import { isAuthenticated } from "../replitAuth";
-import { 
-  libraryResources, 
-  libraryBorrowings, 
-  libraryReservations, 
-  libraryReviews,
-  libraryCategories,
-  libraryCollections
-} from "@shared/schemas/education.schema";
+import { libraryResources } from "@shared/schemas/library-simple.schema";
 import { db } from "../db";
 import { eq, and, desc, asc, sql, like, or, isNull, gte, lte } from "drizzle-orm";
 
@@ -32,14 +25,13 @@ export function registerLibraryRoutes(app: Express) {
         available
       } = req.query;
 
-      // Apply filters using existing schema
-      const conditions = [eq(libraryResources.isDigital, true)];
+      // Apply filters using actual database columns
+      const conditions = [];
       
       if (grade) conditions.push(eq(libraryResources.grade, grade));
       if (curriculum) conditions.push(eq(libraryResources.curriculum, curriculum));
       if (type) conditions.push(eq(libraryResources.type, type));
       if (difficulty) conditions.push(eq(libraryResources.difficulty, difficulty));
-      if (author) conditions.push(eq(libraryResources.author, author));
       
       if (search) {
         conditions.push(
