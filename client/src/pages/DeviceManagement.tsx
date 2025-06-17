@@ -27,7 +27,14 @@ import {
   Search,
   Filter,
   Eye,
-  Play
+  Play,
+  FileCheck,
+  DollarSign,
+  Calendar,
+  TrendingUp,
+  Scan,
+  ShieldCheck,
+  Ban
 } from "lucide-react";
 import Layout from "@/components/Layout";
 
@@ -122,6 +129,22 @@ export default function DeviceManagement() {
   const { data: policyData = [], isLoading: policiesLoading } = useQuery({
     queryKey: ['/api/mdm/policies'],
     queryFn: () => apiRequest('GET', '/api/mdm/policies').then(res => res.json())
+  });
+
+  // Fetch license data from API
+  const { data: licenses = [], isLoading: licensesLoading } = useQuery({
+    queryKey: ['/api/licenses'],
+    queryFn: () => apiRequest('GET', '/api/licenses').then(res => res.json())
+  });
+
+  const { data: licenseViolations = [], isLoading: licenseViolationsLoading } = useQuery({
+    queryKey: ['/api/licenses/violations'],
+    queryFn: () => apiRequest('GET', '/api/licenses/violations').then(res => res.json())
+  });
+
+  const { data: softwareRequests = [], isLoading: requestsLoading } = useQuery({
+    queryKey: ['/api/licenses/requests'],
+    queryFn: () => apiRequest('GET', '/api/licenses/requests').then(res => res.json())
   });
 
   // Remote action mutation
@@ -230,6 +253,7 @@ export default function DeviceManagement() {
             <TabsTrigger value="devices">Devices</TabsTrigger>
             <TabsTrigger value="violations">Violations</TabsTrigger>
             <TabsTrigger value="policies">Policies</TabsTrigger>
+            <TabsTrigger value="licenses">License Compliance</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 

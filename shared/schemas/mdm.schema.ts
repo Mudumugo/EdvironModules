@@ -140,7 +140,92 @@ export const remoteActions = pgTable("remote_actions", {
   completedAt: timestamp("completed_at"),
 });
 
-// Export types
+// Software licenses and compliance tracking
+export const softwareLicenses = pgTable("software_licenses", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  institutionId: varchar("institution_id").references(() => institutions.id).notNull(),
+  softwareName: varchar("software_name").notNull(),
+  vendor: varchar("vendor").notNull(),
+  licenseType: varchar("license_type").notNull(), // perpetual, subscription, volume, educational
+  licenseKey: text("license_key"),
+  totalSeats: integer("total_seats").notNull(),
+  usedSeats: integer("used_seats").default(0),
+  availableSeats: integer("available_seats"),
+  expirationDate: timestamp("expiration_date"),
+  purchaseDate: timestamp("purchase_date"),
+  cost: decimal("cost"),
+  isActive: boolean("is_active").default(true),
+  complianceStatus: varchar("compliance_status").default("compliant"), // compliant, over_licensed, under_licensed, expired
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Software installations on devices
+export const softwareInstallations = pgTable("software_installations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  deviceId: varchar("device_id").references(() => devices.id).notNull(),
+  licenseId: integer("license_id").references(() => softwareLicenses.id),
+  softwareName: varchar("software_name").notNull(),
+  version: varchar("version"),
+  installDate: timestamp("install_date").defaultNow(),
+  lastUsed: timestamp("last_used"),
+  usageMinutes: integer("usage_minutes").default(0),
+  isLicensed: boolean("is_licensed").default(false),
+  complianceStatus: varchar("compliance_status").default("unknown"), // licensed, unlicensed, trial, expired
+  detectedAt: timestamp("detected_at").defaultNow(),
+  metadata: jsonb("metadata").default({}),
+});
+
+// License compliance violations
+export const licenseViolations = pgTable("license_violations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  licenseId: integer("license_id").references(() => softwareLicenses.id),
+  deviceId: varchar("device_id").references(() => devices.id),
+  violationType: varchar("violation_type").notNull(), // seat_exceeded, expired_license, unauthorized_software, version_mismatch
+  severity: varchar("severity").notNull(), // low, medium, high, critical
+  description: text("description"),
+  detectedAt: timestamp("detected_at").defaultNow(),
+  resolvedAt: timestamp("resolved_at"),
+  status: varchar("status").default("open"), // open, acknowledged, resolved, false_positive
+  resolvedBy: varchar("resolved_by").references(() => users.id),
+  actionTaken: text("action_taken"),
+  estimatedCost: decimal("estimated_cost"), // Potential cost of non-compliance
+  metadata: jsonb("metadata").default({}),
+});
+
+// License usage analytics
+export const licenseUsageTracking = pgTable("license_usage_tracking", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  licenseId: integer("license_id").references(() => softwareLicenses.id).notNull(),
+  deviceId: varchar("device_id").references(() => devices.id).notNull(),
+  userId: varchar("user_id").references(() => users.id),
+  sessionStart: timestamp("session_start").notNull(),
+  sessionEnd: timestamp("session_end"),
+  duration: integer("duration"), // in minutes
+  features: jsonb("features").default([]), // Features used during session
+  date: timestamp("date").defaultNow(),
+});
+
+// Software asset requests and approvals
+export const softwareRequests = pgTable("software_requests", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  requestedBy: varchar("requested_by").references(() => users.id).notNull(),
+  softwareName: varchar("software_name").notNull(),
+  vendor: varchar("vendor"),
+  justification: text("justification"),
+  requestType: varchar("request_type").notNull(), // new_license, additional_seats, upgrade, renewal
+  estimatedCost: decimal("estimated_cost"),
+  urgency: varchar("urgency").default("medium"), // low, medium, high, critical
+  status: varchar("status").default("pending"), // pending, approved, rejected, purchased, deployed
+  approvedBy: varchar("approved_by").references(() => users.id),
+  approvalDate: timestamp("approval_date"),
+  rejectionReason: text("rejection_reason"),
+  requestedAt: timestamp("requested_at").defaultNow(),
+  metadata: jsonb("metadata").default({}),
+});
+
+// Export types - Device Management
 export type Device = typeof devices.$inferSelect;
 export type InsertDevice = typeof devices.$inferInsert;
 export type DevicePolicy = typeof devicePolicies.$inferSelect;
@@ -156,6 +241,18 @@ export type InsertContentFilterLog = typeof contentFilterLogs.$inferInsert;
 export type RemoteAction = typeof remoteActions.$inferSelect;
 export type InsertRemoteAction = typeof remoteActions.$inferInsert;
 
+// Export types - License Management
+export type SoftwareLicense = typeof softwareLicenses.$inferSelect;
+export type InsertSoftwareLicense = typeof softwareLicenses.$inferInsert;
+export type SoftwareInstallation = typeof softwareInstallations.$inferSelect;
+export type InsertSoftwareInstallation = typeof softwareInstallations.$inferInsert;
+export type LicenseViolation = typeof licenseViolations.$inferSelect;
+export type InsertLicenseViolation = typeof licenseViolations.$inferInsert;
+export type LicenseUsageTracking = typeof licenseUsageTracking.$inferSelect;
+export type InsertLicenseUsageTracking = typeof licenseUsageTracking.$inferInsert;
+export type SoftwareRequest = typeof softwareRequests.$inferSelect;
+export type InsertSoftwareRequest = typeof softwareRequests.$inferInsert;
+
 // Insert schemas for validation
 export const insertDeviceSchema = createInsertSchema(devices);
 export const insertDevicePolicySchema = createInsertSchema(devicePolicies);
@@ -164,3 +261,8 @@ export const insertDeviceActivitySchema = createInsertSchema(deviceActivities);
 export const insertScreenTimeRecordSchema = createInsertSchema(screenTimeRecords);
 export const insertContentFilterLogSchema = createInsertSchema(contentFilterLogs);
 export const insertRemoteActionSchema = createInsertSchema(remoteActions);
+export const insertSoftwareLicenseSchema = createInsertSchema(softwareLicenses);
+export const insertSoftwareInstallationSchema = createInsertSchema(softwareInstallations);
+export const insertLicenseViolationSchema = createInsertSchema(licenseViolations);
+export const insertLicenseUsageTrackingSchema = createInsertSchema(licenseUsageTracking);
+export const insertSoftwareRequestSchema = createInsertSchema(softwareRequests);
