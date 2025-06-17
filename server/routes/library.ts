@@ -20,8 +20,7 @@ export function registerLibraryRoutes(app: Express) {
         grade, 
         curriculum, 
         type, 
-        difficulty, 
-        category,
+        difficulty,
         subject,
         author,
         search,
@@ -33,29 +32,22 @@ export function registerLibraryRoutes(app: Express) {
         available
       } = req.query;
 
-      let query = db.select().from(libraryResources).where(eq(libraryResources.isActive, true));
-
-      // Apply filters
-      const conditions = [eq(libraryResources.isActive, true)];
+      // Apply filters using existing schema
+      const conditions = [eq(libraryResources.isPublished, true)];
       
       if (grade) conditions.push(eq(libraryResources.grade, grade));
       if (curriculum) conditions.push(eq(libraryResources.curriculum, curriculum));
       if (type) conditions.push(eq(libraryResources.type, type));
       if (difficulty) conditions.push(eq(libraryResources.difficulty, difficulty));
-      if (category) conditions.push(eq(libraryResources.category, category));
-      if (subject) conditions.push(eq(libraryResources.subject, subject));
-      if (author) conditions.push(like(libraryResources.author, `%${author}%`));
-      if (featured === 'true') conditions.push(eq(libraryResources.isFeatured, true));
-      if (available === 'true') conditions.push(sql`${libraryResources.availableCopies} > 0`);
+      if (author) conditions.push(eq(libraryResources.authorId, author));
       
       if (search) {
         conditions.push(
           or(
             like(libraryResources.title, `%${search}%`),
             like(libraryResources.description, `%${search}%`),
-            like(libraryResources.author, `%${search}%`),
-            sql`${libraryResources.tags}::text ILIKE ${'%' + search + '%'}`,
-            sql`${libraryResources.keywords}::text ILIKE ${'%' + search + '%'}`
+            like(libraryResources.content, `%${search}%`),
+            sql`${libraryResources.tags}::text ILIKE ${'%' + search + '%'}`
           )
         );
       }
@@ -101,26 +93,10 @@ export function registerLibraryRoutes(app: Express) {
       const [resource] = await db
         .select()
         .from(libraryResources)
-        .where(and(eq(libraryResources.id, parseInt(id)), eq(libraryResources.isActive, true)));
+        .where(and(eq(libraryResources.id, parseInt(id)), eq(libraryResources.isPublished, true)));
 
       if (!resource) {
         return res.status(404).json({ message: "Resource not found" });
-      }
-
-      // Get borrowing status if user is authenticated
-      let borrowingStatus = null;
-      if (req.user) {
-        const [currentBorrowing] = await db
-          .select()
-          .from(libraryBorrowings)
-          .where(
-            and(
-              eq(libraryBorrowings.resourceId, parseInt(id)),
-              eq(libraryBorrowings.borrowerId, req.user.id),
-              eq(libraryBorrowings.status, 'active')
-            )
-          );
-        borrowingStatus = currentBorrowing || null;
       }
 
       // Increment view count
@@ -129,10 +105,7 @@ export function registerLibraryRoutes(app: Express) {
         .set({ viewCount: sql`${libraryResources.viewCount} + 1` })
         .where(eq(libraryResources.id, parseInt(id)));
 
-      res.json({
-        ...resource,
-        borrowingStatus
-      });
+      res.json(resource);
     } catch (error) {
       console.error("Error fetching resource:", error);
       res.status(500).json({ message: "Failed to fetch resource" });
@@ -489,11 +462,11 @@ export function registerLibraryRoutes(app: Express) {
         .from(libraryResources)
         .where(
           and(
-            eq(libraryResources.isFeatured, true),
-            eq(libraryResources.isActive, true)
+            eq(libraryResources.isPublished, true),
+            eq(libraryResources.isSharedGlobally, true)
           )
         )
-        .orderBy(desc(libraryResources.createdAt))
+        .orderBy(desc(libraryResources.rating))
         .limit(10);
 
       res.json(featured);
@@ -509,42 +482,32 @@ export function registerLibraryRoutes(app: Express) {
       const [totalResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isPublished, true));
 
-      const [totalBorrowings] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(libraryBorrowings);
+      const [totalViews] = await db
+        .select({ total: sql<number>`SUM(view_count)` })
+        .from(libraryResources)
+        .where(eq(libraryResources.isPublished, true));
 
-      const [activeBorrowings] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(libraryBorrowings)
-        .where(eq(libraryBorrowings.status, 'active'));
-
-      const [overdueBorrowings] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(libraryBorrowings)
+      const [averageRating] = await db
+        .select({ avg: sql<number>`AVG(rating)` })
+        .from(libraryResources)
         .where(
           and(
-            eq(libraryBorrowings.status, 'active'),
-            sql`${libraryBorrowings.dueDate} < NOW()`
+            eq(libraryResources.isPublished, true),
+            sql`rating IS NOT NULL`
           )
         );
 
       const [availableResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(
-          and(
-            eq(libraryResources.isActive, true),
-            sql`${libraryResources.availableCopies} > 0`
-          )
-        );
+        .where(eq(libraryResources.isPublished, true));
 
       res.json({
         totalResources: totalResources.count,
-        totalBorrowings: totalBorrowings.count,
-        activeBorrowings: activeBorrowings.count,
-        overdueBorrowings: overdueBorrowings.count,
+        totalViews: totalViews.total || 0,
+        averageRating: Number((averageRating.avg || 0).toFixed(1)),
         availableResources: availableResources.count
       });
     } catch (error) {

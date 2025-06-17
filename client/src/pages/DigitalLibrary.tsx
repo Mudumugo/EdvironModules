@@ -35,39 +35,29 @@ import {
 
 interface LibraryResource {
   id: number;
-  isbn?: string;
   title: string;
   type: string;
-  author?: string;
-  publisher?: string;
-  publicationYear?: number;
-  edition?: string;
-  language: string;
-  subject?: string;
-  category?: string;
+  authorId?: string;
+  subjectId?: number;
   grade?: string;
   curriculum?: string;
   difficulty?: string;
   description?: string;
-  summary?: string;
-  coverImageUrl?: string;
+  content?: string;
   thumbnailUrl?: string;
-  pageCount?: number;
-  deweyDecimal?: string;
-  location?: string;
-  totalCopies: number;
-  availableCopies: number;
+  fileUrl?: string;
+  duration?: number;
+  language: string;
   rating?: number;
   viewCount: number;
-  downloadCount: number;
-  isPhysical: boolean;
-  isDigital: boolean;
-  isFeatured: boolean;
-  isRestricted: boolean;
   tags: string[];
-  keywords: string[];
-  borrowingStatus?: any;
+  learningObjectives: string[];
+  prerequisites: string[];
+  isPublished: boolean;
+  isSharedGlobally: boolean;
+  tenantId: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface LibraryBorrowing {
@@ -259,52 +249,36 @@ export default function DigitalLibrary() {
   };
 
   const getStatusBadge = (resource: LibraryResource) => {
-    if (resource.borrowingStatus) {
-      return <Badge variant="secondary">Borrowed</Badge>;
+    if (!resource.isPublished) {
+      return <Badge variant="destructive">Draft</Badge>;
     }
-    if (resource.availableCopies <= 0) {
-      return <Badge variant="destructive">Unavailable</Badge>;
+    if (resource.isSharedGlobally) {
+      return <Badge variant="default">Global</Badge>;
     }
-    if (resource.availableCopies <= 2) {
-      return <Badge variant="outline">Limited</Badge>;
-    }
-    return <Badge variant="default">Available</Badge>;
+    return <Badge variant="outline">Available</Badge>;
   };
 
   const getActionButton = (resource: LibraryResource) => {
-    if (resource.borrowingStatus) {
+    if (resource.fileUrl) {
       return (
         <Button 
-          onClick={() => handleReturn(resource.id)}
-          disabled={returnMutation.isPending}
-          variant="outline"
+          onClick={() => window.open(resource.fileUrl, '_blank')}
           size="sm"
         >
-          {returnMutation.isPending ? <RefreshCw className="h-4 w-4 animate-spin" /> : "Return"}
-        </Button>
-      );
-    }
-    
-    if (resource.availableCopies > 0) {
-      return (
-        <Button 
-          onClick={() => handleBorrow(resource.id)}
-          disabled={borrowMutation.isPending}
-          size="sm"
-        >
-          {borrowMutation.isPending ? <RefreshCw className="h-4 w-4 animate-spin" /> : "Borrow"}
+          <Download className="h-4 w-4 mr-2" />
+          Access
         </Button>
       );
     }
     
     return (
       <Button 
-        onClick={() => handleReserve(resource.id)}
-        disabled={reserveMutation.isPending}
+        onClick={() => setSelectedResource(resource)}
         variant="outline"
         size="sm"
       >
-        {reserveMutation.isPending ? <RefreshCw className="h-4 w-4 animate-spin" /> : "Reserve"}
+        <Eye className="h-4 w-4 mr-2" />
+        View
       </Button>
     );
   };
@@ -317,9 +291,9 @@ export default function DigitalLibrary() {
             <CardTitle className="text-lg leading-tight mb-1 truncate">
               {resource.title}
             </CardTitle>
-            {resource.author && (
+            {resource.authorId && (
               <CardDescription className="text-sm text-muted-foreground">
-                by {resource.author}
+                by {resource.authorId}
               </CardDescription>
             )}
           </div>
@@ -374,7 +348,11 @@ export default function DigitalLibrary() {
                 </span>
               )}
             </div>
-            <span>{resource.availableCopies}/{resource.totalCopies} available</span>
+            {resource.duration ? (
+              <span>{resource.duration} min</span>
+            ) : (
+              <span>{resource.language.toUpperCase()}</span>
+            )}
           </div>
           
           <div className="flex gap-2">
