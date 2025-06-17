@@ -361,17 +361,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Library Resource routes
+  // Library Resource routes - with curriculum-based filtering
   app.get('/api/library/resources', isAuthenticated, async (req: any, res) => {
     try {
-      const { grade, subject, curriculum } = req.query;
+      const userId = req.user.claims.sub;
+      const { grade, subject, curriculum, type, difficulty } = req.query;
       const filters = {
         grade: grade as string,
         subject: subject as string,
         curriculum: curriculum as string,
+        type: type as string,
+        difficulty: difficulty as string,
       };
       
-      const resources = await storage.getLibraryResources(filters);
+      // Use curriculum-aware filtering based on user profile
+      const resources = await storage.getLibraryResourcesForUser(userId, filters);
       res.json(resources);
     } catch (error) {
       console.error("Error fetching library resources:", error);

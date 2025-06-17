@@ -138,23 +138,32 @@ export const subjects = pgTable("subjects", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Digital Library Resources
+// Digital Library Resources - Shared across tenants with curriculum-based filtering
 export const libraryResources = pgTable("library_resources", {
   id: serial("id").primaryKey(),
   title: varchar("title").notNull(),
+  description: text("description"),
   type: varchar("type").notNull(), // book, video, quiz, simulation, etc.
   subjectId: integer("subject_id").references(() => subjects.id),
-  grade: varchar("grade"),
-  curriculum: varchar("curriculum"),
+  grade: varchar("grade").notNull(), // K, 1-12, University, Adult
+  curriculum: varchar("curriculum").notNull(), // CBC, IGCSE, IB, Common Core, etc.
   content: text("content"),
   fileUrl: varchar("file_url"),
   thumbnailUrl: varchar("thumbnail_url"),
+  difficulty: varchar("difficulty").default("intermediate"), // beginner, intermediate, advanced
+  prerequisites: text("prerequisites").array().default([]), // Required prior knowledge
+  learningObjectives: text("learning_objectives").array().default([]), // What students will learn
+  duration: integer("duration"), // Time in minutes
   accessTier: varchar("access_tier").notNull().default("basic"), // basic, premium, institutional
   isPublished: boolean("is_published").default(false),
+  isSharedGlobally: boolean("is_shared_globally").default(true), // Available across all tenants
+  tenantId: varchar("tenant_id").references(() => tenants.id), // Original creating tenant
   authorId: varchar("author_id").references(() => users.id),
+  approvedBy: varchar("approved_by").references(() => users.id), // For quality control
   viewCount: integer("view_count").default(0),
   rating: decimal("rating", { precision: 3, scale: 2 }),
-  tags: text("tags").array(),
+  tags: text("tags").array().default([]),
+  language: varchar("language").default("en"), // Content language
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -85,6 +85,13 @@ export interface IStorage {
   // Library Resource operations
   getLibraryResource(id: number): Promise<LibraryResource | undefined>;
   getLibraryResources(filters?: { grade?: string; subject?: string; curriculum?: string }): Promise<LibraryResource[]>;
+  getLibraryResourcesForUser(userId: string, filters?: { 
+    grade?: string; 
+    subject?: string; 
+    curriculum?: string;
+    type?: string;
+    difficulty?: string;
+  }): Promise<LibraryResource[]>;
   createLibraryResource(resource: InsertLibraryResource): Promise<LibraryResource>;
   updateLibraryResource(id: number, updates: Partial<LibraryResource>): Promise<LibraryResource>;
   
@@ -282,23 +289,94 @@ export class DatabaseStorage implements IStorage {
     return subject;
   }
 
-  // Library Resource operations
+  // Library Resource operations with curriculum-based filtering
   async getLibraryResource(id: number): Promise<LibraryResource | undefined> {
     const [resource] = await db.select().from(libraryResources).where(eq(libraryResources.id, id));
     return resource;
   }
 
-  async getLibraryResources(filters?: { grade?: string; subject?: string; curriculum?: string }): Promise<LibraryResource[]> {
-    let query = db.select().from(libraryResources).where(eq(libraryResources.isPublished, true));
-    
+  async getLibraryResourcesForUser(userId: string, filters?: { 
+    grade?: string; 
+    subject?: string; 
+    curriculum?: string;
+    type?: string;
+    difficulty?: string;
+  }): Promise<LibraryResource[]> {
+    // Get user profile to determine their academic context
+    const user = await this.getUser(userId);
+    if (!user) return [];
+
+    // Determine user's academic level based on role
+    let userGrade: string[] = [];
+    let userCurriculum: string[] = [];
+
+    if (user.role === 'student') {
+      const student = await db.select().from(students).where(eq(students.userId, userId)).limit(1);
+      if (student[0]) {
+        userGrade = [student[0].grade];
+        userCurriculum = student[0].curriculum ? [student[0].curriculum] : [];
+      }
+    } else if (user.role === 'teacher') {
+      const teacher = await db.select().from(teachers).where(eq(teachers.userId, userId)).limit(1);
+      if (teacher[0]) {
+        // Teachers can access resources for their subjects and grade levels
+        const teacherSubjects = await db.select().from(subjects)
+          .where(eq(subjects.id, teacher[0].subjectId || 0));
+        if (teacherSubjects.length > 0) {
+          userGrade = teacherSubjects[0].grade ? [teacherSubjects[0].grade] : [];
+          userCurriculum = teacherSubjects[0].curriculum ? [teacherSubjects[0].curriculum] : [];
+        }
+      }
+    }
+
+    // Build query with academic context filtering
+    const conditions = [
+      eq(libraryResources.isPublished, true),
+      eq(libraryResources.isSharedGlobally, true)
+    ];
+
+    // Apply user's academic context if available
+    if (userGrade.length > 0) {
+      conditions.push(inArray(libraryResources.grade, userGrade));
+    }
+    if (userCurriculum.length > 0) {
+      conditions.push(inArray(libraryResources.curriculum, userCurriculum));
+    }
+
+    // Apply additional filters
     if (filters?.grade) {
-      query = query.where(eq(libraryResources.grade, filters.grade));
+      conditions.push(eq(libraryResources.grade, filters.grade));
     }
     if (filters?.curriculum) {
-      query = query.where(eq(libraryResources.curriculum, filters.curriculum));
+      conditions.push(eq(libraryResources.curriculum, filters.curriculum));
+    }
+    if (filters?.type) {
+      conditions.push(eq(libraryResources.type, filters.type));
+    }
+    if (filters?.difficulty) {
+      conditions.push(eq(libraryResources.difficulty, filters.difficulty));
+    }
+
+    return await db.select()
+      .from(libraryResources)
+      .where(and(...conditions))
+      .orderBy(desc(libraryResources.createdAt));
+  }
+
+  async getLibraryResources(filters?: { grade?: string; subject?: string; curriculum?: string }): Promise<LibraryResource[]> {
+    const conditions = [eq(libraryResources.isPublished, true)];
+    
+    if (filters?.grade) {
+      conditions.push(eq(libraryResources.grade, filters.grade));
+    }
+    if (filters?.curriculum) {
+      conditions.push(eq(libraryResources.curriculum, filters.curriculum));
     }
     
-    return await query.orderBy(desc(libraryResources.createdAt));
+    return await db.select()
+      .from(libraryResources)
+      .where(and(...conditions))
+      .orderBy(desc(libraryResources.createdAt));
   }
 
   async createLibraryResource(resourceData: InsertLibraryResource): Promise<LibraryResource> {
