@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BookOpen, FileText, Search, Filter, Grid, List, Download, Eye, Star, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -68,17 +69,29 @@ const DigitalLibraryNew = () => {
 
   const handlePreview = (resource: LibraryResource) => {
     setSelectedResource(resource);
-    toast({
-      title: "Preview",
-      description: `Opening preview for: ${resource.title}`,
-    });
   };
 
   const handleDownload = (resource: LibraryResource) => {
-    toast({
-      title: "Download Started",
-      description: `Downloading: ${resource.title}`,
-    });
+    if (resource.fileUrl) {
+      // Create a temporary link and click it to download
+      const link = document.createElement('a');
+      link.href = resource.fileUrl;
+      link.download = resource.title;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Download Started",
+        description: `Downloading: ${resource.title}`,
+      });
+    } else {
+      toast({
+        title: "Download Error",
+        description: "File not available for download",
+        variant: "destructive",
+      });
+    }
   };
 
   const getTypeIcon = (type: string) => {
@@ -217,6 +230,136 @@ const DigitalLibraryNew = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Preview Dialog */}
+      {selectedResource && (
+        <Dialog open={!!selectedResource} onOpenChange={() => setSelectedResource(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl">{selectedResource.title}</DialogTitle>
+              <DialogDescription>
+                by {selectedResource.authorId?.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown Author'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Thumbnail */}
+              {selectedResource.thumbnailUrl && (
+                <div className="w-full max-w-md mx-auto">
+                  <img 
+                    src={selectedResource.thumbnailUrl} 
+                    alt={selectedResource.title}
+                    className="w-full h-auto rounded-lg shadow-md"
+                  />
+                </div>
+              )}
+              
+              {/* Resource Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Resource Information</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="font-medium">Type:</span>
+                        <Badge variant="secondary">{selectedResource.type}</Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Grade:</span>
+                        <span>{selectedResource.grade}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Curriculum:</span>
+                        <span>{selectedResource.curriculum}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Difficulty:</span>
+                        <Badge className={selectedResource.difficulty === 'easy' ? 'bg-green-100 text-green-800' : 
+                                         selectedResource.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
+                                         'bg-red-100 text-red-800'}>
+                          {selectedResource.difficulty}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Duration:</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {selectedResource.duration} min
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Access:</span>
+                        <Badge variant="outline">{selectedResource.accessTier}</Badge>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Stats */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Statistics</h3>
+                    <div className="flex gap-4 text-sm text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
+                        {selectedResource.viewCount} views
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Star className="h-3 w-3" />
+                        {selectedResource.rating}/5
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  {/* Description */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Description</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {selectedResource.description}
+                    </p>
+                  </div>
+                  
+                  {/* Tags */}
+                  {selectedResource.tags && selectedResource.tags.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Tags</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedResource.tags.map((tag, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Actions */}
+                  <div className="pt-4">
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={() => handleDownload(selectedResource)}
+                        className="flex-1"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download Resource
+                      </Button>
+                      {selectedResource.fileUrl && (
+                        <Button 
+                          variant="outline"
+                          onClick={() => window.open(selectedResource.fileUrl, '_blank')}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Open File
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
