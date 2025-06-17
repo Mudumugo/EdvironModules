@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import LibraryResourceCard from "@/components/library/LibraryResourceCard";
+import BookPreviewModal from "@/components/books/BookPreviewModal";
 
 interface LibraryResource {
   id: number;
@@ -231,8 +232,18 @@ const DigitalLibraryNew = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Preview Dialog */}
-      {selectedResource && (
+      {/* Preview Modal */}
+      {selectedResource && selectedResource.type === 'book' && (
+        <BookPreviewModal
+          isOpen={!!selectedResource}
+          onClose={() => setSelectedResource(null)}
+          resource={selectedResource}
+          onDownload={handleDownload}
+        />
+      )}
+
+      {/* Generic Preview Dialog for non-book resources */}
+      {selectedResource && selectedResource.type !== 'book' && (
         <Dialog open={!!selectedResource} onOpenChange={() => setSelectedResource(null)}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
