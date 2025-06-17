@@ -8,8 +8,12 @@ import {
   Bookmark, 
   X,
   List,
-  BookOpen
+  BookOpen,
+  Play,
+  Film
 } from 'lucide-react';
+import { xapiTracker } from '@/lib/xapi/xapiTracker';
+import InteractiveContentViewer from '@/components/multimedia/InteractiveContentViewer';
 
 interface BookViewerProps {
   bookData: {
@@ -23,6 +27,15 @@ interface BookViewerProps {
     grade?: string;
     subject?: string;
     language?: string;
+    type?: string;
+    isInteractive?: boolean;
+    hasVideo?: boolean;
+    hasAudio?: boolean;
+    xapiEnabled?: boolean;
+    content?: string;
+    mediaAssets?: any[];
+    interactiveElements?: any[];
+    trackingConfig?: any;
   };
   onClose?: () => void;
   className?: string;

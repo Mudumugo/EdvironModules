@@ -90,12 +90,12 @@ export const subjects = pgTable("subjects", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Library Resources - Enhanced for comprehensive library management
+// Library Resources - Enhanced for multimedia and interactive content
 export const libraryResources = pgTable("library_resources", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   isbn: varchar("isbn").unique(), // For books
   title: varchar("title").notNull(),
-  type: varchar("type").notNull(), // book, ebook, video, audio, document, interactive, journal
+  type: varchar("type").notNull(), // book, ebook, video, audio, document, interactive, html5, scorm
   author: varchar("author"),
   publisher: varchar("publisher"),
   publicationYear: integer("publication_year"),
@@ -117,7 +117,17 @@ export const libraryResources = pgTable("library_resources", {
   duration: integer("duration"), // in minutes for videos/audio
   pageCount: integer("page_count"), // for books
   fileSize: integer("file_size"), // in bytes
-  format: varchar("format"), // PDF, EPUB, MP4, etc.
+  format: varchar("format"), // PDF, EPUB, MP4, HTML5, etc.
+  
+  // Multimedia and Interactive Content
+  isInteractive: boolean("is_interactive").default(false),
+  hasVideo: boolean("has_video").default(false),
+  hasAudio: boolean("has_audio").default(false),
+  hasAssessments: boolean("has_assessments").default(false),
+  xapiEnabled: boolean("xapi_enabled").default(false),
+  interactiveElements: jsonb("interactive_elements").default([]), // buttons, quizzes, simulations
+  mediaAssets: jsonb("media_assets").default([]), // video/audio file references
+  trackingConfig: jsonb("tracking_config").default({}), // xAPI configuration
   deweyDecimal: varchar("dewey_decimal"), // Library classification
   location: varchar("location"), // Physical location in library
   barcode: varchar("barcode").unique(), // For physical items
