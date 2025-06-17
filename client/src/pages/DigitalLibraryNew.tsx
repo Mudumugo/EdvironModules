@@ -46,7 +46,7 @@ const DigitalLibraryNew = () => {
     enabled: true, // Allow library access without authentication
   });
 
-  // Transform API response from snake_case to camelCase
+  // Transform API response from snake_case to camelCase and add multimedia sample data
   const rawResources = apiResponse?.resources || [];
   const resources = rawResources.map((resource: any) => ({
     id: resource.id,
@@ -66,7 +66,113 @@ const DigitalLibraryNew = () => {
     isPublished: resource.isPublished !== false,
     authorId: resource.authorId || 'unknown-author',
     language: resource.language || 'English',
+    // Enhanced multimedia properties
+    isInteractive: resource.type === 'interactive' || resource.type === 'html5',
+    hasVideo: resource.type === 'video' || resource.type === 'multimedia',
+    hasAudio: resource.type === 'audio' || resource.type === 'multimedia',
+    xapiEnabled: true,
+    content: resource.content || generateSampleContent(resource.type),
+    mediaAssets: generateSampleMediaAssets(resource.type),
+    interactiveElements: generateSampleInteractiveElements(resource.type),
+    trackingConfig: {
+      trackingEnabled: true,
+      trackReadingProgress: true,
+      trackMediaInteractions: true,
+      trackAssessments: true
+    }
   }));
+
+  // Generate sample multimedia content based on type
+  function generateSampleContent(type: string): string {
+    switch (type) {
+      case 'interactive':
+      case 'html5':
+        return `
+          <div class="interactive-lesson">
+            <h2>Interactive Learning Module</h2>
+            <p>This is a sample interactive learning experience with embedded multimedia and assessment elements.</p>
+            <div class="content-section">
+              <h3>Learning Objectives</h3>
+              <ul>
+                <li>Understand key concepts through interactive exploration</li>
+                <li>Apply knowledge through hands-on activities</li>
+                <li>Demonstrate mastery through embedded assessments</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      case 'video':
+      case 'multimedia':
+        return `
+          <div class="video-lesson">
+            <h2>Video Learning Experience</h2>
+            <p>Interactive video content with embedded questions and activities.</p>
+          </div>
+        `;
+      default:
+        return '';
+    }
+  }
+
+  // Generate sample media assets
+  function generateSampleMediaAssets(type: string): any[] {
+    if (type === 'video' || type === 'multimedia' || type === 'interactive') {
+      return [
+        {
+          id: 'video-1',
+          type: 'video',
+          url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+          duration: 120,
+          title: 'Introduction Video',
+          subtitles: 'Sample video content with educational material'
+        },
+        {
+          id: 'audio-1',
+          type: 'audio',
+          url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+          duration: 30,
+          title: 'Audio Narration'
+        }
+      ];
+    }
+    return [];
+  }
+
+  // Generate sample interactive elements
+  function generateSampleInteractiveElements(type: string): any[] {
+    if (type === 'interactive' || type === 'html5') {
+      return [
+        {
+          id: 'quiz-1',
+          type: 'quiz',
+          position: { x: 50, y: 30 },
+          content: {
+            question: 'What is the main concept discussed in this lesson?',
+            options: [
+              'Interactive Learning',
+              'Traditional Teaching',
+              'Assessment Methods',
+              'Content Management'
+            ],
+            correctAnswer: 0
+          },
+          xapiVerb: 'answered',
+          required: true
+        },
+        {
+          id: 'hotspot-1',
+          type: 'hotspot',
+          position: { x: 25, y: 60 },
+          content: {
+            title: 'Click for More Info',
+            description: 'Additional information about this topic'
+          },
+          xapiVerb: 'interacted'
+        }
+      ];
+    }
+    return [];
+  }
 
   const handlePreview = (resource: LibraryResource) => {
     setSelectedResource(resource);

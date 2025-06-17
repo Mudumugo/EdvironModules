@@ -10,7 +10,8 @@ import {
   List,
   BookOpen,
   Play,
-  Film
+  Film,
+  Monitor
 } from 'lucide-react';
 import { xapiTracker } from '@/lib/xapi/xapiTracker';
 import InteractiveContentViewer from '@/components/multimedia/InteractiveContentViewer';
