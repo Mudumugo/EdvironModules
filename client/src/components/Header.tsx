@@ -36,7 +36,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
     retry: false,
   });
 
-  const unreadNotifications = notifications?.filter((n: any) => !n.isRead).length || 0;
+  const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
   const handleLogout = () => {
     window.location.href = "/api/logout";

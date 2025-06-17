@@ -128,7 +128,7 @@ export default function LessonManagement() {
                         <SelectValue placeholder="Select class" />
                       </SelectTrigger>
                       <SelectContent>
-                        {classes?.map((cls: any) => (
+                        {Array.isArray(classes) && classes.map((cls: any) => (
                           <SelectItem key={cls.id} value={cls.id}>
                             {cls.name} - {cls.grade}
                           </SelectItem>
