@@ -57,6 +57,13 @@ export default function Landing() {
               >
                 My Locker
               </Button>
+              <Button 
+                onClick={() => window.location.href = "/scheduling"} 
+                variant="outline"
+                className="border-purple-600 text-purple-600 hover:bg-purple-50"
+              >
+                Scheduling
+              </Button>
               <Button onClick={handleLogin} className="bg-primary-600 hover:bg-primary-700">
                 Sign In
               </Button>
