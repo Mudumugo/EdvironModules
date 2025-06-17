@@ -44,9 +44,9 @@ export function registerLibraryRoutes(app: Express) {
       if (search) {
         conditions.push(
           or(
-            ilike(libraryResources.title, `%${search}%`),
-            ilike(libraryResources.description, `%${search}%`),
-            ilike(libraryResources.subject, `%${search}%`)
+            like(libraryResources.title, `%${search}%`),
+            like(libraryResources.description, `%${search}%`),
+            like(libraryResources.subject, `%${search}%`)
           )
         );
       }
