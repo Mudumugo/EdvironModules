@@ -413,16 +413,28 @@ export default function FamilyControls() {
       </Card>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="children" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="children">Children ({filteredChildren.length})</TabsTrigger>
-          <TabsTrigger value="restrictions">Restrictions ({filteredRestrictions.length})</TabsTrigger>
-          <TabsTrigger value="activity">Activity Log ({filteredActivities.length})</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
+      <Tabs defaultValue="children" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto">
+          <TabsTrigger value="children" className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Children ({filteredChildren.length})</span>
+            <span className="sm:hidden">Kids ({filteredChildren.length})</span>
+          </TabsTrigger>
+          <TabsTrigger value="restrictions" className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Restrictions ({filteredRestrictions.length})</span>
+            <span className="sm:hidden">Rules ({filteredRestrictions.length})</span>
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="text-xs sm:text-sm col-span-2 lg:col-span-1">
+            <span className="hidden sm:inline">Activity Log ({filteredActivities.length})</span>
+            <span className="sm:hidden">Activity ({filteredActivities.length})</span>
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="text-xs sm:text-sm lg:col-span-1">
+            <span className="hidden sm:inline">Reports</span>
+            <span className="sm:hidden">Stats</span>
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="children" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <TabsContent value="children" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {filteredChildren.map((child) => (
               <ChildProfileCard 
                 key={child.id} 
@@ -434,8 +446,8 @@ export default function FamilyControls() {
           </div>
         </TabsContent>
 
-        <TabsContent value="restrictions" className="space-y-6">
-          <div className="space-y-4">
+        <TabsContent value="restrictions" className="space-y-4 sm:space-y-6">
+          <div className="space-y-3 sm:space-y-4">
             {filteredRestrictions.map((restriction) => {
               const child = children.find(c => c.id === restriction.childId);
               return (
@@ -451,8 +463,8 @@ export default function FamilyControls() {
           </div>
         </TabsContent>
 
-        <TabsContent value="activity" className="space-y-6">
-          <div className="space-y-3">
+        <TabsContent value="activity" className="space-y-4 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-3">
             {filteredActivities.map((activity) => {
               const child = children.find(c => c.id === activity.childId);
               return (
@@ -466,8 +478,8 @@ export default function FamilyControls() {
           </div>
         </TabsContent>
 
-        <TabsContent value="reports" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <TabsContent value="reports" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
