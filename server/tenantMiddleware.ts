@@ -29,9 +29,12 @@ export function extractTenant(req: TenantRequest, res: Response, next: NextFunct
     }
   }
   
-  // Validate tenant exists
+  // Validate tenant exists or use default for development
   if (tenantId && validateTenant(tenantId)) {
     req.tenant = getTenantConfig(tenantId);
+  } else if (hostname === 'localhost' || hostname.startsWith('127.0.0.1') || hostname.includes('replit')) {
+    // For development environments, use demo tenant as default
+    req.tenant = getTenantConfig('demo');
   } else {
     return res.status(404).json({ 
       error: 'Tenant not found',
