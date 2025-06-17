@@ -22,7 +22,8 @@ import {
   VolumeX,
   Play,
   Pause,
-  X
+  X,
+  List
 } from 'lucide-react';
 
 interface BookViewerProps {
@@ -53,9 +54,18 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const [viewMode, setViewMode] = useState<'single' | 'double'>('single');
   const [isAutoPlay, setIsAutoPlay] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [showTableOfContents, setShowTableOfContents] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+
+  // Table of Contents data - sample structure
+  const tableOfContents = [
+    { chapter: "Chapter 1", title: "Introduction to Numbers", pages: "3-5" },
+    { chapter: "Chapter 2", title: "Addition and Subtraction", pages: "6-9" },
+    { chapter: "Chapter 3", title: "Shapes and Patterns", pages: "10-12" },
+    { chapter: "Chapter 4", title: "Review and Assessment", pages: "13-15" }
+  ];
 
   // Navigation functions
   const goToNextPage = () => {
@@ -184,9 +194,57 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
           </Button>
           
           {/* Table of Contents */}
-          <Button variant="ghost" size="sm" title="Table of Contents">
-            <Eye className="h-4 w-4" />
-          </Button>
+          <div className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowTableOfContents(!showTableOfContents)}
+              title="Table of Contents"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            
+            {/* Table of Contents Dropdown */}
+            {showTableOfContents && (
+              <div className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">Table of Contents</h3>
+                  <div className="space-y-2">
+                    {tableOfContents.map((item, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          const startPage = parseInt(item.pages.split('-')[0]);
+                          goToPage(startPage);
+                          setShowTableOfContents(false);
+                        }}
+                        className="w-full text-left p-2 hover:bg-gray-50 rounded border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-900">{item.chapter}</div>
+                            <div className="text-sm text-gray-600">{item.title}</div>
+                          </div>
+                          <div className="text-sm text-gray-500 ml-2">Pages {item.pages}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-4 pt-3 border-t border-gray-200">
+                    <div className="bg-blue-50 p-3 rounded">
+                      <h4 className="font-medium text-blue-900 mb-2">How to Use This Book</h4>
+                      <ul className="text-sm text-blue-800 space-y-1">
+                        <li>📖 Read each chapter carefully</li>
+                        <li>🎯 Complete practice exercises</li>
+                        <li>📝 Take quizzes to test your knowledge</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           
           {/* Zoom Out */}
           <Button variant="ghost" size="sm" onClick={zoomOut} disabled={zoom <= 50} title="Zoom Out">
