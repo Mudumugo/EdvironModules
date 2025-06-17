@@ -47,9 +47,16 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const [rotation, setRotation] = useState(0);
   const [bookmarkPages, setBookmarkPages] = useState<number[]>([]);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
+  const [showInteractiveMode, setShowInteractiveMode] = useState(false);
+  const [sessionStartTime] = useState(new Date());
+  const [pageStartTime, setPageStartTime] = useState(new Date());
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+
+  // Detect if this is multimedia/interactive content
+  const isMultimediaContent = bookData.isInteractive || bookData.hasVideo || bookData.hasAudio || 
+                             bookData.type === 'interactive' || bookData.type === 'html5';
 
   // Table of Contents data - detailed structure with topics
   const tableOfContents = [
@@ -96,22 +103,42 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     }
   ];
 
-  // Navigation functions
+  // Navigation functions with xAPI tracking
   const goToNextPage = () => {
     if (currentPage < bookData.totalPages) {
+      trackPageView(currentPage);
       setCurrentPage(prev => prev + 1);
+      setPageStartTime(new Date());
     }
   };
 
   const goToPreviousPage = () => {
     if (currentPage > 1) {
+      trackPageView(currentPage);
       setCurrentPage(prev => prev - 1);
+      setPageStartTime(new Date());
     }
   };
 
   const goToPage = (page: number) => {
     if (page >= 1 && page <= bookData.totalPages) {
+      trackPageView(currentPage);
       setCurrentPage(page);
+      setPageStartTime(new Date());
+    }
+  };
+
+  // xAPI tracking functions
+  const trackPageView = (page: number) => {
+    if (bookData.xapiEnabled) {
+      const timeOnPage = Math.floor((new Date().getTime() - pageStartTime.getTime()) / 1000);
+      xapiTracker.trackReadingProgress(
+        bookData.id.toString(),
+        bookData.title,
+        page,
+        bookData.totalPages,
+        timeOnPage
+      );
     }
   };
 
@@ -124,12 +151,36 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   };
 
   const toggleBookmark = (page: number) => {
+    const action = bookmarkPages.includes(page) ? 'removed' : 'added';
     setBookmarkPages(prev => 
       prev.includes(page) 
         ? prev.filter(p => p !== page)
         : [...prev, page]
     );
+    
+    // Track bookmark action
+    if (bookData.xapiEnabled) {
+      xapiTracker.trackBookmark(action, bookData.id.toString(), bookData.title, page);
+    }
   };
+
+  // Initialize xAPI tracking on component mount
+  useEffect(() => {
+    if (bookData.xapiEnabled) {
+      xapiTracker.trackAccessed(bookData.id.toString(), bookData.title, bookData.type || 'book');
+    }
+  }, [bookData.id, bookData.title, bookData.xapiEnabled, bookData.type]);
+
+  // Track session completion on unmount
+  useEffect(() => {
+    return () => {
+      if (bookData.xapiEnabled) {
+        const sessionDuration = Math.floor((new Date().getTime() - sessionStartTime.getTime()) / 1000);
+        trackPageView(currentPage); // Track final page
+        xapiTracker.trackSessionComplete(bookData.id.toString(), bookData.title, sessionDuration);
+      }
+    };
+  }, []);
 
   // Keyboard navigation
   useEffect(() => {
@@ -150,8 +201,16 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
         case 'Escape':
           if (showTableOfContents) {
             setShowTableOfContents(false);
+          } else if (showInteractiveMode) {
+            setShowInteractiveMode(false);
           } else if (onClose) {
             onClose();
+          }
+          break;
+        case 'i':
+        case 'I':
+          if (isMultimediaContent) {
+            setShowInteractiveMode(!showInteractiveMode);
           }
           break;
       }
@@ -159,7 +218,23 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentPage, bookData.totalPages, showTableOfContents, onClose]);
+  }, [currentPage, bookData.totalPages, showTableOfContents, showInteractiveMode, isMultimediaContent, onClose]);
+
+  // Check if we should show interactive content viewer
+  if (showInteractiveMode && isMultimediaContent) {
+    return (
+      <InteractiveContentViewer
+        resourceId={bookData.id}
+        title={bookData.title}
+        content={bookData.content || ''}
+        mediaAssets={bookData.mediaAssets || []}
+        interactiveElements={bookData.interactiveElements || []}
+        xapiEnabled={bookData.xapiEnabled || false}
+        trackingConfig={bookData.trackingConfig || {}}
+        onClose={() => setShowInteractiveMode(false)}
+      />
+    );
+  }
 
   return (
     <div 
@@ -326,6 +401,19 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                   )}
                 </div>
                 
+                {/* Interactive Mode Toggle */}
+                {isMultimediaContent && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowInteractiveMode(!showInteractiveMode)}
+                    className={`${showInteractiveMode ? 'bg-blue-500 bg-opacity-80' : 'bg-black bg-opacity-30'} hover:bg-opacity-50 text-white border-0 rounded-full`}
+                    title="Interactive Mode (Press 'I')"
+                  >
+                    <Monitor className="h-4 w-4" />
+                  </Button>
+                )}
+
                 {/* Zoom controls */}
                 <Button 
                   variant="ghost" 
