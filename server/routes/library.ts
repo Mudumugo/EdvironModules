@@ -481,7 +481,7 @@ export function registerLibraryRoutes(app: Express) {
         .where(eq(libraryResources.isActive, true));
 
       const [totalViews] = await db
-        .select({ total: sql<number>`SUM(${libraryResources.viewCount})` })
+        .select({ total: sql<number>`SUM(${libraryResources.totalCopies})` })
         .from(libraryResources)
         .where(eq(libraryResources.isActive, true));
 

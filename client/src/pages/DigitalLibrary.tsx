@@ -37,8 +37,8 @@ interface LibraryResource {
   id: number;
   title: string;
   type: string;
-  authorId?: string;
-  subjectId?: number;
+  author?: string;
+  subject?: string;
   grade?: string;
   curriculum?: string;
   difficulty?: string;
@@ -49,13 +49,19 @@ interface LibraryResource {
   duration?: number;
   language: string;
   rating?: number;
-  viewCount: number;
+  totalCopies: number;
+  availableCopies: number;
   tags: string[];
   learningObjectives: string[];
   prerequisites: string[];
-  isPublished: boolean;
-  isSharedGlobally: boolean;
+  isPhysical: boolean;
+  isDigital: boolean;
+  isPublic: boolean;
+  isActive: boolean;
+  isFeatured: boolean;
+  isRestricted: boolean;
   tenantId: string;
+  addedBy: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -253,7 +259,10 @@ export default function DigitalLibrary() {
       return <Badge variant="destructive">Inactive</Badge>;
     }
     if (resource.isPhysical) {
-      return <Badge variant="default">Global</Badge>;
+      return <Badge variant="default">Physical</Badge>;
+    }
+    if (resource.isFeatured) {
+      return <Badge variant="secondary">Featured</Badge>;
     }
     return <Badge variant="outline">Available</Badge>;
   };
@@ -317,9 +326,9 @@ export default function DigitalLibrary() {
             <Badge variant="outline" className="text-xs">
               {resource.type}
             </Badge>
-            {resource.category && (
+            {resource.subject && (
               <Badge variant="outline" className="text-xs">
-                {resource.category}
+                {resource.subject}
               </Badge>
             )}
             {resource.grade && (
@@ -339,7 +348,7 @@ export default function DigitalLibrary() {
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <Eye className="h-3 w-3" />
-                {resource.viewCount}
+                {resource.totalCopies}
               </span>
               {resource.rating && (
                 <span className="flex items-center gap-1">
@@ -376,10 +385,10 @@ export default function DigitalLibrary() {
                 </DialogHeader>
                 
                 <div className="space-y-4">
-                  {resource.coverImageUrl && (
+                  {resource.thumbnailUrl && (
                     <div className="w-48 h-64 mx-auto bg-muted rounded-md overflow-hidden">
                       <img 
-                        src={resource.coverImageUrl} 
+                        src={resource.thumbnailUrl} 
                         alt={resource.title}
                         className="w-full h-full object-cover"
                       />
@@ -387,24 +396,24 @@ export default function DigitalLibrary() {
                   )}
                   
                   <div className="grid grid-cols-2 gap-4 text-sm">
-                    {resource.isbn && (
+                    {resource.subject && (
                       <div>
-                        <span className="font-medium">ISBN:</span> {resource.isbn}
+                        <span className="font-medium">Subject:</span> {resource.subject}
                       </div>
                     )}
-                    {resource.publisher && (
+                    {resource.curriculum && (
                       <div>
-                        <span className="font-medium">Publisher:</span> {resource.publisher}
+                        <span className="font-medium">Curriculum:</span> {resource.curriculum}
                       </div>
                     )}
-                    {resource.publicationYear && (
+                    {resource.grade && (
                       <div>
-                        <span className="font-medium">Year:</span> {resource.publicationYear}
+                        <span className="font-medium">Grade:</span> {resource.grade}
                       </div>
                     )}
-                    {resource.pageCount && (
+                    {resource.difficulty && (
                       <div>
-                        <span className="font-medium">Pages:</span> {resource.pageCount}
+                        <span className="font-medium">Difficulty:</span> {resource.difficulty}
                       </div>
                     )}
                     {resource.language && (
@@ -412,17 +421,17 @@ export default function DigitalLibrary() {
                         <span className="font-medium">Language:</span> {resource.language}
                       </div>
                     )}
-                    {resource.deweyDecimal && (
+                    {resource.type && (
                       <div>
-                        <span className="font-medium">Dewey:</span> {resource.deweyDecimal}
+                        <span className="font-medium">Type:</span> {resource.type}
                       </div>
                     )}
                   </div>
                   
-                  {resource.summary && (
+                  {resource.description && (
                     <div>
-                      <h4 className="font-medium mb-2">Summary</h4>
-                      <p className="text-sm text-muted-foreground">{resource.summary}</p>
+                      <h4 className="font-medium mb-2">Description</h4>
+                      <p className="text-sm text-muted-foreground">{resource.description}</p>
                     </div>
                   )}
                   
