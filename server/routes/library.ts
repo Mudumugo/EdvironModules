@@ -92,7 +92,7 @@ export function registerLibraryRoutes(app: Express) {
       const [resource] = await db
         .select()
         .from(libraryResources)
-        .where(and(eq(libraryResources.id, parseInt(id)), eq(libraryResources.isPublished, true)));
+        .where(and(eq(libraryResources.id, parseInt(id)), eq(libraryResources.isActive, true)));
 
       if (!resource) {
         return res.status(404).json({ message: "Resource not found" });
@@ -486,19 +486,14 @@ export function registerLibraryRoutes(app: Express) {
         .where(eq(libraryResources.isActive, true));
 
       const [averageRating] = await db
-        .select({ avg: sql<number>`AVG(rating)` })
+        .select({ avg: sql<number>`AVG(${libraryResources.rating})` })
         .from(libraryResources)
-        .where(
-          and(
-            eq(libraryResources.isPublished, true),
-            sql`rating IS NOT NULL`
-          )
-        );
+        .where(eq(libraryResources.isActive, true));
 
       const [availableResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isPublished, true));
+        .where(eq(libraryResources.isActive, true));
 
       res.json({
         totalResources: totalResources.count,
