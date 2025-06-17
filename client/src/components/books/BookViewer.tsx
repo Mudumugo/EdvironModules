@@ -168,115 +168,67 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
       className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white' : 'w-full max-w-7xl mx-auto bg-white rounded-lg shadow-lg'} flex flex-col overflow-hidden ${className}`}
       style={{ height: isFullscreen ? '100vh' : 'min(95vh, 900px)' }}
     >
-      {/* Header - Responsive */}
-      <div className="flex items-center justify-between p-2 lg:p-3 border-b bg-gradient-to-r from-blue-50 to-indigo-50 flex-shrink-0">
-        <div className="flex items-center space-x-2 lg:space-x-3 min-w-0">
-          <BookOpen className="h-4 w-4 lg:h-5 lg:w-5 text-blue-600 flex-shrink-0" />
-          <div className="min-w-0">
-            <h3 className="font-semibold text-sm lg:text-base text-gray-900 truncate">{bookData.title}</h3>
-            {bookData.author && (
-              <p className="text-xs text-gray-600 truncate">by {bookData.author}</p>
-            )}
-          </div>
+      {/* Simple Header - Clean Design */}
+      <div className="flex items-center justify-between p-3 border-b bg-gray-50 flex-shrink-0">
+        <div className="flex items-center space-x-3 min-w-0">
+          <h3 className="font-medium text-base text-gray-900 truncate">{bookData.title}</h3>
+          {bookData.author && (
+            <span className="text-sm text-gray-600 truncate">by {bookData.author}</span>
+          )}
         </div>
         
-        <div className="flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
-          <Badge variant="outline" className="text-xs hidden sm:inline-flex">{bookData.grade}</Badge>
-          <Badge variant="outline" className="text-xs hidden sm:inline-flex">{bookData.subject}</Badge>
+        <div className="flex items-center space-x-2">
+          {/* Home/Contents */}
+          <Button variant="ghost" size="sm" title="Contents">
+            <BookOpen className="h-4 w-4" />
+          </Button>
+          
+          {/* Table of Contents */}
+          <Button variant="ghost" size="sm" title="Table of Contents">
+            <Eye className="h-4 w-4" />
+          </Button>
+          
+          {/* Zoom Out */}
+          <Button variant="ghost" size="sm" onClick={zoomOut} disabled={zoom <= 50} title="Zoom Out">
+            <ZoomOut className="h-4 w-4" />
+          </Button>
+          
+          {/* Zoom Level */}
+          <span className="text-sm min-w-[3rem] text-center">{zoom}%</span>
+          
+          {/* Zoom In */}
+          <Button variant="ghost" size="sm" onClick={zoomIn} disabled={zoom >= 200} title="Zoom In">
+            <ZoomIn className="h-4 w-4" />
+          </Button>
+          
+          {/* Rotate */}
+          <Button variant="ghost" size="sm" onClick={rotateRight} title="Rotate">
+            <RotateCw className="h-4 w-4" />
+          </Button>
+          
+          {/* Bookmark */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => toggleBookmark(currentPage)}
+            className={bookmarkPages.includes(currentPage) ? 'text-yellow-600' : ''}
+            title="Bookmark"
+          >
+            <Bookmark className="h-4 w-4" />
+          </Button>
+          
+          {/* Save to Locker */}
+          <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white px-3">
+            <Download className="h-4 w-4 mr-1" />
+            Save to Locker
+          </Button>
+          
+          {/* Close */}
           {onClose && (
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
           )}
-        </div>
-      </div>
-
-      {/* Toolbar - Responsive */}
-      <div className="flex flex-col sm:flex-row items-center justify-between p-1.5 lg:p-2 border-b bg-gray-50 gap-2 flex-shrink-0">
-        <div className="flex items-center space-x-1 lg:space-x-2">
-          {/* Navigation */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={goToPreviousPage}
-            disabled={currentPage === 1}
-            className="px-2 lg:px-3"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span className="hidden sm:inline ml-1">Previous</span>
-          </Button>
-          
-          <span className="text-xs lg:text-sm font-medium px-2 lg:px-3 whitespace-nowrap">
-            <span className="hidden sm:inline">Page </span>{currentPage} / {bookData.totalPages}
-          </span>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={goToNextPage}
-            disabled={currentPage === bookData.totalPages}
-            className="px-2 lg:px-3"
-          >
-            <span className="hidden sm:inline mr-1">Next</span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="flex items-center space-x-1 lg:space-x-2">
-          {/* Zoom Controls - Hidden on mobile, shown in bottom controls */}
-          <div className="hidden md:flex items-center space-x-1">
-            <Button variant="outline" size="sm" onClick={zoomOut} className="px-2">
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            <span className="text-xs min-w-[3rem] text-center">{zoom}%</span>
-            <Button variant="outline" size="sm" onClick={zoomIn} className="px-2">
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Rotation Controls - Hidden on small screens */}
-          <div className="hidden lg:flex items-center space-x-1">
-            <Button variant="outline" size="sm" onClick={rotateLeft} className="px-2">
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={rotateRight} className="px-2">
-              <RotateCw className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Auto-play */}
-          <Button
-            variant={isAutoPlay ? "default" : "outline"}
-            size="sm"
-            onClick={toggleAutoPlay}
-            className="px-2 hidden sm:inline-flex"
-          >
-            {isAutoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-          </Button>
-
-          {/* Bookmark */}
-          <Button
-            variant={bookmarkPages.includes(currentPage) ? "default" : "outline"}
-            size="sm"
-            onClick={() => toggleBookmark(currentPage)}
-            className="px-2"
-          >
-            <Bookmark className="h-4 w-4" />
-          </Button>
-
-          {/* Fullscreen */}
-          <Button variant="outline" size="sm" onClick={toggleFullscreen} className="px-2">
-            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </Button>
-        </div>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="px-2 lg:px-3 py-1 bg-gray-50 border-b flex-shrink-0">
-        <Progress value={progressPercentage} className="w-full h-1" />
-        <div className="flex justify-between text-xs text-gray-500 mt-0.5">
-          <span>Progress: {Math.round(progressPercentage)}%</span>
-          <span className="hidden sm:inline">{bookData.totalPages} pages</span>
         </div>
       </div>
 
@@ -339,174 +291,42 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             )}
           </div>
         </div>
+      </div>
+
+      {/* Simple Bottom Navigation */}
+      <div className="flex items-center justify-between p-3 border-t bg-gray-50 flex-shrink-0">
+        {/* Previous Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={goToPreviousPage}
+          disabled={currentPage === 1}
+          className="flex items-center space-x-1"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span>Previous</span>
+        </Button>
         
-        {/* Mobile Controls Overlay */}
-        <div className="md:hidden absolute bottom-4 left-4 right-4 flex justify-between items-center">
-          <div className="flex items-center space-x-1 bg-white bg-opacity-90 rounded-lg px-3 py-2">
-            <Button variant="outline" size="sm" onClick={zoomOut} className="px-2">
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            <span className="text-xs px-1 min-w-[3rem] text-center">{zoom}%</span>
-            <Button variant="outline" size="sm" onClick={zoomIn} className="px-2">
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="flex items-center space-x-1 bg-white bg-opacity-90 rounded-lg px-3 py-2">
-            <Button
-              variant={isAutoPlay ? "default" : "outline"}
-              size="sm"
-              onClick={toggleAutoPlay}
-              className="px-2 sm:hidden"
-            >
-              {isAutoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            </Button>
-            <Button variant="outline" size="sm" onClick={rotateLeft} className="px-2">
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={rotateRight} className="px-2">
-              <RotateCw className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Page Input & Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-between p-2 lg:p-3 border-t bg-gray-50 gap-2 flex-shrink-0">
-        <div className="flex items-center space-x-2">
-          <span className="text-xs lg:text-sm hidden sm:inline">Go to page:</span>
-          <input
-            type="number"
-            min="1"
-            max={bookData.totalPages}
-            value={currentPage}
-            onChange={(e) => goToPage(parseInt(e.target.value) || 1)}
-            className="w-12 lg:w-16 px-1 lg:px-2 py-1 text-xs lg:text-sm border rounded"
-          />
-          <Button size="sm" variant="outline" onClick={() => goToPage(1)} className="px-2 lg:px-3 text-xs lg:text-sm">
-            <span className="hidden sm:inline">First</span>
-            <span className="sm:hidden">1</span>
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => goToPage(bookData.totalPages)} className="px-2 lg:px-3 text-xs lg:text-sm">
-            <span className="hidden sm:inline">Last</span>
-            <span className="sm:hidden">{bookData.totalPages}</span>
-          </Button>
-        </div>
-
-        {/* Mobile Zoom Controls */}
-        <div className="flex md:hidden items-center space-x-1">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={zoomOut}
-            disabled={zoom <= 0.5}
-            className="px-2"
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
-          <span className="text-xs px-1 min-w-[3rem] text-center">{Math.round(zoom * 100)}%</span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={zoomIn}
-            disabled={zoom >= 2}
-            className="px-2"
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Interactive Features - Collapsible */}
-      <div className="border-t bg-gray-50 flex-shrink-0">
-        <div className="p-2 lg:p-3">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div className="flex items-center justify-between lg:justify-start lg:space-x-4">
-              <div className="text-xs lg:text-sm font-medium text-gray-700">Interactive Features</div>
-              <div className="flex items-center space-x-1 lg:space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const synth = window.speechSynthesis;
-                    const utterance = new SpeechSynthesisUtterance(`Reading page ${currentPage} of ${bookData.title}`);
-                    synth.speak(utterance);
-                  }}
-                  className="px-2 lg:px-3"
-                >
-                  <Volume2 className="h-4 w-4 lg:mr-1" />
-                  <span className="hidden lg:inline">Read Aloud</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    navigator.share && navigator.share({
-                      title: bookData.title,
-                      text: `Check out page ${currentPage} of ${bookData.title}`,
-                      url: window.location.href
-                    });
-                  }}
-                  className="px-2 lg:px-3"
-                >
-                  <Share2 className="h-4 w-4 lg:mr-1" />
-                  <span className="hidden lg:inline">Share</span>
-                </Button>
-              </div>
-            </div>
-            
-            {/* Study Tools - Responsive Grid */}
-            <div className="grid grid-cols-3 gap-1 lg:gap-2 text-xs">
-              <div className="text-center p-1.5 lg:p-2 bg-white rounded border">
-                <div className="font-semibold text-xs lg:text-sm">{Math.round(progressPercentage)}%</div>
-                <div className="text-gray-500 text-xs">Complete</div>
-              </div>
-              <div className="text-center p-1.5 lg:p-2 bg-white rounded border">
-                <div className="font-semibold text-xs lg:text-sm">{bookmarkPages.length}</div>
-                <div className="text-gray-500 text-xs">Bookmarks</div>
-              </div>
-              <div className="text-center p-1.5 lg:p-2 bg-white rounded border">
-                <div className="font-semibold text-xs lg:text-sm">{Math.floor(Date.now() / 60000) % 60}m</div>
-                <div className="text-gray-500 text-xs">Reading</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions - Responsive */}
-      <div className="flex flex-col sm:flex-row items-center justify-between p-2 lg:p-3 border-t bg-gray-50 gap-2 flex-shrink-0 rounded-b-lg">
-        <div className="flex items-center space-x-1 lg:space-x-2">
-          <Button variant="outline" size="sm" className="px-2 lg:px-3">
-            <Download className="h-4 w-4 lg:mr-1" />
-            <span className="hidden lg:inline">Download</span>
-          </Button>
-          <Button variant="outline" size="sm" className="px-2 lg:px-3">
-            <Eye className="h-4 w-4 lg:mr-1" />
-            <span className="hidden lg:inline">Notes</span>
-          </Button>
-          <div className="lg:hidden">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleAutoPlay}
-              className={`${isAutoPlay ? 'bg-green-100 text-green-800' : ''} px-2`}
-            >
-              {isAutoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            </Button>
-          </div>
+        {/* Page Info */}
+        <div className="flex items-center space-x-4">
+          <span className="text-sm text-gray-600">
+            Page {currentPage} of {bookData.totalPages}
+          </span>
+          <span className="text-sm text-gray-600">•</span>
+          <span className="text-sm text-gray-600">{bookData.subject}</span>
         </div>
         
-        <div className="flex items-center space-x-2">
-          {bookmarkPages.length > 0 && (
-            <Badge variant="secondary" className="text-xs">
-              {bookmarkPages.length} bookmark{bookmarkPages.length !== 1 ? 's' : ''}
-            </Badge>
-          )}
-          <Button variant="outline" size="sm" className="px-2">
-            <Settings className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Next Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={goToNextPage}
+          disabled={currentPage === bookData.totalPages}
+          className="flex items-center space-x-1"
+        >
+          <span>Next</span>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
