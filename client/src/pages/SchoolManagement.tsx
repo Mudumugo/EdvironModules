@@ -69,39 +69,80 @@ export default function SchoolManagement() {
   const [isTeacherDialogOpen, setIsTeacherDialogOpen] = useState(false);
   const [isClassDialogOpen, setIsClassDialogOpen] = useState(false);
 
-  // Authentication check
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
+  // Sample data for demonstration
+  const [students, setStudents] = useState([
+    {
+      id: 1,
+      firstName: "John",
+      lastName: "Smith",
+      email: "john.smith@email.com",
+      grade: "9",
+      dateOfBirth: "2008-05-15",
+      parentEmail: "parent@email.com",
+      parentPhone: "555-0123"
+    },
+    {
+      id: 2,
+      firstName: "Sarah",
+      lastName: "Johnson",
+      email: "sarah.johnson@email.com",
+      grade: "10",
+      dateOfBirth: "2007-08-22",
+      parentEmail: "parent2@email.com",
+      parentPhone: "555-0124"
     }
-  }, [isAuthenticated, isLoading, toast]);
+  ]);
 
-  // Data queries with authentication requirement
-  const { data: students = [], isLoading: studentsLoading, error: studentsError } = useQuery({
-    queryKey: ['/api/students'],
-    retry: false,
-    enabled: isAuthenticated,
-  });
+  const [teachers, setTeachers] = useState([
+    {
+      id: 1,
+      firstName: "Dr. Michael",
+      lastName: "Brown",
+      email: "m.brown@demouniversity.edu",
+      subject: "Mathematics",
+      department: "Science",
+      phone: "555-0125"
+    },
+    {
+      id: 2,
+      firstName: "Ms. Emily",
+      lastName: "Davis",
+      email: "e.davis@demouniversity.edu",
+      subject: "English Literature",
+      department: "Humanities",
+      phone: "555-0126"
+    }
+  ]);
 
-  const { data: teachers = [], isLoading: teachersLoading, error: teachersError } = useQuery({
-    queryKey: ['/api/teachers'],
-    retry: false,
-    enabled: isAuthenticated,
-  });
+  const [classes, setClasses] = useState([
+    {
+      id: 1,
+      name: "Algebra II",
+      subject: "Mathematics",
+      teacherId: 1,
+      teacherName: "Dr. Michael Brown",
+      grade: "9",
+      capacity: 25,
+      room: "Math-101"
+    },
+    {
+      id: 2,
+      name: "World Literature",
+      subject: "English",
+      teacherId: 2,
+      teacherName: "Ms. Emily Davis",
+      grade: "10",
+      capacity: 20,
+      room: "Eng-205"
+    }
+  ]);
 
-  const { data: classes = [], isLoading: classesLoading, error: classesError } = useQuery({
-    queryKey: ['/api/classes'],
-    retry: false,
-    enabled: isAuthenticated,
-  });
+  const studentsLoading = false;
+  const teachersLoading = false;
+  const classesLoading = false;
+  const studentsError = null;
+  const teachersError = null;
+  const classesError = null;
 
   // Forms
   const studentForm = useForm({
@@ -141,109 +182,52 @@ export default function SchoolManagement() {
     },
   });
 
-  // Mutations
-  const createStudent = useMutation({
-    mutationFn: async (data: z.infer<typeof studentSchema>) => {
-      return await apiRequest('POST', '/api/students', data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/students'] });
-      setIsStudentDialogOpen(false);
-      studentForm.reset();
-      toast({
-        title: "Success",
-        description: "Student created successfully",
-      });
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  // Local state mutations for demonstration
+  const handleCreateStudent = (data: z.infer<typeof studentSchema>) => {
+    const newStudent = {
+      ...data,
+      id: students.length + 1,
+    };
+    setStudents([...students, newStudent]);
+    setIsStudentDialogOpen(false);
+    studentForm.reset();
+    toast({
+      title: "Success",
+      description: "Student created successfully",
+    });
+  };
 
-  const createTeacher = useMutation({
-    mutationFn: async (data: z.infer<typeof teacherSchema>) => {
-      return await apiRequest('POST', '/api/teachers', data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/teachers'] });
-      setIsTeacherDialogOpen(false);
-      teacherForm.reset();
-      toast({
-        title: "Success",
-        description: "Teacher created successfully",
-      });
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  const handleCreateTeacher = (data: z.infer<typeof teacherSchema>) => {
+    const newTeacher = {
+      ...data,
+      id: teachers.length + 1,
+    };
+    setTeachers([...teachers, newTeacher]);
+    setIsTeacherDialogOpen(false);
+    teacherForm.reset();
+    toast({
+      title: "Success",
+      description: "Teacher created successfully",
+    });
+  };
 
-  const createClass = useMutation({
-    mutationFn: async (data: z.infer<typeof classSchema>) => {
-      return await apiRequest('POST', '/api/classes', {
-        ...data,
-        capacity: parseInt(data.capacity),
-        teacherId: parseInt(data.teacherId),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/classes'] });
-      setIsClassDialogOpen(false);
-      classForm.reset();
-      toast({
-        title: "Success",
-        description: "Class created successfully",
-      });
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  const handleCreateClass = (data: z.infer<typeof classSchema>) => {
+    const teacher = teachers.find(t => t.id === parseInt(data.teacherId));
+    const newClass = {
+      ...data,
+      id: classes.length + 1,
+      capacity: parseInt(data.capacity),
+      teacherId: parseInt(data.teacherId),
+      teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'TBD',
+    };
+    setClasses([...classes, newClass]);
+    setIsClassDialogOpen(false);
+    classForm.reset();
+    toast({
+      title: "Success",
+      description: "Class created successfully",
+    });
+  };
 
   // Filter functions
   const filteredStudents = Array.isArray(students) ? students.filter((student: any) => {
@@ -413,7 +397,7 @@ export default function SchoolManagement() {
                   <DialogTitle>Add New Student</DialogTitle>
                 </DialogHeader>
                 <Form {...studentForm}>
-                  <form onSubmit={studentForm.handleSubmit((data) => createStudent.mutate(data))} className="space-y-4">
+                  <form onSubmit={studentForm.handleSubmit(handleCreateStudent)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={studentForm.control}
@@ -518,8 +502,8 @@ export default function SchoolManagement() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={createStudent.isPending}>
-                      {createStudent.isPending ? "Creating..." : "Create Student"}
+                    <Button type="submit" className="w-full">
+                      Create Student
                     </Button>
                   </form>
                 </Form>
@@ -599,7 +583,7 @@ export default function SchoolManagement() {
                   <DialogTitle>Add New Teacher</DialogTitle>
                 </DialogHeader>
                 <Form {...teacherForm}>
-                  <form onSubmit={teacherForm.handleSubmit((data) => createTeacher.mutate(data))} className="space-y-4">
+                  <form onSubmit={teacherForm.handleSubmit(handleCreateTeacher)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={teacherForm.control}
@@ -680,8 +664,8 @@ export default function SchoolManagement() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={createTeacher.isPending}>
-                      {createTeacher.isPending ? "Creating..." : "Create Teacher"}
+                    <Button type="submit" className="w-full">
+                      Create Teacher
                     </Button>
                   </form>
                 </Form>
@@ -763,7 +747,7 @@ export default function SchoolManagement() {
                   <DialogTitle>Add New Class</DialogTitle>
                 </DialogHeader>
                 <Form {...classForm}>
-                  <form onSubmit={classForm.handleSubmit((data) => createClass.mutate(data))} className="space-y-4">
+                  <form onSubmit={classForm.handleSubmit(handleCreateClass)} className="space-y-4">
                     <FormField
                       control={classForm.control}
                       name="name"

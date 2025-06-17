@@ -43,7 +43,14 @@ function Router() {
   return (
     <Switch>
       {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/school" component={SchoolManagement} />
+          <Route path="/library" component={DigitalLibrary} />
+          <Route path="/analytics" component={Analytics} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/my-locker" component={MyLocker} />
+        </>
       ) : (
         <>
           {/* Authenticated user routes */}
