@@ -352,8 +352,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             style={{
               transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
               transformOrigin: 'center',
-              width: '90%',
-              height: '90%'
+              width: '85%',
+              height: '85%',
+              margin: 'auto'
             }}
           >
             {bookData.pages && bookData.pages[currentPage - 1] ? (
@@ -361,12 +362,12 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                 <img
                   src={bookData.pages[currentPage - 1]}
                   alt={`Page ${currentPage}`}
-                  className="w-full h-full object-contain"
+                  className="object-contain p-4"
                   style={{ 
-                    width: '100%',
-                    height: '100%',
-                    maxWidth: '100%',
-                    maxHeight: '100%'
+                    width: 'calc(100% - 2rem)',
+                    height: 'calc(100% - 2rem)',
+                    maxWidth: 'calc(100% - 2rem)',
+                    maxHeight: 'calc(100% - 2rem)'
                   }}
                 />
                 
