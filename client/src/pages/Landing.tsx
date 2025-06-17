@@ -11,7 +11,13 @@ export default function Landing() {
   };
 
   // Direct API call to get tenant data
-  const { data: tenantData, isLoading: tenantLoading } = useQuery({
+  const { data: tenantData, isLoading: tenantLoading } = useQuery<{
+    id: string;
+    subdomain: string;
+    name: string;
+    features: string[];
+    subscription: string;
+  }>({
     queryKey: ["/api/tenant"],
     retry: false,
   });
@@ -174,71 +180,61 @@ export default function Landing() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-2">
               <Crown className="h-8 w-8 text-yellow-600" />
-              Current Organization
+              Demo University Access
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              View your organization's subscription details and available features
+              You are accessing the Demo University tenant with basic subscription features
             </p>
           </div>
-          <div className="space-y-4">
-            {tenantLoading ? (
-              <Card className="w-full">
-                <CardContent className="p-6">
-                  <div className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : tenantData ? (
-              <Card className="w-full">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Building2 className="h-5 w-5 text-gray-600" />
-                    {tenantData.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Subscription:</span>
-                    <Badge className="flex items-center gap-1 bg-blue-100 text-blue-800 border-blue-200">
-                      <Shield className="h-3 w-3" />
-                      {tenantData.subscription.charAt(0).toUpperCase() + tenantData.subscription.slice(1)}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Tenant ID:</span>
-                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">{tenantData.id}</code>
-                  </div>
+          {/* Static Demo University Information */}
+          <Card className="w-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Building2 className="h-5 w-5 text-gray-600" />
+                Demo University
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Subscription:</span>
+                <Badge className="flex items-center gap-1 bg-blue-100 text-blue-800 border-blue-200">
+                  <Shield className="h-3 w-3" />
+                  Basic
+                </Badge>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Tenant ID:</span>
+                <code className="text-xs bg-gray-100 px-2 py-1 rounded">demo</code>
+              </div>
 
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-700">Available Features:</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {tenantData.features.map((feature) => (
-                        <Badge key={feature} variant="outline" className="text-xs">
-                          {feature.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-gray-700">Available Features:</h4>
+                <div className="flex flex-wrap gap-1">
+                  <Badge variant="outline" className="text-xs">School Management</Badge>
+                  <Badge variant="outline" className="text-xs">Digital Library</Badge>
+                  <Badge variant="outline" className="text-xs">Analytics</Badge>
+                </div>
+              </div>
 
-                  <div className="pt-2 border-t">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">API Response:</h4>
-                    <div className="bg-gray-100 p-3 rounded text-xs font-mono">
-                      <pre>{JSON.stringify(tenantData, null, 2)}</pre>
-                    </div>
+              <div className="pt-2 border-t">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Status:</h4>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm text-green-700">Active and accessible</span>
+                </div>
+              </div>
+
+              {tenantData && (
+                <div className="pt-2 border-t">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Live API Data:</h4>
+                  <div className="bg-gray-100 p-3 rounded text-xs font-mono">
+                    <pre>{JSON.stringify(tenantData, null, 2)}</pre>
                   </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="w-full">
-                <CardContent className="p-6">
-                  <p className="text-gray-500">No tenant information available</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </section>
 
