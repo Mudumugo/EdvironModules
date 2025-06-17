@@ -81,10 +81,17 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
 
   const handlePreview = () => {
     onPreview(resource);
-    toast({
-      title: "Opening Preview",
-      description: `Loading preview for ${resource.title}`,
-    });
+    if (resource.type.toLowerCase() === 'book') {
+      toast({
+        title: "Opening Book",
+        description: `Loading immersive reader for ${resource.title}`,
+      });
+    } else {
+      toast({
+        title: "Opening Preview",
+        description: `Loading preview for ${resource.title}`,
+      });
+    }
   };
 
   const handleDownload = () => {
