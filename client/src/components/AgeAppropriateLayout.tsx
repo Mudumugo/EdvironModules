@@ -16,7 +16,7 @@ export default function AgeAppropriateLayout({ children }: AgeAppropriateLayoutP
     if (!user) return 'primary';
     
     // This would be determined from user's grade/age in a real implementation
-    const grade = user.grade || 1;
+    const grade = typeof user.grade === 'string' ? parseInt(user.grade) : (user.grade || 1);
     if (grade <= 3) return 'primary';
     if (grade <= 8) return 'junior';
     if (grade <= 12) return 'senior';
@@ -113,11 +113,11 @@ export default function AgeAppropriateLayout({ children }: AgeAppropriateLayoutP
           {config.modules.map((module) => (
             <Card key={module.id} className="hover:scale-105 transition-transform cursor-pointer border-2 border-gray-200 hover:border-gray-300">
               <CardContent className="p-8 text-center">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${module.color} mb-4`}>
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${'color' in module ? module.color : 'bg-gray-100'} mb-4`}>
                   {module.icon}
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">{module.name}</h3>
-                <p className="text-gray-600 text-lg">{module.description}</p>
+                {'description' in module && <p className="text-gray-600 text-lg">{module.description}</p>}
               </CardContent>
             </Card>
           ))}

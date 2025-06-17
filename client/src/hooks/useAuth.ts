@@ -7,6 +7,7 @@ interface User {
   lastName?: string;
   role?: string;
   profileImageUrl?: string;
+  grade?: string;
 }
 
 export function useAuth() {

@@ -420,8 +420,8 @@ export class DatabaseStorage implements IStorage {
   async getAttendance(studentId: number, scheduleId: number): Promise<Attendance | undefined> {
     const [attendanceRecord] = await db
       .select()
-      .from(attendances)
-      .where(and(eq(attendances.studentId, studentId), eq(attendances.scheduleId, scheduleId)));
+      .from(attendance)
+      .where(and(eq(attendance.studentId, studentId), eq(attendance.scheduleId, scheduleId)));
     return attendanceRecord;
   }
 

@@ -54,12 +54,12 @@ export default function MyLocker() {
   const { toast } = useToast();
 
   // Fetch locker items
-  const { data: lockerItems = [], isLoading: itemsLoading } = useQuery({
+  const { data: lockerItems = [], isLoading: itemsLoading } = useQuery<LockerItem[]>({
     queryKey: ['/api/locker/items'],
   });
 
   // Fetch collections
-  const { data: collections = [], isLoading: collectionsLoading } = useQuery({
+  const { data: collections = [], isLoading: collectionsLoading } = useQuery<LockerCollection[]>({
     queryKey: ['/api/locker/collections'],
   });
 
@@ -402,7 +402,7 @@ export default function MyLocker() {
                       </div>
                       <div className="flex items-center gap-1">
                         {item.isOfflineAvailable && (
-                          <Download className="h-3 w-3 text-green-600" title="Available offline" />
+                          <Download className="h-3 w-3 text-green-600" />
                         )}
                         <Badge variant="outline" className="text-xs">
                           {item.category}
