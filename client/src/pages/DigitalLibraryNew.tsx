@@ -185,7 +185,7 @@ const DigitalLibraryNew = () => {
   const handlePreview = (resource: LibraryResource) => {
     const message = getBookOpenMessage(resource);
     
-    // Use enhanced BookViewer for all book-type resources
+    // Use enhanced BookViewer for book-type resources
     if (shouldUseBookViewer(resource)) {
       const bookData = convertResourceToBookConfig(resource);
       setCurrentBook(bookData);
@@ -195,8 +195,20 @@ const DigitalLibraryNew = () => {
         title: message.title,
         description: message.description,
       });
-    } else {
-      // For non-book resources, use the basic modal
+    } 
+    // Use WorksheetViewer for worksheet-type resources
+    else if (shouldUseWorksheetViewer(resource)) {
+      const worksheetData = convertResourceToWorksheetConfig(resource);
+      setCurrentWorksheet(worksheetData);
+      setShowWorksheetViewer(true);
+      
+      toast({
+        title: message.title,
+        description: message.description,
+      });
+    } 
+    else {
+      // For other resources, use the basic modal
       setSelectedResource(resource);
       
       toast({
@@ -517,6 +529,18 @@ const DigitalLibraryNew = () => {
         onClose={() => {
           setShowBookViewer(false);
           setCurrentBook(null);
+        }}
+      />,
+      document.body
+    )}
+
+    {/* WorksheetViewer for interactive worksheet viewing - Rendered as Portal */}
+    {showWorksheetViewer && currentWorksheet && createPortal(
+      <WorksheetViewer
+        worksheetData={currentWorksheet}
+        onClose={() => {
+          setShowWorksheetViewer(false);
+          setCurrentWorksheet(null);
         }}
       />,
       document.body

@@ -178,13 +178,26 @@ function calculatePageCount(resource: LibraryResource): number {
   return Math.max(5, Math.min(25, Math.round(base * multiplier)));
 }
 
+// Extract subject from curriculum string
+function extractSubjectFromCurriculum(curriculum: string | null): string {
+  if (!curriculum) return 'General';
+  
+  // Look for common subject patterns
+  const subjects = ['Mathematics', 'Science', 'English', 'History', 'Geography', 'Art', 'Music'];
+  const found = subjects.find(subject => 
+    curriculum.toLowerCase().includes(subject.toLowerCase())
+  );
+  
+  return found || curriculum.split(' ')[0] || 'General';
+}
+
 // Convert a library resource to worksheet configuration
 export function convertResourceToWorksheetConfig(resource: LibraryResource): any {
   return {
     id: resource.id,
     title: resource.title,
     author: resource.authorId || 'Unknown Author',
-    pages: generateSamplePages(resource.type, calculatePageCount(resource)),
+    pages: generateSamplePages(resource),
     totalPages: calculatePageCount(resource),
     thumbnailUrl: resource.thumbnailUrl,
     description: resource.description,
@@ -192,10 +205,10 @@ export function convertResourceToWorksheetConfig(resource: LibraryResource): any
     subject: extractSubjectFromCurriculum(resource.curriculum),
     language: resource.language,
     type: resource.type,
-    isInteractive: resource.isInteractive,
+    isInteractive: true, // Worksheets are interactive by nature
     hasAnswerKey: true, // Most worksheets have answer keys
-    xapiEnabled: resource.xapiEnabled,
-    content: resource.content,
+    xapiEnabled: true, // Enable tracking for worksheets
+    content: resource.description || 'Interactive worksheet content',
     instructions: generateWorksheetInstructions(resource),
     difficulty: resource.difficulty,
     duration: resource.duration,
