@@ -237,7 +237,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
         <div className="w-full h-full flex items-center justify-center p-1">
           <div
             ref={pageRef}
-            className="bg-white shadow-xl rounded-lg overflow-hidden transition-all duration-300 flex items-center justify-center"
+            className="bg-white shadow-xl rounded-lg overflow-auto transition-all duration-300 flex items-center justify-center"
             style={{
               transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
               transformOrigin: 'center',
