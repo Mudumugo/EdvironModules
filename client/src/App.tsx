@@ -13,6 +13,7 @@ import FamilyControls from "@/pages/FamilyControls";
 import Scheduling from "@/pages/Scheduling";
 import Analytics from "@/pages/Analytics";
 import Licensing from "@/pages/Licensing";
+import Settings from "@/pages/Settings";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 
@@ -33,6 +34,7 @@ function Router() {
           <Route path="/scheduling" component={Scheduling} />
           <Route path="/analytics" component={Analytics} />
           <Route path="/licensing" component={Licensing} />
+          <Route path="/settings" component={Settings} />
         </Layout>
       )}
       <Route component={NotFound} />

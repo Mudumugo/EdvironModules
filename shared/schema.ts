@@ -39,6 +39,19 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// User settings table for storing payment keys and preferences
+export const userSettings = pgTable("user_settings", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  stripePublishableKey: varchar("stripe_publishable_key"),
+  stripeSecretKey: varchar("stripe_secret_key"),
+  emailNotifications: boolean("email_notifications").default(true),
+  smsNotifications: boolean("sms_notifications").default(false),
+  pushNotifications: boolean("push_notifications").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Institutions table
 export const institutions = pgTable("institutions", {
   id: varchar("id").primaryKey().notNull(),
