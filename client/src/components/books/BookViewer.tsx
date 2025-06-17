@@ -79,7 +79,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     return isPageTurning ? 0.85 : 1;
   };
 
-  // Audio synthesis for page flip sound
+  // Audio synthesis for realistic paper flip sound
   const playPageFlipSound = () => {
     try {
       if (!audioContextRef.current) {
@@ -87,23 +87,48 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
       }
       
       const audioContext = audioContextRef.current;
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
       
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      // Create multiple layers for realistic paper sound
+      const createPaperRustle = (startTime: number, frequency: number, duration: number, volume: number) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+        
+        // White noise simulation for paper texture
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.3, startTime + duration);
+        
+        // High-pass filter for crisp paper sound
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(800, startTime);
+        filter.Q.setValueAtTime(2, startTime);
+        
+        // Quick attack and decay for paper snap
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.005);
+        gainNode.gain.exponentialRampToValueAtTime(volume * 0.1, startTime + duration * 0.3);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        
+        oscillator.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      };
       
-      // Create a realistic paper rustling sound
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+      const now = audioContext.currentTime;
       
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+      // Layer 1: Initial paper contact (high frequency crinkle)
+      createPaperRustle(now, 1200, 0.08, 0.02);
       
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.15);
+      // Layer 2: Main paper fold/turn (mid frequency)
+      createPaperRustle(now + 0.02, 600, 0.12, 0.025);
+      
+      // Layer 3: Final settling (lower frequency rustle)
+      createPaperRustle(now + 0.06, 300, 0.10, 0.015);
+      
     } catch (error) {
       // Silently fail if audio context is not available
       console.log('Audio context not available for page flip sound');
