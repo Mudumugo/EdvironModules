@@ -81,24 +81,25 @@ export default function FamilyControls() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Shield className="h-8 w-8" />
-            Family Controls
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+            <Shield className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="truncate">Family Controls</span>
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
             Monitor and manage your children's educational activities with comprehensive parental controls
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <Dialog open={restrictionDialog.isOpen} onOpenChange={(open) => open ? restrictionDialog.openDialog() : restrictionDialog.closeDialog()}>
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="w-full sm:w-auto">
                 <Lock className="h-4 w-4 mr-2" />
-                Add Restriction
+                <span className="hidden sm:inline">Add Restriction</span>
+                <span className="sm:hidden">Restriction</span>
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -131,7 +132,7 @@ export default function FamilyControls() {
                       </FormItem>
                     )}
                   />
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={restrictionDialog.form.control}
                       name="type"
@@ -206,9 +207,10 @@ export default function FamilyControls() {
 
           <Dialog open={childDialog.isOpen} onOpenChange={(open) => open ? childDialog.openDialog() : childDialog.closeDialog()}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Child
+                <span className="hidden sm:inline">Add Child</span>
+                <span className="sm:hidden">Child</span>
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -217,7 +219,7 @@ export default function FamilyControls() {
               </DialogHeader>
               <Form {...childDialog.form}>
                 <form onSubmit={childDialog.handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={childDialog.form.control}
                       name="firstName"
@@ -245,7 +247,7 @@ export default function FamilyControls() {
                       )}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={childDialog.form.control}
                       name="grade"
@@ -316,7 +318,7 @@ export default function FamilyControls() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -376,8 +378,8 @@ export default function FamilyControls() {
           <CardTitle>View Controls</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <div className="w-64">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 min-w-0">
               <Label htmlFor="child-filter">Filter by Child</Label>
               <Select value={selectedChild} onValueChange={setSelectedChild}>
                 <SelectTrigger>
@@ -393,7 +395,7 @@ export default function FamilyControls() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="w-48">
+            <div className="flex-1 min-w-0 sm:max-w-48">
               <Label htmlFor="timeframe">Timeframe</Label>
               <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
                 <SelectTrigger>
