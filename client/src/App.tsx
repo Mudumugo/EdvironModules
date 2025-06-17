@@ -4,8 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
-import { getEnabledModules } from "@/config/modules";
-import { getCurrentTenant, getTenantConfig } from "@/lib/tenantUtils";
 import { useEffect, useState } from "react";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
@@ -25,7 +23,8 @@ import TeacherDashboard from "@/pages/TeacherDashboard";
 import UserManagement from "@/pages/UserManagement-simple";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
-import TenantSelector from "@/components/TenantSelector";
+import RoleProtectedRoute from "@/components/RoleProtectedRoute";
+import { USER_ROLES } from "@shared/schema";
 
 // Component mapping for dynamic routing
 const componentMap: Record<string, any> = {
@@ -65,19 +64,90 @@ function Router() {
   return (
     <Layout>
       <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/users" component={UserManagement} />
-        <Route path="/school-management" component={SchoolManagement} />
-        <Route path="/digital-library" component={DigitalLibraryNew} />
-        <Route path="/analytics" component={Analytics} />
-        <Route path="/settings" component={Settings} />
-        <Route path="/my-locker" component={MyLocker} />
-        <Route path="/tutor-hub" component={TutorHub} />
-        <Route path="/teacher-dashboard" component={TeacherDashboard} />
-        <Route path="/family-controls" component={FamilyControls} />
-        <Route path="/scheduling" component={Scheduling} />
-        <Route path="/licensing" component={Licensing} />
-        <Route path="/device-management" component={DeviceManagement} />
+        {/* Core modules - available to all authenticated users */}
+        <Route path="/">
+          <RoleProtectedRoute moduleId="dashboard">
+            <Dashboard />
+          </RoleProtectedRoute>
+        </Route>
+        
+        <Route path="/settings">
+          <RoleProtectedRoute moduleId="settings">
+            <Settings />
+          </RoleProtectedRoute>
+        </Route>
+
+        {/* Student and Teacher modules */}
+        <Route path="/digital-library">
+          <RoleProtectedRoute moduleId="digital-library">
+            <DigitalLibraryNew />
+          </RoleProtectedRoute>
+        </Route>
+
+        <Route path="/my-locker">
+          <RoleProtectedRoute moduleId="my-locker">
+            <MyLocker />
+          </RoleProtectedRoute>
+        </Route>
+
+        {/* Teacher-only modules */}
+        <Route path="/teacher-dashboard">
+          <RoleProtectedRoute moduleId="teacher-dashboard">
+            <TeacherDashboard />
+          </RoleProtectedRoute>
+        </Route>
+
+        <Route path="/tutor-hub">
+          <RoleProtectedRoute moduleId="tutor-hub">
+            <TutorHub />
+          </RoleProtectedRoute>
+        </Route>
+
+        <Route path="/scheduling">
+          <RoleProtectedRoute moduleId="scheduling">
+            <Scheduling />
+          </RoleProtectedRoute>
+        </Route>
+
+        {/* Administrative modules - School Admin only */}
+        <Route path="/users">
+          <RoleProtectedRoute moduleId="users">
+            <UserManagement />
+          </RoleProtectedRoute>
+        </Route>
+
+        <Route path="/school-management">
+          <RoleProtectedRoute moduleId="school-management">
+            <SchoolManagement />
+          </RoleProtectedRoute>
+        </Route>
+
+        <Route path="/analytics">
+          <RoleProtectedRoute moduleId="analytics">
+            <Analytics />
+          </RoleProtectedRoute>
+        </Route>
+
+        <Route path="/licensing">
+          <RoleProtectedRoute moduleId="licensing">
+            <Licensing />
+          </RoleProtectedRoute>
+        </Route>
+
+        {/* Technical modules - IT Staff + School Admin */}
+        <Route path="/device-management">
+          <RoleProtectedRoute moduleId="device-management">
+            <DeviceManagement />
+          </RoleProtectedRoute>
+        </Route>
+
+        {/* Security modules - Security Staff + School Admin */}
+        <Route path="/family-controls">
+          <RoleProtectedRoute moduleId="family-controls">
+            <FamilyControls />
+          </RoleProtectedRoute>
+        </Route>
+
         <Route component={NotFound} />
       </Switch>
     </Layout>
