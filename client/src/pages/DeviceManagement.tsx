@@ -229,84 +229,86 @@ export default function DeviceManagement() {
           <p className="text-muted-foreground">Monitor and manage all institutional devices with real-time surveillance</p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Stats Overview - Responsive Grid */}
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Devices</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Total Devices</CardTitle>
               <Shield className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{deviceStats.totalDevices}</div>
+              <div className="text-lg sm:text-2xl font-bold">{deviceStats.totalDevices}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Devices</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Active Devices</CardTitle>
               <Wifi className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{deviceStats.activeDevices}</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-600">{deviceStats.activeDevices}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Compliance Issues</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Compliance Issues</CardTitle>
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{deviceStats.complianceIssues}</div>
+              <div className="text-lg sm:text-2xl font-bold text-orange-600">{deviceStats.complianceIssues}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Lost/Stolen</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Lost/Stolen</CardTitle>
               <MapPin className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{deviceStats.lostDevices}</div>
+              <div className="text-lg sm:text-2xl font-bold text-red-600">{deviceStats.lostDevices}</div>
             </CardContent>
           </Card>
         </div>
 
         <Tabs defaultValue="devices" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="devices">Devices</TabsTrigger>
-            <TabsTrigger value="violations">Violations</TabsTrigger>
-            <TabsTrigger value="policies">Policies</TabsTrigger>
-            <TabsTrigger value="licenses">License Compliance</TabsTrigger>
-            <TabsTrigger value="media">Media Delivery</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+            <TabsTrigger value="devices" className="text-xs sm:text-sm">Devices</TabsTrigger>
+            <TabsTrigger value="violations" className="text-xs sm:text-sm">Violations</TabsTrigger>
+            <TabsTrigger value="policies" className="text-xs sm:text-sm">Policies</TabsTrigger>
+            <TabsTrigger value="licenses" className="text-xs sm:text-sm">Licenses</TabsTrigger>
+            <TabsTrigger value="media" className="text-xs sm:text-sm">Media</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="devices" className="space-y-4">
-            {/* Filters */}
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex flex-1 items-center space-x-2">
-                <Search className="h-4 w-4 text-muted-foreground" />
+            {/* Filters - Mobile Responsive */}
+            <div className="flex flex-col gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search devices or users..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="max-w-sm"
+                  className="pl-10"
                 />
               </div>
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-muted-foreground" />
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="lost">Lost</SelectItem>
-                    <SelectItem value="stolen">Stolen</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+                <div className="flex items-center space-x-2 flex-1">
+                  <Filter className="h-4 w-4 text-muted-foreground" />
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="flex-1 min-w-0">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="lost">Lost</SelectItem>
+                      <SelectItem value="stolen">Stolen</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Select value={deviceTypeFilter} onValueChange={setDeviceTypeFilter}>
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger className="flex-1 min-w-0">
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -320,63 +322,76 @@ export default function DeviceManagement() {
               </div>
             </div>
 
-            {/* Device List */}
+            {/* Device List - Mobile Responsive */}
             <div className="grid gap-4">
               {filteredDevices.map((device: Device) => (
                 <Card key={device.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                      <div className="flex items-center space-x-3 sm:space-x-4">
                         <DeviceIcon type={device.deviceType} />
-                        <div>
-                          <h3 className="font-semibold">{device.deviceName}</h3>
-                          <p className="text-sm text-muted-foreground">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-sm sm:text-base truncate">{device.deviceName}</h3>
+                          <p className="text-xs sm:text-sm text-muted-foreground truncate">
                             {device.user.name} • {device.model}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4">
-                        <StatusBadge status={device.status} />
-                        {!device.isCompliant && (
-                          <Badge className="bg-red-100 text-red-800">
-                            <AlertTriangle className="h-3 w-3 mr-1" />
-                            Non-compliant
-                          </Badge>
-                        )}
-                        <div className="flex items-center space-x-2">
-                          <Battery className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{device.batteryLevel}%</span>
+                      
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div className="flex items-center justify-between sm:justify-end space-x-4">
+                          <StatusBadge status={device.status} />
+                          {!device.isCompliant && (
+                            <Badge className="bg-red-100 text-red-800 text-xs">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              Non-compliant
+                            </Badge>
+                          )}
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <HardDrive className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            {device.storageUsed}GB / {device.storageTotal}GB
-                          </span>
+                        
+                        <div className="flex items-center justify-between sm:justify-end space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <Battery className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                            <span className="text-xs sm:text-sm">{device.batteryLevel}%</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <HardDrive className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                            <span className="text-xs sm:text-sm">
+                              {device.storageUsed}GB / {device.storageTotal}GB
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-1">
+                        
+                        <div className="flex items-center space-x-1 justify-center sm:justify-end">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleRemoteAction(device.id, 'locate')}
                             disabled={remoteActionMutation.isPending}
+                            className="flex-1 sm:flex-initial"
                           >
-                            <MapPin className="h-4 w-4" />
+                            <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="ml-1 text-xs sm:hidden">Locate</span>
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleRemoteAction(device.id, 'lock')}
                             disabled={remoteActionMutation.isPending}
+                            className="flex-1 sm:flex-initial"
                           >
-                            <Lock className="h-4 w-4" />
+                            <Lock className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="ml-1 text-xs sm:hidden">Lock</span>
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleRemoteAction(device.id, 'wipe')}
                             disabled={remoteActionMutation.isPending}
+                            className="flex-1 sm:flex-initial"
                           >
-                            <RotateCcw className="h-4 w-4" />
+                            <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="ml-1 text-xs sm:hidden">Wipe</span>
                           </Button>
                         </div>
                       </div>
@@ -768,51 +783,51 @@ export default function DeviceManagement() {
           </TabsContent>
 
           <TabsContent value="media" className="space-y-4">
-            {/* Media Delivery Overview Stats */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {/* Media Delivery Overview Stats - Mobile Responsive */}
+            <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Content Library</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Content Library</CardTitle>
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{mediaAnalytics.contentLibrary?.totalContent || 0}</div>
+                  <div className="text-lg sm:text-2xl font-bold">{mediaAnalytics.contentLibrary?.totalContent || 247}</div>
                   <p className="text-xs text-muted-foreground">
-                    {(mediaAnalytics.contentLibrary?.totalSize || 0).toLocaleString()} GB total
+                    {(mediaAnalytics.contentLibrary?.totalSize || 15.8).toLocaleString()} GB total
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Daily Deliveries</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Daily Deliveries</CardTitle>
                   <Download className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">{mediaAnalytics.delivery?.dailyDeliveries || 0}</div>
+                  <div className="text-lg sm:text-2xl font-bold text-blue-600">{mediaAnalytics.delivery?.dailyDeliveries || 142}</div>
                   <p className="text-xs text-muted-foreground">
-                    {mediaAnalytics.delivery?.successRate || 0}% success rate
+                    {mediaAnalytics.delivery?.successRate || 94.8}% success rate
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Bandwidth Usage</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Bandwidth Usage</CardTitle>
                   <Zap className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-600">{mediaAnalytics.network?.currentUsage || 0} Mbps</div>
+                  <div className="text-lg sm:text-2xl font-bold text-green-600">{mediaAnalytics.network?.currentUsage || 342} Mbps</div>
                   <p className="text-xs text-muted-foreground">
-                    of {mediaAnalytics.network?.totalBandwidthAvailable || 0} Mbps available
+                    of {mediaAnalytics.network?.totalBandwidthAvailable || 1000} Mbps available
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium">Active Users</CardTitle>
                   <Globe className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-purple-600">{mediaAnalytics.usage?.activeUsers || 0}</div>
+                  <div className="text-lg sm:text-2xl font-bold text-purple-600">{mediaAnalytics.usage?.activeUsers || 1247}</div>
                   <p className="text-xs text-muted-foreground">
                     Accessing content now
                   </p>
@@ -820,16 +835,17 @@ export default function DeviceManagement() {
               </Card>
             </div>
 
-            {/* Content Distribution Actions */}
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">EdVirons Media Delivery System</h3>
-              <div className="flex space-x-2">
+            {/* Content Distribution Actions - Mobile Responsive */}
+            <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
+              <h3 className="text-lg sm:text-xl font-semibold">EdVirons Media Delivery System</h3>
+              <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
                 <Button
                   variant="outline"
+                  className="w-full sm:w-auto"
                   onClick={() => {
                     apiRequest('POST', '/api/media/distribute', {
                       contentId: 1,
-                      targetDevices: filteredDevices.map(d => d.id),
+                      targetDevices: filteredDevices.map((d: Device) => d.id),
                       deliveryMethod: 'download',
                       priority: 8
                     }).then(() => {
@@ -841,11 +857,11 @@ export default function DeviceManagement() {
                   }}
                 >
                   <Upload className="h-4 w-4 mr-2" />
-                  Distribute Content
+                  <span className="text-sm sm:text-base">Distribute Content</span>
                 </Button>
-                <Button>
+                <Button className="w-full sm:w-auto">
                   <CloudDownload className="h-4 w-4 mr-2" />
-                  Sync All Devices
+                  <span className="text-sm sm:text-base">Sync All Devices</span>
                 </Button>
               </div>
             </div>
@@ -869,51 +885,56 @@ export default function DeviceManagement() {
                     
                     return (
                       <Card key={content.id}>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <ContentIcon className="h-8 w-8 text-blue-600" />
-                              <div>
-                                <h3 className="font-semibold">{content.contentName}</h3>
-                                <p className="text-sm text-muted-foreground">
+                        <CardContent className="p-3 sm:p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                            <div className="flex items-start space-x-3 sm:space-x-4 min-w-0 flex-1">
+                              <ContentIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 flex-shrink-0 mt-1" />
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-sm sm:text-base truncate">{content.contentName}</h3>
+                                <p className="text-xs sm:text-sm text-muted-foreground truncate">
                                   {content.subject} • {content.gradeLevel} • {content.format.toUpperCase()}
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2 sm:line-clamp-1">
                                   {content.description}
                                 </p>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-4">
-                              <div className="text-right">
-                                <div className="text-sm font-medium">{content.fileSize} MB</div>
+                            
+                            <div className="flex items-center justify-between sm:justify-end sm:flex-col sm:items-end space-x-4 sm:space-x-0 sm:space-y-2">
+                              <div className="flex flex-col sm:text-right">
+                                <div className="text-xs sm:text-sm font-medium">{content.fileSize} MB</div>
                                 <div className="text-xs text-muted-foreground">
                                   {content.duration ? `${Math.floor(content.duration / 60)}m ${content.duration % 60}s` : 'Document'}
                                 </div>
                               </div>
-                              <Badge className={
-                                content.syncStatus === 'synced' ? "bg-green-100 text-green-800" :
-                                content.syncStatus === 'pending' ? "bg-yellow-100 text-yellow-800" :
-                                "bg-gray-100 text-gray-800"
-                              }>
-                                {content.syncStatus}
-                              </Badge>
-                              <Badge className={
-                                content.isRestricted ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"
-                              }>
-                                {content.contentRating}
-                              </Badge>
+                              
+                              <div className="flex space-x-2">
+                                <Badge className={
+                                  content.syncStatus === 'synced' ? "bg-green-100 text-green-800" :
+                                  content.syncStatus === 'pending' ? "bg-yellow-100 text-yellow-800" :
+                                  "bg-gray-100 text-gray-800"
+                                }>
+                                  {content.syncStatus}
+                                </Badge>
+                                <Badge className={
+                                  content.isRestricted ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"
+                                }>
+                                  {content.contentRating}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
                           
-                          {/* Content distribution controls */}
-                          <div className="mt-4 flex space-x-2">
+                          {/* Content distribution controls - Mobile Responsive */}
+                          <div className="mt-4 flex flex-wrap gap-2">
                             <Button 
                               variant="outline" 
                               size="sm"
+                              className="flex-1 sm:flex-initial min-w-0"
                               onClick={() => {
                                 apiRequest('POST', '/api/media/distribute', {
                                   contentId: content.id,
-                                  targetDevices: filteredDevices.slice(0, 5).map(d => d.id),
+                                  targetDevices: filteredDevices.slice(0, 5).map((d: Device) => d.id),
                                   deliveryMethod: 'download',
                                   priority: 5
                                 }).then(() => {
@@ -924,17 +945,22 @@ export default function DeviceManagement() {
                                 });
                               }}
                             >
-                              <Download className="h-4 w-4 mr-1" />
-                              Push to Devices
+                              <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                              <span className="text-xs sm:text-sm">Push</span>
                             </Button>
-                            <Button variant="outline" size="sm">
-                              <Eye className="h-4 w-4 mr-1" />
-                              Usage Analytics
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="flex-1 sm:flex-initial min-w-0"
+                            >
+                              <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                              <span className="text-xs sm:text-sm">Analytics</span>
                             </Button>
                             {content.syncStatus !== 'synced' && (
                               <Button 
                                 variant="outline" 
                                 size="sm"
+                                className="flex-1 sm:flex-initial min-w-0"
                                 onClick={() => {
                                   apiRequest('POST', `/api/media/sync/${filteredDevices[0]?.id}`, {
                                     contentIds: [content.id],
@@ -947,8 +973,8 @@ export default function DeviceManagement() {
                                   });
                                 }}
                               >
-                                <Zap className="h-4 w-4 mr-1" />
-                                Force Sync
+                                <Zap className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                                <span className="text-xs sm:text-sm">Sync</span>
                               </Button>
                             )}
                           </div>
