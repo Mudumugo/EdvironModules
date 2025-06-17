@@ -47,6 +47,16 @@ export const MODULE_REGISTRY: ModuleConfig[] = [
     permissions: ['admin', 'teacher']
   },
   {
+    id: 'users',
+    name: 'User Management',
+    description: 'Manage user roles and permissions',
+    enabled: true,
+    route: '/users',
+    icon: 'Users',
+    category: 'management',
+    permissions: ['school_admin', 'principal']
+  },
+  {
     id: 'digital-library',
     name: 'Digital Library',
     description: 'Educational resources and content management',

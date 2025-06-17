@@ -41,16 +41,14 @@ export default function UserManagement() {
   const { data: users = [], isLoading } = useQuery<User[]>({
     queryKey: ['/api/users'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/users');
-      return response;
+      return await apiRequest('GET', '/api/users') as User[];
     },
   });
 
   const { data: availableRoles = [] } = useQuery<AvailableRole[]>({
     queryKey: ['/api/users/available-roles'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/users/available-roles');
-      return response;
+      return await apiRequest('GET', '/api/users/available-roles') as AvailableRole[];
     },
   });
 

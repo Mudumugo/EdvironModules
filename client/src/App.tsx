@@ -39,6 +39,7 @@ const componentMap: Record<string, any> = {
   'analytics': Analytics,
   'licensing': Licensing,
   'settings': Settings,
+  'users': UserManagement,
 };
 
 function Router() {
