@@ -101,9 +101,9 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0">
-              {resource.thumbnailUrl ? (
+              {resource.thumbnail_url ? (
                 <img 
-                  src={resource.thumbnailUrl} 
+                  src={resource.thumbnail_url} 
                   alt={resource.title}
                   className="w-16 h-20 object-cover rounded"
                 />
