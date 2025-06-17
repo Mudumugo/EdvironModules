@@ -48,22 +48,22 @@ const DigitalLibraryNew = () => {
   const rawResources = apiResponse?.resources || [];
   const resources = rawResources.map((resource: any) => ({
     id: resource.id,
-    title: resource.title,
-    type: resource.type,
-    grade: resource.grade,
-    curriculum: resource.curriculum,
-    description: resource.description,
-    difficulty: resource.difficulty,
-    duration: resource.duration,
+    title: resource.title || 'Untitled',
+    type: resource.type || 'book',
+    grade: resource.grade || 'N/A',
+    curriculum: resource.curriculum || 'General',
+    description: resource.description || 'No description available',
+    difficulty: resource.difficulty || 'medium',
+    duration: resource.duration || 30,
     tags: resource.tags || [],
     viewCount: resource.viewCount || 0,
     rating: resource.rating || "0",
     thumbnailUrl: resource.thumbnail_url,
     fileUrl: resource.file_url,
-    accessTier: resource.accessTier,
-    isPublished: resource.isPublished,
-    authorId: resource.authorId,
-    language: resource.language,
+    accessTier: resource.accessTier || 'free',
+    isPublished: resource.isPublished !== false,
+    authorId: resource.authorId || 'unknown-author',
+    language: resource.language || 'English',
   }));
 
   const handlePreview = (resource: LibraryResource) => {

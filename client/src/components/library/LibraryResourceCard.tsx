@@ -121,7 +121,7 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
                     {resource.title}
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">
-                    by {resource.authorId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    by {resource.authorId?.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown Author'}
                   </p>
                   <p className="text-sm text-gray-700 mb-3 line-clamp-2">
                     {resource.description}
@@ -188,10 +188,10 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
           </Badge>
         </div>
         
-        {resource.thumbnail_url && (
+        {resource.thumbnailUrl && (
           <div className="w-full h-32 mb-3 overflow-hidden rounded">
             <img 
-              src={resource.thumbnail_url} 
+              src={resource.thumbnailUrl} 
               alt={resource.title}
               className="w-full h-full object-cover"
             />
@@ -202,7 +202,7 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
           {resource.title}
         </CardTitle>
         <CardDescription className="text-xs">
-          by {resource.author_id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          by {resource.authorId?.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown Author'}
         </CardDescription>
       </CardHeader>
       
@@ -218,7 +218,7 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
           </span>
           <span className="flex items-center gap-1">
             <Eye className="h-3 w-3" />
-            {resource.view_count}
+            {resource.viewCount}
           </span>
           <span className="flex items-center gap-1">
             <Star className="h-3 w-3" />
@@ -234,7 +234,7 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
             {resource.grade}
           </Badge>
           <Badge variant="outline" className="text-xs">
-            {resource.access_tier}
+            {resource.accessTier}
           </Badge>
           {resource.tags?.slice(0, 2).map((tag, index) => (
             <Badge key={index} variant="outline" className="text-xs bg-blue-50">
