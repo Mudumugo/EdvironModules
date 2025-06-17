@@ -139,7 +139,7 @@ export default function AgeAppropriateLayout({ children }: AgeAppropriateLayoutP
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {config.modules.map((module) => (
-            <Card key={module.id} className={`hover:shadow-lg transition-all cursor-pointer ${module.color} border-2`}>
+            <Card key={module.id} className={`hover:shadow-lg transition-all cursor-pointer ${'color' in module ? module.color : 'bg-gray-50'} border-2`}>
               <CardContent className="p-6 text-center">
                 <div className="flex justify-center mb-3">
                   {module.icon}

@@ -50,7 +50,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(req.user.claims.sub);
       const institutionId = user?.institutionId;
       
-      const stats = await storage.getDashboardStats(institutionId);
+      const stats = await storage.getDashboardStats(institutionId || undefined);
       res.json(stats);
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
@@ -63,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(req.user.claims.sub);
       const institutionId = user?.institutionId;
       
-      const activities = await storage.getActivityLogs(undefined, institutionId);
+      const activities = await storage.getActivityLogs(undefined, institutionId || undefined);
       res.json(activities);
     } catch (error) {
       console.error("Error fetching recent activity:", error);
@@ -145,6 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await storage.upsertUser({
         id: userId,
+        tenantId: req.tenant?.id || 'default',
         firstName: validatedData.firstName,
         lastName: validatedData.lastName,
         email: validatedData.email,
@@ -402,13 +403,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const resourceData = insertLibraryResourceSchema.parse(req.body);
       const resource = await storage.createLibraryResource({
         ...resourceData,
-        authorId: user.id,
+        authorId: user!.id,
       });
 
       // Log activity
       await storage.createActivityLog({
-        userId: user.id,
-        institutionId: user.institutionId,
+        userId: user!.id,
+        institutionId: user!.institutionId || '',
         action: 'create_resource',
         module: 'digital_library',
         resourceId: resource.id.toString(),
@@ -495,13 +496,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const attendanceData = insertAttendanceSchema.parse(req.body);
       const attendance = await storage.createAttendance({
         ...attendanceData,
-        recordedBy: user.id,
+        recordedBy: user!.id,
       });
 
       // Log activity
       await storage.createActivityLog({
-        userId: user.id,
-        institutionId: user.institutionId,
+        userId: user!.id,
+        institutionId: user!.institutionId || '',
         action: 'record_attendance',
         module: 'school_management',
         resourceId: attendance.id.toString(),
@@ -537,7 +538,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const notificationData = insertNotificationSchema.parse(req.body);
       const notification = await storage.createNotification({
         ...notificationData,
-        institutionId: user.institutionId,
+        institutionId: user!.institutionId || '',
       });
 
       res.json(notification);
