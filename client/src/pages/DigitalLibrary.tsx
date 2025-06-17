@@ -522,7 +522,7 @@ export default function DigitalLibrary() {
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="book">Book</SelectItem>
                     <SelectItem value="ebook">E-Book</SelectItem>
                     <SelectItem value="video">Video</SelectItem>
@@ -536,7 +536,7 @@ export default function DigitalLibrary() {
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     <SelectItem value="Fiction">Fiction</SelectItem>
                     <SelectItem value="Non-Fiction">Non-Fiction</SelectItem>
                     <SelectItem value="Reference">Reference</SelectItem>
@@ -549,7 +549,7 @@ export default function DigitalLibrary() {
                     <SelectValue placeholder="Grade" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Grades</SelectItem>
+                    <SelectItem value="all">All Grades</SelectItem>
                     <SelectItem value="K">Kindergarten</SelectItem>
                     <SelectItem value="1">Grade 1</SelectItem>
                     <SelectItem value="2">Grade 2</SelectItem>

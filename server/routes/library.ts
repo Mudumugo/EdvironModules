@@ -33,7 +33,7 @@ export function registerLibraryRoutes(app: Express) {
       } = req.query;
 
       // Apply filters using existing schema
-      const conditions = [eq(libraryResources.isActive, true)];
+      const conditions = [eq(libraryResources.isDigital, true)];
       
       if (grade) conditions.push(eq(libraryResources.grade, grade));
       if (curriculum) conditions.push(eq(libraryResources.curriculum, curriculum));
@@ -460,7 +460,7 @@ export function registerLibraryRoutes(app: Express) {
         .select()
         .from(libraryResources)
         .where(
-          eq(libraryResources.isActive, true)
+          eq(libraryResources.isFeatured, true)
         )
         .orderBy(desc(libraryResources.rating))
         .limit(10);
