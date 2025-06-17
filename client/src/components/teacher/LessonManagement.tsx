@@ -210,7 +210,7 @@ export default function LessonManagement() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {lessons?.map((lesson: any) => (
+          {Array.isArray(lessons) && lessons.map((lesson: any) => (
             <div key={lesson.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
               <div className="flex items-start justify-between">
                 <div className="flex-1">

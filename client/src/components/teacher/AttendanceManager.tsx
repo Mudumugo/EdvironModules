@@ -99,7 +99,7 @@ export default function AttendanceManager() {
                 <SelectValue placeholder="Choose a class" />
               </SelectTrigger>
               <SelectContent>
-                {classes?.map((cls: any) => (
+                {Array.isArray(classes) && classes.map((cls: any) => (
                   <SelectItem key={cls.id} value={cls.id}>
                     {cls.name} - {cls.grade}
                   </SelectItem>

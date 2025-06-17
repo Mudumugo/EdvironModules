@@ -18,7 +18,7 @@ export default function AssignmentTracker() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: assignments, isLoading: assignmentsLoading } = useQuery({
+  const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
     queryKey: ['/api/teacher/assignments']
   });
 
@@ -137,7 +137,7 @@ export default function AssignmentTracker() {
                         <SelectValue placeholder="Select class" />
                       </SelectTrigger>
                       <SelectContent>
-                        {classes?.map((cls: any) => (
+                        {Array.isArray(classes) && classes.map((cls: any) => (
                           <SelectItem key={cls.id} value={cls.id}>
                             {cls.name} - {cls.grade}
                           </SelectItem>
@@ -226,7 +226,7 @@ export default function AssignmentTracker() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {assignments?.map((assignment: any) => {
+          {Array.isArray(assignments) && assignments.map((assignment: any) => {
             const submissionRate = (assignment.submissionsReceived / assignment.totalStudents) * 100;
             const gradingProgress = (assignment.graded / assignment.submissionsReceived) * 100;
             const statusInfo = getSubmissionStatus(assignment);
