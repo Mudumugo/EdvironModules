@@ -19,6 +19,7 @@ import Licensing from "@/pages/Licensing";
 import Settings from "@/pages/Settings";
 import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
+import TeacherDashboard from "@/pages/TeacherDashboard";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import TenantSelector from "@/components/TenantSelector";
