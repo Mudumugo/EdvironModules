@@ -38,6 +38,12 @@ import {
   type InsertActivityLog,
   type Notification,
   type InsertNotification,
+  lockerItems,
+  lockerCollections,
+  type LockerItem,
+  type InsertLockerItem,
+  type LockerCollection,
+  type InsertLockerCollection,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, like, inArray } from "drizzle-orm";

@@ -561,6 +561,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // My Locker API routes
+  app.get('/api/locker/items', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const items = await storage.getLockerItemsByUser(userId);
+      res.json(items);
+    } catch (error) {
+      console.error("Error fetching locker items:", error);
+      res.status(500).json({ message: "Failed to fetch locker items" });
+    }
+  });
+
+  app.post('/api/locker/items', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const itemData = { ...req.body, userId };
+      const item = await storage.createLockerItem(itemData);
+      res.json(item);
+    } catch (error) {
+      console.error("Error creating locker item:", error);
+      res.status(500).json({ message: "Failed to create locker item" });
+    }
+  });
+
+  app.put('/api/locker/items/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      const item = await storage.updateLockerItem(id, updates);
+      res.json(item);
+    } catch (error) {
+      console.error("Error updating locker item:", error);
+      res.status(500).json({ message: "Failed to update locker item" });
+    }
+  });
+
+  app.delete('/api/locker/items/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteLockerItem(id);
+      res.json({ message: "Item deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting locker item:", error);
+      res.status(500).json({ message: "Failed to delete locker item" });
+    }
+  });
+
+  app.get('/api/locker/collections', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const collections = await storage.getLockerCollectionsByUser(userId);
+      res.json(collections);
+    } catch (error) {
+      console.error("Error fetching locker collections:", error);
+      res.status(500).json({ message: "Failed to fetch locker collections" });
+    }
+  });
+
+  app.post('/api/locker/collections', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const collectionData = { ...req.body, userId };
+      const collection = await storage.createLockerCollection(collectionData);
+      res.json(collection);
+    } catch (error) {
+      console.error("Error creating locker collection:", error);
+      res.status(500).json({ message: "Failed to create locker collection" });
+    }
+  });
+
+  app.put('/api/locker/collections/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      const collection = await storage.updateLockerCollection(id, updates);
+      res.json(collection);
+    } catch (error) {
+      console.error("Error updating locker collection:", error);
+      res.status(500).json({ message: "Failed to update locker collection" });
+    }
+  });
+
+  app.delete('/api/locker/collections/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteLockerCollection(id);
+      res.json({ message: "Collection deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting locker collection:", error);
+      res.status(500).json({ message: "Failed to delete locker collection" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
