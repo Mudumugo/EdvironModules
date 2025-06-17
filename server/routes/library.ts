@@ -33,21 +33,20 @@ export function registerLibraryRoutes(app: Express) {
       } = req.query;
 
       // Apply filters using existing schema
-      const conditions = [eq(libraryResources.isPublished, true)];
+      const conditions = [eq(libraryResources.isActive, true)];
       
       if (grade) conditions.push(eq(libraryResources.grade, grade));
       if (curriculum) conditions.push(eq(libraryResources.curriculum, curriculum));
       if (type) conditions.push(eq(libraryResources.type, type));
       if (difficulty) conditions.push(eq(libraryResources.difficulty, difficulty));
-      if (author) conditions.push(eq(libraryResources.authorId, author));
+      if (author) conditions.push(eq(libraryResources.author, author));
       
       if (search) {
         conditions.push(
           or(
             like(libraryResources.title, `%${search}%`),
             like(libraryResources.description, `%${search}%`),
-            like(libraryResources.content, `%${search}%`),
-            sql`${libraryResources.tags}::text ILIKE ${'%' + search + '%'}`
+            like(libraryResources.subject, `%${search}%`)
           )
         );
       }
@@ -461,7 +460,7 @@ export function registerLibraryRoutes(app: Express) {
         .select()
         .from(libraryResources)
         .where(
-          eq(libraryResources.status, 'published')
+          eq(libraryResources.isActive, true)
         )
         .orderBy(desc(libraryResources.rating))
         .limit(10);
@@ -479,12 +478,12 @@ export function registerLibraryRoutes(app: Express) {
       const [totalResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isPublished, true));
+        .where(eq(libraryResources.isActive, true));
 
       const [totalViews] = await db
         .select({ total: sql<number>`SUM(${libraryResources.viewCount})` })
         .from(libraryResources)
-        .where(eq(libraryResources.isPublished, true));
+        .where(eq(libraryResources.isActive, true));
 
       const [averageRating] = await db
         .select({ avg: sql<number>`AVG(rating)` })
