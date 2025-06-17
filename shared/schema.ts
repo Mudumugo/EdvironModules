@@ -240,6 +240,46 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// My Locker - Personal workspace for students and teachers
+export const lockerItems = pgTable("locker_items", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  tenantId: varchar("tenant_id").notNull().references(() => tenants.id),
+  type: varchar("type").notNull(), // resource, note, bookmark, file
+  title: varchar("title").notNull(),
+  content: text("content"), // For notes or custom content
+  resourceId: integer("resource_id").references(() => libraryResources.id), // For saved library resources
+  metadata: jsonb("metadata"), // Additional data like tags, categories, etc.
+  isOfflineAvailable: boolean("is_offline_available").default(false),
+  tags: text("tags").array().default([]),
+  category: varchar("category"), // personal, course, project, etc.
+  isPrivate: boolean("is_private").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Locker collections - organize locker items into folders/collections
+export const lockerCollections = pgTable("locker_collections", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  tenantId: varchar("tenant_id").notNull().references(() => tenants.id),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  color: varchar("color").default("#3B82F6"),
+  icon: varchar("icon").default("folder"),
+  isPrivate: boolean("is_private").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Junction table for items in collections
+export const lockerItemCollections = pgTable("locker_item_collections", {
+  id: serial("id").primaryKey(),
+  itemId: integer("item_id").notNull().references(() => lockerItems.id),
+  collectionId: integer("collection_id").notNull().references(() => lockerCollections.id),
+  addedAt: timestamp("added_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   institution: one(institutions, {
@@ -262,6 +302,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   subscriptions: many(subscriptions),
   activityLogs: many(activityLogs),
   notifications: many(notifications),
+  lockerItems: many(lockerItems),
+  lockerCollections: many(lockerCollections),
 }));
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
@@ -382,6 +424,46 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   }),
 }));
 
+// My Locker Relations
+export const lockerItemsRelations = relations(lockerItems, ({ one, many }) => ({
+  user: one(users, {
+    fields: [lockerItems.userId],
+    references: [users.id],
+  }),
+  tenant: one(tenants, {
+    fields: [lockerItems.tenantId],
+    references: [tenants.id],
+  }),
+  resource: one(libraryResources, {
+    fields: [lockerItems.resourceId],
+    references: [libraryResources.id],
+  }),
+  collections: many(lockerItemCollections),
+}));
+
+export const lockerCollectionsRelations = relations(lockerCollections, ({ one, many }) => ({
+  user: one(users, {
+    fields: [lockerCollections.userId],
+    references: [users.id],
+  }),
+  tenant: one(tenants, {
+    fields: [lockerCollections.tenantId],
+    references: [tenants.id],
+  }),
+  items: many(lockerItemCollections),
+}));
+
+export const lockerItemCollectionsRelations = relations(lockerItemCollections, ({ one }) => ({
+  item: one(lockerItems, {
+    fields: [lockerItemCollections.itemId],
+    references: [lockerItems.id],
+  }),
+  collection: one(lockerCollections, {
+    fields: [lockerItemCollections.collectionId],
+    references: [lockerCollections.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -458,6 +540,23 @@ export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
   updatedAt: true,
 });
 
+export const insertLockerItemSchema = createInsertSchema(lockerItems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertLockerCollectionSchema = createInsertSchema(lockerCollections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertLockerItemCollectionSchema = createInsertSchema(lockerItemCollections).omit({
+  id: true,
+  addedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -485,3 +584,9 @@ export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type LockerItem = typeof lockerItems.$inferSelect;
+export type InsertLockerItem = z.infer<typeof insertLockerItemSchema>;
+export type LockerCollection = typeof lockerCollections.$inferSelect;
+export type InsertLockerCollection = z.infer<typeof insertLockerCollectionSchema>;
+export type LockerItemCollection = typeof lockerItemCollections.$inferSelect;
+export type InsertLockerItemCollection = z.infer<typeof insertLockerItemCollectionSchema>;
