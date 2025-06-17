@@ -83,23 +83,37 @@ export const WorksheetViewer: React.FC<WorksheetViewerProps> = ({
   // xAPI Tracking
   useEffect(() => {
     if (worksheetData.xapiEnabled) {
-      xapiTracker.trackResourceAccess(
+      xapiTracker.trackAccessed(
         worksheetData.id.toString(),
         worksheetData.title,
-        'worksheet',
-        'experienced'
+        'worksheet'
       );
     }
   }, [worksheetData]);
 
   useEffect(() => {
-    if (worksheetData.xapiEnabled) {
-      xapiTracker.trackProgress(
-        worksheetData.id.toString(),
-        currentPage,
-        worksheetData.totalPages,
-        'worksheet'
-      );
+    if (worksheetData.xapiEnabled && currentPage > 1) {
+      xapiTracker.trackActivity({
+        verb: {
+          id: 'http://adlnet.gov/expapi/verbs/progressed',
+          display: { 'en-US': 'progressed' }
+        },
+        object: {
+          id: `${window.location.origin}/resource/${worksheetData.id}`,
+          definition: {
+            name: { 'en-US': worksheetData.title },
+            type: 'http://adlnet.gov/expapi/activities/worksheet'
+          }
+        },
+        result: {
+          completion: currentPage === worksheetData.totalPages,
+          extensions: {
+            'http://adlnet.gov/expapi/activities/worksheet/page': currentPage,
+            'http://adlnet.gov/expapi/activities/worksheet/totalPages': worksheetData.totalPages,
+            'http://adlnet.gov/expapi/activities/worksheet/progress': Math.round((currentPage / worksheetData.totalPages) * 100)
+          }
+        }
+      });
     }
   }, [currentPage, worksheetData]);
 
