@@ -667,6 +667,198 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // File Upload Routes with MinIO and Caching
+  app.post('/api/upload/library-resource', isAuthenticated, upload.single('file'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      const metadata = {
+        userId: req.user.claims.sub,
+        title: req.body.title || req.file.originalname,
+        description: req.body.description || '',
+        grade: req.body.grade || '',
+        curriculum: req.body.curriculum || '',
+        subject: req.body.subject || '',
+        tags: req.body.tags || '',
+      };
+
+      const result = await UploadHandlers.uploadLibraryResource(req.file, metadata);
+      
+      // Cache the upload result
+      cache.set(`upload:${result.fileId}`, result, 3600);
+      
+      res.json({
+        success: true,
+        fileId: result.fileId,
+        url: result.originalUrl,
+        thumbnailUrl: result.thumbnailUrl,
+        metadata: result.metadata,
+      });
+    } catch (error) {
+      console.error('Error uploading library resource:', error);
+      res.status(500).json({ error: 'Failed to upload file' });
+    }
+  });
+
+  app.post('/api/upload/user-file', isAuthenticated, upload.single('file'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      const userId = req.user.claims.sub;
+      const folder = req.body.folder || 'general';
+      
+      const result = await UploadHandlers.uploadUserFile(userId, req.file, folder);
+      
+      // Cache the upload result
+      cache.set(`user-upload:${result.fileId}`, result, 3600);
+      
+      res.json({
+        success: true,
+        fileId: result.fileId,
+        url: result.url,
+        metadata: result.metadata,
+      });
+    } catch (error) {
+      console.error('Error uploading user file:', error);
+      res.status(500).json({ error: 'Failed to upload file' });
+    }
+  });
+
+  app.post('/api/upload/multiple', isAuthenticated, upload.array('files', 10), async (req: any, res) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        return res.status(400).json({ error: 'No files provided' });
+      }
+
+      const userId = req.user.claims.sub;
+      const folder = req.body.folder || 'general';
+      const uploadPromises = files.map(file => UploadHandlers.uploadUserFile(userId, file, folder));
+      
+      const results = await Promise.all(uploadPromises);
+      
+      // Cache all results
+      results.forEach(result => {
+        cache.set(`user-upload:${result.fileId}`, result, 3600);
+      });
+      
+      res.json({
+        success: true,
+        files: results,
+      });
+    } catch (error) {
+      console.error('Error uploading multiple files:', error);
+      res.status(500).json({ error: 'Failed to upload files' });
+    }
+  });
+
+  // File Retrieval Routes with Caching
+  app.get('/api/files/:fileId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { fileId } = req.params;
+      
+      // Check cache first
+      const cachedFile = cache.get(`file-url:${fileId}`);
+      if (cachedFile) {
+        return res.json(cachedFile);
+      }
+
+      // Generate presigned URL (this would work with actual MinIO)
+      const url = await fileStorage.generatePresignedUrl('user-uploads', fileId);
+      
+      const result = { fileId, url, cached: false };
+      cache.set(`file-url:${fileId}`, result, 900); // 15 minutes cache
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error retrieving file:', error);
+      res.status(500).json({ error: 'Failed to retrieve file' });
+    }
+  });
+
+  app.get('/api/files/:fileId/metadata', isAuthenticated, async (req: any, res) => {
+    try {
+      const { fileId } = req.params;
+      
+      // Check cache first
+      const cachedMetadata = cache.get(`metadata:${fileId}`);
+      if (cachedMetadata) {
+        return res.json({ ...cachedMetadata, cached: true });
+      }
+
+      // Get metadata from MinIO (would work with actual MinIO)
+      const metadata = await fileStorage.getFileMetadata('user-uploads', fileId);
+      
+      cache.set(`metadata:${fileId}`, metadata, 1800); // 30 minutes cache
+      
+      res.json({ ...metadata, cached: false });
+    } catch (error) {
+      console.error('Error retrieving file metadata:', error);
+      res.status(500).json({ error: 'Failed to retrieve file metadata' });
+    }
+  });
+
+  // Cache Management Routes
+  app.get('/api/cache/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const stats = fileStorage.getCacheStats();
+      res.json({
+        success: true,
+        cacheStats: stats,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Error getting cache stats:', error);
+      res.status(500).json({ error: 'Failed to get cache statistics' });
+    }
+  });
+
+  app.post('/api/cache/clear', isAuthenticated, async (req: any, res) => {
+    try {
+      const { cacheType } = req.body;
+      fileStorage.clearCache(cacheType);
+      
+      res.json({
+        success: true,
+        message: `${cacheType || 'All'} cache cleared successfully`,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Error clearing cache:', error);
+      res.status(500).json({ error: 'Failed to clear cache' });
+    }
+  });
+
+  // File listing with caching
+  app.get('/api/files/list/:bucket', isAuthenticated, async (req: any, res) => {
+    try {
+      const { bucket } = req.params;
+      const { prefix } = req.query;
+      
+      // Check cache first
+      const cacheKey = `list:${bucket}:${prefix || 'root'}`;
+      const cachedList = cache.get(cacheKey);
+      if (cachedList) {
+        return res.json({ files: cachedList, cached: true });
+      }
+
+      // Get file list from MinIO (would work with actual MinIO)
+      const files = await fileStorage.listFiles(bucket, prefix as string);
+      
+      res.json({ files, cached: false });
+    } catch (error) {
+      console.error('Error listing files:', error);
+      res.status(500).json({ error: 'Failed to list files' });
+    }
+  });
+
+  // Error handling middleware for uploads
+  app.use(handleUploadError);
+
   const httpServer = createServer(app);
   return httpServer;
 }
