@@ -166,7 +166,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     <div 
       ref={containerRef}
       className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white' : 'w-full max-w-7xl mx-auto bg-white rounded-lg shadow-lg'} flex flex-col overflow-hidden ${className}`}
-      style={{ height: isFullscreen ? '100vh' : 'min(95vh, 900px)' }}
+      style={{ height: isFullscreen ? '100vh' : '100vh' }}
     >
       {/* Simple Header - Clean Design */}
       <div className="flex items-center justify-between p-3 border-b bg-gray-50 flex-shrink-0">
