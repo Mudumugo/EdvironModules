@@ -237,10 +237,21 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     fields: [users.id],
     references: [teachers.userId],
   }),
+  settings: one(userSettings, {
+    fields: [users.id],
+    references: [userSettings.userId],
+  }),
   libraryResources: many(libraryResources),
   subscriptions: many(subscriptions),
   activityLogs: many(activityLogs),
   notifications: many(notifications),
+}));
+
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userSettings.userId],
+    references: [users.id],
+  }),
 }));
 
 export const institutionsRelations = relations(institutions, ({ many }) => ({
@@ -424,9 +435,17 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
   createdAt: true,
 });
 
+export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type UserSettings = typeof userSettings.$inferSelect;
+export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 export type Institution = typeof institutions.$inferSelect;
 export type InsertInstitution = z.infer<typeof insertInstitutionSchema>;
 export type Student = typeof students.$inferSelect;

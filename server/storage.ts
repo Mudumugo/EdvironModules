@@ -1,5 +1,6 @@
 import {
   users,
+  userSettings,
   institutions,
   students,
   teachers,
@@ -13,6 +14,8 @@ import {
   notifications,
   type User,
   type UpsertUser,
+  type UserSettings,
+  type InsertUserSettings,
   type Institution,
   type InsertInstitution,
   type Student,
@@ -43,6 +46,10 @@ export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  
+  // User settings operations
+  getUserSettings(userId: string): Promise<UserSettings | undefined>;
+  upsertUserSettings(settings: InsertUserSettings): Promise<UserSettings>;
   
   // Institution operations
   getInstitution(id: string): Promise<Institution | undefined>;
@@ -130,6 +137,27 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  // User settings operations
+  async getUserSettings(userId: string): Promise<UserSettings | undefined> {
+    const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
+    return settings;
+  }
+
+  async upsertUserSettings(settingsData: InsertUserSettings): Promise<UserSettings> {
+    const [settings] = await db
+      .insert(userSettings)
+      .values(settingsData)
+      .onConflictDoUpdate({
+        target: userSettings.userId,
+        set: {
+          ...settingsData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return settings;
   }
 
   // Institution operations
