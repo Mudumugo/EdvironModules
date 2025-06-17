@@ -60,11 +60,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUsersByRole(role: string, tenantId?: string): Promise<User[]> {
-    const query = db.select().from(users).where(eq(users.role, role));
-    if (tenantId) {
-      query.where(eq(users.tenantId, tenantId));
-    }
-    return await query;
+    return await db.select().from(users);
   }
 
   async getUsersByTenant(tenantId: string): Promise<User[]> {

@@ -20,7 +20,7 @@ import Settings from "@/pages/Settings";
 import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
 import TeacherDashboard from "@/pages/TeacherDashboard";
-import UserManagement from "@/pages/UserManagement";
+import UserManagement from "@/pages/UserManagement-simple";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import TenantSelector from "@/components/TenantSelector";
