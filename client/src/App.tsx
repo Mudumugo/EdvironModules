@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { getEnabledModules } from "@/config/modules";
+import { getCurrentTenant, getTenantConfig } from "@/lib/tenantUtils";
+import { useEffect, useState } from "react";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import SchoolManagement from "@/pages/SchoolManagement";
@@ -17,6 +19,7 @@ import Licensing from "@/pages/Licensing";
 import Settings from "@/pages/Settings";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
+import TenantSelector from "@/components/TenantSelector";
 
 // Component mapping for dynamic routing
 const componentMap: Record<string, any> = {
@@ -33,7 +36,27 @@ const componentMap: Record<string, any> = {
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
-  const enabledModules = getEnabledModules();
+  const [currentTenant, setCurrentTenant] = useState<string | null>(null);
+  const [tenantConfig, setTenantConfig] = useState<any>(null);
+
+  // Initialize tenant detection
+  useEffect(() => {
+    const tenant = getCurrentTenant();
+    setCurrentTenant(tenant);
+    if (tenant) {
+      setTenantConfig(getTenantConfig(tenant));
+    }
+  }, []);
+
+  // Show tenant selector if no valid tenant is detected
+  if (!currentTenant || !tenantConfig) {
+    return <TenantSelector />;
+  }
+
+  // Filter modules based on tenant features
+  const enabledModules = getEnabledModules().filter(module => 
+    tenantConfig.features.includes(module.id)
+  );
 
   return (
     <Switch>
@@ -41,7 +64,7 @@ function Router() {
         <Route path="/" component={Landing} />
       ) : (
         <Layout>
-          {/* Dynamic routing based on enabled modules */}
+          {/* Dynamic routing based on tenant-enabled modules */}
           {enabledModules.map((module) => {
             const Component = componentMap[module.id];
             return Component ? (

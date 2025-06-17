@@ -17,6 +17,9 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Multi-tenant middleware - extract tenant from subdomain
+  app.use(extractTenant);
+  
   // Auth middleware
   await setupAuth(app);
 
