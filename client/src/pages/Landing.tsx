@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { GraduationCap, Users, BookOpen, Calendar, BarChart3, Shield } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import TenantInfo from "@/components/TenantInfo";
+import { GraduationCap, Users, BookOpen, Calendar, BarChart3, Shield, Crown } from "lucide-react";
 
 export default function Landing() {
   const handleLogin = () => {
@@ -156,6 +158,22 @@ export default function Landing() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      {/* Tenant Information Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-2">
+              <Crown className="h-8 w-8 text-yellow-600" />
+              Current Organization
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              View your organization's subscription details and available features
+            </p>
+          </div>
+          <TenantInfo />
         </div>
       </section>
 

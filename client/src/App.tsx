@@ -50,8 +50,14 @@ function Router() {
     }
   }, []);
 
-  // Show tenant selector if no valid tenant is detected
-  if (!currentTenant || !tenantConfig) {
+  // Show tenant selector if no valid tenant is detected (but allow fallback to demo)
+  if (!currentTenant) {
+    // Fallback to demo tenant for development
+    setCurrentTenant('demo');
+    setTenantConfig(getTenantConfig('demo'));
+  }
+  
+  if (!tenantConfig) {
     return <TenantSelector />;
   }
 
