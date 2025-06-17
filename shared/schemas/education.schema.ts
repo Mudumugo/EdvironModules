@@ -289,6 +289,12 @@ export type InsertSchedule = typeof schedules.$inferInsert;
 export type Schedule = typeof schedules.$inferSelect;
 export type InsertAttendance = typeof attendance.$inferInsert;
 export type Attendance = typeof attendance.$inferSelect;
+export type InsertUserProgress = typeof userProgress.$inferInsert;
+export type UserProgress = typeof userProgress.$inferSelect;
+export type InsertLearningAnalytics = typeof learningAnalytics.$inferInsert;
+export type LearningAnalytics = typeof learningAnalytics.$inferSelect;
+export type InsertRecommendation = typeof recommendations.$inferInsert;
+export type Recommendation = typeof recommendations.$inferSelect;
 
 // Insert schemas for validation
 export const insertStudentSchema = createInsertSchema(students);
@@ -303,3 +309,19 @@ export const insertLibraryCategorySchema = createInsertSchema(libraryCategories)
 export const insertLibraryCollectionSchema = createInsertSchema(libraryCollections);
 export const insertScheduleSchema = createInsertSchema(schedules);
 export const insertAttendanceSchema = createInsertSchema(attendance);
+export const insertUserProgressSchema = createInsertSchema(userProgress).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertLearningAnalyticsSchema = createInsertSchema(learningAnalytics).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertRecommendationSchema = createInsertSchema(recommendations).omit({
+  id: true,
+  viewed: true,
+  accepted: true,
+  dismissedAt: true,
+  createdAt: true,
+});
