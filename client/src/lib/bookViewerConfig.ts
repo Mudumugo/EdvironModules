@@ -38,9 +38,26 @@ export const BOOK_VIEWER_TYPES = [
   'reading_material'
 ];
 
+// Resource types that should use the WorksheetViewer
+export const WORKSHEET_VIEWER_TYPES = [
+  'worksheet',
+  'workbook',
+  'exercise',
+  'practice',
+  'assignment',
+  'activity',
+  'quiz',
+  'test'
+];
+
 // Check if a resource should use the enhanced BookViewer
 export function shouldUseBookViewer(resource: LibraryResource): boolean {
   return BOOK_VIEWER_TYPES.includes(resource.type.toLowerCase());
+}
+
+// Check if a resource should use the WorksheetViewer
+export function shouldUseWorksheetViewer(resource: LibraryResource): boolean {
+  return WORKSHEET_VIEWER_TYPES.includes(resource.type.toLowerCase());
 }
 
 // Convert a library resource to book configuration
@@ -161,12 +178,67 @@ function calculatePageCount(resource: LibraryResource): number {
   return Math.max(5, Math.min(25, Math.round(base * multiplier)));
 }
 
-// Get appropriate toast message for book types
+// Convert a library resource to worksheet configuration
+export function convertResourceToWorksheetConfig(resource: LibraryResource): any {
+  return {
+    id: resource.id,
+    title: resource.title,
+    author: resource.authorId || 'Unknown Author',
+    pages: generateSamplePages(resource.type, calculatePageCount(resource)),
+    totalPages: calculatePageCount(resource),
+    thumbnailUrl: resource.thumbnailUrl,
+    description: resource.description,
+    grade: resource.grade,
+    subject: extractSubjectFromCurriculum(resource.curriculum),
+    language: resource.language,
+    type: resource.type,
+    isInteractive: resource.isInteractive,
+    hasAnswerKey: true, // Most worksheets have answer keys
+    xapiEnabled: resource.xapiEnabled,
+    content: resource.content,
+    instructions: generateWorksheetInstructions(resource),
+    difficulty: resource.difficulty,
+    duration: resource.duration,
+    trackingConfig: {
+      trackPageViews: true,
+      trackReadingTime: true,
+      trackCompletionRate: true,
+    }
+  };
+}
+
+// Generate worksheet-specific instructions
+function generateWorksheetInstructions(resource: LibraryResource): string {
+  const baseInstructions = [
+    "Read each question carefully before answering.",
+    "Show your work where applicable.",
+    "Use the answer key to check your responses when finished."
+  ];
+  
+  if (resource.type === 'quiz' || resource.type === 'test') {
+    baseInstructions.push("Time limit applies - work efficiently.");
+  }
+  
+  if (resource.difficulty === 'hard') {
+    baseInstructions.push("Take your time with complex problems.");
+  }
+  
+  return baseInstructions.join(' ');
+}
+
+// Get appropriate toast message for all resource types
 export function getBookOpenMessage(resource: LibraryResource): { title: string; description: string } {
   if (shouldUseBookViewer(resource)) {
     return {
       title: "Opening Immersive Reader",
       description: `Loading ${resource.type} with enhanced reading features`
+    };
+  }
+  
+  if (shouldUseWorksheetViewer(resource)) {
+    return {
+      title: "Opening Interactive Worksheet",
+      description: `Loading ${resource.type} with worksheet tools and answer key`
     };
   }
   

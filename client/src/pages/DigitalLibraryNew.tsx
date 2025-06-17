@@ -13,7 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import LibraryResourceCard from "@/components/library/LibraryResourceCard";
 import BookPreviewModal from "@/components/books/BookPreviewModal";
 import { BookViewer } from "@/components/books/BookViewer";
-import { shouldUseBookViewer, convertResourceToBookConfig, getBookOpenMessage } from "@/lib/bookViewerConfig";
+import WorksheetViewer from "@/components/worksheets/WorksheetViewer";
+import { shouldUseBookViewer, shouldUseWorksheetViewer, convertResourceToBookConfig, convertResourceToWorksheetConfig, getBookOpenMessage } from "@/lib/bookViewerConfig";
 
 export interface LibraryResource {
   id: number;
@@ -42,6 +43,8 @@ const DigitalLibraryNew = () => {
   const [selectedResource, setSelectedResource] = useState<LibraryResource | null>(null);
   const [showBookViewer, setShowBookViewer] = useState(false);
   const [currentBook, setCurrentBook] = useState<any | null>(null);
+  const [showWorksheetViewer, setShowWorksheetViewer] = useState(false);
+  const [currentWorksheet, setCurrentWorksheet] = useState<any | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
