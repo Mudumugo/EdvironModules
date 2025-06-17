@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Smartphone, 
   Laptop, 
@@ -24,7 +26,8 @@ import {
   RotateCcw,
   Search,
   Filter,
-  MoreVertical
+  Eye,
+  Play
 } from "lucide-react";
 import Layout from "@/components/Layout";
 
@@ -100,88 +103,58 @@ export default function DeviceManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [deviceTypeFilter, setDeviceTypeFilter] = useState("all");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Mock data for development - replace with actual API calls
-  const devices: Device[] = [
-    {
-      id: "device-1",
-      deviceName: "Sarah's iPad",
-      deviceType: "tablet",
-      platform: "iOS",
-      osVersion: "17.2",
-      model: "iPad Pro 11-inch",
-      status: "active",
-      lastSeen: "2024-01-15T10:30:00Z",
-      batteryLevel: 85,
-      storageUsed: 32.5,
-      storageTotal: 128,
-      isCompliant: true,
-      location: { lat: 40.7128, lng: -74.0060, accuracy: 10 },
-      user: { name: "Sarah Johnson", email: "sarah.j@school.edu" }
-    },
-    {
-      id: "device-2",
-      deviceName: "Math Lab Laptop 05",
-      deviceType: "laptop",
-      platform: "Windows",
-      osVersion: "11",
-      model: "Dell Latitude 5520",
-      status: "active",
-      lastSeen: "2024-01-15T09:45:00Z",
-      batteryLevel: 45,
-      storageUsed: 180.2,
-      storageTotal: 256,
-      isCompliant: false,
-      location: { lat: 40.7589, lng: -73.9851, accuracy: 5 },
-      user: { name: "Michael Chen", email: "m.chen@school.edu" }
-    },
-    {
-      id: "device-3",
-      deviceName: "Teacher iPhone",
-      deviceType: "smartphone",
-      platform: "iOS",
-      osVersion: "17.1",
-      model: "iPhone 14",
-      status: "lost",
-      lastSeen: "2024-01-14T16:20:00Z",
-      batteryLevel: 12,
-      storageUsed: 45.8,
-      storageTotal: 128,
-      isCompliant: true,
-      location: { lat: 40.7831, lng: -73.9712, accuracy: 50 },
-      user: { name: "Emma Wilson", email: "e.wilson@school.edu" }
-    }
-  ];
+  // Fetch devices from API
+  const { data: devices = [], isLoading: devicesLoading } = useQuery({
+    queryKey: ['/api/mdm/devices'],
+    queryFn: () => apiRequest('GET', '/api/mdm/devices').then(res => res.json())
+  });
 
-  const violations: ComplianceViolation[] = [
-    {
-      id: 1,
-      deviceName: "Math Lab Laptop 05",
-      violationType: "Unauthorized App",
-      severity: "high",
-      description: "Gaming application detected during class hours",
-      detectedAt: "2024-01-15T09:30:00Z",
-      status: "open"
-    },
-    {
-      id: 2,
-      deviceName: "Sarah's iPad",
-      violationType: "Screen Time Exceeded",
-      severity: "medium",
-      description: "Daily screen time limit exceeded by 2 hours",
-      detectedAt: "2024-01-14T20:15:00Z",
-      status: "acknowledged"
-    }
-  ];
+  // Fetch violations from API
+  const { data: violationData = [], isLoading: violationsLoading } = useQuery({
+    queryKey: ['/api/mdm/violations'],
+    queryFn: () => apiRequest('GET', '/api/mdm/violations').then(res => res.json())
+  });
 
-  const stats = {
+  // Fetch policies from API
+  const { data: policyData = [], isLoading: policiesLoading } = useQuery({
+    queryKey: ['/api/mdm/policies'],
+    queryFn: () => apiRequest('GET', '/api/mdm/policies').then(res => res.json())
+  });
+
+  // Remote action mutation
+  const remoteActionMutation = useMutation({
+    mutationFn: async (data: { deviceId: string; action: string; parameters?: any }) => {
+      const response = await apiRequest('POST', '/api/mdm/remote-action', data);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Remote Action Successful",
+        description: "The device action was executed successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/mdm/devices'] });
+    },
+    onError: () => {
+      toast({
+        title: "Remote Action Failed",
+        description: "Failed to execute the device action. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Calculate stats from actual data
+  const deviceStats = {
     totalDevices: devices.length,
-    activeDevices: devices.filter(d => d.status === 'active').length,
-    complianceIssues: devices.filter(d => !d.isCompliant).length,
-    lostDevices: devices.filter(d => d.status === 'lost' || d.status === 'stolen').length
+    activeDevices: devices.filter((d: Device) => d.status === 'active').length,
+    complianceIssues: devices.filter((d: Device) => !d.isCompliant).length,
+    lostDevices: devices.filter((d: Device) => d.status === 'lost' || d.status === 'stolen').length
   };
 
-  const filteredDevices = devices.filter(device => {
+  const filteredDevices = devices.filter((device: Device) => {
     const matchesSearch = device.deviceName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          device.user.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || device.status === statusFilter;
@@ -191,16 +164,25 @@ export default function DeviceManagement() {
   });
 
   const handleRemoteAction = (deviceId: string, action: string) => {
-    console.log(`Performing ${action} on device ${deviceId}`);
-    // Implement remote action logic
+    remoteActionMutation.mutate({ deviceId, action });
   };
+
+  if (devicesLoading) {
+    return (
+      <Layout>
+        <div className="h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Device Management</h1>
-          <p className="text-muted-foreground">Monitor and manage all institutional devices</p>
+          <p className="text-muted-foreground">Monitor and manage all institutional devices with real-time surveillance</p>
         </div>
 
         {/* Stats Overview */}
@@ -211,7 +193,7 @@ export default function DeviceManagement() {
               <Shield className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalDevices}</div>
+              <div className="text-2xl font-bold">{deviceStats.totalDevices}</div>
             </CardContent>
           </Card>
           <Card>
@@ -220,7 +202,7 @@ export default function DeviceManagement() {
               <Wifi className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.activeDevices}</div>
+              <div className="text-2xl font-bold text-green-600">{deviceStats.activeDevices}</div>
             </CardContent>
           </Card>
           <Card>
@@ -229,7 +211,7 @@ export default function DeviceManagement() {
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{stats.complianceIssues}</div>
+              <div className="text-2xl font-bold text-orange-600">{deviceStats.complianceIssues}</div>
             </CardContent>
           </Card>
           <Card>
@@ -238,7 +220,7 @@ export default function DeviceManagement() {
               <MapPin className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.lostDevices}</div>
+              <div className="text-2xl font-bold text-red-600">{deviceStats.lostDevices}</div>
             </CardContent>
           </Card>
         </div>
@@ -294,7 +276,7 @@ export default function DeviceManagement() {
 
             {/* Device List */}
             <div className="grid gap-4">
-              {filteredDevices.map((device) => (
+              {filteredDevices.map((device: Device) => (
                 <Card key={device.id}>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
@@ -330,6 +312,7 @@ export default function DeviceManagement() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleRemoteAction(device.id, 'locate')}
+                            disabled={remoteActionMutation.isPending}
                           >
                             <MapPin className="h-4 w-4" />
                           </Button>
@@ -337,6 +320,7 @@ export default function DeviceManagement() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleRemoteAction(device.id, 'lock')}
+                            disabled={remoteActionMutation.isPending}
                           >
                             <Lock className="h-4 w-4" />
                           </Button>
@@ -344,6 +328,7 @@ export default function DeviceManagement() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleRemoteAction(device.id, 'wipe')}
+                            disabled={remoteActionMutation.isPending}
                           >
                             <RotateCcw className="h-4 w-4" />
                           </Button>
@@ -377,12 +362,12 @@ export default function DeviceManagement() {
               <CardHeader>
                 <CardTitle>Compliance Violations</CardTitle>
                 <CardDescription>
-                  Recent policy violations and security issues
+                  Real-time policy violations and security incidents
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {violations.map((violation) => (
+                  {violationData.map((violation: ComplianceViolation) => (
                     <Alert key={violation.id}>
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
@@ -417,17 +402,37 @@ export default function DeviceManagement() {
               <CardHeader>
                 <CardTitle>Device Policies</CardTitle>
                 <CardDescription>
-                  Configure and manage device policies
+                  Active surveillance and control policies
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Policy Management</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Create and manage device policies for different user groups
-                  </p>
-                  <Button>Create New Policy</Button>
+                <div className="space-y-4">
+                  {policyData.map((policy: any) => (
+                    <Card key={policy.id}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-semibold">{policy.name}</h3>
+                            <p className="text-sm text-muted-foreground">{policy.description}</p>
+                            <div className="flex items-center space-x-2 mt-2">
+                              <Badge variant="outline">{policy.policyType}</Badge>
+                              <Badge className={policy.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                                {policy.isActive ? "Active" : "Inactive"}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              Edit
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -436,19 +441,22 @@ export default function DeviceManagement() {
           <TabsContent value="analytics" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Device Analytics</CardTitle>
+                <CardTitle>Device Analytics & Surveillance</CardTitle>
                 <CardDescription>
-                  Usage patterns and security insights
+                  Real-time monitoring and behavioral analysis
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8">
                   <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+                  <h3 className="text-lg font-semibold mb-2">Advanced Analytics Dashboard</h3>
                   <p className="text-muted-foreground mb-4">
-                    View device usage patterns, security trends, and compliance reports
+                    View comprehensive device usage patterns, security trends, compliance reports, and behavioral analytics
                   </p>
-                  <Button>View Full Analytics</Button>
+                  <Button>
+                    <Play className="h-4 w-4 mr-2" />
+                    View Full Analytics
+                  </Button>
                 </div>
               </CardContent>
             </Card>
