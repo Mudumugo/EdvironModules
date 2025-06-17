@@ -128,18 +128,32 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  const user = req.user as any;
+  const sessionUser = (req.session as any)?.user;
+  const replitUser = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  // Check for demo session first
+  if (sessionUser && sessionUser.expires_at) {
+    const now = Math.floor(Date.now() / 1000);
+    if (now <= sessionUser.expires_at) {
+      req.user = sessionUser;
+      return next();
+    } else {
+      // Demo session expired
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+  }
+
+  // Fall back to Replit auth
+  if (!req.isAuthenticated() || !replitUser?.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const now = Math.floor(Date.now() / 1000);
-  if (now <= user.expires_at) {
+  if (now <= replitUser.expires_at) {
     return next();
   }
 
-  const refreshToken = user.refresh_token;
+  const refreshToken = replitUser.refresh_token;
   if (!refreshToken) {
     res.status(401).json({ message: "Unauthorized" });
     return;
@@ -148,7 +162,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   try {
     const config = await getOidcConfig();
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
-    updateUserSession(user, tokenResponse);
+    updateUserSession(replitUser, tokenResponse);
     return next();
   } catch (error) {
     res.status(401).json({ message: "Unauthorized" });

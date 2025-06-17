@@ -8,6 +8,7 @@ import { getEnabledModules } from "@/config/modules";
 import { getCurrentTenant, getTenantConfig } from "@/lib/tenantUtils";
 import { useEffect, useState } from "react";
 import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import SchoolManagement from "@/pages/SchoolManagement";
 import DigitalLibrary from "@/pages/DigitalLibrary";
@@ -46,7 +47,21 @@ const componentMap: Record<string, any> = {
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Development routing - bypass authentication for testing
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
+  // Show main application with role-based routing
   return (
     <Layout>
       <Switch>
