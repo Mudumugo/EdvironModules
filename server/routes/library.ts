@@ -54,7 +54,7 @@ export function registerLibraryRoutes(app: Express) {
       const resources = await db
         .select()
         .from(libraryResources)
-        .where(and(...conditions))
+        .where(conditions.length > 0 ? and(...conditions) : sql`1=1`)
         .orderBy(
           sortOrder === 'desc' 
             ? desc(libraryResources.title)
@@ -67,7 +67,7 @@ export function registerLibraryRoutes(app: Express) {
       const totalCount = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(and(...conditions));
+        .where(conditions.length > 0 ? and(...conditions) : sql`1=1`);
 
       res.json({
         resources,

@@ -53,7 +53,7 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/users" component={UserManagement} />
         <Route path="/school-management" component={SchoolManagement} />
-        <Route path="/digital-library" component={DigitalLibrary} />
+        <Route path="/digital-library" component={DigitalLibraryNew} />
         <Route path="/analytics" component={Analytics} />
         <Route path="/settings" component={Settings} />
         <Route path="/my-locker" component={MyLocker} />
