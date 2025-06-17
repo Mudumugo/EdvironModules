@@ -57,6 +57,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Detect if this is multimedia/interactive content
   const isMultimediaContent = bookData.isInteractive || bookData.hasVideo || bookData.hasAudio || 
@@ -195,6 +196,33 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
       const direction = page > currentPage ? 'next' : 'prev';
       animatePageTurn(direction, page);
     }
+  };
+
+  // Touch gesture handlers for mobile navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || isPageTurning) return;
+    
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    
+    // Only handle horizontal swipes (ignore vertical scrolling)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe right - go to previous page
+        goToPreviousPage();
+      } else {
+        // Swipe left - go to next page
+        goToNextPage();
+      }
+    }
+    
+    touchStartRef.current = null;
   };
 
   // xAPI tracking functions
@@ -337,6 +365,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                     transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
                     transformOrigin: 'center'
                   }}
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
                 >
                   {bookData.pages && bookData.pages[currentPage - 1] ? (
                     <div className="relative w-full h-full flex items-center justify-center">
@@ -386,50 +416,50 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             </div>
             
             {/* Left margin controls - Previous page */}
-            <div className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-10">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={goToPreviousPage} 
                 disabled={currentPage <= 1}
-                className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-10 h-10"
+                className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-6 w-6 sm:h-5 sm:w-5" />
               </Button>
             </div>
             
             {/* Right margin controls - Next page */}
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-10">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={goToNextPage} 
                 disabled={currentPage >= bookData.totalPages}
-                className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-10 h-10"
+                className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-6 w-6 sm:h-5 sm:w-5" />
               </Button>
             </div>
             
             {/* Bottom margin controls - Tools and navigation */}
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-10">
+            <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 flex items-center justify-between z-10">
               {/* Left tools */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 {/* Table of Contents */}
                 <div className="relative">
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => setShowTableOfContents(!showTableOfContents)}
-                    className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+                    className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-10 h-10 sm:w-8 sm:h-8 touch-manipulation"
                     title="Table of Contents"
                   >
-                    <List className="h-4 w-4" />
+                    <List className="h-5 w-5 sm:h-4 sm:w-4" />
                   </Button>
                   
                   {/* Table of Contents Dropdown */}
                   {showTableOfContents && (
-                    <div className="absolute bottom-full left-0 mb-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                    <div className="absolute bottom-full left-0 mb-2 w-80 sm:w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 sm:max-h-96 overflow-y-auto">
                       <div className="p-4">
                         <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">Table of Contents</h3>
                         <div className="space-y-1">
