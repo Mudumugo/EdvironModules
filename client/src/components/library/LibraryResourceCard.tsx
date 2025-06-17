@@ -188,10 +188,10 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
           </Badge>
         </div>
         
-        {resource.thumbnailUrl && (
+        {resource.thumbnail_url && (
           <div className="w-full h-32 mb-3 overflow-hidden rounded">
             <img 
-              src={resource.thumbnailUrl} 
+              src={resource.thumbnail_url} 
               alt={resource.title}
               className="w-full h-full object-cover"
             />
