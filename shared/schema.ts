@@ -68,6 +68,89 @@ export const userSettings = pgTable("user_settings", {
 // Simple schema exports for immediate functionality
 export type InsertTenant = typeof tenants.$inferInsert;
 export type Tenant = typeof tenants.$inferSelect;
+// User role definitions
+export const USER_ROLES = {
+  // Student roles by education level
+  STUDENT_ELEMENTARY: "student_elementary",
+  STUDENT_MIDDLE: "student_middle", 
+  STUDENT_HIGH: "student_high",
+  STUDENT_COLLEGE: "student_college",
+  
+  // Educational staff
+  TEACHER: "teacher",
+  TUTOR: "tutor",
+  PRINCIPAL: "principal",
+  VICE_PRINCIPAL: "vice_principal",
+  COUNSELOR: "counselor",
+  LIBRARIAN: "librarian",
+  
+  // Administrative staff
+  SCHOOL_ADMIN: "school_admin",
+  SCHOOL_SECURITY: "school_security",
+  SCHOOL_IT_STAFF: "school_it_staff",
+  
+  // Family
+  PARENT: "parent"
+} as const;
+
+export const GRADE_LEVELS = {
+  // Elementary
+  KINDERGARTEN: "K",
+  GRADE_1: "1", GRADE_2: "2", GRADE_3: "3", GRADE_4: "4", GRADE_5: "5",
+  
+  // Middle School
+  GRADE_6: "6", GRADE_7: "7", GRADE_8: "8",
+  
+  // High School
+  GRADE_9: "9", GRADE_10: "10", GRADE_11: "11", GRADE_12: "12",
+  
+  // College
+  COLLEGE_YEAR_1: "College Year 1",
+  COLLEGE_YEAR_2: "College Year 2", 
+  COLLEGE_YEAR_3: "College Year 3",
+  COLLEGE_YEAR_4: "College Year 4",
+  GRADUATE: "Graduate"
+} as const;
+
+export const PERMISSIONS = {
+  // Student permissions
+  VIEW_OWN_GRADES: "view_own_grades",
+  SUBMIT_ASSIGNMENTS: "submit_assignments",
+  JOIN_VIRTUAL_CLASSES: "join_virtual_classes",
+  ACCESS_LIBRARY: "access_library",
+  VIEW_SCHEDULE: "view_schedule",
+  
+  // Teacher permissions
+  MANAGE_CLASSES: "manage_classes",
+  GRADE_ASSIGNMENTS: "grade_assignments",
+  CREATE_ASSIGNMENTS: "create_assignments",
+  MANAGE_ATTENDANCE: "manage_attendance",
+  VIEW_STUDENT_RECORDS: "view_student_records",
+  CONDUCT_LIVE_SESSIONS: "conduct_live_sessions",
+  
+  // Admin permissions
+  MANAGE_USERS: "manage_users",
+  MANAGE_SCHOOL_SETTINGS: "manage_school_settings",
+  VIEW_ALL_ANALYTICS: "view_all_analytics",
+  MANAGE_DEVICES: "manage_devices",
+  MANAGE_LICENSING: "manage_licensing",
+  
+  // IT Staff permissions
+  MANAGE_DEVICES: "manage_devices",
+  CONFIGURE_SYSTEMS: "configure_systems",
+  MANAGE_NETWORK: "manage_network",
+  INSTALL_SOFTWARE: "install_software",
+  
+  // Security permissions
+  VIEW_ACCESS_LOGS: "view_access_logs",
+  MANAGE_SECURITY_POLICIES: "manage_security_policies",
+  MONITOR_ACTIVITIES: "monitor_activities",
+} as const;
+
+export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+export type GradeLevel = typeof GRADE_LEVELS[keyof typeof GRADE_LEVELS];
+export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS];
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUserSettings = typeof userSettings.$inferInsert;
