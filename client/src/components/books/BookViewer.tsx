@@ -416,7 +416,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   return (
     <div 
       ref={containerRef}
-      className={`fixed inset-0 z-50 bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden ${className}`}
+      className={`fixed inset-0 z-[9999] bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden ${className}`}
       onMouseMove={handleUserActivity}
       onTouchStart={handleUserActivity}
     >
