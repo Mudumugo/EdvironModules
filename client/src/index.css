@@ -1,0 +1,341 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(142, 76%, 36%);
+  --accent-foreground: hsl(355, 7%, 97%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  --chart-1: hsl(207, 90%, 54%);
+  --chart-2: hsl(142, 76%, 36%);
+  --chart-3: hsl(38, 92%, 50%);
+  --chart-4: hsl(268, 83%, 58%);
+  --chart-5: hsl(0, 84%, 60%);
+  --sidebar-background: hsl(0, 0%, 100%);
+  --sidebar-foreground: hsl(20, 14.3%, 4.1%);
+  --sidebar-primary: hsl(207, 90%, 54%);
+  --sidebar-primary-foreground: hsl(211, 100%, 99%);
+  --sidebar-accent: hsl(60, 4.8%, 95.9%);
+  --sidebar-accent-foreground: hsl(24, 9.8%, 10%);
+  --sidebar-border: hsl(20, 5.9%, 90%);
+  --sidebar-ring: hsl(20, 14.3%, 4.1%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(142, 76%, 36%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+  --chart-1: hsl(207, 90%, 54%);
+  --chart-2: hsl(142, 76%, 36%);
+  --chart-3: hsl(38, 92%, 50%);
+  --chart-4: hsl(268, 83%, 58%);
+  --chart-5: hsl(0, 84%, 60%);
+  --sidebar-background: hsl(240, 10%, 3.9%);
+  --sidebar-foreground: hsl(0, 0%, 98%);
+  --sidebar-primary: hsl(207, 90%, 54%);
+  --sidebar-primary-foreground: hsl(211, 100%, 99%);
+  --sidebar-accent: hsl(240, 3.7%, 15.9%);
+  --sidebar-accent-foreground: hsl(0, 0%, 98%);
+  --sidebar-border: hsl(240, 3.7%, 15.9%);
+  --sidebar-ring: hsl(240, 4.9%, 83.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Custom styles for Edvirons Learning Portal */
+.primary-50 {
+  background-color: hsl(207, 90%, 97%);
+}
+
+.primary-100 {
+  background-color: hsl(207, 90%, 92%);
+}
+
+.primary-500 {
+  background-color: hsl(207, 90%, 54%);
+}
+
+.primary-600 {
+  background-color: hsl(207, 90%, 44%);
+}
+
+.primary-700 {
+  background-color: hsl(207, 90%, 34%);
+}
+
+.secondary-50 {
+  background-color: hsl(268, 83%, 97%);
+}
+
+.secondary-500 {
+  background-color: hsl(268, 83%, 58%);
+}
+
+.secondary-600 {
+  background-color: hsl(268, 83%, 48%);
+}
+
+.accent-50 {
+  background-color: hsl(142, 76%, 96%);
+}
+
+.accent-500 {
+  background-color: hsl(142, 76%, 36%);
+}
+
+.accent-600 {
+  background-color: hsl(142, 76%, 26%);
+}
+
+/* Animation for loading states */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Custom scrollbar styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(20, 5.9%, 90%) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: hsl(20, 5.9%, 90%);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(20, 5.9%, 80%);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Status indicators */
+.status-online {
+  background-color: hsl(142, 76%, 36%);
+}
+
+.status-offline {
+  background-color: hsl(0, 0%, 64%);
+}
+
+.status-warning {
+  background-color: hsl(38, 92%, 50%);
+}
+
+.status-error {
+  background-color: hsl(0, 84%, 60%);
+}
+
+/* Module-specific color schemes */
+.module-school {
+  color: hsl(207, 90%, 54%);
+}
+
+.module-library {
+  color: hsl(142, 76%, 36%);
+}
+
+.module-tutor {
+  color: hsl(268, 83%, 58%);
+}
+
+.module-family {
+  color: hsl(300, 84%, 60%);
+}
+
+.module-analytics {
+  color: hsl(38, 92%, 50%);
+}
+
+.module-licensing {
+  color: hsl(0, 84%, 60%);
+}
+
+/* Typography enhancements */
+.text-display {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.text-lead {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: hsl(25, 5.3%, 44.7%);
+}
+
+/* Interactive elements */
+.btn-primary {
+  background-color: hsl(207, 90%, 54%);
+  color: hsl(211, 100%, 99%);
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: hsl(207, 90%, 44%);
+}
+
+.btn-secondary {
+  background-color: hsl(268, 83%, 58%);
+  color: hsl(0, 0%, 98%);
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-secondary:hover {
+  background-color: hsl(268, 83%, 48%);
+}
+
+/* Dashboard specific styles */
+.dashboard-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.stat-card {
+  background: hsl(0, 0%, 100%);
+  border: 1px solid hsl(20, 5.9%, 90%);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Module status indicators */
+.module-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.module-status.online {
+  background-color: hsl(142, 76%, 96%);
+  color: hsl(142, 76%, 26%);
+}
+
+.module-status.syncing {
+  background-color: hsl(38, 92%, 95%);
+  color: hsl(38, 92%, 40%);
+}
+
+.module-status.offline {
+  background-color: hsl(0, 0%, 95%);
+  color: hsl(0, 0%, 50%);
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+}
+
+/* Focus states for accessibility */
+.focus\:ring-primary:focus {
+  box-shadow: 0 0 0 3px hsl(207, 90%, 54%, 0.1);
+}
+
+.focus\:ring-accent:focus {
+  box-shadow: 0 0 0 3px hsl(142, 76%, 36%, 0.1);
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
