@@ -225,8 +225,8 @@ export default function DeviceManagement() {
     <Layout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Device Management</h1>
-          <p className="text-muted-foreground">Monitor and manage all institutional devices with real-time surveillance</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Device Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Monitor and manage all institutional devices with real-time surveillance</p>
         </div>
 
         {/* Stats Overview - Responsive Grid */}
