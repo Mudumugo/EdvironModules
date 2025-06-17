@@ -501,7 +501,7 @@ export default function MyLocker() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">No Collection</SelectItem>
+                            <SelectItem value="none">No Collection</SelectItem>
                             {collections.map((collection) => (
                               <SelectItem key={collection.id} value={collection.id}>
                                 {collection.name}
