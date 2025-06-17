@@ -39,10 +39,32 @@ const DigitalLibraryNew = () => {
   const { toast } = useToast();
 
   // Fetch library resources
-  const { data: resources = [], isLoading, error } = useQuery({
+  const { data: apiResponse, isLoading, error } = useQuery({
     queryKey: ["/api/library/resources", { search: searchQuery, type: activeTab !== "all" ? activeTab : undefined }],
-    enabled: !!user,
+    enabled: true, // Allow library access without authentication
   });
+
+  // Transform API response from snake_case to camelCase
+  const rawResources = apiResponse?.resources || [];
+  const resources = rawResources.map((resource: any) => ({
+    id: resource.id,
+    title: resource.title,
+    type: resource.type,
+    grade: resource.grade,
+    curriculum: resource.curriculum,
+    description: resource.description,
+    difficulty: resource.difficulty,
+    duration: resource.duration,
+    tags: resource.tags || [],
+    viewCount: resource.viewCount || 0,
+    rating: resource.rating || "0",
+    thumbnailUrl: resource.thumbnail_url,
+    fileUrl: resource.file_url,
+    accessTier: resource.accessTier,
+    isPublished: resource.isPublished,
+    authorId: resource.authorId,
+    language: resource.language,
+  }));
 
   const handlePreview = (resource: LibraryResource) => {
     setSelectedResource(resource);
