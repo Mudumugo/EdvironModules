@@ -359,7 +359,7 @@ export default function Settings() {
                 </Button>
               </form>
 
-              {paymentStatus?.configured && (
+              {(paymentStatus as any)?.configured && (
                 <Alert>
                   <Check className="h-4 w-4" />
                   <AlertDescription>
