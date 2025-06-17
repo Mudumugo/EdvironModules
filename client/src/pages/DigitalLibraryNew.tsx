@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -278,6 +279,7 @@ const DigitalLibraryNew = () => {
   }
 
   return (
+    <>
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -504,17 +506,19 @@ const DigitalLibraryNew = () => {
         </Dialog>
       )}
 
-      {/* Enhanced BookViewer for immersive book reading */}
-      {showBookViewer && currentBook && (
-        <BookViewer
-          bookData={currentBook}
-          onClose={() => {
-            setShowBookViewer(false);
-            setCurrentBook(null);
-          }}
-        />
-      )}
     </div>
+    {/* Enhanced BookViewer for immersive book reading - Rendered as Portal */}
+    {showBookViewer && currentBook && createPortal(
+      <BookViewer
+        bookData={currentBook}
+        onClose={() => {
+          setShowBookViewer(false);
+          setCurrentBook(null);
+        }}
+      />,
+      document.body
+    )}
+    </>
   );
 };
 
