@@ -1,13 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import TenantInfo from "@/components/TenantInfo";
-import { GraduationCap, Users, BookOpen, Calendar, BarChart3, Shield, Crown } from "lucide-react";
+import { GraduationCap, Users, BookOpen, Calendar, BarChart3, Shield, Crown, Building2, Star } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Landing() {
   const handleLogin = () => {
     window.location.href = "/api/login";
   };
+
+  // Direct API call to get tenant data
+  const { data: tenantData, isLoading: tenantLoading } = useQuery({
+    queryKey: ["/api/tenant"],
+    retry: false,
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
@@ -173,7 +180,65 @@ export default function Landing() {
               View your organization's subscription details and available features
             </p>
           </div>
-          <TenantInfo />
+          <div className="space-y-4">
+            {tenantLoading ? (
+              <Card className="w-full">
+                <CardContent className="p-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : tenantData ? (
+              <Card className="w-full">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Building2 className="h-5 w-5 text-gray-600" />
+                    {tenantData.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Subscription:</span>
+                    <Badge className="flex items-center gap-1 bg-blue-100 text-blue-800 border-blue-200">
+                      <Shield className="h-3 w-3" />
+                      {tenantData.subscription.charAt(0).toUpperCase() + tenantData.subscription.slice(1)}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Tenant ID:</span>
+                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">{tenantData.id}</code>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-700">Available Features:</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {tenantData.features.map((feature) => (
+                        <Badge key={feature} variant="outline" className="text-xs">
+                          {feature.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">API Response:</h4>
+                    <div className="bg-gray-100 p-3 rounded text-xs font-mono">
+                      <pre>{JSON.stringify(tenantData, null, 2)}</pre>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="w-full">
+                <CardContent className="p-6">
+                  <p className="text-gray-500">No tenant information available</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </section>
 
