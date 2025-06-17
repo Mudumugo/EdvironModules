@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, FileText, Download, Eye, Clock, Star, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { shouldUseBookViewer, getBookOpenMessage } from "@/lib/bookViewerConfig";
 
 interface LibraryResource {
   id: number;
@@ -80,18 +81,13 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
   };
 
   const handlePreview = () => {
+    const message = getBookOpenMessage(resource);
     onPreview(resource);
-    if (resource.type.toLowerCase() === 'book') {
-      toast({
-        title: "Opening Book",
-        description: `Loading immersive reader for ${resource.title}`,
-      });
-    } else {
-      toast({
-        title: "Opening Preview",
-        description: `Loading preview for ${resource.title}`,
-      });
-    }
+    
+    toast({
+      title: message.title,
+      description: message.description,
+    });
   };
 
   const handleDownload = () => {

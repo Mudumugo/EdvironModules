@@ -14,7 +14,7 @@ import BookPreviewModal from "@/components/books/BookPreviewModal";
 import { BookViewer } from "@/components/books/BookViewer";
 import { shouldUseBookViewer, convertResourceToBookConfig, getBookOpenMessage } from "@/lib/bookViewerConfig";
 
-interface LibraryResource {
+export interface LibraryResource {
   id: number;
   title: string;
   type: string;
@@ -179,61 +179,30 @@ const DigitalLibraryNew = () => {
   }
 
   const handlePreview = (resource: LibraryResource) => {
-    // For book type resources, use the enhanced BookViewer
-    if (resource.type.toLowerCase() === 'book') {
-      const bookData = {
-        id: resource.id,
-        title: resource.title,
-        author: resource.authorId || 'Unknown Author',
-        pages: generateSamplePages(resource.title), // Generate sample pages based on resource
-        totalPages: 10, // Default page count for sample books
-        thumbnailUrl: resource.thumbnailUrl,
-        description: resource.description,
-        grade: resource.grade,
-        subject: resource.curriculum,
-        language: resource.language,
-        type: resource.type,
-        isInteractive: resource.type.includes('interactive'),
-        hasVideo: resource.tags?.includes('video') || false,
-        hasAudio: resource.tags?.includes('audio') || false,
-        xapiEnabled: true, // Enable learning analytics for all books
-        content: resource.description, // Use description as content for now
-        mediaAssets: [],
-        interactiveElements: [],
-        trackingConfig: {
-          trackPageViews: true,
-          trackReadingTime: true,
-          trackCompletionRate: true
-        }
-      };
-      
+    const message = getBookOpenMessage(resource);
+    
+    // Use enhanced BookViewer for all book-type resources
+    if (shouldUseBookViewer(resource)) {
+      const bookData = convertResourceToBookConfig(resource);
       setCurrentBook(bookData);
       setShowBookViewer(true);
+      
+      toast({
+        title: message.title,
+        description: message.description,
+      });
     } else {
       // For non-book resources, use the basic modal
       setSelectedResource(resource);
+      
+      toast({
+        title: message.title,
+        description: message.description,
+      });
     }
   };
 
-  // Generate sample book pages based on the resource title
-  const generateSamplePages = (title: string): string[] => {
-    const pages = [];
-    for (let i = 1; i <= 10; i++) {
-      // This would normally come from the actual book content/API
-      pages.push(`data:image/svg+xml,${encodeURIComponent(
-        `<svg width="800" height="1000" xmlns="http://www.w3.org/2000/svg">
-          <rect width="100%" height="100%" fill="white"/>
-          <text x="50%" y="10%" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold">${title}</text>
-          <text x="50%" y="50%" text-anchor="middle" font-family="Arial" font-size="18">Page ${i}</text>
-          <text x="50%" y="60%" text-anchor="middle" font-family="Arial" font-size="14">Sample content for page ${i}</text>
-          <text x="50%" y="70%" text-anchor="middle" font-family="Arial" font-size="14">This is educational content from the CBE curriculum</text>
-          <text x="50%" y="80%" text-anchor="middle" font-family="Arial" font-size="14">aligned with Grade ${Math.ceil(Math.random() * 12)} standards.</text>
-          <text x="50%" y="95%" text-anchor="middle" font-family="Arial" font-size="12" fill="gray">${i}</text>
-        </svg>`
-      )}`);
-    }
-    return pages;
-  };
+
 
   const handleDownload = (resource: LibraryResource) => {
     if (resource.fileUrl) {
