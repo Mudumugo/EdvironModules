@@ -166,16 +166,16 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     <div 
       ref={containerRef}
       className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white' : 'w-full max-w-7xl mx-auto bg-white rounded-lg shadow-lg'} flex flex-col overflow-hidden ${className}`}
-      style={{ height: isFullscreen ? '100vh' : 'min(90vh, 800px)' }}
+      style={{ height: isFullscreen ? '100vh' : 'min(95vh, 900px)' }}
     >
       {/* Header - Responsive */}
-      <div className="flex items-center justify-between p-3 lg:p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50 flex-shrink-0">
+      <div className="flex items-center justify-between p-2 lg:p-3 border-b bg-gradient-to-r from-blue-50 to-indigo-50 flex-shrink-0">
         <div className="flex items-center space-x-2 lg:space-x-3 min-w-0">
-          <BookOpen className="h-5 w-5 lg:h-6 lg:w-6 text-blue-600 flex-shrink-0" />
+          <BookOpen className="h-4 w-4 lg:h-5 lg:w-5 text-blue-600 flex-shrink-0" />
           <div className="min-w-0">
-            <h3 className="font-semibold text-sm lg:text-lg text-gray-900 truncate">{bookData.title}</h3>
+            <h3 className="font-semibold text-sm lg:text-base text-gray-900 truncate">{bookData.title}</h3>
             {bookData.author && (
-              <p className="text-xs lg:text-sm text-gray-600 truncate">by {bookData.author}</p>
+              <p className="text-xs text-gray-600 truncate">by {bookData.author}</p>
             )}
           </div>
         </div>
@@ -192,7 +192,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
       </div>
 
       {/* Toolbar - Responsive */}
-      <div className="flex flex-col sm:flex-row items-center justify-between p-2 lg:p-3 border-b bg-gray-50 gap-2 flex-shrink-0">
+      <div className="flex flex-col sm:flex-row items-center justify-between p-1.5 lg:p-2 border-b bg-gray-50 gap-2 flex-shrink-0">
         <div className="flex items-center space-x-1 lg:space-x-2">
           {/* Navigation */}
           <Button
@@ -272,17 +272,17 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
       </div>
 
       {/* Progress Bar */}
-      <div className="px-3 lg:px-4 py-2 bg-gray-50 border-b flex-shrink-0">
-        <Progress value={progressPercentage} className="w-full h-1.5 lg:h-2" />
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+      <div className="px-2 lg:px-3 py-1 bg-gray-50 border-b flex-shrink-0">
+        <Progress value={progressPercentage} className="w-full h-1" />
+        <div className="flex justify-between text-xs text-gray-500 mt-0.5">
           <span>Progress: {Math.round(progressPercentage)}%</span>
           <span className="hidden sm:inline">{bookData.totalPages} pages</span>
         </div>
       </div>
 
-      {/* Main Book Content - Optimized for screen space */}
+      {/* Main Book Content - Maximized viewing area */}
       <div className="flex-1 overflow-hidden bg-gray-100 relative">
-        <div className="w-full h-full flex items-center justify-center p-2 lg:p-4">
+        <div className="w-full h-full flex items-center justify-center p-1">
           <div
             ref={pageRef}
             className="bg-white shadow-xl rounded-lg overflow-hidden transition-all duration-300 w-full h-full flex items-center justify-center"
@@ -300,9 +300,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                   style={{ 
                     width: 'auto',
                     height: 'auto',
-                    maxWidth: isFullscreen ? '95vw' : '100%',
-                    maxHeight: isFullscreen ? '75vh' : '60vh',
-                    minHeight: isFullscreen ? '40vh' : '30vh'
+                    maxWidth: isFullscreen ? '98vw' : '98%',
+                    maxHeight: isFullscreen ? '85vh' : '85%',
+                    minHeight: isFullscreen ? '60vh' : '50vh'
                   }}
                 />
                 
