@@ -80,6 +80,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // School Management routes
+  
+  // Students routes
+  app.get('/api/students', isAuthenticated, async (req: any, res) => {
+    try {
+      const students = await storage.getStudentsByInstitution('demo');
+      res.json(students);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      res.status(500).json({ message: "Failed to fetch students" });
+    }
+  });
+
+  app.post('/api/students', isAuthenticated, async (req: any, res) => {
+    try {
+      const student = await storage.createStudent({
+        ...req.body,
+        institutionId: 'demo',
+      });
+      res.json(student);
+    } catch (error) {
+      console.error("Error creating student:", error);
+      res.status(500).json({ message: "Failed to create student" });
+    }
+  });
+
+  // Teachers routes
+  app.get('/api/teachers', isAuthenticated, async (req: any, res) => {
+    try {
+      const teachers = await storage.getTeachersByInstitution('demo');
+      res.json(teachers);
+    } catch (error) {
+      console.error("Error fetching teachers:", error);
+      res.status(500).json({ message: "Failed to fetch teachers" });
+    }
+  });
+
+  app.post('/api/teachers', isAuthenticated, async (req: any, res) => {
+    try {
+      const teacher = await storage.createTeacher({
+        ...req.body,
+        institutionId: 'demo',
+      });
+      res.json(teacher);
+    } catch (error) {
+      console.error("Error creating teacher:", error);
+      res.status(500).json({ message: "Failed to create teacher" });
+    }
+  });
+
+  // Classes routes
+  app.get('/api/classes', isAuthenticated, async (req: any, res) => {
+    try {
+      const classes = await storage.getClassesByInstitution('demo');
+      res.json(classes);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+      res.status(500).json({ message: "Failed to fetch classes" });
+    }
+  });
+
+  app.post('/api/classes', isAuthenticated, async (req: any, res) => {
+    try {
+      const classData = await storage.createClass({
+        ...req.body,
+        institutionId: 'demo',
+      });
+      res.json(classData);
+    } catch (error) {
+      console.error("Error creating class:", error);
+      res.status(500).json({ message: "Failed to create class" });
+    }
+  });
+
+  // Subjects routes
+  app.get('/api/subjects', isAuthenticated, async (req: any, res) => {
+    try {
+      const subjects = await storage.getSubjectsByInstitution('demo');
+      res.json(subjects);
+    } catch (error) {
+      console.error("Error fetching subjects:", error);
+      res.status(500).json({ message: "Failed to fetch subjects" });
+    }
+  });
+
+  app.post('/api/subjects', isAuthenticated, async (req: any, res) => {
+    try {
+      const subject = await storage.createSubject({
+        ...req.body,
+        institutionId: 'demo',
+      });
+      res.json(subject);
+    } catch (error) {
+      console.error("Error creating subject:", error);
+      res.status(500).json({ message: "Failed to create subject" });
+    }
+  });
+
   // Settings routes
   app.get('/api/settings', isAuthenticated, async (req: any, res) => {
     try {
