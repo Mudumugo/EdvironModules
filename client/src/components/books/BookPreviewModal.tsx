@@ -55,20 +55,54 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
   const [isBookViewerOpen, setIsBookViewerOpen] = useState(false);
   const [bookData, setBookData] = useState<any>(null);
 
-  // Mock book data - in real implementation, this would come from the API
+  // Generate interactive book content based on subject and grade
   useEffect(() => {
     if (resource && resource.type === 'book') {
+      const generateBookPages = () => {
+        const subject = resource.curriculum.toLowerCase();
+        const grade = resource.grade;
+        
+        // Create subject-specific interactive pages
+        if (subject.includes('math')) {
+          return [
+            `data:image/svg+xml,${encodeURIComponent(generateMathPage(1, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateMathPage(2, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateMathPage(3, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateMathPage(4, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateMathPage(5, grade))}`
+          ];
+        } else if (subject.includes('science')) {
+          return [
+            `data:image/svg+xml,${encodeURIComponent(generateSciencePage(1, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateSciencePage(2, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateSciencePage(3, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateSciencePage(4, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateSciencePage(5, grade))}`
+          ];
+        } else if (subject.includes('english') || subject.includes('language')) {
+          return [
+            `data:image/svg+xml,${encodeURIComponent(generateLanguagePage(1, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateLanguagePage(2, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateLanguagePage(3, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateLanguagePage(4, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateLanguagePage(5, grade))}`
+          ];
+        } else {
+          return [
+            `data:image/svg+xml,${encodeURIComponent(generateGeneralPage(1, resource.title, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateGeneralPage(2, resource.title, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateGeneralPage(3, resource.title, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateGeneralPage(4, resource.title, grade))}`,
+            `data:image/svg+xml,${encodeURIComponent(generateGeneralPage(5, resource.title, grade))}`
+          ];
+        }
+      };
+
       setBookData({
         id: resource.id,
         title: resource.title,
         author: resource.authorId?.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown Author',
-        pages: [
-          resource.thumbnailUrl || '/api/placeholder/400/500',
-          '/api/placeholder/400/500',
-          '/api/placeholder/400/500',
-          '/api/placeholder/400/500',
-          '/api/placeholder/400/500'
-        ],
+        pages: generateBookPages(),
         totalPages: 5,
         thumbnailUrl: resource.thumbnailUrl,
         description: resource.description,
@@ -78,6 +112,297 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
       });
     }
   }, [resource]);
+
+  // Page generation functions
+  const generateMathPage = (pageNum: number, grade: string) => {
+    const problems = {
+      1: {
+        title: "Introduction to Numbers",
+        content: [
+          "Let's learn about numbers!",
+          "Can you count these apples?",
+          "🍎 🍎 🍎 🍎 🍎",
+          "",
+          "Exercise: Circle the correct number",
+          "A) 3  B) 5  C) 7",
+          "",
+          "Remember: Counting helps us understand quantity!"
+        ]
+      },
+      2: {
+        title: "Addition Fun",
+        content: [
+          "Adding numbers together",
+          "",
+          "2 + 3 = ?",
+          "",
+          "🟦🟦 + 🟦🟦🟦 = 🟦🟦🟦🟦🟦",
+          "",
+          "Try these problems:",
+          "1 + 4 = ___",
+          "3 + 2 = ___",
+          "5 + 1 = ___"
+        ]
+      },
+      3: {
+        title: "Subtraction Practice",
+        content: [
+          "Taking away numbers",
+          "",
+          "5 - 2 = ?",
+          "",
+          "🟨🟨🟨🟨🟨 - 🟨🟨 = 🟨🟨🟨",
+          "",
+          "Practice problems:",
+          "6 - 1 = ___",
+          "4 - 3 = ___",
+          "7 - 2 = ___"
+        ]
+      },
+      4: {
+        title: "Shapes and Patterns",
+        content: [
+          "Learning about shapes",
+          "",
+          "Circle: ⭕",
+          "Square: ⬜",
+          "Triangle: 🔺",
+          "",
+          "Can you continue the pattern?",
+          "⭕ ⬜ ⭕ ⬜ ⭕ ___"
+        ]
+      },
+      5: {
+        title: "Review and Practice",
+        content: [
+          "Let's review what we learned!",
+          "",
+          "1. Counting: 1, 2, 3, 4, 5",
+          "2. Addition: 2 + 3 = 5",
+          "3. Subtraction: 5 - 2 = 3",
+          "4. Shapes: ⭕ ⬜ 🔺",
+          "",
+          "Great job learning math!"
+        ]
+      }
+    };
+
+    const page = problems[pageNum as keyof typeof problems];
+    return `<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="600" fill="#f8f9fa"/>
+      <rect x="20" y="20" width="360" height="560" fill="white" stroke="#e9ecef" stroke-width="2" rx="10"/>
+      <text x="200" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#495057">${page.title}</text>
+      <text x="200" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">Page ${pageNum} • ${grade} • Mathematics</text>
+      ${page.content.map((line, i) => 
+        `<text x="40" y="${130 + i * 35}" font-family="Arial, sans-serif" font-size="16" fill="#212529">${line}</text>`
+      ).join('')}
+      <text x="200" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#adb5bd">EdVirons Educational Platform</text>
+    </svg>`;
+  };
+
+  const generateSciencePage = (pageNum: number, grade: string) => {
+    const topics = {
+      1: {
+        title: "The Solar System",
+        content: [
+          "Our Solar System has 8 planets",
+          "",
+          "☀️ Sun (Our Star)",
+          "🪐 Mercury, Venus, Earth, Mars",
+          "🪐 Jupiter, Saturn, Uranus, Neptune",
+          "",
+          "Earth is the only planet with life!",
+          "",
+          "Fun Fact: Jupiter is the biggest planet"
+        ]
+      },
+      2: {
+        title: "Animal Habitats",
+        content: [
+          "Where do animals live?",
+          "",
+          "🏔️ Mountains: Bears, Eagles",
+          "🌊 Ocean: Fish, Whales, Dolphins",
+          "🏜️ Desert: Camels, Lizards",
+          "🌳 Forest: Deer, Squirrels, Birds",
+          "",
+          "Each habitat provides what animals need!"
+        ]
+      },
+      3: {
+        title: "Weather Patterns",
+        content: [
+          "Understanding Weather",
+          "",
+          "☀️ Sunny: Clear skies, warm",
+          "☁️ Cloudy: Gray skies, cooler",
+          "🌧️ Rainy: Water from clouds",
+          "❄️ Snowy: Frozen precipitation",
+          "",
+          "Weather changes every day!"
+        ]
+      },
+      4: {
+        title: "Plant Life Cycle",
+        content: [
+          "How do plants grow?",
+          "",
+          "1. 🌱 Seed: Starting point",
+          "2. 🌿 Sprout: First leaves appear",
+          "3. 🌳 Plant: Grows bigger",
+          "4. 🌸 Flower: Makes new seeds",
+          "",
+          "Plants need water, sun, and soil!"
+        ]
+      },
+      5: {
+        title: "Simple Machines",
+        content: [
+          "Machines help us work!",
+          "",
+          "Lever: See-saw, crowbar",
+          "Wheel: Bicycle, car",
+          "Pulley: Flag pole",
+          "Incline: Ramp, slide",
+          "",
+          "Machines make work easier!"
+        ]
+      }
+    };
+
+    const page = topics[pageNum as keyof typeof topics];
+    return `<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="600" fill="#e8f5e8"/>
+      <rect x="20" y="20" width="360" height="560" fill="white" stroke="#28a745" stroke-width="2" rx="10"/>
+      <text x="200" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#155724">${page.title}</text>
+      <text x="200" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">Page ${pageNum} • ${grade} • Science</text>
+      ${page.content.map((line, i) => 
+        `<text x="40" y="${130 + i * 35}" font-family="Arial, sans-serif" font-size="16" fill="#212529">${line}</text>`
+      ).join('')}
+      <text x="200" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#adb5bd">EdVirons Educational Platform</text>
+    </svg>`;
+  };
+
+  const generateLanguagePage = (pageNum: number, grade: string) => {
+    const lessons = {
+      1: {
+        title: "Letter Recognition",
+        content: [
+          "Learning the Alphabet",
+          "",
+          "A B C D E F G",
+          "H I J K L M N",
+          "O P Q R S T U",
+          "V W X Y Z",
+          "",
+          "Practice writing these letters!",
+          "Circle all the letter 'A's you can find."
+        ]
+      },
+      2: {
+        title: "Simple Words",
+        content: [
+          "Building Words with Letters",
+          "",
+          "CAT = C + A + T",
+          "DOG = D + O + G",
+          "SUN = S + U + N",
+          "",
+          "Try to read these words:",
+          "BAT  HAT  RAT  SAT",
+          "",
+          "What rhymes with CAT?"
+        ]
+      },
+      3: {
+        title: "Sentence Structure",
+        content: [
+          "Making Complete Sentences",
+          "",
+          "A sentence needs:",
+          "• Who (Subject)",
+          "• What they do (Verb)",
+          "",
+          "Example: The cat runs.",
+          "Who: The cat",
+          "What: runs",
+          "",
+          "Try: The dog ___."
+        ]
+      },
+      4: {
+        title: "Reading Comprehension",
+        content: [
+          "Understanding Stories",
+          "",
+          "Tom has a red ball.",
+          "He plays in the park.",
+          "The ball rolls far away.",
+          "Tom runs to get it.",
+          "",
+          "Questions:",
+          "What color is Tom's ball?",
+          "Where does Tom play?"
+        ]
+      },
+      5: {
+        title: "Creative Writing",
+        content: [
+          "Tell Your Own Story",
+          "",
+          "Think about:",
+          "• Who is in your story?",
+          "• Where does it happen?",
+          "• What happens?",
+          "",
+          "Start with: Once upon a time...",
+          "",
+          "Draw a picture of your story!"
+        ]
+      }
+    };
+
+    const page = lessons[pageNum as keyof typeof lessons];
+    return `<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="600" fill="#fff3cd"/>
+      <rect x="20" y="20" width="360" height="560" fill="white" stroke="#ffc107" stroke-width="2" rx="10"/>
+      <text x="200" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#856404">${page.title}</text>
+      <text x="200" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">Page ${pageNum} • ${grade} • Language Arts</text>
+      ${page.content.map((line, i) => 
+        `<text x="40" y="${130 + i * 32}" font-family="Arial, sans-serif" font-size="15" fill="#212529">${line}</text>`
+      ).join('')}
+      <text x="200" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#adb5bd">EdVirons Educational Platform</text>
+    </svg>`;
+  };
+
+  const generateGeneralPage = (pageNum: number, title: string, grade: string) => {
+    const content = [
+      `Welcome to ${title}`,
+      "",
+      `This is page ${pageNum} of your textbook.`,
+      "",
+      "Learning objectives:",
+      "• Understand key concepts",
+      "• Practice new skills",
+      "• Apply knowledge",
+      "",
+      "Take your time to read and understand.",
+      "Ask questions if you need help!",
+      "",
+      "Interactive elements coming soon..."
+    ];
+
+    return `<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="600" fill="#f8f9fa"/>
+      <rect x="20" y="20" width="360" height="560" fill="white" stroke="#6c757d" stroke-width="2" rx="10"/>
+      <text x="200" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#495057">${title}</text>
+      <text x="200" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">Page ${pageNum} • ${grade}</text>
+      ${content.map((line, i) => 
+        `<text x="40" y="${130 + i * 30}" font-family="Arial, sans-serif" font-size="14" fill="#212529">${line}</text>`
+      ).join('')}
+      <text x="200" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#adb5bd">EdVirons Educational Platform</text>
+    </svg>`;
+  };
 
   const handleDownload = () => {
     if (onDownload) {
@@ -323,18 +648,63 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Table of Contents</h3>
               <div className="space-y-2">
-                {/* Mock table of contents */}
-                {Array.from({ length: 5 }, (_, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-gray-500">Page {i + 1}</span>
-                      <span>Chapter {i + 1}: Introduction to {resource.curriculum}</span>
+                {/* Subject-specific table of contents */}
+                {(() => {
+                  const subject = resource.curriculum.toLowerCase();
+                  const chapters = subject.includes('math') ? [
+                    "Introduction to Numbers",
+                    "Addition Fun", 
+                    "Subtraction Practice",
+                    "Shapes and Patterns",
+                    "Review and Practice"
+                  ] : subject.includes('science') ? [
+                    "The Solar System",
+                    "Animal Habitats",
+                    "Weather Patterns", 
+                    "Plant Life Cycle",
+                    "Simple Machines"
+                  ] : subject.includes('english') || subject.includes('language') ? [
+                    "Letter Recognition",
+                    "Simple Words",
+                    "Sentence Structure",
+                    "Reading Comprehension", 
+                    "Creative Writing"
+                  ] : [
+                    "Introduction",
+                    "Basic Concepts",
+                    "Practice Exercises",
+                    "Advanced Topics",
+                    "Summary"
+                  ];
+                  
+                  return chapters.map((chapter, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">Page {i + 1}</span>
+                        <span className="font-medium">{chapter}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">
+                          {Math.floor(Math.random() * 5) + 3} min
+                        </Badge>
+                        <Button variant="ghost" size="sm" onClick={() => setIsBookViewerOpen(true)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+                  ));
+                })()}
+              </div>
+              
+              {/* Learning objectives */}
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-medium text-blue-900 mb-2">Learning Objectives</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Master fundamental concepts in {resource.curriculum}</li>
+                  <li>• Develop critical thinking skills</li>
+                  <li>• Apply knowledge through interactive exercises</li>
+                  <li>• Build confidence in problem-solving</li>
+                </ul>
               </div>
             </div>
           </TabsContent>

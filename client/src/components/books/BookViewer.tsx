@@ -281,18 +281,41 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             }}
           >
             {bookData.pages && bookData.pages[currentPage - 1] ? (
-              <img
-                src={bookData.pages[currentPage - 1]}
-                alt={`Page ${currentPage}`}
-                className="max-w-full max-h-full object-contain"
-                style={{ minHeight: '500px', minWidth: '400px' }}
-              />
+              <div className="relative">
+                <img
+                  src={bookData.pages[currentPage - 1]}
+                  alt={`Page ${currentPage}`}
+                  className="max-w-full max-h-full object-contain shadow-lg"
+                  style={{ minHeight: '500px', minWidth: '400px' }}
+                />
+                
+                {/* Interactive overlay for page interactions */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {/* Reading progress indicator */}
+                  {bookmarkPages.includes(currentPage) && (
+                    <div className="absolute top-0 right-0 p-2">
+                      <div className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-bl-lg text-xs font-semibold">
+                        <Bookmark className="h-3 w-3 inline mr-1" />
+                        Bookmarked
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Page navigation hints */}
+                  <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded text-xs">
+                    Use ← → keys to navigate
+                  </div>
+                </div>
+              </div>
             ) : (
-              <div className="w-96 h-[500px] flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300">
+              <div className="w-96 h-[500px] flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-dashed border-blue-300 rounded-lg">
                 <div className="text-center">
-                  <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">Page {currentPage}</p>
-                  <p className="text-sm text-gray-400">Content not available</p>
+                  <BookOpen className="h-16 w-16 text-blue-400 mx-auto mb-4 animate-pulse" />
+                  <p className="text-blue-600 font-medium text-lg">Page {currentPage}</p>
+                  <p className="text-sm text-blue-400 mt-2">Loading interactive content...</p>
+                  <div className="mt-4 flex justify-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                  </div>
                 </div>
               </div>
             )}
@@ -321,6 +344,57 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
         </div>
       </div>
 
+      {/* Interactive Features */}
+      <div className="border-t bg-gray-50 p-3">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-medium text-gray-700">Interactive Features</div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const synth = window.speechSynthesis;
+                const utterance = new SpeechSynthesisUtterance(`Reading page ${currentPage} of ${bookData.title}`);
+                synth.speak(utterance);
+              }}
+            >
+              <Volume2 className="h-4 w-4 mr-1" />
+              Read Aloud
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                navigator.share && navigator.share({
+                  title: bookData.title,
+                  text: `Check out page ${currentPage} of ${bookData.title}`,
+                  url: window.location.href
+                });
+              }}
+            >
+              <Share2 className="h-4 w-4 mr-1" />
+              Share Page
+            </Button>
+          </div>
+        </div>
+        
+        {/* Study Tools */}
+        <div className="grid grid-cols-3 gap-2 text-xs">
+          <div className="text-center p-2 bg-white rounded border">
+            <div className="font-semibold">{Math.round(progressPercentage)}%</div>
+            <div className="text-gray-500">Complete</div>
+          </div>
+          <div className="text-center p-2 bg-white rounded border">
+            <div className="font-semibold">{bookmarkPages.length}</div>
+            <div className="text-gray-500">Bookmarks</div>
+          </div>
+          <div className="text-center p-2 bg-white rounded border">
+            <div className="font-semibold">{Math.floor(Date.now() / 60000) % 60}m</div>
+            <div className="text-gray-500">Reading</div>
+          </div>
+        </div>
+      </div>
+
       {/* Quick Actions */}
       <div className="flex items-center justify-between p-3 border-t bg-gray-50 rounded-b-lg">
         <div className="flex items-center space-x-2">
@@ -329,8 +403,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             Download
           </Button>
           <Button variant="outline" size="sm">
-            <Share2 className="h-4 w-4 mr-1" />
-            Share
+            <Eye className="h-4 w-4 mr-1" />
+            Notes
           </Button>
         </div>
         
