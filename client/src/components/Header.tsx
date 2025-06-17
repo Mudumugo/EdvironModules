@@ -11,7 +11,8 @@ import {
   ChevronDown,
   User,
   Settings,
-  LogOut
+  LogOut,
+  Menu
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -22,7 +23,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -70,15 +75,23 @@ export default function Header() {
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and Brand */}
-          <div className="flex items-center space-x-4">
+          {/* Mobile Menu Button and Logo */}
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="lg:hidden p-2"
+              onClick={onMenuClick}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
                 <GraduationCap className="text-white h-5 w-5" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900">Edvirons</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">Edvirons</h1>
             </div>
-            <span className="hidden sm:block text-sm text-gray-500 border-l border-gray-200 pl-4">
+            <span className="hidden md:block text-sm text-gray-500 border-l border-gray-200 pl-4">
               Learning Portal
             </span>
           </div>
