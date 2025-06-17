@@ -291,9 +291,9 @@ export default function DigitalLibrary() {
             <CardTitle className="text-lg leading-tight mb-1 truncate">
               {resource.title}
             </CardTitle>
-            {resource.authorId && (
+            {resource.author && (
               <CardDescription className="text-sm text-muted-foreground">
-                by {resource.authorId}
+                by {resource.author}
               </CardDescription>
             )}
           </div>

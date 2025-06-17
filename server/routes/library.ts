@@ -478,22 +478,22 @@ export function registerLibraryRoutes(app: Express) {
       const [totalResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isAvailable, true));
+        .where(eq(libraryResources.isActive, true));
 
       const [totalViews] = await db
         .select({ total: sql<number>`SUM(${libraryResources.viewCount})` })
         .from(libraryResources)
-        .where(eq(libraryResources.isAvailable, true));
+        .where(eq(libraryResources.isActive, true));
 
       const [averageRating] = await db
         .select({ avg: sql<number>`AVG(${libraryResources.rating})` })
         .from(libraryResources)
-        .where(eq(libraryResources.isAvailable, true));
+        .where(eq(libraryResources.isActive, true));
 
       const [availableResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isAvailable, true));
+        .where(eq(libraryResources.isActive, true));
 
       res.json({
         totalResources: totalResources.count,
