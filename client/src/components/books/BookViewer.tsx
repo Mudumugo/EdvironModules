@@ -21,7 +21,8 @@ import {
   Volume2,
   VolumeX,
   Play,
-  Pause
+  Pause,
+  X
 } from 'lucide-react';
 
 interface BookViewerProps {
