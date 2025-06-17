@@ -32,6 +32,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
+  // Tenant information endpoint
+  app.get('/api/tenant', (req: any, res) => {
+    const tenant = req.tenant;
+    if (!tenant) {
+      return res.status(404).json({ message: "Tenant not found" });
+    }
+    res.json(tenant);
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {

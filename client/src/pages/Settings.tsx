@@ -6,7 +6,9 @@ import { z } from "zod";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useTenant } from "@/hooks/useTenant";
 import { MODULE_REGISTRY, toggleModule, type ModuleConfig } from "@/config/modules";
+import TenantInfo from "@/components/TenantInfo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -186,7 +188,11 @@ export default function Settings() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="tenant" className="flex items-center gap-2">
+            <Crown className="h-4 w-4" />
+            Tenant
+          </TabsTrigger>
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             Profile
@@ -208,6 +214,20 @@ export default function Settings() {
             Security
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="tenant" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tenant Information</CardTitle>
+              <CardDescription>
+                View your organization's subscription details and available features
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TenantInfo />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="profile" className="space-y-6">
           <Card>
