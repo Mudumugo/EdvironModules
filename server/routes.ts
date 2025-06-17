@@ -823,6 +823,291 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Media Delivery System API endpoints
+  app.get('/api/media/content', isAuthenticated, async (req: any, res) => {
+    try {
+      const mediaContent = [
+        {
+          id: 1,
+          contentName: "Introduction to Algebra - Chapter 1",
+          contentType: "video",
+          category: "educational",
+          fileSize: 250.5,
+          duration: 1800,
+          format: "mp4",
+          storageLocation: "educational/math/algebra-intro-ch1.mp4",
+          thumbnailUrl: "thumbnails/algebra-ch1-thumb.jpg",
+          description: "Comprehensive introduction to algebraic concepts and problem-solving techniques",
+          tags: ["mathematics", "algebra", "grade-9", "fundamentals"],
+          contentRating: "G",
+          gradeLevel: "9-12",
+          subject: "Mathematics",
+          isActive: true,
+          isRestricted: false,
+          createdAt: "2024-01-01T10:00:00Z",
+          syncStatus: "synced",
+          downloadSize: 250.5,
+          streamingQuality: ["720p", "1080p"],
+          estimatedBandwidth: 5.2
+        },
+        {
+          id: 2,
+          contentName: "Chemistry Lab Safety Protocols",
+          contentType: "document",
+          category: "educational",
+          fileSize: 15.2,
+          duration: null,
+          format: "pdf",
+          storageLocation: "educational/science/chem-safety-protocols.pdf",
+          thumbnailUrl: "thumbnails/chem-safety-thumb.jpg",
+          description: "Essential safety procedures for chemistry laboratory work",
+          tags: ["chemistry", "safety", "laboratory", "protocols"],
+          contentRating: "G",
+          gradeLevel: "9-12",
+          subject: "Chemistry",
+          isActive: true,
+          isRestricted: false,
+          createdAt: "2024-01-05T14:30:00Z",
+          syncStatus: "synced",
+          downloadSize: 15.2,
+          accessCount: 156
+        },
+        {
+          id: 3,
+          contentName: "World History Interactive Timeline",
+          contentType: "application",
+          category: "educational",
+          fileSize: 450.8,
+          duration: null,
+          format: "apk",
+          storageLocation: "educational/history/world-history-timeline.apk",
+          thumbnailUrl: "thumbnails/history-timeline-thumb.jpg",
+          description: "Interactive application covering major world historical events",
+          tags: ["history", "interactive", "timeline", "world-events"],
+          contentRating: "PG",
+          gradeLevel: "10-12",
+          subject: "History",
+          isActive: true,
+          isRestricted: true,
+          createdAt: "2024-01-10T09:15:00Z",
+          syncStatus: "pending",
+          downloadSize: 450.8,
+          installCount: 28,
+          requiredStorageSpace: 520.0
+        },
+        {
+          id: 4,
+          contentName: "Shakespeare's Complete Works",
+          contentType: "ebook",
+          category: "educational",
+          fileSize: 89.4,
+          duration: null,
+          format: "epub",
+          storageLocation: "educational/literature/shakespeare-complete-works.epub",
+          thumbnailUrl: "thumbnails/shakespeare-thumb.jpg",
+          description: "Complete collection of William Shakespeare's plays and sonnets",
+          tags: ["literature", "shakespeare", "classic", "english"],
+          contentRating: "PG-13",
+          gradeLevel: "11-12",
+          subject: "English Literature",
+          isActive: true,
+          isRestricted: false,
+          createdAt: "2024-01-08T16:45:00Z",
+          syncStatus: "synced",
+          downloadSize: 89.4,
+          readingProgress: 67,
+          bookmarks: 12
+        }
+      ];
+      
+      res.json(mediaContent);
+    } catch (error) {
+      console.error("Error fetching media content:", error);
+      res.status(500).json({ message: "Failed to fetch media content" });
+    }
+  });
+
+  app.get('/api/media/delivery/:deviceId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { deviceId } = req.params;
+      
+      const deliveryQueue = [
+        {
+          id: 1,
+          contentId: 1,
+          contentName: "Introduction to Algebra - Chapter 1",
+          deviceId,
+          deliveryMethod: "download",
+          deliveryStatus: "completed",
+          startTime: "2024-01-15T08:30:00Z",
+          completionTime: "2024-01-15T08:45:00Z",
+          bytesTransferred: 262.144,
+          transferSpeed: 12.5,
+          networkType: "wifi",
+          qualitySettings: { resolution: "1080p", bitrate: "5000kbps" },
+          progress: 100
+        },
+        {
+          id: 2,
+          contentId: 3,
+          contentName: "World History Interactive Timeline",
+          deviceId,
+          deliveryMethod: "download",
+          deliveryStatus: "in_progress",
+          startTime: "2024-01-15T14:20:00Z",
+          completionTime: null,
+          bytesTransferred: 180.5,
+          transferSpeed: 8.2,
+          networkType: "wifi",
+          qualitySettings: {},
+          progress: 40,
+          estimatedTimeRemaining: 420
+        },
+        {
+          id: 3,
+          contentId: 4,
+          contentName: "Shakespeare's Complete Works",
+          deviceId,
+          deliveryMethod: "cache",
+          deliveryStatus: "pending",
+          startTime: null,
+          completionTime: null,
+          bytesTransferred: 0,
+          transferSpeed: 0,
+          networkType: "wifi",
+          qualitySettings: {},
+          progress: 0,
+          priority: 3
+        }
+      ];
+      
+      res.json(deliveryQueue);
+    } catch (error) {
+      console.error("Error fetching delivery queue:", error);
+      res.status(500).json({ message: "Failed to fetch content delivery queue" });
+    }
+  });
+
+  app.post('/api/media/distribute', isAuthenticated, async (req: any, res) => {
+    try {
+      const { contentId, targetDevices, deliveryMethod, priority } = req.body;
+      const userId = req.user.claims.sub;
+      
+      const distributionResult = {
+        id: Date.now(),
+        contentId,
+        targetDevices,
+        deliveryMethod,
+        priority: priority || 5,
+        initiatedBy: userId,
+        status: "initiated",
+        estimatedCompletion: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+        distributionJobs: targetDevices.map((deviceId: string, index: number) => ({
+          deviceId,
+          status: "queued",
+          estimatedStart: new Date(Date.now() + index * 60 * 1000).toISOString(),
+          bandwidth: "10 Mbps"
+        }))
+      };
+      
+      console.log(`Content distribution initiated: Content ${contentId} to ${targetDevices.length} devices`);
+      
+      res.json(distributionResult);
+    } catch (error) {
+      console.error("Error initiating content distribution:", error);
+      res.status(500).json({ message: "Failed to initiate content distribution" });
+    }
+  });
+
+  app.get('/api/media/analytics', isAuthenticated, async (req: any, res) => {
+    try {
+      const mediaAnalytics = {
+        contentLibrary: {
+          totalContent: 247,
+          contentByType: {
+            video: 89,
+            document: 76,
+            ebook: 45,
+            application: 23,
+            audio: 14
+          },
+          totalSize: 15840.5, // GB
+          averageFileSize: 64.2 // MB
+        },
+        delivery: {
+          dailyDeliveries: 342,
+          successRate: 94.8,
+          averageSpeed: 15.2, // Mbps
+          totalBandwidthUsed: 2840.5, // GB this month
+          peakDeliveryHours: [9, 10, 14, 15, 20]
+        },
+        usage: {
+          activeUsers: 1247,
+          topContent: [
+            { name: "Introduction to Algebra - Chapter 1", views: 892, downloads: 456 },
+            { name: "Chemistry Lab Safety Protocols", views: 724, downloads: 689 },
+            { name: "Shakespeare's Complete Works", views: 567, downloads: 334 },
+            { name: "World History Interactive Timeline", views: 445, downloads: 289 }
+          ],
+          deviceDistribution: {
+            tablets: 45,
+            laptops: 32,
+            smartphones: 18,
+            desktops: 5
+          }
+        },
+        compliance: {
+          policiesActive: 3,
+          violationsToday: 2,
+          contentBlocked: 15,
+          quotaExceeded: 8
+        },
+        network: {
+          totalBandwidthAvailable: 1000, // Mbps
+          currentUsage: 342, // Mbps
+          peakUsage: 856, // Mbps
+          efficiency: 89.2 // percentage
+        }
+      };
+      
+      res.json(mediaAnalytics);
+    } catch (error) {
+      console.error("Error fetching media analytics:", error);
+      res.status(500).json({ message: "Failed to fetch media analytics" });
+    }
+  });
+
+  app.post('/api/media/distribute', isAuthenticated, async (req: any, res) => {
+    try {
+      const { contentId, targetDevices, deliveryMethod, priority } = req.body;
+      const userId = req.user.claims.sub;
+      
+      const distributionResult = {
+        id: Date.now(),
+        contentId,
+        targetDevices,
+        deliveryMethod,
+        priority: priority || 5,
+        initiatedBy: userId,
+        status: "initiated",
+        estimatedCompletion: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+        distributionJobs: targetDevices.map((deviceId: string, index: number) => ({
+          deviceId,
+          status: "queued",
+          estimatedStart: new Date(Date.now() + index * 60 * 1000).toISOString(),
+          bandwidth: "10 Mbps"
+        }))
+      };
+      
+      console.log(`Content distribution initiated: Content ${contentId} to ${targetDevices.length} devices`);
+      
+      res.json(distributionResult);
+    } catch (error) {
+      console.error("Error initiating content distribution:", error);
+      res.status(500).json({ message: "Failed to initiate content distribution" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

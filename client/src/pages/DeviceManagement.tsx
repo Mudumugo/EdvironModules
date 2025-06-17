@@ -34,7 +34,17 @@ import {
   TrendingUp,
   Scan,
   ShieldCheck,
-  Ban
+  Ban,
+  Download,
+  Upload,
+  Video,
+  FileText,
+  Book,
+  Package,
+  Music,
+  CloudDownload,
+  Zap,
+  Globe
 } from "lucide-react";
 import Layout from "@/components/Layout";
 
@@ -147,6 +157,17 @@ export default function DeviceManagement() {
     queryFn: () => apiRequest('GET', '/api/licenses/requests').then(res => res.json())
   });
 
+  // Fetch media content and delivery data
+  const { data: mediaContent = [], isLoading: mediaLoading } = useQuery({
+    queryKey: ['/api/media/content'],
+    queryFn: () => apiRequest('GET', '/api/media/content').then(res => res.json())
+  });
+
+  const { data: mediaAnalytics = {}, isLoading: mediaAnalyticsLoading } = useQuery({
+    queryKey: ['/api/media/analytics'],
+    queryFn: () => apiRequest('GET', '/api/media/analytics').then(res => res.json())
+  });
+
   // Remote action mutation
   const remoteActionMutation = useMutation({
     mutationFn: async (data: { deviceId: string; action: string; parameters?: any }) => {
@@ -254,6 +275,7 @@ export default function DeviceManagement() {
             <TabsTrigger value="violations">Violations</TabsTrigger>
             <TabsTrigger value="policies">Policies</TabsTrigger>
             <TabsTrigger value="licenses">License Compliance</TabsTrigger>
+            <TabsTrigger value="media">Media Delivery</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 

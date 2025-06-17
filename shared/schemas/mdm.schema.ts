@@ -225,6 +225,115 @@ export const softwareRequests = pgTable("software_requests", {
   metadata: jsonb("metadata").default({}),
 });
 
+// Media delivery and content distribution
+export const mediaContent = pgTable("media_content", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  institutionId: varchar("institution_id").references(() => institutions.id).notNull(),
+  contentName: varchar("content_name").notNull(),
+  contentType: varchar("content_type").notNull(), // video, audio, document, application, ebook
+  category: varchar("category"), // educational, administrative, entertainment, reference
+  fileSize: decimal("file_size"), // in MB
+  duration: integer("duration"), // in seconds for audio/video
+  format: varchar("format"), // mp4, pdf, epub, apk, etc
+  storageLocation: text("storage_location"), // MinIO object path
+  thumbnailUrl: text("thumbnail_url"),
+  description: text("description"),
+  tags: jsonb("tags").default([]),
+  contentRating: varchar("content_rating"), // G, PG, PG-13, R for age-appropriate filtering
+  gradeLevel: varchar("grade_level"), // K-12, college, adult
+  subject: varchar("subject"),
+  isActive: boolean("is_active").default(true),
+  isRestricted: boolean("is_restricted").default(false),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  metadata: jsonb("metadata").default({}),
+});
+
+// Content distribution policies
+export const contentDistributionPolicies = pgTable("content_distribution_policies", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  institutionId: varchar("institution_id").references(() => institutions.id).notNull(),
+  policyName: varchar("policy_name").notNull(),
+  description: text("description"),
+  targetType: varchar("target_type").notNull(), // device_type, user_role, grade_level, department
+  targetIds: jsonb("target_ids").default([]),
+  allowedContentTypes: jsonb("allowed_content_types").default([]),
+  blockedContentTypes: jsonb("blocked_content_types").default([]),
+  allowedCategories: jsonb("allowed_categories").default([]),
+  blockedCategories: jsonb("blocked_categories").default([]),
+  contentRatingRestrictions: jsonb("content_rating_restrictions").default([]),
+  downloadPermissions: boolean("download_permissions").default(true),
+  streamingPermissions: boolean("streaming_permissions").default(true),
+  offlineAccess: boolean("offline_access").default(false),
+  bandwidthLimit: integer("bandwidth_limit"), // in Mbps
+  storageQuota: decimal("storage_quota"), // in GB per device
+  isActive: boolean("is_active").default(true),
+  priority: integer("priority").default(1),
+  effectiveFrom: timestamp("effective_from"),
+  effectiveTo: timestamp("effective_to"),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Content delivery tracking
+export const contentDelivery = pgTable("content_delivery", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  contentId: integer("content_id").references(() => mediaContent.id).notNull(),
+  deviceId: varchar("device_id").references(() => devices.id).notNull(),
+  userId: varchar("user_id").references(() => users.id),
+  deliveryMethod: varchar("delivery_method").notNull(), // download, stream, cache, push
+  deliveryStatus: varchar("delivery_status").default("pending"), // pending, in_progress, completed, failed, cancelled
+  startTime: timestamp("start_time"),
+  completionTime: timestamp("completion_time"),
+  bytesTransferred: decimal("bytes_transferred"),
+  transferSpeed: decimal("transfer_speed"), // in Mbps
+  errorMessage: text("error_message"),
+  networkType: varchar("network_type"), // wifi, cellular, ethernet
+  qualitySettings: jsonb("quality_settings").default({}), // resolution, bitrate, etc
+  initiatedAt: timestamp("initiated_at").defaultNow(),
+  metadata: jsonb("metadata").default({}),
+});
+
+// Content access and usage tracking
+export const contentAccess = pgTable("content_access", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  contentId: integer("content_id").references(() => mediaContent.id).notNull(),
+  deviceId: varchar("device_id").references(() => devices.id).notNull(),
+  userId: varchar("user_id").references(() => users.id),
+  accessType: varchar("access_type").notNull(), // view, download, share, favorite
+  sessionStart: timestamp("session_start").notNull(),
+  sessionEnd: timestamp("session_end"),
+  duration: integer("duration"), // in seconds
+  progress: decimal("progress"), // percentage completed for media
+  interactions: jsonb("interactions").default([]), // play, pause, seek, bookmark
+  deviceLocation: jsonb("device_location").default({}),
+  networkQuality: varchar("network_quality"), // excellent, good, fair, poor
+  buffering: integer("buffering"), // total buffering time in seconds
+  date: timestamp("date").defaultNow(),
+});
+
+// Content synchronization status
+export const contentSync = pgTable("content_sync", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  deviceId: varchar("device_id").references(() => devices.id).notNull(),
+  contentId: integer("content_id").references(() => mediaContent.id).notNull(),
+  syncStatus: varchar("sync_status").default("pending"), // pending, syncing, synced, failed, outdated
+  localPath: text("local_path"), // path on device storage
+  localSize: decimal("local_size"), // actual size on device
+  lastSyncAttempt: timestamp("last_sync_attempt"),
+  lastSuccessfulSync: timestamp("last_successful_sync"),
+  syncPriority: integer("sync_priority").default(5), // 1-10, 10 being highest
+  retryCount: integer("retry_count").default(0),
+  errorDetails: text("error_details"),
+  checksumLocal: varchar("checksum_local"),
+  checksumRemote: varchar("checksum_remote"),
+  expiresAt: timestamp("expires_at"), // for temporary/cached content
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Export types - Device Management
 export type Device = typeof devices.$inferSelect;
 export type InsertDevice = typeof devices.$inferInsert;
@@ -253,6 +362,18 @@ export type InsertLicenseUsageTracking = typeof licenseUsageTracking.$inferInser
 export type SoftwareRequest = typeof softwareRequests.$inferSelect;
 export type InsertSoftwareRequest = typeof softwareRequests.$inferInsert;
 
+// Export types - Media Delivery
+export type MediaContent = typeof mediaContent.$inferSelect;
+export type InsertMediaContent = typeof mediaContent.$inferInsert;
+export type ContentDistributionPolicy = typeof contentDistributionPolicies.$inferSelect;
+export type InsertContentDistributionPolicy = typeof contentDistributionPolicies.$inferInsert;
+export type ContentDelivery = typeof contentDelivery.$inferSelect;
+export type InsertContentDelivery = typeof contentDelivery.$inferInsert;
+export type ContentAccess = typeof contentAccess.$inferSelect;
+export type InsertContentAccess = typeof contentAccess.$inferInsert;
+export type ContentSync = typeof contentSync.$inferSelect;
+export type InsertContentSync = typeof contentSync.$inferInsert;
+
 // Insert schemas for validation
 export const insertDeviceSchema = createInsertSchema(devices);
 export const insertDevicePolicySchema = createInsertSchema(devicePolicies);
@@ -266,3 +387,8 @@ export const insertSoftwareInstallationSchema = createInsertSchema(softwareInsta
 export const insertLicenseViolationSchema = createInsertSchema(licenseViolations);
 export const insertLicenseUsageTrackingSchema = createInsertSchema(licenseUsageTracking);
 export const insertSoftwareRequestSchema = createInsertSchema(softwareRequests);
+export const insertMediaContentSchema = createInsertSchema(mediaContent);
+export const insertContentDistributionPolicySchema = createInsertSchema(contentDistributionPolicies);
+export const insertContentDeliverySchema = createInsertSchema(contentDelivery);
+export const insertContentAccessSchema = createInsertSchema(contentAccess);
+export const insertContentSyncSchema = createInsertSchema(contentSync);
