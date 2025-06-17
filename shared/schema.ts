@@ -481,10 +481,9 @@ export const insertUserSchema = createInsertSchema(users).omit({
 });
 
 export const insertInstitutionSchema = createInsertSchema(institutions).omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
-});
+}).partial({ id: true });
 
 export const insertStudentSchema = createInsertSchema(students).omit({
   id: true,

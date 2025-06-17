@@ -194,9 +194,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createInstitution(institutionData: InsertInstitution): Promise<Institution> {
+    const institutionWithId = {
+      ...institutionData,
+      id: 'id' in institutionData && institutionData.id 
+        ? institutionData.id 
+        : `inst_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+    
     const [institution] = await db
       .insert(institutions)
-      .values(institutionData)
+      .values(institutionWithId)
       .returning();
     return institution;
   }

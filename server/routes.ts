@@ -538,7 +538,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const notificationData = insertNotificationSchema.parse(req.body);
       const notification = await storage.createNotification({
         ...notificationData,
-        institutionId: user!.institutionId || '',
+        institutionId: user?.institutionId || '',
       });
 
       res.json(notification);
