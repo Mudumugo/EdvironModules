@@ -46,8 +46,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const [location] = useLocation();
   const { user } = useAuth();
   
-  // Get navigation structure based on user role and enabled modules
-  const userRole = (user as any)?.role || 'student';
+  // Development mode - show admin navigation
+  const userRole = 'school_admin';
   const navigationItems = getNavigationStructure(userRole);
 
   return (

@@ -45,37 +45,26 @@ const componentMap: Record<string, any> = {
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Simplified routing - always show Landing for unauthenticated users
+  // Development routing - bypass authentication for testing
   return (
-    <Switch>
-      {isLoading || !isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/school" component={SchoolManagement} />
-          <Route path="/tutor-hub" component={TutorHub} />
-          <Route path="/my-locker" component={MyLocker} />
-          <Route path="/scheduling" component={Scheduling} />
-          <Route path="/family-controls" component={FamilyControls} />
-          <Route path="/library" component={DigitalLibrary} />
-          <Route path="/analytics" component={Analytics} />
-          <Route path="/settings" component={Settings} />
-        </>
-      ) : (
-        <>
-          {/* Authenticated user routes */}
-          <Layout>
-            <Route path="/" component={Dashboard} />
-            <Route path="/school" component={SchoolManagement} />
-            <Route path="/library" component={DigitalLibrary} />
-            <Route path="/analytics" component={Analytics} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/my-locker" component={MyLocker} />
-            <Route path="/users" component={UserManagement} />
-          </Layout>
-        </>
-      )}
-      <Route component={NotFound} />
-    </Switch>
+    <Layout>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/users" component={UserManagement} />
+        <Route path="/school-management" component={SchoolManagement} />
+        <Route path="/digital-library" component={DigitalLibrary} />
+        <Route path="/analytics" component={Analytics} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/my-locker" component={MyLocker} />
+        <Route path="/tutor-hub" component={TutorHub} />
+        <Route path="/teacher-dashboard" component={TeacherDashboard} />
+        <Route path="/family-controls" component={FamilyControls} />
+        <Route path="/scheduling" component={Scheduling} />
+        <Route path="/licensing" component={Licensing} />
+        <Route path="/device-management" component={DeviceManagement} />
+        <Route component={NotFound} />
+      </Switch>
+    </Layout>
   );
 }
 
