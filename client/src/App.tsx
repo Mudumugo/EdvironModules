@@ -32,6 +32,7 @@ const componentMap: Record<string, any> = {
   'device-management': DeviceManagement,
   'digital-library': DigitalLibrary,
   'tutor-hub': TutorHub,
+  'teacher-dashboard': TeacherDashboard,
   'family-controls': FamilyControls,
   'scheduling': Scheduling,
   'analytics': Analytics,
