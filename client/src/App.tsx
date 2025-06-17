@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { getEnabledModules } from "@/config/modules";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import SchoolManagement from "@/pages/SchoolManagement";
@@ -17,8 +18,22 @@ import Settings from "@/pages/Settings";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 
+// Component mapping for dynamic routing
+const componentMap: Record<string, any> = {
+  'dashboard': Dashboard,
+  'school-management': SchoolManagement,
+  'digital-library': DigitalLibrary,
+  'tutor-hub': TutorHub,
+  'family-controls': FamilyControls,
+  'scheduling': Scheduling,
+  'analytics': Analytics,
+  'licensing': Licensing,
+  'settings': Settings,
+};
+
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  const enabledModules = getEnabledModules();
 
   return (
     <Switch>
@@ -26,15 +41,13 @@ function Router() {
         <Route path="/" component={Landing} />
       ) : (
         <Layout>
-          <Route path="/" component={Dashboard} />
-          <Route path="/school-management" component={SchoolManagement} />
-          <Route path="/digital-library" component={DigitalLibrary} />
-          <Route path="/tutor-hub" component={TutorHub} />
-          <Route path="/family-controls" component={FamilyControls} />
-          <Route path="/scheduling" component={Scheduling} />
-          <Route path="/analytics" component={Analytics} />
-          <Route path="/licensing" component={Licensing} />
-          <Route path="/settings" component={Settings} />
+          {/* Dynamic routing based on enabled modules */}
+          {enabledModules.map((module) => {
+            const Component = componentMap[module.id];
+            return Component ? (
+              <Route key={module.id} path={module.route} component={Component} />
+            ) : null;
+          })}
         </Layout>
       )}
       <Route component={NotFound} />

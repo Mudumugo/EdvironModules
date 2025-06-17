@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { getNavigationStructure } from "@/config/modules";
 import { 
   BarChart3,
   BookOpen,
@@ -18,45 +19,31 @@ import {
   FlaskRound
 } from "lucide-react";
 
-const navigationItems = [
-  {
-    section: "Core Modules",
-    items: [
-      { name: "Dashboard", href: "/", icon: BarChart3 },
-      { name: "School Management", href: "/school-management", icon: School },
-      { name: "Digital Library", href: "/digital-library", icon: BookOpen },
-      { name: "Tutor Hub", href: "/tutor-hub", icon: Presentation },
-    ]
-  },
-  {
-    section: "Management",
-    items: [
-      { name: "Family Controls", href: "/family-controls", icon: Users },
-      { name: "Scheduling & Events", href: "/scheduling", icon: Calendar },
-      { name: "MDM & Surveillance", href: "/mdm-surveillance", icon: Monitor },
-    ]
-  },
-  {
-    section: "Analytics & Tools",
-    items: [
-      { name: "Analytics & Reporting", href: "/analytics", icon: BarChart3 },
-      { name: "Virtual Labs", href: "/virtual-labs", icon: FlaskRound },
-      { name: "Certification", href: "/certification", icon: IdCard },
-    ]
-  },
-  {
-    section: "System",
-    items: [
-      { name: "License & Subscriptions", href: "/licensing", icon: CreditCard },
-      { name: "Offline Sync", href: "/offline-sync", icon: CloudDownload },
-      { name: "Settings", href: "/settings", icon: Settings },
-    ]
-  }
-];
+// Icon mapping for dynamic module loading
+const iconMap: Record<string, any> = {
+  BarChart3,
+  BookOpen,
+  Calendar,
+  CreditCard,
+  GraduationCap,
+  Monitor,
+  School,
+  Settings,
+  Shield,
+  Users,
+  Presentation,
+  CloudDownload,
+  IdCard,
+  FlaskRound
+};
 
 export default function Sidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
+  
+  // Get navigation structure based on user role and enabled modules
+  const userRole = (user as any)?.role || 'student';
+  const navigationItems = getNavigationStructure(userRole);
 
   return (
     <nav className="w-64 bg-white shadow-sm border-r border-gray-200 fixed h-full overflow-y-auto z-40">
@@ -65,15 +52,15 @@ export default function Sidebar() {
         <div className="mb-6">
           <div className="bg-primary-50 text-primary-700 px-3 py-2 rounded-lg text-sm font-medium">
             <Shield className="inline mr-2 h-4 w-4" />
-            {user?.role === 'admin' ? 'Administrator Dashboard' : 
-             user?.role === 'teacher' ? 'Teacher Dashboard' :
-             user?.role === 'tutor' ? 'Tutor Dashboard' :
-             user?.role === 'parent' ? 'Parent Dashboard' :
+            {userRole === 'admin' ? 'Administrator Dashboard' : 
+             userRole === 'teacher' ? 'Teacher Dashboard' :
+             userRole === 'tutor' ? 'Tutor Dashboard' :
+             userRole === 'parent' ? 'Parent Dashboard' :
              'Student Dashboard'}
           </div>
         </div>
 
-        {/* Navigation Menu */}
+        {/* Dynamic Navigation Menu */}
         <div className="space-y-2">
           {navigationItems.map((section, sectionIndex) => (
             <div key={sectionIndex} className="mb-4">
@@ -82,11 +69,11 @@ export default function Sidebar() {
               </h3>
               
               {section.items.map((item, itemIndex) => {
-                const isActive = location === item.href;
-                const IconComponent = item.icon;
+                const isActive = location === item.route;
+                const IconComponent = iconMap[item.icon] || Settings;
                 
                 return (
-                  <Link key={itemIndex} href={item.href}>
+                  <Link key={itemIndex} href={item.route}>
                     <a className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                       isActive
                         ? 'bg-primary-50 text-primary-700 border border-primary-200'
@@ -96,6 +83,11 @@ export default function Sidebar() {
                         isActive ? 'text-primary-600' : 'text-gray-400'
                       }`} />
                       {item.name}
+                      {item.isPremium && (
+                        <Badge variant="secondary" className="ml-auto text-xs">
+                          Pro
+                        </Badge>
+                      )}
                     </a>
                   </Link>
                 );
