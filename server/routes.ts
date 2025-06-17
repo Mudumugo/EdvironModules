@@ -1,7 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { insertUserSettingsSchema } from "@shared/schema";
 import { 
   insertStudentSchema,
   insertTeacherSchema,
@@ -53,6 +55,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recent activity:", error);
       res.status(500).json({ message: "Failed to fetch recent activity" });
+    }
+  });
+
+  // Settings routes
+  app.get('/api/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const settings = await storage.getUserSettings(userId);
+      
+      res.json({
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        email: user?.email || '',
+        emailNotifications: settings?.emailNotifications ?? true,
+        smsNotifications: settings?.smsNotifications ?? false,
+        pushNotifications: settings?.pushNotifications ?? true,
+      });
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.get('/api/payment-status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const settings = await storage.getUserSettings(userId);
+      
+      res.json({
+        configured: !!(settings?.stripePublishableKey && settings?.stripeSecretKey)
+      });
+    } catch (error) {
+      console.error("Error fetching payment status:", error);
+      res.status(500).json({ message: "Failed to fetch payment status" });
+    }
+  });
+
+  app.post('/api/settings/payment', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const paymentSettingsSchema = z.object({
+        stripePublishableKey: z.string().min(1, "Publishable key is required").startsWith("pk_", "Must start with pk_"),
+        stripeSecretKey: z.string().min(1, "Secret key is required").startsWith("sk_", "Must start with sk_"),
+      });
+
+      const validatedData = paymentSettingsSchema.parse(req.body);
+      
+      await storage.upsertUserSettings({
+        userId,
+        stripePublishableKey: validatedData.stripePublishableKey,
+        stripeSecretKey: validatedData.stripeSecretKey,
+      });
+
+      res.json({ message: "Payment settings updated successfully" });
+    } catch (error) {
+      console.error("Error updating payment settings:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Failed to update payment settings" });
+    }
+  });
+
+  app.put('/api/settings/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profileSchema = z.object({
+        firstName: z.string().min(1, "First name is required"),
+        lastName: z.string().min(1, "Last name is required"),
+        email: z.string().email("Invalid email address"),
+      });
+
+      const validatedData = profileSchema.parse(req.body);
+      
+      await storage.upsertUser({
+        id: userId,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        email: validatedData.email,
+      });
+
+      res.json({ message: "Profile updated successfully" });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.put('/api/settings/notifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const notificationSchema = z.object({
+        emailNotifications: z.boolean(),
+        smsNotifications: z.boolean(),
+        pushNotifications: z.boolean(),
+      });
+
+      const validatedData = notificationSchema.parse(req.body);
+      
+      await storage.upsertUserSettings({
+        userId,
+        ...validatedData,
+      });
+
+      res.json({ message: "Notification settings updated successfully" });
+    } catch (error) {
+      console.error("Error updating notification settings:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Failed to update notification settings" });
     }
   });
 

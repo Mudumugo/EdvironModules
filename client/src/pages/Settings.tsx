@@ -68,9 +68,9 @@ export default function Settings() {
   const profileForm = useForm({
     resolver: zodResolver(profileSettingsSchema),
     defaultValues: {
-      firstName: settings?.firstName || "",
-      lastName: settings?.lastName || "",
-      email: settings?.email || "",
+      firstName: (settings as any)?.firstName || "",
+      lastName: (settings as any)?.lastName || "",
+      email: (settings as any)?.email || "",
     },
   });
 
@@ -78,9 +78,9 @@ export default function Settings() {
   const notificationForm = useForm({
     resolver: zodResolver(notificationSettingsSchema),
     defaultValues: {
-      emailNotifications: settings?.emailNotifications || true,
-      smsNotifications: settings?.smsNotifications || false,
-      pushNotifications: settings?.pushNotifications || true,
+      emailNotifications: (settings as any)?.emailNotifications ?? true,
+      smsNotifications: (settings as any)?.smsNotifications ?? false,
+      pushNotifications: (settings as any)?.pushNotifications ?? true,
     },
   });
 
@@ -220,7 +220,7 @@ export default function Settings() {
                     />
                     {profileForm.formState.errors.firstName && (
                       <p className="text-sm text-destructive">
-                        {profileForm.formState.errors.firstName.message}
+                        {profileForm.formState.errors.firstName.message as string}
                       </p>
                     )}
                   </div>
@@ -233,7 +233,7 @@ export default function Settings() {
                     />
                     {profileForm.formState.errors.lastName && (
                       <p className="text-sm text-destructive">
-                        {profileForm.formState.errors.lastName.message}
+                        {profileForm.formState.errors.lastName.message as string}
                       </p>
                     )}
                   </div>
@@ -248,7 +248,7 @@ export default function Settings() {
                   />
                   {profileForm.formState.errors.email && (
                     <p className="text-sm text-destructive">
-                      {profileForm.formState.errors.email.message}
+                      {profileForm.formState.errors.email.message as string}
                     </p>
                   )}
                 </div>
@@ -279,16 +279,16 @@ export default function Settings() {
               {/* Payment Status */}
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${paymentStatus?.configured ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                  <div className={`w-3 h-3 rounded-full ${(paymentStatus as any)?.configured ? 'bg-green-500' : 'bg-yellow-500'}`} />
                   <div>
                     <p className="font-medium">Payment Status</p>
                     <p className="text-sm text-muted-foreground">
-                      {paymentStatus?.configured ? 'Stripe is configured and ready' : 'Stripe keys not configured'}
+                      {(paymentStatus as any)?.configured ? 'Stripe is configured and ready' : 'Stripe keys not configured'}
                     </p>
                   </div>
                 </div>
-                <Badge variant={paymentStatus?.configured ? 'success' : 'secondary'}>
-                  {paymentStatus?.configured ? (
+                <Badge variant={(paymentStatus as any)?.configured ? 'default' : 'secondary'}>
+                  {(paymentStatus as any)?.configured ? (
                     <><Check className="h-3 w-3 mr-1" /> Active</>
                   ) : (
                     <><X className="h-3 w-3 mr-1" /> Inactive</>
