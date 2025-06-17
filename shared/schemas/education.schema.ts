@@ -86,29 +86,145 @@ export const subjects = pgTable("subjects", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Library Resources
+// Library Resources - Enhanced for comprehensive library management
 export const libraryResources = pgTable("library_resources", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  isbn: varchar("isbn").unique(), // For books
   title: varchar("title").notNull(),
-  type: varchar("type").notNull(), // book, video, audio, document, interactive
+  type: varchar("type").notNull(), // book, ebook, video, audio, document, interactive, journal
   author: varchar("author"),
+  publisher: varchar("publisher"),
+  publicationYear: integer("publication_year"),
+  edition: varchar("edition"),
+  language: varchar("language").default("en"),
   subject: varchar("subject"),
+  category: varchar("category"), // Fiction, Non-Fiction, Reference, Textbook, etc.
   grade: varchar("grade"),
   curriculum: varchar("curriculum"),
   difficulty: varchar("difficulty"),
   description: text("description"),
+  summary: text("summary"),
+  tableOfContents: text("table_of_contents"),
   content: text("content"),
   url: varchar("url"),
   fileUrl: varchar("file_url"),
   thumbnailUrl: varchar("thumbnail_url"),
-  duration: integer("duration"), // in minutes
+  coverImageUrl: varchar("cover_image_url"),
+  duration: integer("duration"), // in minutes for videos/audio
+  pageCount: integer("page_count"), // for books
   fileSize: integer("file_size"), // in bytes
+  format: varchar("format"), // PDF, EPUB, MP4, etc.
+  deweyDecimal: varchar("dewey_decimal"), // Library classification
+  location: varchar("location"), // Physical location in library
+  barcode: varchar("barcode").unique(), // For physical items
+  totalCopies: integer("total_copies").default(1),
+  availableCopies: integer("available_copies").default(1),
   tags: jsonb("tags").default([]),
+  keywords: jsonb("keywords").default([]),
+  learningObjectives: jsonb("learning_objectives").default([]),
+  prerequisites: jsonb("prerequisites").default([]),
   metadata: jsonb("metadata").default({}),
+  rating: decimal("rating", { precision: 3, scale: 2 }),
+  viewCount: integer("view_count").default(0),
+  downloadCount: integer("download_count").default(0),
+  isPhysical: boolean("is_physical").default(false),
+  isDigital: boolean("is_digital").default(true),
   isPublic: boolean("is_public").default(true),
   isActive: boolean("is_active").default(true),
+  isFeatured: boolean("is_featured").default(false),
+  isRestricted: boolean("is_restricted").default(false), // Requires special permissions
+  tenantId: varchar("tenant_id").notNull(),
+  addedBy: varchar("added_by").notNull(), // User who added the resource
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Library Borrowing System
+export const libraryBorrowings = pgTable("library_borrowings", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  resourceId: integer("resource_id").notNull().references(() => libraryResources.id),
+  borrowerId: varchar("borrower_id").notNull().references(() => users.id),
+  borrowedAt: timestamp("borrowed_at").defaultNow(),
+  dueDate: timestamp("due_date").notNull(),
+  returnedAt: timestamp("returned_at"),
+  renewalCount: integer("renewal_count").default(0),
+  maxRenewals: integer("max_renewals").default(2),
+  status: varchar("status").notNull().default("active"), // active, returned, overdue, lost
+  fineAmount: decimal("fine_amount", { precision: 10, scale: 2 }).default("0.00"),
+  notes: text("notes"),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Library Reservations
+export const libraryReservations = pgTable("library_reservations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  resourceId: integer("resource_id").notNull().references(() => libraryResources.id),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  reservedAt: timestamp("reserved_at").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+  notifiedAt: timestamp("notified_at"),
+  status: varchar("status").notNull().default("pending"), // pending, ready, fulfilled, expired, cancelled
+  priority: integer("priority").default(1), // Queue position
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Library Reviews and Ratings
+export const libraryReviews = pgTable("library_reviews", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  resourceId: integer("resource_id").notNull().references(() => libraryResources.id),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  rating: integer("rating").notNull(), // 1-5 stars
+  review: text("review"),
+  isRecommended: boolean("is_recommended").default(false),
+  helpfulVotes: integer("helpful_votes").default(0),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Library Categories for organization
+export const libraryCategories = pgTable("library_categories", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  parentId: integer("parent_id").references(() => libraryCategories.id),
+  slug: varchar("slug").notNull().unique(),
+  icon: varchar("icon"),
+  color: varchar("color"),
+  displayOrder: integer("display_order").default(0),
+  isActive: boolean("is_active").default(true),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Reading Lists and Collections
+export const libraryCollections = pgTable("library_collections", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  type: varchar("type").notNull(), // reading_list, curriculum, recommended, featured
+  createdBy: varchar("created_by").notNull().references(() => users.id),
+  isPublic: boolean("is_public").default(true),
+  isActive: boolean("is_active").default(true),
+  tags: jsonb("tags").default([]),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Collection Items (many-to-many relationship)
+export const libraryCollectionItems = pgTable("library_collection_items", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  collectionId: integer("collection_id").notNull().references(() => libraryCollections.id),
+  resourceId: integer("resource_id").notNull().references(() => libraryResources.id),
+  order: integer("order").default(0),
+  notes: text("notes"),
+  addedAt: timestamp("added_at").defaultNow(),
 });
 
 // Schedules
@@ -157,6 +273,18 @@ export type InsertSubject = typeof subjects.$inferInsert;
 export type Subject = typeof subjects.$inferSelect;
 export type InsertLibraryResource = typeof libraryResources.$inferInsert;
 export type LibraryResource = typeof libraryResources.$inferSelect;
+export type InsertLibraryBorrowing = typeof libraryBorrowings.$inferInsert;
+export type LibraryBorrowing = typeof libraryBorrowings.$inferSelect;
+export type InsertLibraryReservation = typeof libraryReservations.$inferInsert;
+export type LibraryReservation = typeof libraryReservations.$inferSelect;
+export type InsertLibraryReview = typeof libraryReviews.$inferInsert;
+export type LibraryReview = typeof libraryReviews.$inferSelect;
+export type InsertLibraryCategory = typeof libraryCategories.$inferInsert;
+export type LibraryCategory = typeof libraryCategories.$inferSelect;
+export type InsertLibraryCollection = typeof libraryCollections.$inferInsert;
+export type LibraryCollection = typeof libraryCollections.$inferSelect;
+export type InsertLibraryCollectionItem = typeof libraryCollectionItems.$inferInsert;
+export type LibraryCollectionItem = typeof libraryCollectionItems.$inferSelect;
 export type InsertSchedule = typeof schedules.$inferInsert;
 export type Schedule = typeof schedules.$inferSelect;
 export type InsertAttendance = typeof attendance.$inferInsert;
@@ -168,5 +296,10 @@ export const insertTeacherSchema = createInsertSchema(teachers);
 export const insertClassSchema = createInsertSchema(classes);
 export const insertSubjectSchema = createInsertSchema(subjects);
 export const insertLibraryResourceSchema = createInsertSchema(libraryResources);
+export const insertLibraryBorrowingSchema = createInsertSchema(libraryBorrowings);
+export const insertLibraryReservationSchema = createInsertSchema(libraryReservations);
+export const insertLibraryReviewSchema = createInsertSchema(libraryReviews);
+export const insertLibraryCategorySchema = createInsertSchema(libraryCategories);
+export const insertLibraryCollectionSchema = createInsertSchema(libraryCollections);
 export const insertScheduleSchema = createInsertSchema(schedules);
 export const insertAttendanceSchema = createInsertSchema(attendance);
