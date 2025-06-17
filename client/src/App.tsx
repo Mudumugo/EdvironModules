@@ -38,79 +38,23 @@ const componentMap: Record<string, any> = {
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
-  const [currentTenant, setCurrentTenant] = useState<string | null>(null);
-  const [tenantConfig, setTenantConfig] = useState<any>(null);
 
-  // Initialize tenant detection
-  useEffect(() => {
-    const tenant = getCurrentTenant();
-    setCurrentTenant(tenant);
-    if (tenant) {
-      setTenantConfig(getTenantConfig(tenant));
-    }
-  }, []);
-
-  // Show tenant selector if no valid tenant is detected (but allow fallback to demo)
-  if (!currentTenant) {
-    // Fallback to demo tenant for development
-    setCurrentTenant('demo');
-    setTenantConfig(getTenantConfig('demo'));
-  }
-  
-  if (!tenantConfig) {
-    return <TenantSelector />;
-  }
-
-  // Determine academic level for age-appropriate interface
-  const getAcademicLevel = () => {
-    if (!user) return 'junior';
-    
-    if (user.role === 'student') {
-      const grade = 7; // Would be dynamic from user profile
-      if (grade <= 3) return 'primary';
-      if (grade <= 8) return 'junior';
-      if (grade <= 12) return 'senior';
-      return 'college';
-    }
-    
-    if (user.role === 'teacher') return 'senior';
-    if (user.role === 'admin') return 'college';
-    return 'junior';
-  };
-
-  const academicLevel = getAcademicLevel();
-  const useStandardLayout = !['primary', 'junior'].includes(academicLevel);
-
-  // Filter modules based on tenant features
-  const enabledModules = getEnabledModules().filter(module => 
-    tenantConfig.features.includes(module.id)
-  );
-
+  // Simplified routing - always show Landing for unauthenticated users
   return (
     <Switch>
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />
       ) : (
         <>
-          {/* Age-appropriate routing */}
-          {useStandardLayout ? (
-            <Layout>
-              {enabledModules.map((module) => {
-                const Component = componentMap[module.id];
-                return Component ? (
-                  <Route key={module.id} path={module.route} component={Component} />
-                ) : null;
-              })}
-            </Layout>
-          ) : (
-            // Simplified interface for primary and junior users
-            enabledModules.map((module) => {
-              const Component = componentMap[module.id];
-              return Component ? (
-                <Route key={module.id} path={module.route} component={Component} />
-              ) : null;
-            })
-          )}
+          {/* Authenticated user routes */}
+          <Layout>
+            <Route path="/" component={Dashboard} />
+            <Route path="/school" component={SchoolManagement} />
+            <Route path="/library" component={DigitalLibrary} />
+            <Route path="/analytics" component={Analytics} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/my-locker" component={MyLocker} />
+          </Layout>
         </>
       )}
       <Route component={NotFound} />
