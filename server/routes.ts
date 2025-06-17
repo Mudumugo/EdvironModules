@@ -4,6 +4,8 @@ import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { extractTenant, requireTenantFeature, type TenantRequest } from "./tenantMiddleware";
+import { fileStorage, cache, initializeBuckets } from "./minioClient";
+import { upload, UploadHandlers, handleUploadError } from "./uploadMiddleware";
 import { insertUserSettingsSchema } from "@shared/schema";
 import { 
   insertStudentSchema,
@@ -17,6 +19,13 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize MinIO buckets on startup
+  try {
+    await initializeBuckets();
+  } catch (error) {
+    console.error('Failed to initialize MinIO buckets:', error);
+  }
+
   // Multi-tenant middleware - extract tenant from subdomain
   app.use(extractTenant);
   
