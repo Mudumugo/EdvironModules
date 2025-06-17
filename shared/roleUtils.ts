@@ -150,31 +150,31 @@ export function hasAllPermissions(userRole: UserRole, userPermissions: Permissio
 
 export function isStudent(role: UserRole): boolean {
   return [
-    USER_ROLES.STUDENT_ELEMENTARY,
-    USER_ROLES.STUDENT_MIDDLE,
-    USER_ROLES.STUDENT_HIGH,
-    USER_ROLES.STUDENT_COLLEGE,
+    "student_elementary" as UserRole,
+    "student_middle" as UserRole,
+    "student_high" as UserRole,
+    "student_college" as UserRole,
   ].includes(role);
 }
 
 export function isTeacher(role: UserRole): boolean {
-  return role === USER_ROLES.TEACHER;
+  return role === "teacher";
 }
 
 export function isAdmin(role: UserRole): boolean {
   return [
-    USER_ROLES.PRINCIPAL,
-    USER_ROLES.VICE_PRINCIPAL,
-    USER_ROLES.SCHOOL_ADMIN,
+    "principal" as UserRole,
+    "vice_principal" as UserRole,
+    "school_admin" as UserRole,
   ].includes(role);
 }
 
 export function isStaff(role: UserRole): boolean {
   return [
-    USER_ROLES.SCHOOL_IT_STAFF,
-    USER_ROLES.SCHOOL_SECURITY,
-    USER_ROLES.COUNSELOR,
-    USER_ROLES.LIBRARIAN,
+    "school_it_staff" as UserRole,
+    "school_security" as UserRole,
+    "counselor" as UserRole,
+    "librarian" as UserRole,
   ].includes(role);
 }
 

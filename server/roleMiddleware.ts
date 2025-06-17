@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { hasPermission, hasAnyPermission, type Permission, type UserRole } from '@shared/roleUtils';
+import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
+import { type Permission, type UserRole } from '@shared/schema';
 
 interface AuthenticatedRequest extends Request {
   user?: {

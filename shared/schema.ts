@@ -136,7 +136,6 @@ export const PERMISSIONS = {
   MANAGE_LICENSING: "manage_licensing",
   
   // IT Staff permissions
-  MANAGE_DEVICES: "manage_devices",
   CONFIGURE_SYSTEMS: "configure_systems",
   MANAGE_NETWORK: "manage_network",
   INSTALL_SOFTWARE: "install_software",

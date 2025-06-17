@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useRole } from '@/hooks/useRole';
-import { type Permission, type UserRole } from '@shared/roleUtils';
+import { type Permission, type UserRole } from '@shared/schema';
 
 interface RoleGuardProps {
   children: ReactNode;

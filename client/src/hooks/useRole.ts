@@ -6,10 +6,9 @@ import {
   isStudent, 
   isTeacher, 
   isAdmin, 
-  isStaff,
-  type Permission,
-  type UserRole 
+  isStaff
 } from "@shared/roleUtils";
+import { type Permission, type UserRole } from "@shared/schema";
 
 export function useRole() {
   const { user } = useAuth();
@@ -17,14 +16,14 @@ export function useRole() {
   return {
     user,
     role: user?.role as UserRole,
-    permissions: user?.permissions || [],
+    permissions: (user as any)?.permissions || [],
     
     // Permission checks
     hasPermission: (permission: Permission) => 
-      user ? hasPermission(user.role as UserRole, user.permissions || [], permission) : false,
+      user ? hasPermission(user.role as UserRole, (user as any).permissions || [], permission) : false,
     
     hasAnyPermission: (permissions: Permission[]) =>
-      user ? hasAnyPermission(user.role as UserRole, user.permissions || [], permissions) : false,
+      user ? hasAnyPermission(user.role as UserRole, (user as any).permissions || [], permissions) : false,
     
     // Role type checks
     isStudent: () => user ? isStudent(user.role as UserRole) : false,
