@@ -15,13 +15,13 @@ interface LibraryResource {
   difficulty: string;
   duration: number;
   tags: string[];
-  view_count: number;
-  rating: number;
-  thumbnail_url?: string;
-  file_url?: string;
-  access_tier: string;
-  is_published: boolean;
-  author_id: string;
+  viewCount: number;
+  rating: string;
+  thumbnailUrl?: string;
+  fileUrl?: string;
+  accessTier: string;
+  isPublished: boolean;
+  authorId: string;
   language: string;
 }
 
@@ -32,7 +32,7 @@ interface LibraryResourceCardProps {
   viewMode?: "grid" | "list";
 }
 
-export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
+const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
   resource,
   onPreview,
   onDownload,
@@ -121,7 +121,7 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
                     {resource.title}
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">
-                    by {resource.author_id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    by {resource.authorId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </p>
                   <p className="text-sm text-gray-700 mb-3 line-clamp-2">
                     {resource.description}
@@ -146,11 +146,11 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
                     </span>
                     <span className="flex items-center gap-1">
                       <Eye className="h-3 w-3" />
-                      {resource.view_count} views
+                      {resource.viewCount} views
                     </span>
                     <span className="flex items-center gap-1">
                       <Star className="h-3 w-3" />
-                      {resource.rating}/5
+                      {parseFloat(resource.rating).toFixed(1)}/5
                     </span>
                   </div>
                 </div>
@@ -271,3 +271,5 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
     </Card>
   );
 };
+
+export default LibraryResourceCard;

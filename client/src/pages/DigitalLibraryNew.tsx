@@ -8,7 +8,7 @@ import { BookOpen, FileText, Search, Filter, Grid, List, Download, Eye, Star, Cl
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { LibraryResourceCard } from "@/components/library/LibraryResourceCard";
+import LibraryResourceCard from "@/components/library/LibraryResourceCard";
 
 interface LibraryResource {
   id: number;
@@ -20,13 +20,13 @@ interface LibraryResource {
   difficulty: string;
   duration: number;
   tags: string[];
-  view_count: number;
-  rating: number;
-  thumbnail_url?: string;
-  file_url?: string;
-  access_tier: string;
-  is_published: boolean;
-  author_id: string;
+  viewCount: number;
+  rating: string;
+  thumbnailUrl?: string;
+  fileUrl?: string;
+  accessTier: string;
+  isPublished: boolean;
+  authorId: string;
   language: string;
 }
 
@@ -171,7 +171,7 @@ const DigitalLibraryNew = () => {
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" 
               : "space-y-4"
           }`}>
-            {(resources as LibraryResource[]).map((resource: LibraryResource) => (
+            {resources.map((resource: LibraryResource) => (
               <LibraryResourceCard 
                 key={resource.id} 
                 resource={resource} 
