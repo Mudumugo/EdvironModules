@@ -89,14 +89,14 @@ export const MODULE_REGISTRY: ModuleConfig[] = [
     permissions: ['*']
   },
   {
-    id: 'mdm-surveillance',
-    name: 'MDM & Surveillance',
-    description: 'Device management and monitoring',
-    enabled: false, // Disabled by default - premium feature
-    route: '/mdm-surveillance',
-    icon: 'Monitor',
+    id: 'device-management',
+    name: 'Device Management',
+    description: 'Mobile device management and monitoring',
+    enabled: true, // Enable MDM capabilities
+    route: '/device-management',
+    icon: 'Smartphone',
     category: 'management',
-    permissions: ['admin'],
+    permissions: ['admin', 'teacher'],
     isPremium: true
   },
 

@@ -18,6 +18,7 @@ import Analytics from "@/pages/Analytics";
 import Licensing from "@/pages/Licensing";
 import Settings from "@/pages/Settings";
 import MyLocker from "@/pages/MyLocker";
+import DeviceManagement from "@/pages/DeviceManagement";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import TenantSelector from "@/components/TenantSelector";
@@ -27,6 +28,7 @@ const componentMap: Record<string, any> = {
   'dashboard': Dashboard,
   'my-locker': MyLocker,
   'school-management': SchoolManagement,
+  'device-management': DeviceManagement,
   'digital-library': DigitalLibrary,
   'tutor-hub': TutorHub,
   'family-controls': FamilyControls,
