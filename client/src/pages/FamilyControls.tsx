@@ -1,322 +1,67 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { format, parseISO, subDays, subWeeks } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { 
   Shield,
   Users,
   Clock,
-  Eye,
-  EyeOff,
-  Calendar,
-  BookOpen,
-  Award,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Timer,
-  User,
-  Plus,
-  Settings,
-  Bell,
-  Lock,
-  Unlock,
-  Monitor,
-  Smartphone,
-  Tablet,
-  Globe,
-  Home,
-  School,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-  PieChart,
   Activity,
   Target,
-  Star,
-  MessageSquare,
-  FileText,
-  Video,
-  Headphones,
-  Image as ImageIcon,
-  Download
+  Lock,
+  Plus,
+  BarChart3,
+  PieChart,
+  TrendingUp
 } from "lucide-react";
 
-// Form schemas
-const childSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  grade: z.string().min(1, "Grade is required"),
-  age: z.string().min(1, "Age is required"),
-  school: z.string().optional(),
-});
-
-const restrictionSchema = z.object({
-  childId: z.string().min(1, "Child is required"),
-  type: z.string().min(1, "Restriction type is required"),
-  value: z.string().min(1, "Value is required"),
-  description: z.string().optional(),
-  isActive: z.boolean().default(true),
-});
+// Hooks and components
+import { useFamilyControls, childSchema, restrictionSchema } from "@/hooks/useFamilyControls";
+import { useFormDialog } from "@/hooks/useFormDialog";
+import { ChildProfileCard } from "@/components/family-controls/ChildProfileCard";
+import { RestrictionCard } from "@/components/family-controls/RestrictionCard";
+import { ActivityLogItem } from "@/components/family-controls/ActivityLogItem";
 
 export default function FamilyControls() {
-  const { toast } = useToast();
-  
-  // Dialog states
-  const [isChildDialogOpen, setIsChildDialogOpen] = useState(false);
-  const [isRestrictionDialogOpen, setIsRestrictionDialogOpen] = useState(false);
-  
+  const { 
+    children, 
+    restrictions, 
+    activityLogs, 
+    addChild, 
+    addRestriction, 
+    updateRestriction, 
+    removeRestriction 
+  } = useFamilyControls();
+
   // View states
   const [selectedChild, setSelectedChild] = useState<string>("all");
   const [selectedTimeframe, setSelectedTimeframe] = useState("week");
 
-  // Sample data for demonstration
-  const [children, setChildren] = useState([
-    {
-      id: "1",
-      firstName: "Emma",
-      lastName: "Johnson",
-      grade: "8th Grade",
-      age: "13",
-      school: "Lincoln Middle School",
-      avatar: "👧",
-      status: "online",
-      totalScreenTime: 4.5,
-      weeklyGoal: 20,
-      lastActive: "2024-01-15T14:30:00Z",
-      weeklyProgress: {
-        math: 85,
-        science: 92,
-        english: 78,
-        history: 88
-      }
-    },
-    {
-      id: "2",
-      firstName: "Alex",
-      lastName: "Johnson",
-      grade: "5th Grade",
-      age: "10",
-      school: "Sunshine Elementary",
-      avatar: "👦",
-      status: "offline",
-      totalScreenTime: 2.8,
-      weeklyGoal: 15,
-      lastActive: "2024-01-15T16:45:00Z",
-      weeklyProgress: {
-        math: 90,
-        science: 85,
-        reading: 95,
-        spelling: 80
-      }
-    }
-  ]);
-
-  const [restrictions, setRestrictions] = useState([
-    {
-      id: "1",
-      childId: "1",
-      type: "screen-time",
-      value: "3",
-      description: "Maximum 3 hours of screen time per day",
-      isActive: true,
-      category: "Time Management"
-    },
-    {
-      id: "2",
-      childId: "1",
-      type: "content-filter",
-      value: "educational-only",
-      description: "Access only educational content during study hours",
-      isActive: true,
-      category: "Content Control"
-    },
-    {
-      id: "3",
-      childId: "2",
-      type: "bedtime",
-      value: "20:00",
-      description: "No device access after 8 PM on school days",
-      isActive: true,
-      category: "Sleep Schedule"
-    },
-    {
-      id: "4",
-      childId: "2",
-      type: "app-restriction",
-      value: "games",
-      description: "Gaming apps restricted during homework hours",
-      isActive: true,
-      category: "App Control"
-    }
-  ]);
-
-  const [activityLogs, setActivityLogs] = useState([
-    {
-      id: "1",
-      childId: "1",
-      activity: "Completed Math Assignment",
-      type: "achievement",
-      timestamp: "2024-01-15T10:30:00Z",
-      duration: 45,
-      subject: "Mathematics",
-      score: 92,
-      device: "tablet"
-    },
-    {
-      id: "2",
-      childId: "1",
-      activity: "Watched Science Video",
-      type: "learning",
-      timestamp: "2024-01-15T14:15:00Z",
-      duration: 25,
-      subject: "Science",
-      score: null,
-      device: "computer"
-    },
-    {
-      id: "3",
-      childId: "2",
-      activity: "Reading Session",
-      type: "learning",
-      timestamp: "2024-01-15T16:00:00Z",
-      duration: 30,
-      subject: "English",
-      score: null,
-      device: "tablet"
-    },
-    {
-      id: "4",
-      childId: "1",
-      activity: "Screen Time Limit Reached",
-      type: "restriction",
-      timestamp: "2024-01-15T17:00:00Z",
-      duration: 0,
-      subject: "System",
-      score: null,
-      device: "all"
-    }
-  ]);
-
-  // Forms
-  const childForm = useForm({
-    resolver: zodResolver(childSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      grade: "",
-      age: "",
-      school: "",
-    },
+  // Form dialogs
+  const childDialog = useFormDialog(childSchema, addChild, {
+    firstName: "",
+    lastName: "",
+    grade: "",
+    age: "",
+    school: "",
   });
 
-  const restrictionForm = useForm({
-    resolver: zodResolver(restrictionSchema),
-    defaultValues: {
-      childId: "",
-      type: "screen-time",
-      value: "",
-      description: "",
-      isActive: true,
-    },
+  const restrictionDialog = useFormDialog(restrictionSchema, addRestriction, {
+    childId: "",
+    type: "screen-time",
+    value: "",
+    description: "",
+    isActive: true,
   });
-
-  // Handle form submissions
-  const handleCreateChild = (data: z.infer<typeof childSchema>) => {
-    const newChild = {
-      ...data,
-      id: String(children.length + 1),
-      school: data.school || "",
-      avatar: data.firstName.toLowerCase().includes('a') ? "👧" : "👦",
-      status: "offline" as const,
-      totalScreenTime: 0,
-      weeklyGoal: 15,
-      lastActive: new Date().toISOString(),
-      weeklyProgress: {
-        math: 0,
-        science: 0,
-        english: 0,
-        reading: 0,
-        spelling: 0,
-        history: 0
-      }
-    };
-    setChildren([...children, newChild]);
-    setIsChildDialogOpen(false);
-    childForm.reset();
-    toast({
-      title: "Success",
-      description: "Child profile created successfully",
-    });
-  };
-
-  const handleCreateRestriction = (data: z.infer<typeof restrictionSchema>) => {
-    const newRestriction = {
-      ...data,
-      id: String(restrictions.length + 1),
-      description: data.description || "",
-      category: getRestrictionCategory(data.type)
-    };
-    setRestrictions([...restrictions, newRestriction]);
-    setIsRestrictionDialogOpen(false);
-    restrictionForm.reset();
-    toast({
-      title: "Success",
-      description: "Restriction applied successfully",
-    });
-  };
-
-  // Helper functions
-  const getRestrictionCategory = (type: string) => {
-    switch (type) {
-      case "screen-time": return "Time Management";
-      case "content-filter": return "Content Control";
-      case "bedtime": return "Sleep Schedule";
-      case "app-restriction": return "App Control";
-      case "website-block": return "Web Control";
-      default: return "General";
-    }
-  };
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case "achievement": return <Award className="h-4 w-4 text-yellow-600" />;
-      case "learning": return <BookOpen className="h-4 w-4 text-blue-600" />;
-      case "restriction": return <AlertTriangle className="h-4 w-4 text-red-600" />;
-      default: return <Activity className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const getDeviceIcon = (device: string) => {
-    switch (device) {
-      case "computer": return <Monitor className="h-4 w-4" />;
-      case "tablet": return <Tablet className="h-4 w-4" />;
-      case "phone": return <Smartphone className="h-4 w-4" />;
-      default: return <Globe className="h-4 w-4" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "online": return "bg-green-100 text-green-800";
-      case "offline": return "bg-gray-100 text-gray-800";
-      default: return "bg-gray-100 text-gray-800";
-    }
-  };
 
   // Filter functions
   const filteredChildren = selectedChild === "all" ? children : children.filter(child => child.id === selectedChild);
@@ -330,6 +75,10 @@ export default function FamilyControls() {
     format(parseISO(log.timestamp), "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
   ).length;
   const averageScreenTime = children.reduce((acc, child) => acc + child.totalScreenTime, 0) / children.length;
+
+  const handleRestrictionToggle = (id: string, isActive: boolean) => {
+    updateRestriction(id, { isActive });
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -345,7 +94,7 @@ export default function FamilyControls() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Dialog open={isRestrictionDialogOpen} onOpenChange={setIsRestrictionDialogOpen}>
+          <Dialog open={restrictionDialog.isOpen} onOpenChange={(open) => open ? restrictionDialog.openDialog() : restrictionDialog.closeDialog()}>
             <DialogTrigger asChild>
               <Button variant="outline">
                 <Lock className="h-4 w-4 mr-2" />
@@ -356,10 +105,10 @@ export default function FamilyControls() {
               <DialogHeader>
                 <DialogTitle>Create New Restriction</DialogTitle>
               </DialogHeader>
-              <Form {...restrictionForm}>
-                <form onSubmit={restrictionForm.handleSubmit(handleCreateRestriction)} className="space-y-4">
+              <Form {...restrictionDialog.form}>
+                <form onSubmit={restrictionDialog.handleSubmit} className="space-y-4">
                   <FormField
-                    control={restrictionForm.control}
+                    control={restrictionDialog.form.control}
                     name="childId"
                     render={({ field }) => (
                       <FormItem>
@@ -384,7 +133,7 @@ export default function FamilyControls() {
                   />
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
-                      control={restrictionForm.control}
+                      control={restrictionDialog.form.control}
                       name="type"
                       render={({ field }) => (
                         <FormItem>
@@ -408,7 +157,7 @@ export default function FamilyControls() {
                       )}
                     />
                     <FormField
-                      control={restrictionForm.control}
+                      control={restrictionDialog.form.control}
                       name="value"
                       render={({ field }) => (
                         <FormItem>
@@ -422,7 +171,7 @@ export default function FamilyControls() {
                     />
                   </div>
                   <FormField
-                    control={restrictionForm.control}
+                    control={restrictionDialog.form.control}
                     name="description"
                     render={({ field }) => (
                       <FormItem>
@@ -435,7 +184,7 @@ export default function FamilyControls() {
                     )}
                   />
                   <FormField
-                    control={restrictionForm.control}
+                    control={restrictionDialog.form.control}
                     name="isActive"
                     render={({ field }) => (
                       <FormItem className="flex items-center space-x-2">
@@ -455,7 +204,7 @@ export default function FamilyControls() {
             </DialogContent>
           </Dialog>
 
-          <Dialog open={isChildDialogOpen} onOpenChange={setIsChildDialogOpen}>
+          <Dialog open={childDialog.isOpen} onOpenChange={(open) => open ? childDialog.openDialog() : childDialog.closeDialog()}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -466,11 +215,11 @@ export default function FamilyControls() {
               <DialogHeader>
                 <DialogTitle>Add Child Profile</DialogTitle>
               </DialogHeader>
-              <Form {...childForm}>
-                <form onSubmit={childForm.handleSubmit(handleCreateChild)} className="space-y-4">
+              <Form {...childDialog.form}>
+                <form onSubmit={childDialog.handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
-                      control={childForm.control}
+                      control={childDialog.form.control}
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
@@ -483,7 +232,7 @@ export default function FamilyControls() {
                       )}
                     />
                     <FormField
-                      control={childForm.control}
+                      control={childDialog.form.control}
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
@@ -498,7 +247,7 @@ export default function FamilyControls() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
-                      control={childForm.control}
+                      control={childDialog.form.control}
                       name="grade"
                       render={({ field }) => (
                         <FormItem>
@@ -530,7 +279,7 @@ export default function FamilyControls() {
                       )}
                     />
                     <FormField
-                      control={childForm.control}
+                      control={childDialog.form.control}
                       name="age"
                       render={({ field }) => (
                         <FormItem>
@@ -544,7 +293,7 @@ export default function FamilyControls() {
                     />
                   </div>
                   <FormField
-                    control={childForm.control}
+                    control={childDialog.form.control}
                     name="school"
                     render={({ field }) => (
                       <FormItem>
@@ -610,7 +359,7 @@ export default function FamilyControls() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Timer className="h-4 w-4" />
+              <Clock className="h-4 w-4" />
               Avg Screen Time
             </CardTitle>
           </CardHeader>
@@ -673,61 +422,12 @@ export default function FamilyControls() {
         <TabsContent value="children" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredChildren.map((child) => (
-              <Card key={child.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl">{child.avatar}</div>
-                      <div>
-                        <CardTitle className="text-lg">{child.firstName} {child.lastName}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{child.grade} • {child.school}</p>
-                      </div>
-                    </div>
-                    <Badge className={getStatusColor(child.status)}>
-                      {child.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Weekly Screen Time</span>
-                      <span>{child.totalScreenTime}h / {child.weeklyGoal}h</span>
-                    </div>
-                    <Progress 
-                      value={(child.totalScreenTime / child.weeklyGoal) * 100} 
-                      className="h-2"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Subject Progress</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(child.weeklyProgress).map(([subject, progress]) => (
-                        <div key={subject} className="space-y-1">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="capitalize">{subject}</span>
-                            <span>{progress}%</span>
-                          </div>
-                          <Progress value={progress} className="h-1" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
-                    <span>Last active: {format(parseISO(child.lastActive), "MMM d, HH:mm")}</span>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Settings className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ChildProfileCard 
+                key={child.id} 
+                child={child}
+                onViewDetails={(childId) => console.log("View details for:", childId)}
+                onSettings={(childId) => console.log("Settings for:", childId)}
+              />
             ))}
           </div>
         </TabsContent>
@@ -737,44 +437,13 @@ export default function FamilyControls() {
             {filteredRestrictions.map((restriction) => {
               const child = children.find(c => c.id === restriction.childId);
               return (
-                <Card key={restriction.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Lock className="h-5 w-5" />
-                        <div>
-                          <CardTitle className="text-lg">{restriction.category}</CardTitle>
-                          <p className="text-sm text-muted-foreground">
-                            For {child?.firstName} {child?.lastName}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={restriction.isActive ? "default" : "secondary"}>
-                          {restriction.isActive ? "Active" : "Inactive"}
-                        </Badge>
-                        <Switch checked={restriction.isActive} />
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Type:</span>
-                        <span className="text-sm capitalize">{restriction.type.replace('-', ' ')}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Value:</span>
-                        <span className="text-sm">{restriction.value}</span>
-                      </div>
-                      {restriction.description && (
-                        <div className="pt-2 border-t">
-                          <p className="text-sm text-muted-foreground">{restriction.description}</p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <RestrictionCard 
+                  key={restriction.id} 
+                  restriction={restriction}
+                  child={child}
+                  onToggle={handleRestrictionToggle}
+                  onDelete={removeRestriction}
+                />
               );
             })}
           </div>
@@ -785,40 +454,11 @@ export default function FamilyControls() {
             {filteredActivities.map((activity) => {
               const child = children.find(c => c.id === activity.childId);
               return (
-                <Card key={activity.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {getActivityIcon(activity.type)}
-                        <div>
-                          <div className="font-medium">{activity.activity}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {child?.firstName} {child?.lastName} • {activity.subject}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        {activity.score && (
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3" />
-                            <span>{activity.score}%</span>
-                          </div>
-                        )}
-                        {activity.duration > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Timer className="h-3 w-3" />
-                            <span>{activity.duration}m</span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          {getDeviceIcon(activity.device)}
-                          <span className="capitalize">{activity.device}</span>
-                        </div>
-                        <span>{format(parseISO(activity.timestamp), "MMM d, HH:mm")}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ActivityLogItem 
+                  key={activity.id} 
+                  activity={activity}
+                  child={child}
+                />
               );
             })}
           </div>
