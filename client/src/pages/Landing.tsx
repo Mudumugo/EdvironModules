@@ -43,6 +43,13 @@ export default function Landing() {
               >
                 School Management
               </Button>
+              <Button 
+                onClick={() => window.location.href = "/tutor-hub"} 
+                variant="outline"
+                className="border-accent-600 text-accent-600 hover:bg-accent-50"
+              >
+                Tutor Hub
+              </Button>
               <Button onClick={handleLogin} className="bg-primary-600 hover:bg-primary-700">
                 Sign In
               </Button>
