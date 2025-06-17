@@ -206,14 +206,14 @@ export default function AttendanceManager() {
                   })}
                 </div>
 
-                {attendanceData?.length > 0 && (
+                {Array.isArray(attendanceData?.students) && attendanceData.students.length > 0 && (
                   <div className="mt-6 p-4 bg-muted rounded-lg">
                     <h4 className="font-medium mb-2">Attendance Summary</h4>
                     <div className="grid grid-cols-4 gap-4 text-sm">
                       <div>
                         <div className="text-muted-foreground">Present</div>
                         <div className="font-medium text-green-600">
-                          {attendanceData?.filter((s: any) => s.attendanceStatus === 'present').length || 0}
+                          {Array.isArray(attendanceData?.students) ? attendanceData.students.filter((s: any) => s.attendanceStatus === 'present').length : 0}
                         </div>
                       </div>
                       <div>

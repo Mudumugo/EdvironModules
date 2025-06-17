@@ -17,7 +17,7 @@ export default function LiveSessionPanel() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: liveSessions, isLoading: sessionsLoading } = useQuery({
+  const { data: liveSessions = [], isLoading: sessionsLoading } = useQuery({
     queryKey: ['/api/teacher/live-sessions']
   });
 
@@ -152,7 +152,7 @@ export default function LiveSessionPanel() {
                         <SelectValue placeholder="Select class" />
                       </SelectTrigger>
                       <SelectContent>
-                        {classes?.map((cls: any) => (
+                        {Array.isArray(classes) && classes.map((cls: any) => (
                           <SelectItem key={cls.id} value={cls.id}>
                             {cls.name} - {cls.grade}
                           </SelectItem>

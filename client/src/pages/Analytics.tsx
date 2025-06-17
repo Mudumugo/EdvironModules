@@ -135,7 +135,7 @@ export default function Analytics() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="text-center p-4 border rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">
-                    {xapiStatements?.length || 0}
+                    {Array.isArray(xapiStatements) ? xapiStatements.length : 0}
                   </div>
                   <div className="text-sm text-muted-foreground">Total Interactions</div>
                 </div>
@@ -152,7 +152,7 @@ export default function Analytics() {
               <div className="space-y-4">
                 <h3 className="font-semibold">Recent Learning Interactions</h3>
                 <div className="space-y-2">
-                  {xapiStatements?.slice(0, 10).map((statement: any, index: number) => (
+                  {Array.isArray(xapiStatements) && xapiStatements.slice(0, 10).map((statement: any, index: number) => (
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <div className="font-medium">
