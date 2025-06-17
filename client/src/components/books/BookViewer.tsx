@@ -1,29 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { 
   ChevronLeft, 
   ChevronRight, 
-  RotateCcw, 
-  RotateCw, 
   ZoomIn, 
   ZoomOut, 
-  Maximize2, 
-  Minimize2,
-  BookOpen,
-  Eye,
-  Download,
-  Share2,
-  Bookmark,
-  Settings,
-  Volume2,
-  VolumeX,
-  Play,
-  Pause,
+  Bookmark, 
   X,
-  List
+  List,
+  BookOpen
 } from 'lucide-react';
 
 interface BookViewerProps {
@@ -47,13 +32,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isReading, setIsReading] = useState(false);
-  const [readingSpeed, setReadingSpeed] = useState(150); // words per minute
   const [bookmarkPages, setBookmarkPages] = useState<number[]>([]);
-  const [viewMode, setViewMode] = useState<'single' | 'double'>('single');
-  const [isAutoPlay, setIsAutoPlay] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,75 +86,37 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   // Navigation functions
   const goToNextPage = () => {
     if (currentPage < bookData.totalPages) {
-      setCurrentPage(currentPage + 1);
+      setCurrentPage(prev => prev + 1);
     }
   };
 
   const goToPreviousPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      setCurrentPage(prev => prev - 1);
     }
   };
 
-  const goToPage = (pageNumber: number) => {
-    if (pageNumber >= 1 && pageNumber <= bookData.totalPages) {
-      setCurrentPage(pageNumber);
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= bookData.totalPages) {
+      setCurrentPage(page);
     }
   };
 
-  // Zoom functions
-  const zoomIn = () => setZoom(Math.min(zoom + 25, 200));
-  const zoomOut = () => setZoom(Math.max(zoom - 25, 50));
-  const resetZoom = () => setZoom(100);
-
-  // Rotation functions
-  const rotateLeft = () => setRotation((rotation - 90) % 360);
-  const rotateRight = () => setRotation((rotation + 90) % 360);
-  const resetRotation = () => setRotation(0);
-
-  // Fullscreen functions
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
+  const zoomIn = () => {
+    setZoom(prev => Math.min(prev + 25, 200));
   };
 
-  // Bookmark functions
-  const toggleBookmark = (pageNumber: number) => {
+  const zoomOut = () => {
+    setZoom(prev => Math.max(prev - 25, 50));
+  };
+
+  const toggleBookmark = (page: number) => {
     setBookmarkPages(prev => 
-      prev.includes(pageNumber) 
-        ? prev.filter(p => p !== pageNumber)
-        : [...prev, pageNumber]
+      prev.includes(page) 
+        ? prev.filter(p => p !== page)
+        : [...prev, page]
     );
   };
-
-  // Reading functions
-  const toggleReading = () => {
-    setIsReading(!isReading);
-  };
-
-  const toggleAutoPlay = () => {
-    setIsAutoPlay(!isAutoPlay);
-  };
-
-  // Auto-play functionality
-  useEffect(() => {
-    if (isAutoPlay && !isReading) {
-      const interval = setInterval(() => {
-        if (currentPage < bookData.totalPages) {
-          setCurrentPage(prev => prev + 1);
-        } else {
-          setIsAutoPlay(false);
-        }
-      }, 3000); // 3 seconds per page
-
-      return () => clearInterval(interval);
-    }
-  }, [isAutoPlay, currentPage, bookData.totalPages, isReading]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -194,252 +135,255 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
           goToPage(bookData.totalPages);
           break;
         case 'Escape':
-          if (isFullscreen) toggleFullscreen();
-          break;
-        case ' ':
-          e.preventDefault();
-          toggleAutoPlay();
+          if (showTableOfContents) {
+            setShowTableOfContents(false);
+          } else if (onClose) {
+            onClose();
+          }
           break;
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentPage, bookData.totalPages, isFullscreen]);
-
-  const progressPercentage = (currentPage / bookData.totalPages) * 100;
+  }, [currentPage, bookData.totalPages, showTableOfContents, onClose]);
 
   return (
     <div 
       ref={containerRef}
-      className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white' : 'w-full max-w-7xl mx-auto bg-white rounded-lg shadow-lg'} flex flex-col overflow-hidden ${className}`}
-      style={{ height: isFullscreen ? '100vh' : '100vh' }}
+      className={`fixed inset-0 z-50 bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden ${className}`}
     >
-      {/* Simple Header - Clean Design */}
-      <div className="flex items-center justify-between p-3 border-b bg-gray-50 flex-shrink-0">
-        <div className="flex items-center space-x-3 min-w-0">
-          <h3 className="font-medium text-base text-gray-900 truncate">{bookData.title}</h3>
-          {bookData.author && (
-            <span className="text-sm text-gray-600 truncate">by {bookData.author}</span>
-          )}
-        </div>
+      {/* Flipbook-style Book Container - Full immersive viewport */}
+      <div className="relative w-full h-full flex items-center justify-center">
         
-        <div className="flex items-center space-x-2">
-          {/* Home/Contents */}
-          <Button variant="ghost" size="sm" title="Contents">
-            <BookOpen className="h-4 w-4" />
-          </Button>
+        {/* The Book itself - Centered with realistic dimensions */}
+        <div className="relative w-full max-w-5xl h-full max-h-[90vh] flex items-center justify-center">
           
-          {/* Table of Contents */}
-          <div className="relative">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setShowTableOfContents(!showTableOfContents)}
-              title="Table of Contents"
-            >
-              <List className="h-4 w-4" />
-            </Button>
+          {/* Book Shadow and 3D Effect */}
+          <div className="relative bg-white rounded-lg shadow-2xl transform transition-all duration-300" 
+               style={{ 
+                 width: '95%', 
+                 height: '95%',
+                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+               }}>
             
-            {/* Table of Contents Dropdown */}
-            {showTableOfContents && (
-              <div className="absolute top-full right-0 mt-1 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">Table of Contents</h3>
-                  <div className="space-y-1">
-                    {tableOfContents.map((chapter, chapterIndex) => (
-                      <div key={chapterIndex} className="border-b border-gray-100 last:border-b-0">
-                        {/* Chapter Header */}
-                        <div className="p-2 bg-gray-50 rounded-t">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <div className="font-semibold text-gray-900">{chapter.chapter}</div>
-                              <div className="text-sm text-gray-600">{chapter.title}</div>
-                            </div>
-                            <div className="text-sm text-gray-500">Pages {chapter.pages}</div>
+            {/* Book Content Area */}
+            <div className="relative w-full h-full overflow-hidden rounded-lg">
+              <div className="w-full h-full flex items-center justify-center p-4">
+                <div
+                  ref={pageRef}
+                  className="w-full h-full flex items-center justify-center transition-all duration-300"
+                  style={{
+                    transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+                    transformOrigin: 'center'
+                  }}
+                >
+                  {bookData.pages && bookData.pages[currentPage - 1] ? (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <img
+                        src={bookData.pages[currentPage - 1]}
+                        alt={`Page ${currentPage}`}
+                        className="object-contain"
+                        style={{ 
+                          width: 'calc(100% - 2rem)',
+                          height: 'calc(100% - 2rem)',
+                          maxWidth: 'calc(100% - 2rem)',
+                          maxHeight: 'calc(100% - 2rem)'
+                        }}
+                      />
+                      
+                      {/* Bookmark indicator */}
+                      {bookmarkPages.includes(currentPage) && (
+                        <div className="absolute top-2 right-2">
+                          <div className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-bl-lg text-xs font-semibold">
+                            <Bookmark className="h-3 w-3 inline mr-1" />
+                            <span className="hidden sm:inline">Bookmarked</span>
                           </div>
                         </div>
-                        
-                        {/* Chapter Topics */}
-                        <div className="bg-white">
-                          {chapter.topics.map((topic, topicIndex) => (
-                            <button
-                              key={topicIndex}
-                              onClick={() => {
-                                goToPage(topic.page);
-                                setShowTableOfContents(false);
-                              }}
-                              className="w-full text-left p-2 pl-4 hover:bg-blue-50 border-l-2 border-transparent hover:border-blue-300 transition-colors"
-                            >
-                              <div className="flex justify-between items-center">
-                                <div className="text-sm text-gray-700">{topic.title}</div>
-                                <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                  Page {topic.page}
-                                </div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-4 pt-3 border-t border-gray-200">
-                    <div className="bg-blue-50 p-3 rounded">
-                      <h4 className="font-medium text-blue-900 mb-2">How to Use This Book</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
-                        <li>📖 Read each chapter carefully</li>
-                        <li>🎯 Complete practice exercises</li>
-                        <li>📝 Take quizzes to test your knowledge</li>
-                      </ul>
+                      )}
                     </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Zoom Out */}
-          <Button variant="ghost" size="sm" onClick={zoomOut} disabled={zoom <= 50} title="Zoom Out">
-            <ZoomOut className="h-4 w-4" />
-          </Button>
-          
-          {/* Zoom Level */}
-          <span className="text-sm min-w-[3rem] text-center">{zoom}%</span>
-          
-          {/* Zoom In */}
-          <Button variant="ghost" size="sm" onClick={zoomIn} disabled={zoom >= 200} title="Zoom In">
-            <ZoomIn className="h-4 w-4" />
-          </Button>
-          
-          {/* Rotate */}
-          <Button variant="ghost" size="sm" onClick={rotateRight} title="Rotate">
-            <RotateCw className="h-4 w-4" />
-          </Button>
-          
-          {/* Bookmark */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => toggleBookmark(currentPage)}
-            className={bookmarkPages.includes(currentPage) ? 'text-yellow-600' : ''}
-            title="Bookmark"
-          >
-            <Bookmark className="h-4 w-4" />
-          </Button>
-          
-          {/* Save to Locker */}
-          <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white px-3">
-            <Download className="h-4 w-4 mr-1" />
-            Save to Locker
-          </Button>
-          
-          {/* Close */}
-          {onClose && (
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Main Book Content - Maximized viewing area */}
-      <div className="flex-1 overflow-hidden bg-gray-100 relative">
-        <div className="w-full h-full flex items-center justify-center p-1">
-          <div
-            ref={pageRef}
-            className="bg-white shadow-xl rounded-lg overflow-auto transition-all duration-300 flex items-center justify-center"
-            style={{
-              transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-              transformOrigin: 'center',
-              width: '85%',
-              height: '85%',
-              margin: 'auto'
-            }}
-          >
-            {bookData.pages && bookData.pages[currentPage - 1] ? (
-              <div className="relative w-full h-full flex items-center justify-center">
-                <img
-                  src={bookData.pages[currentPage - 1]}
-                  alt={`Page ${currentPage}`}
-                  className="object-contain p-4"
-                  style={{ 
-                    width: 'calc(100% - 2rem)',
-                    height: 'calc(100% - 2rem)',
-                    maxWidth: 'calc(100% - 2rem)',
-                    maxHeight: 'calc(100% - 2rem)'
-                  }}
-                />
-                
-                {/* Interactive overlay for page interactions */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {/* Reading progress indicator */}
-                  {bookmarkPages.includes(currentPage) && (
-                    <div className="absolute top-2 right-2 lg:top-4 lg:right-4">
-                      <div className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-bl-lg text-xs font-semibold">
-                        <Bookmark className="h-3 w-3 inline mr-1" />
-                        <span className="hidden sm:inline">Bookmarked</span>
+                  ) : (
+                    <div className="w-full h-64 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-dashed border-blue-300 rounded-lg">
+                      <div className="text-center">
+                        <BookOpen className="h-16 w-16 text-blue-400 mx-auto mb-4 animate-pulse" />
+                        <p className="text-blue-600 font-medium text-lg">Page {currentPage}</p>
+                        <p className="text-sm text-blue-400 mt-2">Loading content...</p>
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Flipbook-style overlay controls integrated into book margins */}
+            
+            {/* Top margin controls - Book title and status */}
+            <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+              <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                {bookData.title}
+              </div>
+              <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                {currentPage} / {bookData.totalPages}
+              </div>
+            </div>
+            
+            {/* Left margin controls - Previous page */}
+            <div className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={goToPreviousPage} 
+                disabled={currentPage <= 1}
+                className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-10 h-10"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            {/* Right margin controls - Next page */}
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={goToNextPage} 
+                disabled={currentPage >= bookData.totalPages}
+                className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-10 h-10"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            {/* Bottom margin controls - Tools and navigation */}
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-10">
+              {/* Left tools */}
+              <div className="flex items-center space-x-2">
+                {/* Table of Contents */}
+                <div className="relative">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowTableOfContents(!showTableOfContents)}
+                    className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+                    title="Table of Contents"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
                   
-                  {/* Page navigation hints */}
-                  <div className="absolute bottom-2 right-2 lg:bottom-4 lg:right-4 bg-black bg-opacity-50 text-white px-2 py-1 lg:px-3 lg:py-1 rounded text-xs">
-                    <span className="hidden sm:inline">Use ← → keys to navigate</span>
-                    <span className="sm:hidden">← →</span>
-                  </div>
+                  {/* Table of Contents Dropdown */}
+                  {showTableOfContents && (
+                    <div className="absolute bottom-full left-0 mb-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                      <div className="p-4">
+                        <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">Table of Contents</h3>
+                        <div className="space-y-1">
+                          {tableOfContents.map((chapter, chapterIndex) => (
+                            <div key={chapterIndex} className="border-b border-gray-100 last:border-b-0">
+                              <div className="p-2 bg-gray-50 rounded-t">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <div className="font-semibold text-gray-900">{chapter.chapter}</div>
+                                    <div className="text-sm text-gray-600">{chapter.title}</div>
+                                  </div>
+                                  <div className="text-sm text-gray-500">Pages {chapter.pages}</div>
+                                </div>
+                              </div>
+                              <div className="bg-white">
+                                {chapter.topics.map((topic, topicIndex) => (
+                                  <button
+                                    key={topicIndex}
+                                    onClick={() => {
+                                      goToPage(topic.page);
+                                      setShowTableOfContents(false);
+                                    }}
+                                    className="w-full text-left p-2 pl-4 hover:bg-blue-50 border-l-2 border-transparent hover:border-blue-300 transition-colors"
+                                  >
+                                    <div className="flex justify-between items-center">
+                                      <div className="text-sm text-gray-700">{topic.title}</div>
+                                      <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        Page {topic.page}
+                                      </div>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
+                
+                {/* Zoom controls */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={zoomOut} 
+                  disabled={zoom <= 50}
+                  className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="h-4 w-4" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={zoomIn} 
+                  disabled={zoom >= 200}
+                  className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
               </div>
-            ) : (
-              <div className="w-full max-w-md h-64 lg:h-96 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-dashed border-blue-300 rounded-lg">
-                <div className="text-center">
-                  <BookOpen className="h-12 w-12 lg:h-16 lg:w-16 text-blue-400 mx-auto mb-4 animate-pulse" />
-                  <p className="text-blue-600 font-medium text-base lg:text-lg">Page {currentPage}</p>
-                  <p className="text-xs lg:text-sm text-blue-400 mt-2">Loading interactive content...</p>
-                  <div className="mt-4 flex justify-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                  </div>
-                </div>
+              
+              {/* Center - Page input */}
+              <div className="bg-black bg-opacity-50 rounded-full px-4 py-2">
+                <input
+                  type="number"
+                  value={currentPage}
+                  onChange={(e) => {
+                    const page = parseInt(e.target.value);
+                    if (page >= 1 && page <= bookData.totalPages) {
+                      goToPage(page);
+                    }
+                  }}
+                  className="w-16 px-2 py-1 text-center bg-transparent text-white border-0 focus:outline-none text-sm"
+                  min="1"
+                  max={bookData.totalPages}
+                />
               </div>
-            )}
+              
+              {/* Right tools */}
+              <div className="flex items-center space-x-2">
+                {/* Bookmark */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => toggleBookmark(currentPage)}
+                  className={`${bookmarkPages.includes(currentPage) ? 'bg-yellow-500 bg-opacity-80' : 'bg-black bg-opacity-30'} hover:bg-opacity-50 text-white border-0 rounded-full`}
+                  title="Bookmark"
+                >
+                  <Bookmark className="h-4 w-4" />
+                </Button>
+                
+                {/* Close */}
+                {onClose && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={onClose}
+                    className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+                    title="Close"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+            
           </div>
         </div>
-      </div>
-
-      {/* Simple Bottom Navigation */}
-      <div className="flex items-center justify-between p-3 border-t bg-gray-50 flex-shrink-0">
-        {/* Previous Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={goToPreviousPage}
-          disabled={currentPage === 1}
-          className="flex items-center space-x-1"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span>Previous</span>
-        </Button>
-        
-        {/* Page Info */}
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {bookData.totalPages}
-          </span>
-          <span className="text-sm text-gray-600">•</span>
-          <span className="text-sm text-gray-600">{bookData.subject}</span>
-        </div>
-        
-        {/* Next Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={goToNextPage}
-          disabled={currentPage === bookData.totalPages}
-          className="flex items-center space-x-1"
-        >
-          <span>Next</span>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   );
