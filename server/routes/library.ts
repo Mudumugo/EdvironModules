@@ -92,7 +92,7 @@ export function registerLibraryRoutes(app: Express) {
       const [resource] = await db
         .select()
         .from(libraryResources)
-        .where(and(eq(libraryResources.id, parseInt(id)), eq(libraryResources.isActive, true)));
+        .where(eq(libraryResources.id, parseInt(id)));
 
       if (!resource) {
         return res.status(404).json({ message: "Resource not found" });
@@ -478,22 +478,22 @@ export function registerLibraryRoutes(app: Express) {
       const [totalResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isAvailable, true));
 
       const [totalViews] = await db
         .select({ total: sql<number>`SUM(${libraryResources.viewCount})` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isAvailable, true));
 
       const [averageRating] = await db
         .select({ avg: sql<number>`AVG(${libraryResources.rating})` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isAvailable, true));
 
       const [availableResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isAvailable, true));
 
       res.json({
         totalResources: totalResources.count,

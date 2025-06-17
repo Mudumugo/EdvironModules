@@ -249,10 +249,10 @@ export default function DigitalLibrary() {
   };
 
   const getStatusBadge = (resource: LibraryResource) => {
-    if (!resource.isPublished) {
-      return <Badge variant="destructive">Draft</Badge>;
+    if (!resource.isActive) {
+      return <Badge variant="destructive">Inactive</Badge>;
     }
-    if (resource.isSharedGlobally) {
+    if (resource.isPhysical) {
       return <Badge variant="default">Global</Badge>;
     }
     return <Badge variant="outline">Available</Badge>;
