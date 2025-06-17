@@ -7,23 +7,22 @@ import { useToast } from "@/hooks/use-toast";
 
 interface LibraryResource {
   id: number;
-  contentId: string;
   title: string;
-  author: string;
   type: string;
-  subject: string;
   grade: string;
-  level: string;
+  curriculum: string;
   description: string;
-  pages?: number;
   difficulty: string;
-  estimatedTime?: number;
-  competencies: string[];
-  topics: string[];
-  views: number;
-  downloads: number;
-  rating?: string;
-  thumbnailUrl?: string;
+  duration: number;
+  tags: string[];
+  view_count: number;
+  rating: number;
+  thumbnail_url?: string;
+  file_url?: string;
+  access_tier: string;
+  is_published: boolean;
+  author_id: string;
+  language: string;
 }
 
 interface LibraryResourceCardProps {
@@ -65,15 +64,15 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
     }
   };
 
-  const getSubjectColor = (subject: string) => {
-    switch (subject?.toLowerCase()) {
-      case "mathematics":
+  const getSubjectColor = (curriculum: string) => {
+    switch (curriculum?.toLowerCase()) {
+      case "cbe mathematics":
         return "bg-blue-100 text-blue-800";
-      case "english":
+      case "cbe english":
         return "bg-purple-100 text-purple-800";
-      case "science":
+      case "cbe science":
         return "bg-green-100 text-green-800";
-      case "social studies":
+      case "cbe social studies":
         return "bg-orange-100 text-orange-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -122,15 +121,15 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
                     {resource.title}
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">
-                    by {resource.author}
+                    by {resource.author_id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </p>
                   <p className="text-sm text-gray-700 mb-3 line-clamp-2">
                     {resource.description}
                   </p>
                   
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="outline" className={getSubjectColor(resource.subject)}>
-                      {resource.subject}
+                    <Badge variant="outline" className={getSubjectColor(resource.curriculum)}>
+                      {resource.curriculum}
                     </Badge>
                     <Badge variant="outline">
                       {resource.grade}
@@ -141,25 +140,17 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
                   </div>
                   
                   <div className="flex items-center gap-4 text-xs text-gray-500">
-                    {resource.pages && (
-                      <span className="flex items-center gap-1">
-                        <BookOpen className="h-3 w-3" />
-                        {resource.pages} pages
-                      </span>
-                    )}
-                    {resource.estimatedTime && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {resource.estimatedTime}min
-                      </span>
-                    )}
                     <span className="flex items-center gap-1">
-                      <Eye className="h-3 w-3" />
-                      {resource.views} views
+                      <Clock className="h-3 w-3" />
+                      {resource.duration}min
                     </span>
                     <span className="flex items-center gap-1">
-                      <Users className="h-3 w-3" />
-                      {resource.downloads} downloads
+                      <Eye className="h-3 w-3" />
+                      {resource.view_count} views
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Star className="h-3 w-3" />
+                      {resource.rating}/5
                     </span>
                   </div>
                 </div>
@@ -211,7 +202,7 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
           {resource.title}
         </CardTitle>
         <CardDescription className="text-xs">
-          by {resource.author}
+          by {resource.author_id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
         </CardDescription>
       </CardHeader>
       
@@ -221,42 +212,38 @@ export const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
         </p>
         
         <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
-          {resource.pages && (
-            <span className="flex items-center gap-1">
-              <BookOpen className="h-3 w-3" />
-              {resource.pages} pages
-            </span>
-          )}
-          {resource.estimatedTime && (
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {resource.estimatedTime}min
-            </span>
-          )}
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {resource.duration}min
+          </span>
           <span className="flex items-center gap-1">
             <Eye className="h-3 w-3" />
-            {resource.views}
+            {resource.view_count}
+          </span>
+          <span className="flex items-center gap-1">
+            <Star className="h-3 w-3" />
+            {resource.rating}/5
           </span>
         </div>
 
         <div className="flex flex-wrap gap-1 mb-4">
-          <Badge variant="outline" className={`text-xs ${getSubjectColor(resource.subject)}`}>
-            {resource.subject}
+          <Badge variant="outline" className={`text-xs ${getSubjectColor(resource.curriculum)}`}>
+            {resource.curriculum}
           </Badge>
           <Badge variant="outline" className="text-xs">
             {resource.grade}
           </Badge>
           <Badge variant="outline" className="text-xs">
-            {resource.level}
+            {resource.access_tier}
           </Badge>
-          {resource.topics?.slice(0, 2).map((topic, index) => (
+          {resource.tags?.slice(0, 2).map((tag, index) => (
             <Badge key={index} variant="outline" className="text-xs bg-blue-50">
-              {topic}
+              {tag}
             </Badge>
           ))}
-          {resource.topics?.length > 2 && (
+          {resource.tags?.length > 2 && (
             <Badge variant="outline" className="text-xs bg-gray-50">
-              +{resource.topics.length - 2}
+              +{resource.tags.length - 2}
             </Badge>
           )}
         </div>

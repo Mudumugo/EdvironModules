@@ -12,23 +12,22 @@ import { LibraryResourceCard } from "@/components/library/LibraryResourceCard";
 
 interface LibraryResource {
   id: number;
-  contentId: string;
   title: string;
-  author: string;
   type: string;
-  subject: string;
   grade: string;
-  level: string;
+  curriculum: string;
   description: string;
-  pages: number;
   difficulty: string;
-  estimatedTime: number;
-  competencies: string[];
-  topics: string[];
-  views: number;
-  downloads: number;
-  rating: string;
-  thumbnailUrl?: string;
+  duration: number;
+  tags: string[];
+  view_count: number;
+  rating: number;
+  thumbnail_url?: string;
+  file_url?: string;
+  access_tier: string;
+  is_published: boolean;
+  author_id: string;
+  language: string;
 }
 
 const DigitalLibraryNew = () => {
