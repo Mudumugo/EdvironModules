@@ -186,12 +186,12 @@ export const libraryReviews = pgTable("library_reviews", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Library Categories for organization
-export const libraryCategories = pgTable("library_categories", {
+// Library Categories for organization  
+export const libraryCategories: any = pgTable("library_categories", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   name: varchar("name").notNull(),
   description: text("description"),
-  parentId: integer("parent_id").references(() => libraryCategories.id),
+  parentId: integer("parent_id"),
   slug: varchar("slug").notNull().unique(),
   icon: varchar("icon"),
   color: varchar("color"),

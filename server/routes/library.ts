@@ -66,8 +66,8 @@ export function registerLibraryRoutes(app: Express) {
         .where(and(...conditions))
         .orderBy(
           sortOrder === 'desc' 
-            ? desc(libraryResources[sortBy as keyof typeof libraryResources] || libraryResources.title)
-            : asc(libraryResources[sortBy as keyof typeof libraryResources] || libraryResources.title)
+            ? desc(libraryResources.title)
+            : asc(libraryResources.title)
         )
         .limit(parseInt(limit))
         .offset((parseInt(page) - 1) * parseInt(limit));
@@ -156,7 +156,7 @@ export function registerLibraryRoutes(app: Express) {
         return res.status(404).json({ message: "Resource not found" });
       }
 
-      if (resource.availableCopies <= 0) {
+      if ((resource.availableCopies || 0) <= 0) {
         return res.status(400).json({ message: "No copies available for borrowing" });
       }
 
@@ -452,10 +452,12 @@ export function registerLibraryRoutes(app: Express) {
         .from(libraryReviews)
         .where(eq(libraryReviews.resourceId, parseInt(id)));
 
-      await db
-        .update(libraryResources)
-        .set({ rating: avgRating.avgRating })
-        .where(eq(libraryResources.id, parseInt(id)));
+      if (avgRating.avgRating) {
+        await db
+          .update(libraryResources)
+          .set({ rating: avgRating.avgRating.toString() })
+          .where(eq(libraryResources.id, parseInt(id)));
+      }
 
     } catch (error) {
       console.error("Error adding review:", error);
