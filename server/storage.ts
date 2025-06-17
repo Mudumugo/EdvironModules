@@ -196,7 +196,7 @@ export class DatabaseStorage implements IStorage {
   async createInstitution(institutionData: InsertInstitution): Promise<Institution> {
     const [institution] = await db
       .insert(institutions)
-      .values([institutionData])
+      .values(institutionData)
       .returning();
     return institution;
   }
@@ -313,18 +313,16 @@ export class DatabaseStorage implements IStorage {
     if (user.role === 'student') {
       const student = await db.select().from(students).where(eq(students.userId, userId)).limit(1);
       if (student[0]) {
-        userGrade = [student[0].grade];
-        userCurriculum = student[0].curriculum ? [student[0].curriculum] : [];
+        userGrade = student[0].grade ? [student[0].grade] : [];
+        // Remove curriculum reference as it doesn't exist in schema
       }
     } else if (user.role === 'teacher') {
       const teacher = await db.select().from(teachers).where(eq(teachers.userId, userId)).limit(1);
       if (teacher[0]) {
-        // Teachers can access resources for their subjects and grade levels
-        const teacherSubjects = await db.select().from(subjects)
-          .where(eq(subjects.id, teacher[0].subjectId || 0));
-        if (teacherSubjects.length > 0) {
-          userGrade = teacherSubjects[0].grade ? [teacherSubjects[0].grade] : [];
-          userCurriculum = teacherSubjects[0].curriculum ? [teacherSubjects[0].curriculum] : [];
+        // Teachers can access resources for their subjects
+        if (teacher[0].subjects && teacher[0].subjects.length > 0) {
+          // Use teacher's subject list for filtering
+          userCurriculum = teacher[0].subjects;
         }
       }
     }
@@ -420,11 +418,11 @@ export class DatabaseStorage implements IStorage {
 
   // Attendance operations
   async getAttendance(studentId: number, scheduleId: number): Promise<Attendance | undefined> {
-    const [attendance] = await db
+    const [attendanceRecord] = await db
       .select()
-      .from(attendance)
-      .where(and(eq(attendance.studentId, studentId), eq(attendance.scheduleId, scheduleId)));
-    return attendance;
+      .from(attendances)
+      .where(and(eq(attendances.studentId, studentId), eq(attendances.scheduleId, scheduleId)));
+    return attendanceRecord;
   }
 
   async getAttendanceBySchedule(scheduleId: number): Promise<Attendance[]> {
@@ -473,16 +471,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getActivityLogs(userId?: string, institutionId?: string): Promise<ActivityLog[]> {
-    let query = db.select().from(activityLogs);
+    const conditions = [];
     
     if (userId) {
-      query = query.where(eq(activityLogs.userId, userId));
+      conditions.push(eq(activityLogs.userId, userId));
     }
     if (institutionId) {
-      query = query.where(eq(activityLogs.institutionId, institutionId));
+      conditions.push(eq(activityLogs.institutionId, institutionId));
     }
     
-    return await query.orderBy(desc(activityLogs.createdAt)).limit(100);
+    if (conditions.length > 0) {
+      return await db.select().from(activityLogs)
+        .where(and(...conditions))
+        .orderBy(desc(activityLogs.createdAt))
+        .limit(100);
+    }
+    
+    return await db.select().from(activityLogs)
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(100);
   }
 
   // Notification operations
