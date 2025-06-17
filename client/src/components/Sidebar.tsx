@@ -81,8 +81,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 
                 return (
                   <Link key={itemIndex} href={item.route}>
-                    <a 
-                      className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    <div 
+                      className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
                         isActive
                           ? 'bg-primary-50 text-primary-700 border border-primary-200'
                           : 'text-gray-700 hover:bg-gray-50'
@@ -103,7 +103,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                           Pro
                         </Badge>
                       )}
-                    </a>
+                    </div>
                   </Link>
                 );
               })}

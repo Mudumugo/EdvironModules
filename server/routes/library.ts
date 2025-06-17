@@ -461,10 +461,7 @@ export function registerLibraryRoutes(app: Express) {
         .select()
         .from(libraryResources)
         .where(
-          and(
-            eq(libraryResources.isPublished, true),
-            eq(libraryResources.isSharedGlobally, true)
-          )
+          eq(libraryResources.status, 'published')
         )
         .orderBy(desc(libraryResources.rating))
         .limit(10);
@@ -485,7 +482,7 @@ export function registerLibraryRoutes(app: Express) {
         .where(eq(libraryResources.isPublished, true));
 
       const [totalViews] = await db
-        .select({ total: sql<number>`SUM(view_count)` })
+        .select({ total: sql<number>`SUM(${libraryResources.viewCount})` })
         .from(libraryResources)
         .where(eq(libraryResources.isPublished, true));
 
