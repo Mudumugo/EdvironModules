@@ -64,6 +64,13 @@ export default function Landing() {
               >
                 Scheduling
               </Button>
+              <Button 
+                onClick={() => window.location.href = "/family-controls"} 
+                variant="outline"
+                className="border-green-600 text-green-600 hover:bg-green-50"
+              >
+                Family Controls
+              </Button>
               <Button onClick={handleLogin} className="bg-primary-600 hover:bg-primary-700">
                 Sign In
               </Button>
