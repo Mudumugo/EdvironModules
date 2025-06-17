@@ -53,6 +53,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const [pageStartTime, setPageStartTime] = useState(new Date());
   const [isPageTurning, setIsPageTurning] = useState(false);
   const [pageTransition, setPageTransition] = useState<'none' | 'next' | 'prev'>('none');
+  const [showControls, setShowControls] = useState(true);
+  const [controlsTimeout, setControlsTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -250,6 +252,27 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     touchStartRef.current = null;
   };
 
+  // Controls visibility management
+  const showControlsTemporarily = () => {
+    setShowControls(true);
+    
+    // Clear existing timeout
+    if (controlsTimeout) {
+      clearTimeout(controlsTimeout);
+    }
+    
+    // Set new timeout to hide controls after 3 seconds of inactivity
+    const newTimeout = setTimeout(() => {
+      setShowControls(false);
+    }, 3000);
+    
+    setControlsTimeout(newTimeout);
+  };
+
+  const handleUserActivity = () => {
+    showControlsTemporarily();
+  };
+
   // xAPI tracking functions
   const trackPageView = (page: number) => {
     if (bookData.xapiEnabled) {
@@ -304,9 +327,41 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     };
   }, []);
 
+  // Initialize controls timeout and cleanup
+  useEffect(() => {
+    showControlsTemporarily();
+    
+    return () => {
+      if (controlsTimeout) {
+        clearTimeout(controlsTimeout);
+      }
+    };
+  }, []);
+
+  // Handle mouse movement and touch to show controls
+  useEffect(() => {
+    const handleMouseMove = () => {
+      handleUserActivity();
+    };
+
+    const handleTouchStart = () => {
+      handleUserActivity();
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('touchstart', handleTouchStart);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('touchstart', handleTouchStart);
+    };
+  }, []);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      handleUserActivity(); // Show controls on any key press
+      
       switch (e.key) {
         case 'ArrowLeft':
           goToPreviousPage();
@@ -362,6 +417,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     <div 
       ref={containerRef}
       className={`fixed inset-0 z-50 bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden ${className}`}
+      onMouseMove={handleUserActivity}
+      onTouchStart={handleUserActivity}
     >
       {/* Flipbook-style Book Container - Full immersive viewport */}
       <div className="relative w-full h-full flex items-center justify-center">
@@ -431,7 +488,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             {/* Flipbook-style overlay controls integrated into book margins */}
             
             {/* Top margin controls - Book title and status */}
-            <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+            <div className={`absolute top-4 left-4 right-4 flex items-center justify-between z-10 transition-all duration-500 ${
+              showControls ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+            }`}>
               <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
                 {bookData.title}
               </div>
@@ -441,7 +500,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             </div>
             
             {/* Left margin controls - Previous page */}
-            <div className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-10">
+            <div className={`absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-500 ${
+              showControls ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+            }`}>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -454,7 +515,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             </div>
             
             {/* Right margin controls - Next page */}
-            <div className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-10">
+            <div className={`absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-500 ${
+              showControls ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+            }`}>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -467,7 +530,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
             </div>
             
             {/* Bottom margin controls - Tools and navigation */}
-            <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 flex items-center justify-between z-10">
+            <div className={`absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 flex items-center justify-between z-10 transition-all duration-500 ${
+              showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}>
               {/* Left tools */}
               <div className="flex items-center space-x-1 sm:space-x-2">
                 {/* Table of Contents */}
