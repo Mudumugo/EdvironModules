@@ -260,6 +260,65 @@ export const attendance = pgTable("attendance", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// User progress tracking for library resources
+export const libraryProgress = pgTable("library_progress", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  contentId: text("content_id").notNull(),
+  contentType: text("content_type").notNull(),
+  currentPosition: integer("current_position").default(0), // current page/question
+  totalItems: integer("total_items").notNull(),
+  percentage: decimal("percentage", { precision: 5, scale: 2 }).default("0"),
+  timeSpent: integer("time_spent").default(0), // in minutes
+  sessionsCount: integer("sessions_count").default(0),
+  completed: boolean("completed").default(false),
+  competenciesAchieved: text("competencies_achieved").array(),
+  lastAccessed: timestamp("last_accessed").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  tenantId: text("tenant_id").notNull(),
+});
+
+// Library learning analytics and insights
+export const libraryAnalytics = pgTable("library_analytics", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  date: timestamp("date").defaultNow(),
+  subjectBreakdown: jsonb("subject_breakdown"), // subject progress data
+  learningVelocity: decimal("learning_velocity", { precision: 5, scale: 2 }), // pages/questions per hour
+  focusAreas: text("focus_areas").array(),
+  strugglingAreas: text("struggling_areas").array(),
+  strongAreas: text("strong_areas").array(),
+  totalTimeSpent: integer("total_time_spent").default(0), // in minutes
+  streakDays: integer("streak_days").default(0),
+  achievements: jsonb("achievements"), // earned achievements
+  recommendations: jsonb("recommendations"), // AI recommendations
+  lastActiveDate: timestamp("last_active_date"),
+  completionRate: decimal("completion_rate", { precision: 5, scale: 2 }),
+  resourcesAccessed: integer("resources_accessed").default(0),
+  progressData: jsonb("progress_data"), // detailed progress tracking
+  createdAt: timestamp("created_at").defaultNow(),
+  tenantId: text("tenant_id").notNull(),
+});
+
+// Library personalized recommendations
+export const libraryRecommendations = pgTable("library_recommendations", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  contentId: text("content_id").notNull(),
+  type: text("type").notNull(), // "next_step", "reinforcement", "challenge", "review"
+  priority: integer("priority").default(1), // 1-5 priority scale
+  reason: text("reason").notNull(), // explanation for recommendation
+  confidence: decimal("confidence", { precision: 3, scale: 2 }), // AI confidence 0-1
+  metadata: jsonb("metadata"), // additional recommendation data
+  viewed: boolean("viewed").default(false),
+  accepted: boolean("accepted").default(false),
+  dismissedAt: timestamp("dismissed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  tenantId: text("tenant_id").notNull(),
+});
+
 // Export types
 export type InsertInstitution = typeof institutions.$inferInsert;
 export type Institution = typeof institutions.$inferSelect;
@@ -289,12 +348,12 @@ export type InsertSchedule = typeof schedules.$inferInsert;
 export type Schedule = typeof schedules.$inferSelect;
 export type InsertAttendance = typeof attendance.$inferInsert;
 export type Attendance = typeof attendance.$inferSelect;
-export type InsertUserProgress = typeof userProgress.$inferInsert;
-export type UserProgress = typeof userProgress.$inferSelect;
-export type InsertLearningAnalytics = typeof learningAnalytics.$inferInsert;
-export type LearningAnalytics = typeof learningAnalytics.$inferSelect;
-export type InsertRecommendation = typeof recommendations.$inferInsert;
-export type Recommendation = typeof recommendations.$inferSelect;
+export type InsertLibraryProgress = typeof libraryProgress.$inferInsert;
+export type LibraryProgress = typeof libraryProgress.$inferSelect;
+export type InsertLibraryAnalytics = typeof libraryAnalytics.$inferInsert;
+export type LibraryAnalytics = typeof libraryAnalytics.$inferSelect;
+export type InsertLibraryRecommendation = typeof libraryRecommendations.$inferInsert;
+export type LibraryRecommendation = typeof libraryRecommendations.$inferSelect;
 
 // Insert schemas for validation
 export const insertStudentSchema = createInsertSchema(students);
@@ -309,16 +368,16 @@ export const insertLibraryCategorySchema = createInsertSchema(libraryCategories)
 export const insertLibraryCollectionSchema = createInsertSchema(libraryCollections);
 export const insertScheduleSchema = createInsertSchema(schedules);
 export const insertAttendanceSchema = createInsertSchema(attendance);
-export const insertUserProgressSchema = createInsertSchema(userProgress).omit({
+export const insertLibraryProgressSchema = createInsertSchema(libraryProgress).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
-export const insertLearningAnalyticsSchema = createInsertSchema(learningAnalytics).omit({
+export const insertLibraryAnalyticsSchema = createInsertSchema(libraryAnalytics).omit({
   id: true,
   createdAt: true,
 });
-export const insertRecommendationSchema = createInsertSchema(recommendations).omit({
+export const insertLibraryRecommendationSchema = createInsertSchema(libraryRecommendations).omit({
   id: true,
   viewed: true,
   accepted: true,
