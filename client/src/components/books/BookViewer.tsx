@@ -130,17 +130,17 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     // Track current page view before transition
     trackPageView(currentPage);
     
-    // After a brief animation delay, update the page
+    // Start CSS animation and update page content mid-transition
     setTimeout(() => {
       setCurrentPage(targetPage);
       setPageStartTime(new Date());
-      
-      // Complete the animation
-      setTimeout(() => {
-        setPageTransition('none');
-        setIsPageTurning(false);
-      }, 150); // Secondary animation phase
-    }, 200); // Primary animation phase
+    }, 175); // Update content at animation midpoint
+    
+    // Complete the animation cycle
+    setTimeout(() => {
+      setPageTransition('none');
+      setIsPageTurning(false);
+    }, 350); // Match CSS animation duration
   };
 
   const goToNextPage = () => {
@@ -294,14 +294,15 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
               <div className="w-full h-full flex items-center justify-center p-4">
                 <div
                   ref={pageRef}
-                  className={`w-full h-full flex items-center justify-center transition-all duration-300 ${
+                  className={`w-full h-full flex items-center justify-center page-content-transition ${
                     isPageTurning ? 'pointer-events-none' : ''
+                  } ${
+                    pageTransition === 'next' ? 'page-turn-animation-next' : 
+                    pageTransition === 'prev' ? 'page-turn-animation-prev' : ''
                   }`}
                   style={{
-                    transform: `scale(${zoom / 100}) rotate(${rotation}deg) ${getPageTransitionTransform()}`,
-                    transformOrigin: 'center',
-                    opacity: getPageTransitionOpacity(),
-                    filter: isPageTurning ? 'blur(1px)' : 'none'
+                    transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+                    transformOrigin: 'center'
                   }}
                 >
                   {bookData.pages && bookData.pages[currentPage - 1] ? (
