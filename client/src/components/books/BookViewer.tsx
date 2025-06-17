@@ -56,6 +56,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   // Detect if this is multimedia/interactive content
   const isMultimediaContent = bookData.isInteractive || bookData.hasVideo || bookData.hasAudio || 
@@ -75,6 +76,37 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
 
   const getPageTransitionOpacity = (): number => {
     return isPageTurning ? 0.85 : 1;
+  };
+
+  // Audio synthesis for page flip sound
+  const playPageFlipSound = () => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      
+      const audioContext = audioContextRef.current;
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Create a realistic paper rustling sound
+      oscillator.type = 'sawtooth';
+      oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.15);
+    } catch (error) {
+      // Silently fail if audio context is not available
+      console.log('Audio context not available for page flip sound');
+    }
   };
 
   // Table of Contents data - detailed structure with topics
@@ -126,6 +158,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const animatePageTurn = (direction: 'next' | 'prev', targetPage: number) => {
     setIsPageTurning(true);
     setPageTransition(direction);
+    
+    // Play page flip sound effect
+    playPageFlipSound();
     
     // Track current page view before transition
     trackPageView(currentPage);
@@ -278,20 +313,18 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
       {/* Flipbook-style Book Container - Full immersive viewport */}
       <div className="relative w-full h-full flex items-center justify-center">
         
-        {/* The Book itself - Centered with realistic dimensions */}
-        <div className="relative w-full max-w-5xl h-full max-h-[90vh] flex items-center justify-center">
+        {/* The Book itself - Responsive dimensions for all devices */}
+        <div className="relative w-full h-full flex items-center justify-center px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4">
           
           {/* Book Shadow and 3D Effect */}
-          <div className="relative bg-white rounded-lg shadow-2xl transform transition-all duration-300" 
-               style={{ 
-                 width: '95%', 
-                 height: '95%',
+          <div className="relative bg-white rounded-lg shadow-2xl transform transition-all duration-300 w-full h-full max-w-5xl max-h-[95vh] sm:max-h-[90vh]" 
+               style={{
                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                }}>
             
             {/* Book Content Area */}
             <div className="relative w-full h-full overflow-hidden rounded-lg">
-              <div className="w-full h-full flex items-center justify-center p-4">
+              <div className="w-full h-full flex items-center justify-center p-2 sm:p-3 md:p-4 lg:p-6">
                 <div
                   ref={pageRef}
                   className={`w-full h-full flex items-center justify-center page-content-transition ${
@@ -310,12 +343,10 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                       <img
                         src={bookData.pages[currentPage - 1]}
                         alt={`Page ${currentPage}`}
-                        className="object-contain"
+                        className="object-contain w-full h-full"
                         style={{ 
-                          width: 'calc(100% - 2rem)',
-                          height: 'calc(100% - 2rem)',
-                          maxWidth: 'calc(100% - 2rem)',
-                          maxHeight: 'calc(100% - 2rem)'
+                          maxWidth: '100%',
+                          maxHeight: '100%'
                         }}
                       />
                       
