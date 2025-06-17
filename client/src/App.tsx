@@ -11,6 +11,7 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import SchoolManagement from "@/pages/SchoolManagement";
 import DigitalLibrary from "@/pages/DigitalLibrary";
+import DigitalLibraryNew from "@/pages/DigitalLibraryNew";
 import TutorHub from "@/pages/TutorHub";
 import FamilyControls from "@/pages/FamilyControls";
 import Scheduling from "@/pages/Scheduling";

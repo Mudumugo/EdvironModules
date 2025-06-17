@@ -7,6 +7,10 @@ import {
   boolean,
   decimal,
   jsonb,
+  date,
+  serial,
+  unique,
+  index,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { users } from "./user.schema";
