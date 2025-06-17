@@ -44,9 +44,9 @@ export function registerLibraryRoutes(app: Express) {
       if (search) {
         conditions.push(
           or(
-            like(libraryResources.title, `%${search}%`),
-            like(libraryResources.description, `%${search}%`),
-            like(libraryResources.subject, `%${search}%`)
+            ilike(libraryResources.title, `%${search}%`),
+            ilike(libraryResources.description, `%${search}%`),
+            ilike(libraryResources.subject, `%${search}%`)
           )
         );
       }
@@ -478,22 +478,22 @@ export function registerLibraryRoutes(app: Express) {
       const [totalResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isDigital, true));
 
       const [totalViews] = await db
         .select({ total: sql<number>`SUM(${libraryResources.totalCopies})` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isDigital, true));
 
       const [averageRating] = await db
         .select({ avg: sql<number>`AVG(${libraryResources.rating})` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isDigital, true));
 
       const [availableResources] = await db
         .select({ count: sql<number>`count(*)` })
         .from(libraryResources)
-        .where(eq(libraryResources.isActive, true));
+        .where(eq(libraryResources.isDigital, true));
 
       res.json({
         totalResources: totalResources.count,
