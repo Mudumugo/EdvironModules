@@ -51,6 +51,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const [showInteractiveMode, setShowInteractiveMode] = useState(false);
   const [sessionStartTime] = useState(new Date());
   const [pageStartTime, setPageStartTime] = useState(new Date());
+  const [isPageTurning, setIsPageTurning] = useState(false);
+  const [pageTransition, setPageTransition] = useState<'none' | 'next' | 'prev'>('none');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -58,6 +60,22 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   // Detect if this is multimedia/interactive content
   const isMultimediaContent = bookData.isInteractive || bookData.hasVideo || bookData.hasAudio || 
                              bookData.type === 'interactive' || bookData.type === 'html5';
+
+  // Animation helper functions
+  const getPageTransitionTransform = (): string => {
+    switch (pageTransition) {
+      case 'next':
+        return 'translateX(3px) rotateY(-2deg)';
+      case 'prev':
+        return 'translateX(-3px) rotateY(2deg)';
+      default:
+        return '';
+    }
+  };
+
+  const getPageTransitionOpacity = (): number => {
+    return isPageTurning ? 0.85 : 1;
+  };
 
   // Table of Contents data - detailed structure with topics
   const tableOfContents = [
@@ -104,28 +122,43 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     }
   ];
 
-  // Navigation functions with xAPI tracking
-  const goToNextPage = () => {
-    if (currentPage < bookData.totalPages) {
-      trackPageView(currentPage);
-      setCurrentPage(prev => prev + 1);
+  // Navigation functions with subtle page turn animations
+  const animatePageTurn = (direction: 'next' | 'prev', targetPage: number) => {
+    setIsPageTurning(true);
+    setPageTransition(direction);
+    
+    // Track current page view before transition
+    trackPageView(currentPage);
+    
+    // After a brief animation delay, update the page
+    setTimeout(() => {
+      setCurrentPage(targetPage);
       setPageStartTime(new Date());
+      
+      // Complete the animation
+      setTimeout(() => {
+        setPageTransition('none');
+        setIsPageTurning(false);
+      }, 150); // Secondary animation phase
+    }, 200); // Primary animation phase
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < bookData.totalPages && !isPageTurning) {
+      animatePageTurn('next', currentPage + 1);
     }
   };
 
   const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      trackPageView(currentPage);
-      setCurrentPage(prev => prev - 1);
-      setPageStartTime(new Date());
+    if (currentPage > 1 && !isPageTurning) {
+      animatePageTurn('prev', currentPage - 1);
     }
   };
 
   const goToPage = (page: number) => {
-    if (page >= 1 && page <= bookData.totalPages) {
-      trackPageView(currentPage);
-      setCurrentPage(page);
-      setPageStartTime(new Date());
+    if (page >= 1 && page <= bookData.totalPages && page !== currentPage && !isPageTurning) {
+      const direction = page > currentPage ? 'next' : 'prev';
+      animatePageTurn(direction, page);
     }
   };
 
@@ -261,10 +294,14 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
               <div className="w-full h-full flex items-center justify-center p-4">
                 <div
                   ref={pageRef}
-                  className="w-full h-full flex items-center justify-center transition-all duration-300"
+                  className={`w-full h-full flex items-center justify-center transition-all duration-300 ${
+                    isPageTurning ? 'pointer-events-none' : ''
+                  }`}
                   style={{
-                    transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-                    transformOrigin: 'center'
+                    transform: `scale(${zoom / 100}) rotate(${rotation}deg) ${getPageTransitionTransform()}`,
+                    transformOrigin: 'center',
+                    opacity: getPageTransitionOpacity(),
+                    filter: isPageTurning ? 'blur(1px)' : 'none'
                   }}
                 >
                   {bookData.pages && bookData.pages[currentPage - 1] ? (
