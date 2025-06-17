@@ -8,6 +8,7 @@ import { registerDeviceRoutes } from "./routes/devices";
 import { registerMediaRoutes } from "./routes/media";
 import { registerLicensingRoutes } from "./routes/licensing";
 import { registerTenantRoutes } from "./routes/tenant";
+import { registerUserRoutes } from "./routes/users";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
@@ -19,6 +20,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerMediaRoutes(app);
   registerLicensingRoutes(app);
   registerTenantRoutes(app);
+  registerUserRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;

@@ -149,12 +149,7 @@ export function hasAllPermissions(userRole: UserRole, userPermissions: Permissio
 }
 
 export function isStudent(role: UserRole): boolean {
-  return [
-    "student_elementary" as UserRole,
-    "student_middle" as UserRole,
-    "student_high" as UserRole,
-    "student_college" as UserRole,
-  ].includes(role);
+  return role.startsWith("student_");
 }
 
 export function isTeacher(role: UserRole): boolean {
@@ -162,20 +157,11 @@ export function isTeacher(role: UserRole): boolean {
 }
 
 export function isAdmin(role: UserRole): boolean {
-  return [
-    "principal" as UserRole,
-    "vice_principal" as UserRole,
-    "school_admin" as UserRole,
-  ].includes(role);
+  return ["principal", "vice_principal", "school_admin"].includes(role);
 }
 
 export function isStaff(role: UserRole): boolean {
-  return [
-    "school_it_staff" as UserRole,
-    "school_security" as UserRole,
-    "counselor" as UserRole,
-    "librarian" as UserRole,
-  ].includes(role);
+  return ["school_it_staff", "school_security", "counselor", "librarian"].includes(role);
 }
 
 export function canManageUser(currentUserRole: UserRole, targetUserRole: UserRole): boolean {

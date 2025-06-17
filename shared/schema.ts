@@ -49,6 +49,17 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  role: varchar("role", { enum: [
+    "student_elementary", "student_middle", "student_high", "student_college",
+    "teacher", "tutor", "school_admin", "school_security", "school_it_staff",
+    "parent", "principal", "vice_principal", "counselor", "librarian"
+  ] }).notNull().default("student_elementary"),
+  tenantId: varchar("tenant_id").references(() => tenants.id),
+  gradeLevel: varchar("grade_level"),
+  department: varchar("department"),
+  permissions: text("permissions").array().default([]),
+  isActive: boolean("is_active").default(true),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

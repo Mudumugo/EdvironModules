@@ -20,6 +20,7 @@ import Settings from "@/pages/Settings";
 import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
 import TeacherDashboard from "@/pages/TeacherDashboard";
+import UserManagement from "@/pages/UserManagement";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import TenantSelector from "@/components/TenantSelector";
@@ -68,6 +69,7 @@ function Router() {
             <Route path="/analytics" component={Analytics} />
             <Route path="/settings" component={Settings} />
             <Route path="/my-locker" component={MyLocker} />
+            <Route path="/users" component={UserManagement} />
           </Layout>
         </>
       )}
