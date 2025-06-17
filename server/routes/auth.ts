@@ -6,20 +6,7 @@ export async function registerAuthRoutes(app: Express) {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      if (!userId) {
-        return res.status(401).json({ message: "User ID not found" });
-      }
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth routes - moved to bottom of file to avoid duplication
 
   // Demo login endpoint for role switching
   app.post('/api/auth/demo-login', async (req, res) => {
