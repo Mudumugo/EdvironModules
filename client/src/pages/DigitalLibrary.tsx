@@ -251,7 +251,12 @@ export default function DigitalLibrary() {
 }
 
 // Primary school layout with simpler, more colorful design
-function PrimaryLayout({ categories, resources, layout, onResourceAccess }) {
+function PrimaryLayout({ categories, resources, layout, onResourceAccess }: {
+  categories: any[];
+  resources: any[];
+  layout: any;
+  onResourceAccess: (resource: any, type: string) => void;
+}) {
   const [activeTab, setActiveTab] = useState('subjects');
 
   return (
@@ -380,7 +385,14 @@ function PrimaryLayout({ categories, resources, layout, onResourceAccess }) {
 }
 
 // Secondary school layout with more sophisticated design
-function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, onResourceAccess }) {
+function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, onResourceAccess }: {
+  categories: any[];
+  subjects: any[];
+  resources: any[];
+  layout: any;
+  gradeLevel: string;
+  onResourceAccess: (resource: any, type: string) => void;
+}) {
   return (
     <div className="space-y-8">
       {/* Main Learning Areas */}
@@ -530,7 +542,11 @@ function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, 
 }
 
 // Resource card component
-function ResourceCard({ resource, layout, onAccess }) {
+function ResourceCard({ resource, layout, onAccess }: {
+  resource: any;
+  layout: any;
+  onAccess: (resource: any, type: string) => void;
+}) {
   const ResourceIcon = getResourceIcon(resource.resourceType);
   
   return (
