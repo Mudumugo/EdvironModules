@@ -10,6 +10,7 @@ import { useXapiPageTracking } from "@/lib/xapi/xapiHooks";
 import DeviceGrid from "@/components/device/DeviceGrid";
 import DeviceFilters from "@/components/device/DeviceFilters";
 import DeviceStats from "@/components/device/DeviceStats";
+import DevicePolicies from "@/components/device/DevicePolicies";
 
 export default function DeviceManagement() {
   const [filters, setFilters] = useState({
@@ -256,18 +257,7 @@ export default function DeviceManagement() {
         </TabsContent>
 
         <TabsContent value="policies" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Device Policies</CardTitle>
-              <CardDescription>Manage access controls and restrictions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <Upload className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Policy management interface coming soon</p>
-              </div>
-            </CardContent>
-          </Card>
+          <DevicePolicies />
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-6">

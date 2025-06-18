@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { registerAuthRoutes } from "./routes/auth";
 import { registerXapiRoutes } from "./routes/xapi";
+import { registerDevicePolicyRoutes } from "./routes/devicePolicies";
 import { registerAnalyticsRoutes } from "./routes/analytics";
 import { registerTeacherRoutes } from "./routes/teacher";
 import { registerDeviceRoutes } from "./routes/devices";
