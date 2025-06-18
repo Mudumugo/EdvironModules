@@ -100,15 +100,15 @@ export default function UserProfile() {
   useEffect(() => {
     if (profileData) {
       setFormData({
-        firstName: profileData.firstName || '',
-        lastName: profileData.lastName || '',
-        email: profileData.email || '',
+        firstName: (profileData as any).firstName || '',
+        lastName: (profileData as any).lastName || '',
+        email: (profileData as any).email || '',
         phone: (profileData as any).phone || '',
         address: (profileData as any).address || '',
         bio: (profileData as any).bio || '',
         dateOfBirth: (profileData as any).dateOfBirth || '',
-        gradeLevel: profileData.gradeLevel || '',
-        department: profileData.department || '',
+        gradeLevel: (profileData as any).gradeLevel || '',
+        department: (profileData as any).department || '',
         subjects: (profileData as any).subjects || [],
         achievements: (profileData as any).achievements || []
       });

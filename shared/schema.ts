@@ -65,9 +65,8 @@ export const users = pgTable("users", {
 export const userSettings = pgTable("user_settings", {
   id: varchar("id").primaryKey().notNull(),
   userId: varchar("user_id").references(() => users.id).notNull(),
-  theme: varchar("theme").default("light"),
-  language: varchar("language").default("en"),
   notifications: jsonb("notifications").default({}),
+  privacy: jsonb("privacy").default({}),
   preferences: jsonb("preferences").default({}),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
