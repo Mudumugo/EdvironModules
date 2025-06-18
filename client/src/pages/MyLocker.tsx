@@ -28,7 +28,13 @@ import {
   FolderOpen,
   User,
   Calendar,
-  Clock
+  Clock,
+  BookmarkPlus,
+  Eye,
+  Download,
+  Video,
+  Music,
+  Image
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -90,9 +96,37 @@ interface PageWithStickies extends Page {
   stickyNotes: StickyNoteType[];
 }
 
+interface LockerItem {
+  id: number;
+  userId: string;
+  itemType: 'notebook' | 'resource' | 'bookmark';
+  title: string;
+  description?: string;
+  originalResourceId?: number;
+  content?: string;
+  annotations?: any;
+  metadata?: any;
+  fileUrl?: string;
+  thumbnailUrl?: string;
+  tags?: string[];
+  category?: string;
+  subject?: string;
+  gradeLevel?: string;
+  isPrivate: boolean;
+  isOfflineAvailable: boolean;
+  sizeMb?: number;
+  views: number;
+  lastAccessed?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function MyLocker() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState("notebooks");
   
   // Dialog states
   const [isNotebookDialogOpen, setIsNotebookDialogOpen] = useState(false);
@@ -101,6 +135,8 @@ export default function MyLocker() {
   const [isTopicDialogOpen, setIsTopicDialogOpen] = useState(false);
   const [isPageDialogOpen, setIsPageDialogOpen] = useState(false);
   const [isStickyDialogOpen, setIsStickyDialogOpen] = useState(false);
+  const [selectedLockerItem, setSelectedLockerItem] = useState<LockerItem | null>(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
   
   // Current context states
   const [selectedNotebook, setSelectedNotebook] = useState<NotebookWithContent | null>(null);
@@ -118,6 +154,11 @@ export default function MyLocker() {
   // Fetch notebooks
   const { data: notebooks = [], isLoading: isLoadingNotebooks } = useQuery({
     queryKey: ['/api/notebooks'],
+  });
+
+  // Fetch locker items (saved resources)
+  const { data: lockerItems = [], isLoading: isLoadingItems } = useQuery({
+    queryKey: ['/api/locker/items'],
   });
 
   // Fetch selected notebook details

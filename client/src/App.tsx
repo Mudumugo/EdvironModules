@@ -18,7 +18,7 @@ import Scheduling from "@/pages/Scheduling";
 import Analytics from "@/pages/Analytics";
 import Licensing from "@/pages/Licensing";
 import Settings from "@/pages/Settings";
-import MyLocker from "@/pages/MyLockerNew";
+import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
 import TeacherDashboard from "@/pages/TeacherDashboard";
 import UserManagement from "@/pages/UserManagement-simple";
