@@ -27,6 +27,7 @@ import ParentPortal from "@/pages/ParentPortal";
 import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
 import AppsHub from "@/pages/AppsHub";
 import HotCall from "@/pages/HotCall";
+import TimetableManagement from "@/pages/TimetableManagement";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";

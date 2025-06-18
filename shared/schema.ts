@@ -209,9 +209,54 @@ export * from "./schemas/education.schema";
 export * from "./schemas/mdm.schema";
 export * from "./schemas/activity.schema";
 
+// Timetable schema
+export const timetableEntries = pgTable("timetable_entries", {
+  id: serial("id").primaryKey(),
+  subjectName: varchar("subject_name", { length: 255 }).notNull(),
+  teacherId: varchar("teacher_id", { length: 255 }).notNull(),
+  teacherName: varchar("teacher_name", { length: 255 }).notNull(),
+  classId: varchar("class_id", { length: 255 }).notNull(),
+  className: varchar("class_name", { length: 255 }).notNull(),
+  room: varchar("room", { length: 100 }).notNull(),
+  dayOfWeek: integer("day_of_week").notNull(), // 0=Sunday, 1=Monday, etc.
+  startTime: varchar("start_time", { length: 10 }).notNull(), // HH:MM format
+  endTime: varchar("end_time", { length: 10 }).notNull(), // HH:MM format
+  duration: integer("duration").notNull(), // in minutes
+  semester: varchar("semester", { length: 50 }).notNull(),
+  academicYear: varchar("academic_year", { length: 20 }).notNull(),
+  notes: text("notes"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  tenantId: varchar("tenant_id", { length: 255 }).default("default"),
+});
+
+// Classes schema
+export const classes = pgTable("classes", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  grade: varchar("grade", { length: 20 }),
+  section: varchar("section", { length: 10 }),
+  capacity: integer("capacity").default(30),
+  teacherId: varchar("teacher_id", { length: 255 }),
+  teacherName: varchar("teacher_name", { length: 255 }),
+  academicYear: varchar("academic_year", { length: 20 }).notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  tenantId: varchar("tenant_id", { length: 255 }).default("default"),
+});
+
+export type InsertTimetableEntry = typeof timetableEntries.$inferInsert;
+export type TimetableEntry = typeof timetableEntries.$inferSelect;
+export type InsertClass = typeof classes.$inferInsert;
+export type Class = typeof classes.$inferSelect;
+
+export const insertTimetableEntrySchema = createInsertSchema(timetableEntries);
+export const insertClassSchema = createInsertSchema(classes);
+
 export const insertStudentSchema = z.object({});
 export const insertTeacherSchema = z.object({});
-export const insertClassSchema = z.object({});
 export const insertSubjectSchema = z.object({});
 export const insertLibraryResourceSchema = z.object({});
 export const insertScheduleSchema = z.object({});
