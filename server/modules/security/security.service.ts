@@ -156,12 +156,10 @@ export class SecurityService {
     return {
       totalZones: 3,
       activeCameras: 2,
-      offlineCameras: 1,
-      activeAlerts: 1,
-      todayVisitors: 12,
-      todayIncidents: 2,
-      averageResponseTime: 4.5,
-      systemHealth: "good" as const
+      totalEvents: 2,
+      activeVisitors: 1,
+      threatsDetected: 1,
+      systemStatus: "online" as const
     };
   }
 

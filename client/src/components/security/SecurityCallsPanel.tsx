@@ -202,9 +202,9 @@ export default function SecurityCallsPanel() {
                 </div>
               ))}
             </div>
-          ) : calls && calls.length > 0 ? (
+          ) : calls && Array.isArray(calls) && calls.length > 0 ? (
             <div className="space-y-3">
-              {calls.map((call: any) => (
+              {(calls || []).map((call: any) => (
                 <div key={call.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-muted rounded-lg">

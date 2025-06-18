@@ -36,18 +36,31 @@ export default function SecurityDashboard() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
 
-  // Fetch security metrics
-  const { data: metrics, isLoading: metricsLoading } = useQuery({
-    queryKey: ["/api/security/metrics"],
-  });
+  // Using the security module hook
+  const {
+    metrics,
+    zones,
+    cameras,
+    events,
+    visitors,
+    calls,
+    threats,
+    isLoading: { 
+      metrics: metricsLoading,
+      zones: zonesLoading,
+      cameras: camerasLoading,
+      events: eventsLoading,
+      visitors: visitorsLoading,
+      calls: callsLoading,
+      threats: threatsLoading
+    },
+    createEvent,
+    createVisitor,
+    createCall
+  } = useSecurityModule();
 
-  // Fetch security zones
-  const { data: zones, isLoading: zonesLoading } = useQuery({
-    queryKey: ["/api/security/zones"],
-  });
-
-  // Fetch active threats
-  const { data: threats, isLoading: threatsLoading } = useQuery({
+  // Fetch additional data
+  const { data: additionalThreats } = useQuery({
     queryKey: ["/api/security/threats"],
   });
 
@@ -115,7 +128,12 @@ export default function SecurityDashboard() {
               <DialogHeader>
                 <DialogTitle>Register New Visitor</DialogTitle>
               </DialogHeader>
-              <VisitorRegistrationForm />
+              <VisitorRegistrationForm 
+                onSubmit={(data) => {
+                  console.log('Visitor registered:', data);
+                }}
+                onCancel={() => {}}
+              />
             </DialogContent>
           </Dialog>
           <Button>
