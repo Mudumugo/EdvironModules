@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 
 export function registerDeviceRoutes(app: Express) {

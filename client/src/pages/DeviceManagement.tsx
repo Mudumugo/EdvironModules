@@ -11,6 +11,8 @@ import DeviceGrid from "@/components/device/DeviceGrid";
 import DeviceFilters from "@/components/device/DeviceFilters";
 import DeviceStats from "@/components/device/DeviceStats";
 import DevicePolicies from "@/components/device/DevicePolicies";
+import AddDeviceDialog from "@/components/device/AddDeviceDialog";
+import DeviceGroupManager from "@/components/device/DeviceGroupManager";
 
 export default function DeviceManagement() {
   const [filters, setFilters] = useState({
@@ -254,6 +256,10 @@ export default function DeviceManagement() {
               />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="groups" className="space-y-6">
+          <DeviceGroupManager />
         </TabsContent>
 
         <TabsContent value="policies" className="space-y-6">
