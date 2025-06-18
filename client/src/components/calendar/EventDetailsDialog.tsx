@@ -1,25 +1,23 @@
-import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { format, parseISO } from "date-fns";
 import { 
-  Calendar as CalendarIcon, 
+  Calendar, 
   Clock, 
   MapPin, 
   Users, 
-  Tag,
-  User,
-  CheckCircle,
-  XCircle,
-  Clock3,
-  AlertCircle
+  AlertCircle, 
+  Check, 
+  X, 
+  Edit,
+  Trash2
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { format, parseISO } from "date-fns";
 
 interface CalendarEvent {
   id: string;
@@ -36,351 +34,251 @@ interface CalendarEvent {
   priority: string;
   status: string;
   requiresRSVP: boolean;
-  maxAttendees?: number;
   tags: string[];
-  participants?: Array<{
-    id: string;
-    userId: string;
-    participantType: string;
-    rsvpStatus: string;
-    rsvpResponse?: string;
-  }>;
-  roleTargets?: Array<{
-    id: string;
-    targetType: string;
-    targetValue: string;
-    isRequired: boolean;
-  }>;
 }
 
 interface EventDetailsDialogProps {
   event: CalendarEvent | null;
-  open: boolean;
+  isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onEventUpdated: () => void;
-  onRSVP: (status: string, response?: string) => void;
+  onEdit?: (event: CalendarEvent) => void;
+  onRSVP?: (status: string, response?: string) => void;
 }
 
-export function EventDetailsDialog({ event, open, onOpenChange, onEventUpdated, onRSVP }: EventDetailsDialogProps) {
+export function EventDetailsDialog({ 
+  event, 
+  isOpen, 
+  onOpenChange, 
+  onEdit, 
+  onRSVP 
+}: EventDetailsDialogProps) {
   const { user } = useAuth();
-  const [rsvpStatus, setRsvpStatus] = useState<string>('');
-  const [rsvpResponse, setRsvpResponse] = useState<string>('');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const deleteEventMutation = useMutation({
+    mutationFn: async (eventId: string) => {
+      return apiRequest("DELETE", `/api/calendar/events/${eventId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Event Deleted",
+        description: "Event has been successfully deleted",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/calendar/events"] });
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete event",
+        variant: "destructive",
+      });
+    },
+  });
 
   if (!event) return null;
 
-  const userParticipant = event.participants?.find(p => p.userId === user?.id);
-  const isOrganizer = event.organizerId === user?.id;
-  const canManage = isOrganizer || user?.role === 'admin';
+  const canEdit = user?.id === event.organizerId || user?.role === 'admin' || user?.role === 'teacher';
+  const canDelete = user?.id === event.organizerId || user?.role === 'admin';
 
-  const handleRSVP = () => {
-    if (rsvpStatus) {
-      onRSVP(rsvpStatus, rsvpResponse || undefined);
-      setRsvpStatus('');
-      setRsvpResponse('');
+  const formatDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "PPP");
+    } catch {
+      return dateStr;
     }
   };
 
-  const getPriorityVariant = (priority: string) => {
+  const formatTime = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "p");
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'destructive';
-      case 'high': return 'secondary';
-      case 'normal': return 'default';
-      case 'low': return 'outline';
-      default: return 'default';
+      case 'urgent': return 'bg-red-500';
+      case 'high': return 'bg-orange-500';
+      case 'medium': return 'bg-yellow-500';
+      case 'low': return 'bg-green-500';
+      default: return 'bg-gray-500';
     }
   };
 
-  const getEventTypeColor = (eventType: string) => {
-    const colors = {
-      meeting: 'bg-blue-500',
-      holiday: 'bg-green-500',
-      exam: 'bg-red-500',
-      assembly: 'bg-purple-500',
-      parent_conference: 'bg-orange-500',
-      sports: 'bg-yellow-500',
-      cultural: 'bg-pink-500',
-    };
-    return colors[eventType as keyof typeof colors] || 'bg-gray-500';
+  const getEventTypeColor = (type: string) => {
+    switch (type) {
+      case 'academic': return 'bg-blue-500';
+      case 'administrative': return 'bg-purple-500';
+      case 'social': return 'bg-pink-500';
+      case 'sports': return 'bg-green-500';
+      case 'cultural': return 'bg-orange-500';
+      case 'meeting': return 'bg-gray-500';
+      case 'deadline': return 'bg-red-500';
+      case 'holiday': return 'bg-yellow-500';
+      default: return 'bg-gray-500';
+    }
   };
 
-  const getRSVPIcon = (status: string) => {
-    switch (status) {
-      case 'accepted': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'declined': return <XCircle className="h-4 w-4 text-red-500" />;
-      case 'tentative': return <Clock3 className="h-4 w-4 text-yellow-500" />;
-      default: return <AlertCircle className="h-4 w-4 text-gray-500" />;
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      deleteEventMutation.mutate(event.id);
     }
+  };
+
+  const handleRSVP = (status: string) => {
+    onRSVP?.(status);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>{event.title}</span>
-            <div className="flex items-center gap-2">
-              <Badge variant={getPriorityVariant(event.priority)}>
-                {event.priority}
-              </Badge>
-              <Badge variant="outline">{event.eventType}</Badge>
+          <div className="flex justify-between items-start">
+            <DialogTitle className="text-xl font-bold pr-8">
+              {event.title}
+            </DialogTitle>
+            <div className="flex space-x-2">
+              {canEdit && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit?.(event)}
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              )}
+              {canDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDelete}
+                  disabled={deleteEventMutation.isPending}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
             </div>
-          </DialogTitle>
+          </div>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Event Details */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Event Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {event.description && (
-                  <div>
-                    <h4 className="font-medium mb-2">Description</h4>
-                    <p className="text-muted-foreground">{event.description}</p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">Date</p>
-                      <p className="text-sm text-muted-foreground">
-                        {format(parseISO(event.startDateTime), 'MMMM d, yyyy')}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">Time</p>
-                      <p className="text-sm text-muted-foreground">
-                        {event.isAllDay 
-                          ? 'All day'
-                          : `${format(parseISO(event.startDateTime), 'HH:mm')} - ${format(parseISO(event.endDateTime), 'HH:mm')}`
-                        }
-                      </p>
-                    </div>
-                  </div>
-
-                  {event.location && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="font-medium">Location</p>
-                        <p className="text-sm text-muted-foreground">{event.location}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">Audience</p>
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {event.targetAudience.replace('_', ' ')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {event.tags && event.tags.length > 0 && (
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Tag className="h-4 w-4 text-muted-foreground" />
-                      <p className="font-medium">Tags</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {event.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Role Targets */}
-            {event.roleTargets && event.roleTargets.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Target Audience</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {event.roleTargets.map((target, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 border rounded">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="capitalize">
-                            {target.targetType}: {target.targetValue.replace('_', ' ')}
-                          </span>
-                        </div>
-                        {target.isRequired && (
-                          <Badge variant="secondary">Required</Badge>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* RSVP Section */}
-            {event.requiresRSVP && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">RSVP</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {userParticipant ? (
-                    <div>
-                      <div className="flex items-center gap-2 mb-4">
-                        {getRSVPIcon(userParticipant.rsvpStatus)}
-                        <span className="font-medium capitalize">
-                          Your Response: {userParticipant.rsvpStatus || 'Pending'}
-                        </span>
-                      </div>
-                      
-                      {userParticipant.rsvpResponse && (
-                        <div className="p-3 bg-muted rounded">
-                          <p className="text-sm font-medium mb-1">Your Message:</p>
-                          <p className="text-sm text-muted-foreground">{userParticipant.rsvpResponse}</p>
-                        </div>
-                      )}
-
-                      <Separator />
-
-                      <div className="space-y-3">
-                        <p className="font-medium">Update your response:</p>
-                        <Select value={rsvpStatus} onValueChange={setRsvpStatus}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select your response" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="accepted">Accept</SelectItem>
-                            <SelectItem value="declined">Decline</SelectItem>
-                            <SelectItem value="tentative">Maybe</SelectItem>
-                          </SelectContent>
-                        </Select>
-
-                        <Textarea
-                          value={rsvpResponse}
-                          onChange={(e) => setRsvpResponse(e.target.value)}
-                          placeholder="Optional message (e.g., dietary requirements, questions, etc.)"
-                          rows={3}
-                        />
-
-                        <Button onClick={handleRSVP} disabled={!rsvpStatus}>
-                          Update RSVP
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center text-muted-foreground">
-                      You are not a participant in this event
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Badge className={`${getEventTypeColor(event.eventType)} text-white`}>
+              {event.eventType}
+            </Badge>
+            <Badge className={`${getPriorityColor(event.priority)} text-white`}>
+              {event.priority} priority
+            </Badge>
+            <Badge variant="outline">
+              {event.visibility}
+            </Badge>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Event Status */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Event Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status:</span>
-                    <Badge variant={event.status === 'active' ? 'default' : 'secondary'}>
-                      {event.status}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Visibility:</span>
-                    <Badge variant="outline">{event.visibility}</Badge>
-                  </div>
+          {event.description && (
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {event.description}
+              </p>
+            </div>
+          )}
 
-                  {event.requiresRSVP && (
-                    <>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">RSVP Required:</span>
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                      </div>
-                      
-                      {event.maxAttendees && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Max Attendees:</span>
-                          <span>{event.maxAttendees}</span>
-                        </div>
-                      )}
-                    </>
-                  )}
+          <Separator />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-gray-500" />
+                <span className="text-sm">
+                  {formatDate(event.startDateTime)}
+                  {formatDate(event.startDateTime) !== formatDate(event.endDateTime) && 
+                    ` - ${formatDate(event.endDateTime)}`
+                  }
+                </span>
+              </div>
+
+              {!event.isAllDay && (
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm">
+                    {formatTime(event.startDateTime)} - {formatTime(event.endDateTime)}
+                  </span>
                 </div>
-              </CardContent>
-            </Card>
+              )}
 
-            {/* Participants */}
-            {event.participants && event.participants.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">
-                    Participants ({event.participants.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {event.participants.map((participant, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 border rounded">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{participant.userId}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {getRSVPIcon(participant.rsvpStatus)}
-                          <Badge variant="outline" className="text-xs">
-                            {participant.participantType}
-                          </Badge>
-                        </div>
-                      </div>
+              {event.location && (
+                <div className="flex items-center space-x-2">
+                  <MapPin className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm">{event.location}</span>
+                </div>
+              )}
+
+              <div className="flex items-center space-x-2">
+                <Users className="w-4 h-4 text-gray-500" />
+                <span className="text-sm capitalize">{event.targetAudience}</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-gray-500" />
+                <span className="text-sm">Status: {event.status}</span>
+              </div>
+
+              {event.tags && event.tags.length > 0 && (
+                <div>
+                  <span className="text-sm text-gray-500">Tags:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {event.tags.map((tag, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Actions */}
-            {canManage && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button variant="outline" className="w-full">
-                    Edit Event
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    Manage Participants
-                  </Button>
-                  <Button variant="destructive" className="w-full">
-                    Cancel Event
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              )}
+            </div>
           </div>
+
+          {event.requiresRSVP && (
+            <>
+              <Separator />
+              <div>
+                <h4 className="font-medium mb-2">RSVP Required</h4>
+                <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRSVP('attending')}
+                    className="text-green-600 border-green-600 hover:bg-green-50"
+                  >
+                    <Check className="w-4 h-4 mr-1" />
+                    Attending
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRSVP('not_attending')}
+                    className="text-red-600 border-red-600 hover:bg-red-50"
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Not Attending
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRSVP('maybe')}
+                    className="text-yellow-600 border-yellow-600 hover:bg-yellow-50"
+                  >
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    Maybe
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>
