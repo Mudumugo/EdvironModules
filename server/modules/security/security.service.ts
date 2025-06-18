@@ -1,5 +1,6 @@
 // Security module service - completely isolated
-import { SecurityZone, SecurityCamera, SecurityEvent, VisitorRegistration, SecurityCall, SecurityMetrics } from "@shared/types/security.types";
+import { SecurityMetrics, ThreatAlert } from "@shared/types/security.types";
+import { SecurityZone, SecurityCamera, SecurityEvent, VisitorRegistration, SecurityCall } from "@shared/schema";
 
 export class SecurityService {
   private static instance: SecurityService;

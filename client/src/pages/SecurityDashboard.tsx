@@ -42,7 +42,7 @@ export default function SecurityDashboard() {
     useSecurityZones,
     useSecurityCameras,
     useSecurityEvents,
-    useSecurityVisitors,
+    useVisitorRegistrations,
     useSecurityCalls,
     useSecurityMetrics,
     createSecurityEvent,
@@ -54,7 +54,7 @@ export default function SecurityDashboard() {
   const { data: zones = [], isLoading: zonesLoading } = useSecurityZones();
   const { data: cameras = [], isLoading: camerasLoading } = useSecurityCameras();
   const { data: securityEvents = [], isLoading: eventsLoading } = useSecurityEvents();
-  const { data: securityVisitors = [], isLoading: visitorsLoading } = useSecurityVisitors();
+  const { data: securityVisitors = [], isLoading: visitorsLoading } = useVisitorRegistrations();
   const { data: securityCalls = [], isLoading: callsLoading } = useSecurityCalls();
   const { data: metrics = {}, isLoading: metricsLoading } = useSecurityMetrics();
 
@@ -224,9 +224,8 @@ export default function SecurityDashboard() {
               </CardHeader>
               <CardContent>
                 <SecurityEventsList 
-                  events={events?.slice(0, 5) || []} 
-                  onEventClick={handleEventClick}
-                  compact={true}
+                  events={securityEvents?.slice(0, 5) || []} 
+                  isLoading={eventsLoading}
                 />
               </CardContent>
             </Card>
@@ -292,7 +291,7 @@ export default function SecurityDashboard() {
             </CardHeader>
             <CardContent>
               <SecurityEventsList 
-                events={events || []} 
+                events={securityEvents || []} 
                 onEventClick={handleEventClick}
               />
             </CardContent>
@@ -307,7 +306,7 @@ export default function SecurityDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {visitors?.map((visitor: any) => (
+                {securityVisitors?.map((visitor: any) => (
                   <div key={visitor.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
