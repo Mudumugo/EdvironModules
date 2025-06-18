@@ -159,7 +159,84 @@ export const WorksheetViewer: React.FC<WorksheetViewerProps> = ({
     if (showAnswerKey && worksheetData.hasAnswerKey) {
       return `Answer Key - Page ${currentPage} of ${worksheetData.totalPages}`;
     }
-    return worksheetData.pages[currentPage - 1] || `Page ${currentPage} Content`;
+    
+    // Get the raw content for this page
+    const rawContent = worksheetData.pages[currentPage - 1] || worksheetData.content || '';
+    
+    // If content looks like encoded CSS/HTML, try to extract meaningful content
+    if (rawContent.includes('%20') || rawContent.includes('%3A') || rawContent.includes('%3C')) {
+      // This appears to be URL-encoded content, decode it
+      const decoded = decodeURIComponent(rawContent);
+      
+      // Extract meaningful text from CSS/HTML
+      const textMatch = decoded.match(/content[^:]*:\s*["']([^"']+)["']/g);
+      if (textMatch) {
+        return textMatch.map(match => match.replace(/content[^:]*:\s*["']([^"']+)["']/, '$1')).join(' ');
+      }
+      
+      // Try to extract any readable text
+      const cleanText = decoded
+        .replace(/%[0-9A-F]{2}/gi, ' ') // Remove remaining URL encoding
+        .replace(/[{}();:]/g, ' ') // Remove CSS syntax
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+      
+      if (cleanText.length > 20) {
+        return cleanText;
+      }
+    }
+    
+    return rawContent || `Page ${currentPage} Content`;
+  };
+
+  const renderPageContent = () => {
+    const content = getCurrentPageContent();
+    
+    // Check if this looks like CSS/HTML content that needs special handling
+    if (content.includes('%20') || content.includes('background') || content.includes('font-weight')) {
+      return (
+        <div className="space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
+            Page {currentPage} of {worksheetData.totalPages}
+          </h2>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div className="text-center space-y-4">
+              <FileText className="h-16 w-16 text-blue-400 mx-auto" />
+              <h3 className="text-lg font-semibold text-blue-800">Interactive Worksheet</h3>
+              <p className="text-blue-700">
+                This page contains interactive content that would be rendered properly in a full worksheet environment.
+              </p>
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <p className="text-sm text-gray-600 font-medium mb-2">Content Preview:</p>
+                <p className="text-xs text-gray-500 break-all max-h-32 overflow-y-auto">
+                  {content.substring(0, 200)}...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // For normal content, render as before
+    return (
+      <div className="space-y-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
+          Page {currentPage} of {worksheetData.totalPages}
+        </h2>
+        <div className="text-gray-600 leading-relaxed">
+          <div className="min-h-[300px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <FileText className="h-16 w-16 text-gray-400 mx-auto" />
+              <p className="text-lg font-medium">{content}</p>
+              <p className="text-sm text-gray-500">
+                Interactive worksheet content would appear here
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -259,22 +336,7 @@ export const WorksheetViewer: React.FC<WorksheetViewerProps> = ({
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-6">
-                          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
-                            Page {currentPage} of {worksheetData.totalPages}
-                          </h2>
-                          <div className="text-gray-600 leading-relaxed">
-                            <div className="min-h-[300px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                              <div className="text-center space-y-4">
-                                <FileText className="h-16 w-16 text-gray-400 mx-auto" />
-                                <p className="text-lg font-medium">{getCurrentPageContent()}</p>
-                                <p className="text-sm text-gray-500">
-                                  Interactive worksheet content would appear here
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        renderPageContent()
                       )}
                     </div>
                   </div>
