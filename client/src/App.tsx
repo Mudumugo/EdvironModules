@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
 import { Solutions } from "@/pages/Solutions";
 import { CBEOverview } from "@/pages/CBEOverview";
+import { About } from "@/pages/About";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import LearningDashboard from "@/pages/LearningDashboard";
@@ -87,6 +88,7 @@ function Router() {
         <Route path="/demo" component={Login} />
         <Route path="/solutions" component={Solutions} />
         <Route path="/cbe-overview" component={CBEOverview} />
+        <Route path="/about" component={About} />
         <Route component={Landing} />
       </Switch>
     );

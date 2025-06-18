@@ -137,7 +137,9 @@ export function Landing() {
               <Link href="/cbe-overview">
                 <span className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 cursor-pointer">CBE Overview</span>
               </Link>
-              <a href="#about" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">About</a>
+              <Link href="/about">
+                <span className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 cursor-pointer">About</span>
+              </Link>
               <div className="border-t border-gray-200 pt-4 pb-3">
                 <Link href="/login">
                   <Button variant="ghost" className="w-full mb-2">Sign In</Button>
@@ -411,7 +413,7 @@ export function Landing() {
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#about" className="hover:text-white">About</a></li>
+                <li><Link href="/about" className="hover:text-white">About</Link></li>
                 <li><a href="#careers" className="hover:text-white">Careers</a></li>
                 <li><a href="#contact" className="hover:text-white">Contact</a></li>
                 <li><a href="#blog" className="hover:text-white">Blog</a></li>
