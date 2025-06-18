@@ -144,7 +144,7 @@ export function registerCalendarRoutes(app: Express) {
   });
 
   // Create new event
-  app.post('/api/calendar/events', isAuthenticated, requireRole([USER_ROLES.ADMIN, USER_ROLES.TEACHER, USER_ROLES.STAFF]), async (req: AuthenticatedRequest, res) => {
+  app.post('/api/calendar/events', isAuthenticated, requireRole(['admin', 'teacher', 'staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const eventData = insertCalendarEventSchema.parse({
         ...req.body,
@@ -156,7 +156,7 @@ export function registerCalendarRoutes(app: Express) {
 
       // Check if user has permission to create events for the specified audience
       const userRole = req.user!.role;
-      if (eventData.targetAudience === 'all' && userRole !== USER_ROLES.ADMIN) {
+      if (eventData.targetAudience === 'all' && userRole !== 'admin') {
         return res.status(403).json({ message: 'Only administrators can create school-wide events' });
       }
 
@@ -215,7 +215,7 @@ export function registerCalendarRoutes(app: Express) {
       // Check permissions
       const userRole = req.user!.role;
       const canEdit = event.organizerId === req.user!.id || 
-                     [USER_ROLES.ADMIN].includes(userRole);
+                     userRole === 'admin';
       
       if (!canEdit) {
         return res.status(403).json({ message: 'Access denied' });
@@ -248,7 +248,7 @@ export function registerCalendarRoutes(app: Express) {
       // Check permissions
       const userRole = req.user!.role;
       const canDelete = event.organizerId === req.user!.id || 
-                       [USER_ROLES.ADMIN].includes(userRole);
+                       userRole === 'admin';
       
       if (!canDelete) {
         return res.status(403).json({ message: 'Access denied' });
@@ -292,7 +292,7 @@ export function registerCalendarRoutes(app: Express) {
   });
 
   // Get events requiring approval (admin only)
-  app.get('/api/calendar/pending-approval', isAuthenticated, requireRole([USER_ROLES.ADMIN]), async (req: AuthenticatedRequest, res) => {
+  app.get('/api/calendar/pending-approval', isAuthenticated, requireRole(['admin']), async (req: AuthenticatedRequest, res) => {
     try {
       const events = await storage.getEventsRequiringApproval(req.user!.tenantId);
       res.json(events);
@@ -303,7 +303,7 @@ export function registerCalendarRoutes(app: Express) {
   });
 
   // Approve/reject event (admin only)
-  app.patch('/api/calendar/events/:eventId/approval', isAuthenticated, requireRole([USER_ROLES.ADMIN]), async (req: AuthenticatedRequest, res) => {
+  app.patch('/api/calendar/events/:eventId/approval', isAuthenticated, requireRole(['admin']), async (req: AuthenticatedRequest, res) => {
     try {
       const { eventId } = req.params;
       const { status } = req.body; // 'approved' or 'rejected'
@@ -322,7 +322,7 @@ export function registerCalendarRoutes(app: Express) {
   });
 
   // Get event templates
-  app.get('/api/calendar/templates', isAuthenticated, requireRole([USER_ROLES.ADMIN, USER_ROLES.TEACHER]), async (req: AuthenticatedRequest, res) => {
+  app.get('/api/calendar/templates', isAuthenticated, requireRole(['admin', 'teacher']), async (req: AuthenticatedRequest, res) => {
     try {
       const templates = await storage.getEventTemplates(req.user!.tenantId);
       res.json(templates);
@@ -333,7 +333,7 @@ export function registerCalendarRoutes(app: Express) {
   });
 
   // Create event template
-  app.post('/api/calendar/templates', isAuthenticated, requireRole([USER_ROLES.ADMIN]), async (req: AuthenticatedRequest, res) => {
+  app.post('/api/calendar/templates', isAuthenticated, requireRole(['admin']), async (req: AuthenticatedRequest, res) => {
     try {
       const templateData = insertEventTemplateSchema.parse({
         ...req.body,
@@ -369,7 +369,7 @@ export function registerCalendarRoutes(app: Express) {
   });
 
   // Get calendar statistics (admin only)
-  app.get('/api/calendar/stats', isAuthenticated, requireRole([USER_ROLES.ADMIN]), async (req: AuthenticatedRequest, res) => {
+  app.get('/api/calendar/stats', isAuthenticated, requireRole(['admin']), async (req: AuthenticatedRequest, res) => {
     try {
       const now = new Date();
       const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);

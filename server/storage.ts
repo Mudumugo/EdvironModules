@@ -796,6 +796,8 @@ export class DatabaseStorage implements IStorage {
       .orderBy(asc(deviceControlActions.createdAt));
   }
 
+
+
   // Calendar operations
   async createEvent(eventData: InsertCalendarEvent): Promise<CalendarEvent> {
     const [event] = await db
