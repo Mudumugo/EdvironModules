@@ -55,7 +55,7 @@ const moduleCards = [
     features: ["Event Management", "Schedule Sync"],
     moreCount: 1,
     category: "Management",
-    route: "/scheduling"
+    route: "/school-calendar"
   },
   {
     id: "lesson-planning",

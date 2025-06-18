@@ -16,6 +16,7 @@ import DigitalLibraryNew from "@/pages/DigitalLibraryNew";
 import TutorHub from "@/pages/TutorHub";
 import FamilyControls from "@/pages/FamilyControls";
 import Scheduling from "@/pages/Scheduling";
+import SchoolCalendar from "@/pages/SchoolCalendar";
 import Analytics from "@/pages/Analytics";
 import Licensing from "@/pages/Licensing";
 import Settings from "@/pages/Settings";
@@ -126,6 +127,12 @@ function Router() {
         <Route path="/scheduling">
           <RoleProtectedRoute moduleId="scheduling">
             <Scheduling />
+          </RoleProtectedRoute>
+        </Route>
+        
+        <Route path="/school-calendar">
+          <RoleProtectedRoute moduleId="scheduling">
+            <SchoolCalendar />
           </RoleProtectedRoute>
         </Route>
 
