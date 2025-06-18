@@ -460,19 +460,32 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                 >
                   {bookData.pages && bookData.pages[currentPage - 1] ? (
                     <div className="relative w-full h-full flex items-center justify-center">
-                      <img
-                        src={bookData.pages[currentPage - 1]}
-                        alt={`Page ${currentPage}`}
-                        className="object-contain w-full h-full"
-                        style={{ 
-                          maxWidth: '100%',
-                          maxHeight: '100%'
-                        }}
-                      />
+                      {bookData.pages[currentPage - 1].startsWith('data:text/html') ? (
+                        <iframe
+                          src={bookData.pages[currentPage - 1]}
+                          className="w-full h-full border-0 rounded-lg"
+                          style={{ 
+                            maxWidth: '100%',
+                            maxHeight: '100%'
+                          }}
+                          title={`Page ${currentPage}`}
+                          sandbox="allow-scripts allow-same-origin allow-forms"
+                        />
+                      ) : (
+                        <img
+                          src={bookData.pages[currentPage - 1]}
+                          alt={`Page ${currentPage}`}
+                          className="object-contain w-full h-full"
+                          style={{ 
+                            maxWidth: '100%',
+                            maxHeight: '100%'
+                          }}
+                        />
+                      )}
                       
                       {/* Bookmark indicator */}
                       {bookmarkPages.includes(currentPage) && (
-                        <div className="absolute top-2 right-2">
+                        <div className="absolute top-2 right-2 z-10">
                           <div className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-bl-lg text-xs font-semibold">
                             <Bookmark className="h-3 w-3 inline mr-1" />
                             <span className="hidden sm:inline">Bookmarked</span>
