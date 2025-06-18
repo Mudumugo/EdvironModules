@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Star, RefreshCw, CheckCircle } from "lucide-react";
 import { CurrentSubscription } from "../types";
+import { formatKSH } from "@shared/utils/currency";
 
 interface CurrentSubscriptionCardProps {
   subscription: CurrentSubscription;
@@ -40,7 +41,7 @@ export function CurrentSubscriptionCard({ subscription }: CurrentSubscriptionCar
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{subscription.planName} Plan</h3>
                   <p className="text-sm text-gray-600">
-                    ${subscription.amount}/{subscription.currency.toLowerCase()} per month
+                    {formatKSH(subscription.amount)} per month
                   </p>
                 </div>
               </div>

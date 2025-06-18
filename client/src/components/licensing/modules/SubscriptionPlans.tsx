@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Shield, Star, Crown } from "lucide-react";
 import { SubscriptionPlan } from "../types";
+import { formatKSH } from "@shared/utils/currency";
 
 interface SubscriptionPlansProps {
   plans: SubscriptionPlan[];
@@ -43,7 +44,7 @@ export function SubscriptionPlans({ plans, currentPlanName }: SubscriptionPlansP
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
                 <div className="mt-2">
-                  <span className="text-3xl font-bold text-gray-900">${plan.price}</span>
+                  <span className="text-3xl font-bold text-gray-900">{formatKSH(plan.price)}</span>
                   <span className="text-gray-600">/{plan.interval}</span>
                 </div>
               </div>

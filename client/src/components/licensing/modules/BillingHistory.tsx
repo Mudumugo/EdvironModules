@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard } from "lucide-react";
 import { PaymentRecord } from "../types";
+import { formatKSH } from "@shared/utils/currency";
 
 interface BillingHistoryProps {
   paymentHistory: PaymentRecord[];
@@ -37,7 +38,7 @@ export function BillingHistory({ paymentHistory }: BillingHistoryProps) {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">
-                    ${payment.amount} {payment.currency}
+                    {formatKSH(payment.amount)}
                   </p>
                   <p className="text-sm text-gray-500">
                     {new Date(payment.date).toLocaleDateString()} • {payment.method}

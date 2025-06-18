@@ -626,12 +626,12 @@ export default function SignUp() {
                               <SelectValue placeholder="Select budget range" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="under-5k">Under $5,000</SelectItem>
-                              <SelectItem value="5k-15k">$5,000 - $15,000</SelectItem>
-                              <SelectItem value="15k-30k">$15,000 - $30,000</SelectItem>
-                              <SelectItem value="30k-50k">$30,000 - $50,000</SelectItem>
-                              <SelectItem value="50k-100k">$50,000 - $100,000</SelectItem>
-                              <SelectItem value="over-100k">Over $100,000</SelectItem>
+                              <SelectItem value="under-500k">Under KSH 500,000</SelectItem>
+                              <SelectItem value="500k-1.5m">KSH 500,000 - 1.5M</SelectItem>
+                              <SelectItem value="1.5m-3m">KSH 1.5M - 3M</SelectItem>
+                              <SelectItem value="3m-5m">KSH 3M - 5M</SelectItem>
+                              <SelectItem value="5m-10m">KSH 5M - 10M</SelectItem>
+                              <SelectItem value="over-10m">Over KSH 10M</SelectItem>
                               <SelectItem value="tbd">To be determined</SelectItem>
                             </SelectContent>
                           </Select>
