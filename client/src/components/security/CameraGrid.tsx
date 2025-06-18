@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSecurityModule } from "@/hooks/useSecurityModule";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,8 @@ interface CameraGridProps {
 }
 
 export default function CameraGrid({ zoneId }: CameraGridProps) {
-  const { data: cameras = [], isLoading } = useQuery({
-    queryKey: zoneId ? ["/api/security/cameras", { zoneId }] : ["/api/security/cameras"],
-  });
+  const { useSecurityCameras } = useSecurityModule();
+  const { data: cameras = [], isLoading } = useSecurityCameras(zoneId);
 
   if (isLoading) {
     return (
