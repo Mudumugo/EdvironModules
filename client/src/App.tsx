@@ -117,7 +117,7 @@ function Router() {
         {/* Student and Teacher modules */}
         <Route path="/digital-library">
           <RoleProtectedRoute moduleId="digital-library">
-            <DigitalLibraryNew />
+            <DigitalLibrary />
           </RoleProtectedRoute>
         </Route>
 
