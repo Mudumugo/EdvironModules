@@ -23,6 +23,7 @@ import { registerUserProfileRoutes } from "./routes/userProfile";
 import { registerNotebookModuleRoutes } from "./routes/notebook/index";
 import { registerAuthoringRoutes } from "./routes/authoring";
 import { registerLiveSessionRoutes } from "./routes/liveSessions";
+import { registerCalendarRoutes } from "./routes/calendar";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
@@ -48,6 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerUserProfileRoutes(app);
   registerNotebookModuleRoutes(app);
   registerAuthoringRoutes(app);
+  registerCalendarRoutes(app);
 
   const { registerLockerRoutes } = await import("./routes/locker");
   registerLockerRoutes(app);

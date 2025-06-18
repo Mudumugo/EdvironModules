@@ -20,9 +20,24 @@ import {
   deviceControlActions,
   type DeviceControlAction,
   type InsertDeviceControlAction,
+  calendarEvents,
+  type CalendarEvent,
+  type InsertCalendarEvent,
+  eventParticipants,
+  type EventParticipant,
+  type InsertEventParticipant,
+  eventRoleTargets,
+  type EventRoleTarget,
+  type InsertEventRoleTarget,
+  eventReminders,
+  type EventReminder,
+  type InsertEventReminder,
+  eventTemplates,
+  type EventTemplate,
+  type InsertEventTemplate,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, lte, isNotNull, desc, asc } from "drizzle-orm";
+import { eq, and, lte, gte, isNotNull, desc, asc } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -779,6 +794,275 @@ export class DatabaseStorage implements IStorage {
         eq(deviceControlActions.status, "pending")
       ))
       .orderBy(asc(deviceControlActions.createdAt));
+  }
+
+  // Calendar operations
+  async createEvent(eventData: InsertCalendarEvent): Promise<CalendarEvent> {
+    const [event] = await db
+      .insert(calendarEvents)
+      .values(eventData)
+      .returning();
+    return event;
+  }
+
+  async updateEvent(eventId: string, updates: Partial<CalendarEvent>): Promise<CalendarEvent> {
+    const [event] = await db
+      .update(calendarEvents)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(calendarEvents.id, eventId))
+      .returning();
+    return event;
+  }
+
+  async getEvent(eventId: string): Promise<CalendarEvent | undefined> {
+    const [event] = await db
+      .select()
+      .from(calendarEvents)
+      .where(eq(calendarEvents.id, eventId));
+    return event;
+  }
+
+  async getEventsForUser(userId: string, startDate: Date, endDate: Date, tenantId?: string): Promise<CalendarEvent[]> {
+    // Get user info first to determine their role and permissions
+    const user = await this.getUser(userId);
+    if (!user) return [];
+
+    // Build conditions for events the user should see
+    const conditions = [
+      and(
+        lte(calendarEvents.startDateTime, endDate),
+        gte(calendarEvents.endDateTime, startDate),
+        eq(calendarEvents.status, 'active')
+      )
+    ];
+
+    if (tenantId) {
+      conditions.push(eq(calendarEvents.tenantId, tenantId));
+    }
+
+    // Get events based on visibility and role
+    let events = await db
+      .select()
+      .from(calendarEvents)
+      .where(and(...conditions))
+      .orderBy(asc(calendarEvents.startDateTime));
+
+    // Filter events based on user permissions and targeting
+    const filteredEvents = [];
+    
+    for (const event of events) {
+      let canView = false;
+
+      // Check visibility
+      if (event.visibility === 'public') {
+        canView = true;
+      } else if (event.visibility === 'private' && event.organizerId === userId) {
+        canView = true;
+      } else if (event.visibility === 'restricted') {
+        // Check if user is targeted or is a participant
+        const isParticipant = await db
+          .select()
+          .from(eventParticipants)
+          .where(and(
+            eq(eventParticipants.eventId, event.id),
+            eq(eventParticipants.userId, userId)
+          ))
+          .limit(1);
+
+        if (isParticipant.length > 0) {
+          canView = true;
+        } else {
+          // Check role targeting
+          const roleTargets = await db
+            .select()
+            .from(eventRoleTargets)
+            .where(eq(eventRoleTargets.eventId, event.id));
+
+          for (const target of roleTargets) {
+            if (target.targetType === 'role' && target.targetValue === user.role) {
+              canView = true;
+              break;
+            } else if (target.targetType === 'grade' && target.targetValue === user.gradeLevel) {
+              canView = true;
+              break;
+            } else if (target.targetType === 'department' && target.targetValue === user.department) {
+              canView = true;
+              break;
+            }
+          }
+        }
+      }
+
+      // Check target audience
+      if (canView && event.targetAudience !== 'all') {
+        if (event.targetAudience === 'staff' && !['teacher', 'admin', 'staff'].includes(user.role)) {
+          canView = false;
+        } else if (event.targetAudience === 'students' && user.role !== 'student') {
+          canView = false;
+        } else if (event.targetAudience === 'parents' && user.role !== 'parent') {
+          canView = false;
+        }
+      }
+
+      if (canView) {
+        filteredEvents.push(event);
+      }
+    }
+
+    return filteredEvents;
+  }
+
+  async getEventsByDateRange(startDate: Date, endDate: Date, tenantId?: string): Promise<CalendarEvent[]> {
+    const conditions = [
+      and(
+        lte(calendarEvents.startDateTime, endDate),
+        gte(calendarEvents.endDateTime, startDate),
+        eq(calendarEvents.status, 'active')
+      )
+    ];
+
+    if (tenantId) {
+      conditions.push(eq(calendarEvents.tenantId, tenantId));
+    }
+
+    return await db
+      .select()
+      .from(calendarEvents)
+      .where(and(...conditions))
+      .orderBy(asc(calendarEvents.startDateTime));
+  }
+
+  async deleteEvent(eventId: string): Promise<void> {
+    await db
+      .delete(calendarEvents)
+      .where(eq(calendarEvents.id, eventId));
+  }
+
+  // Event participants
+  async addEventParticipant(participantData: InsertEventParticipant): Promise<EventParticipant> {
+    const [participant] = await db
+      .insert(eventParticipants)
+      .values(participantData)
+      .returning();
+    return participant;
+  }
+
+  async updateParticipantRSVP(participantId: string, rsvpStatus: string, response?: string): Promise<EventParticipant> {
+    const [participant] = await db
+      .update(eventParticipants)
+      .set({ 
+        rsvpStatus, 
+        rsvpResponse: response, 
+        rsvpAt: new Date(),
+        updatedAt: new Date() 
+      })
+      .where(eq(eventParticipants.id, participantId))
+      .returning();
+    return participant;
+  }
+
+  async getEventParticipants(eventId: string): Promise<EventParticipant[]> {
+    return await db
+      .select()
+      .from(eventParticipants)
+      .where(eq(eventParticipants.eventId, eventId))
+      .orderBy(asc(eventParticipants.createdAt));
+  }
+
+  async removeEventParticipant(participantId: string): Promise<void> {
+    await db
+      .delete(eventParticipants)
+      .where(eq(eventParticipants.id, participantId));
+  }
+
+  // Event role targets
+  async addEventRoleTarget(roleTargetData: InsertEventRoleTarget): Promise<EventRoleTarget> {
+    const [roleTarget] = await db
+      .insert(eventRoleTargets)
+      .values(roleTargetData)
+      .returning();
+    return roleTarget;
+  }
+
+  async getEventRoleTargets(eventId: string): Promise<EventRoleTarget[]> {
+    return await db
+      .select()
+      .from(eventRoleTargets)
+      .where(eq(eventRoleTargets.eventId, eventId));
+  }
+
+  async removeEventRoleTarget(roleTargetId: string): Promise<void> {
+    await db
+      .delete(eventRoleTargets)
+      .where(eq(eventRoleTargets.id, roleTargetId));
+  }
+
+  // Event templates
+  async createEventTemplate(templateData: InsertEventTemplate): Promise<EventTemplate> {
+    const [template] = await db
+      .insert(eventTemplates)
+      .values(templateData)
+      .returning();
+    return template;
+  }
+
+  async getEventTemplates(tenantId: string): Promise<EventTemplate[]> {
+    return await db
+      .select()
+      .from(eventTemplates)
+      .where(eq(eventTemplates.tenantId, tenantId))
+      .orderBy(asc(eventTemplates.name));
+  }
+
+  async updateEventTemplate(templateId: string, updates: Partial<EventTemplate>): Promise<EventTemplate> {
+    const [template] = await db
+      .update(eventTemplates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(eventTemplates.id, templateId))
+      .returning();
+    return template;
+  }
+
+  async deleteEventTemplate(templateId: string): Promise<void> {
+    await db
+      .delete(eventTemplates)
+      .where(eq(eventTemplates.id, templateId));
+  }
+
+  // Advanced calendar queries
+  async getUpcomingEventsForUser(userId: string, limit: number = 10): Promise<CalendarEvent[]> {
+    const now = new Date();
+    const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+    const events = await this.getEventsForUser(userId, now, oneWeekFromNow);
+    return events.slice(0, limit);
+  }
+
+  async getEventsRequiringApproval(tenantId: string): Promise<CalendarEvent[]> {
+    return await db
+      .select()
+      .from(calendarEvents)
+      .where(and(
+        eq(calendarEvents.tenantId, tenantId),
+        eq(calendarEvents.approvalStatus, 'pending')
+      ))
+      .orderBy(asc(calendarEvents.createdAt));
+  }
+
+  async getUserEventConflicts(userId: string, startDate: Date, endDate: Date): Promise<CalendarEvent[]> {
+    // Get all events where user is a participant during the specified time
+    const userEvents = await db
+      .select({ event: calendarEvents })
+      .from(calendarEvents)
+      .innerJoin(eventParticipants, eq(eventParticipants.eventId, calendarEvents.id))
+      .where(and(
+        eq(eventParticipants.userId, userId),
+        lte(calendarEvents.startDateTime, endDate),
+        gte(calendarEvents.endDateTime, startDate),
+        eq(calendarEvents.status, 'active')
+      ));
+
+    return userEvents.map(row => row.event);
   }
 }
 
