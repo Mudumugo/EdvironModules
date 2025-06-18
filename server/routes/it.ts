@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requireRole } from "../roleMiddleware";
 
