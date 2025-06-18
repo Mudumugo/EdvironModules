@@ -144,6 +144,19 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     ],
     isCore: true
   },
+  {
+    id: "hot-call",
+    name: "Hot Call Directory",
+    path: "/hot-call",
+    icon: "Phone",
+    description: "Quick access to priority extensions and emergency contacts",
+    allowedRoles: [
+      "school_admin", "school_it_staff", "school_security", "teacher", 
+      "principal", "vice_principal", "office_staff", "receptionist", 
+      "secretary", "registrar", "nurse", "counselor"
+    ],
+    isCore: true
+  },
 
   // Parent modules
   {

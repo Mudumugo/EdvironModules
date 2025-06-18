@@ -192,11 +192,38 @@ export function registerPBXRoutes(app: Express) {
     async (req, res) => {
       try {
         const extensions = [
-          { id: 1, extension: "1001", userId: "john_smith", displayName: "John Smith", department: "Administration", location: "Office A-102", status: "online", deviceType: "desk_phone", lastActivity: new Date() },
-          { id: 2, extension: "1002", userId: "maria_garcia", displayName: "Maria Garcia", department: "Teaching", location: "Classroom B-201", status: "busy", deviceType: "softphone", lastActivity: new Date() },
-          { id: 3, extension: "1003", userId: "david_chen", displayName: "David Chen", department: "IT Support", location: "IT Room", status: "online", deviceType: "desk_phone", lastActivity: new Date() },
-          { id: 4, extension: "1004", userId: "sarah_johnson", displayName: "Sarah Johnson", department: "Security", location: "Security Office", status: "offline", deviceType: "mobile", lastActivity: new Date(Date.now() - 3600000) },
-          { id: 5, extension: "1005", userId: "mike_brown", displayName: "Mike Brown", department: "Maintenance", location: "Maintenance Shop", status: "dnd", deviceType: "softphone", lastActivity: new Date() }
+          // Emergency Extensions
+          { id: 1, extension: '911', name: 'Emergency Services', department: 'Emergency', status: 'available', location: 'External', type: 'emergency', priority: 'high', description: 'Local emergency services' },
+          { id: 2, extension: '999', name: 'Campus Security Emergency', department: 'Security', status: 'available', location: 'Security Office', type: 'emergency', priority: 'high', description: 'Campus emergency hotline' },
+          { id: 3, extension: '105', name: 'Nurse Station Emergency', department: 'Health', status: 'available', location: 'Health Center', type: 'emergency', priority: 'high', description: 'Medical emergency line' },
+          
+          // Department Extensions
+          { id: 4, extension: '100', name: 'Reception', department: 'Front Office', status: 'available', location: 'Main Building', type: 'department', priority: 'high', description: 'Main reception desk' },
+          { id: 5, extension: '101', name: 'Principal Office', department: 'Administration', status: 'busy', location: 'Admin Block', type: 'department', priority: 'high', description: 'Principal\'s office' },
+          { id: 6, extension: '102', name: 'Vice Principal', department: 'Administration', status: 'available', location: 'Admin Block', type: 'department', priority: 'high', description: 'Vice Principal\'s office' },
+          { id: 7, extension: '103', name: 'IT Support', department: 'Technology', status: 'available', location: 'IT Lab', type: 'department', priority: 'medium', description: 'Technical support helpdesk' },
+          { id: 8, extension: '104', name: 'Library', department: 'Academic', status: 'available', location: 'Library Building', type: 'department', priority: 'medium', description: 'Library information desk' },
+          { id: 9, extension: '106', name: 'Security Office', department: 'Safety', status: 'available', location: 'Security Office', type: 'department', priority: 'high', description: 'Campus security office' },
+          { id: 10, extension: '107', name: 'Maintenance', department: 'Facilities', status: 'dnd', location: 'Maintenance Shop', type: 'department', priority: 'medium', description: 'Facilities maintenance' },
+          { id: 11, extension: '110', name: 'Admissions Office', department: 'Enrollment', status: 'available', location: 'Admin Block', type: 'department', priority: 'medium', description: 'Student admissions' },
+          { id: 12, extension: '111', name: 'Finance Office', department: 'Finance', status: 'available', location: 'Admin Block', type: 'department', priority: 'medium', description: 'Financial services' },
+          
+          // Key Personnel
+          { id: 13, extension: '201', name: 'Dr. Sarah Johnson', department: 'Administration', status: 'available', location: 'Principal Office', type: 'user', priority: 'high', description: 'School Principal' },
+          { id: 14, extension: '202', name: 'Mr. Michael Chen', department: 'Administration', status: 'busy', location: 'Vice Principal Office', type: 'user', priority: 'high', description: 'Vice Principal' },
+          { id: 15, extension: '203', name: 'Ms. Emily Davis', department: 'Technology', status: 'available', location: 'IT Department', type: 'user', priority: 'high', description: 'IT Director' },
+          { id: 16, extension: '204', name: 'Dr. Robert Wilson', department: 'Academic', status: 'available', location: 'Faculty Office', type: 'user', priority: 'high', description: 'Academic Dean' },
+          { id: 17, extension: '205', name: 'Ms. Lisa Thompson', department: 'Health', status: 'offline', location: 'Health Center', type: 'user', priority: 'high', description: 'School Nurse' },
+          
+          // External Numbers
+          { id: 18, extension: '301', name: 'District Office', department: 'Administration', status: 'available', location: 'External', type: 'external', priority: 'medium', description: 'School district headquarters' },
+          { id: 19, extension: '302', name: 'Transportation', department: 'Transport', status: 'available', location: 'External', type: 'external', priority: 'medium', description: 'Bus transportation services' },
+          { id: 20, extension: '303', name: 'Food Services', department: 'Cafeteria', status: 'available', location: 'External', type: 'external', priority: 'low', description: 'Catering services' },
+          
+          // Conference and Meeting Rooms
+          { id: 21, extension: '108', name: 'Conference Room A', department: 'Meeting', status: 'available', location: 'Admin Block', type: 'department', priority: 'low', description: 'Main conference room' },
+          { id: 22, extension: '109', name: 'Teacher Lounge', department: 'Faculty', status: 'available', location: 'Faculty Building', type: 'department', priority: 'low', description: 'Faculty meeting space' },
+          { id: 23, extension: '112', name: 'Board Room', department: 'Administration', status: 'dnd', location: 'Admin Block', type: 'department', priority: 'medium', description: 'School board meeting room' }
         ];
 
         res.json({ extensions });

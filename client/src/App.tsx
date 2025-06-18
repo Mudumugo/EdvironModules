@@ -23,6 +23,7 @@ import TeacherDashboard from "@/pages/TeacherDashboard";
 import UserManagement from "@/pages/UserManagement-simple";
 import PBXDashboard from "@/pages/PBXDashboard";
 import ParentPortal from "@/pages/ParentPortal";
+import HotCall from "@/pages/HotCall";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
@@ -45,6 +46,7 @@ const componentMap: Record<string, any> = {
   'users': UserManagement,
   'pbx': PBXDashboard,
   'parent-portal': ParentPortal,
+  'hot-call': HotCall,
 };
 
 function Router() {
