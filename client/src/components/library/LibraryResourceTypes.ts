@@ -33,7 +33,7 @@ export class LibraryResourceTypes {
   }
 
   static getResourceTypeColor(type: string): string {
-    const colors = {
+    const colors: Record<string, string> = {
       book: 'bg-blue-500',
       worksheet: 'bg-green-500', 
       video: 'bg-red-500',

@@ -51,7 +51,7 @@ export const LibrarySearchFilters = ({
             onChange={(e) => onResourceTypeChange(e.target.value)}
             className="px-3 py-2 border rounded-lg bg-background"
           >
-            {resourceTypes.map(type => (
+            {resourceTypes.map((type: any) => (
               <option key={type.id} value={type.id}>{type.name}</option>
             ))}
           </select>
