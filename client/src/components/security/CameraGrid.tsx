@@ -9,7 +9,7 @@ interface CameraGridProps {
 }
 
 export default function CameraGrid({ zoneId }: CameraGridProps) {
-  const { data: cameras, isLoading } = useQuery({
+  const { data: cameras = [], isLoading } = useQuery({
     queryKey: zoneId ? ["/api/security/cameras", { zoneId }] : ["/api/security/cameras"],
   });
 
@@ -31,7 +31,7 @@ export default function CameraGrid({ zoneId }: CameraGridProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {cameras?.map((camera: any) => (
+      {cameras.map((camera: any) => (
         <Card key={camera.id} className="overflow-hidden">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
