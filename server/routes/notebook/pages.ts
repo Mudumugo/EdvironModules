@@ -130,7 +130,7 @@ export function registerPageRoutes(app: Express) {
         }
       });
 
-      if (!page || page.topic.chapter.subject.notebook.userId !== userId) {
+      if (!page || (page as any)?.topic?.chapter?.subject?.notebook?.userId !== userId) {
         return res.status(404).json({ message: "Page not found" });
       }
 

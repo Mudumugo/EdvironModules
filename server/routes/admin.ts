@@ -250,12 +250,10 @@ export function registerAdminRoutes(app: Express) {
         // Log the admin action
         await db.insert(activityLogs).values({
           userId,
-          activityType: 'admin_action',
           action: action,
-          target: target,
-          details: details,
-          timestamp: new Date(),
-          metadata: { userRole: 'school_admin' }
+          entityType: 'admin_action',
+          entityId: target,
+          details: details
         });
 
         res.json({ success: true, message: 'Action logged successfully' });
