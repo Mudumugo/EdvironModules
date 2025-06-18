@@ -159,33 +159,23 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
             : "space-y-4"
         }>
-          {filteredModules.map((module) => {
-            if (module.id === "tech-tutor") {
-              return (
-                <TechTutorCard 
-                  key={module.id}
-                  variant="junior"
-                  viewMode={viewMode}
-                  onClick={() => {
-                    console.log("Opening Tech Tutor external app with SSO...");
-                    // Future: Implement SSO redirect to Tech Tutor
-                  }}
-                />
-              );
-            }
-            return (
-              <div key={module.id}>
-                <ModuleGrid 
-                  modules={[module]}
-                  viewMode={viewMode}
-                  onModuleClick={(moduleId) => {
-                    console.log(`Opening module: ${moduleId}`);
-                  }}
-                />
-              </div>
-            );
-          })}
+          <TechTutorCard 
+            variant="junior"
+            viewMode={viewMode}
+            onClick={() => {
+              console.log("Opening Tech Tutor external app with SSO...");
+              // Future: Implement SSO redirect to Tech Tutor
+            }}
+          />
         </div>
+
+        <ModuleGrid 
+          modules={filteredModules.filter(m => m.id !== "tech-tutor")}
+          viewMode={viewMode}
+          onModuleClick={(moduleId) => {
+            console.log(`Opening module: ${moduleId}`);
+          }}
+        />
 
         {filteredModules.length === 0 && (
           <div className="text-center py-12">

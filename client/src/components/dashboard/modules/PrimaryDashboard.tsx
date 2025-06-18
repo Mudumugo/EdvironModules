@@ -100,17 +100,14 @@ export function PrimaryDashboard({ user }: PrimaryDashboardProps) {
               // Future: Implement SSO redirect to Tech Tutor
             }}
           />
-          {modules.map((module) => (
-            <div key={module.id}>
-              <ModuleGrid 
-                modules={[module]}
-                onModuleClick={(moduleId) => {
-                  console.log(`Opening module: ${moduleId}`);
-                }}
-              />
-            </div>
-          ))}
         </div>
+        
+        <ModuleGrid 
+          modules={modules}
+          onModuleClick={(moduleId) => {
+            console.log(`Opening module: ${moduleId}`);
+          }}
+        />
       </div>
     </div>
   );
