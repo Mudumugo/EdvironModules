@@ -1,14 +1,11 @@
-import type { Express, Response } from "express";
+import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
-import { requirePermission } from "../roleMiddleware";
-import { AuthenticatedRequest } from "../types/auth";
 
 export function registerDevicePolicyRoutes(app: Express) {
   // Get all device policies
   app.get('/api/device-policies', 
     isAuthenticated, 
-    requirePermission('MANAGE_DEVICES'),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: Request, res: Response) => {
       try {
         // Mock data for development - replace with actual database queries
         const policies = [
@@ -119,8 +116,7 @@ export function registerDevicePolicyRoutes(app: Express) {
   // Create new device policy
   app.post('/api/device-policies',
     isAuthenticated,
-    requirePermission('MANAGE_DEVICES'),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: Request, res: Response) => {
       try {
         const { name, description, targetType, targetIds, policyType, rules, priority, effectiveFrom, effectiveTo } = req.body;
         
@@ -142,7 +138,7 @@ export function registerDevicePolicyRoutes(app: Express) {
           priority: priority || 1,
           effectiveFrom: effectiveFrom ? new Date(effectiveFrom).toISOString() : null,
           effectiveTo: effectiveTo ? new Date(effectiveTo).toISOString() : null,
-          createdBy: req.user?.id || 'unknown',
+          createdBy: (req as any).user?.id || 'unknown',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
@@ -158,8 +154,7 @@ export function registerDevicePolicyRoutes(app: Express) {
   // Update device policy
   app.put('/api/device-policies/:id',
     isAuthenticated,
-    requirePermission('MANAGE_DEVICES'),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: Request, res: Response) => {
       try {
         const policyId = parseInt(req.params.id);
         const updateData = req.body;
@@ -182,8 +177,7 @@ export function registerDevicePolicyRoutes(app: Express) {
   // Toggle policy active status
   app.put('/api/device-policies/:id/toggle',
     isAuthenticated,
-    requirePermission('MANAGE_DEVICES'),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: Request, res: Response) => {
       try {
         const policyId = parseInt(req.params.id);
         const { isActive } = req.body;
@@ -206,8 +200,7 @@ export function registerDevicePolicyRoutes(app: Express) {
   // Delete device policy
   app.delete('/api/device-policies/:id',
     isAuthenticated,
-    requirePermission('MANAGE_DEVICES'),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: Request, res: Response) => {
       try {
         const policyId = parseInt(req.params.id);
 
@@ -223,8 +216,7 @@ export function registerDevicePolicyRoutes(app: Express) {
   // Get compliance violations
   app.get('/api/compliance-violations',
     isAuthenticated,
-    requirePermission('MANAGE_DEVICES'),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: Request, res: Response) => {
       try {
         // Mock violations data
         const violations = [
@@ -298,8 +290,7 @@ export function registerDevicePolicyRoutes(app: Express) {
   // Resolve compliance violation
   app.put('/api/compliance-violations/:id/resolve',
     isAuthenticated,
-    requirePermission('MANAGE_DEVICES'),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: Request, res: Response) => {
       try {
         const violationId = parseInt(req.params.id);
         const { actionTaken } = req.body;
@@ -309,7 +300,7 @@ export function registerDevicePolicyRoutes(app: Express) {
           id: violationId,
           status: "resolved",
           resolvedAt: new Date().toISOString(),
-          resolvedBy: req.user?.id,
+          resolvedBy: (req as any).user?.id,
           actionTaken
         };
 

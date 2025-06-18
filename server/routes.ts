@@ -25,6 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
   await registerAuthRoutes(app);
   registerXapiRoutes(app);
+  registerDevicePolicyRoutes(app);
   registerAnalyticsRoutes(app);
   registerTeacherRoutes(app);
   registerDeviceRoutes(app);
