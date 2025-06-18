@@ -35,7 +35,7 @@ const DigitalLibraryNew = () => {
   });
 
   // Use sample data for demonstration
-  const resources = apiResponse?.resources || sampleResources;
+  const resources = (apiResponse as any)?.resources || sampleResources;
 
   // Library actions
   const { handlePreview, handleSaveToLocker } = useLibraryActions(

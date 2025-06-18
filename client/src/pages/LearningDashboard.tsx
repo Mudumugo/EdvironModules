@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardHeader, ModuleGrid, SearchAndFilters } from "@/components/learning/modules";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   BookOpen, 
   FolderOpen, 
@@ -9,7 +12,13 @@ import {
   Notebook, 
   Layers, 
   FlaskConical, 
-  GraduationCap
+  GraduationCap,
+  Star,
+  ArrowUpRight,
+  Search,
+  Filter,
+  Grid3X3,
+  List
 } from "lucide-react";
 
 const moduleCards = [

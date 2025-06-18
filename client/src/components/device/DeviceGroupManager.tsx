@@ -247,7 +247,7 @@ export default function DeviceGroupManager() {
             </DialogHeader>
             <GroupForm
               onSubmit={handleFormSubmit}
-              onCancel={() => handleDialogClose(false)}
+              onCancel={() => setIsCreateDialogOpen(false)}
               editingGroup={editingGroup}
               isLoading={createGroupMutation.isPending || updateGroupMutation.isPending}
             />
