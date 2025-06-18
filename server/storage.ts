@@ -35,9 +35,17 @@ import {
   eventTemplates,
   type EventTemplate,
   type InsertEventTemplate,
+  libraryCategories,
+  librarySubjects,
+  libraryResources,
+  libraryResourceAccess,
+  type LibraryCategory,
+  type LibrarySubject,
+  type LibraryResource,
+  type LibraryResourceAccess
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, lte, gte, isNotNull, desc, asc } from "drizzle-orm";
+import { eq, and, lte, gte, isNotNull, desc, asc, or, ilike, sql } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -1106,106 +1114,6 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-  // Library operations
-  async getLibraryCategories(gradeLevel?: string): Promise<any[]> {
-    const query = db.select().from(libraryCategories).where(eq(libraryCategories.isActive, true));
-    
-    if (gradeLevel) {
-      query.where(eq(libraryCategories.gradeLevel, gradeLevel));
-    }
-    
-    return await query.orderBy(libraryCategories.sortOrder, libraryCategories.name);
-  }
 
-  async getLibrarySubjects(gradeLevel?: string, categoryId?: string): Promise<any[]> {
-    let query = db.select().from(librarySubjects).where(eq(librarySubjects.isActive, true));
-    
-    if (gradeLevel) {
-      query = query.where(eq(librarySubjects.gradeLevel, gradeLevel));
-    }
-    
-    if (categoryId) {
-      query = query.where(eq(librarySubjects.categoryId, categoryId));
-    }
-    
-    return await query.orderBy(librarySubjects.sortOrder, librarySubjects.name);
-  }
-
-  async getLibraryResources(filters: any): Promise<any[]> {
-    let query = db.select().from(libraryResources).where(eq(libraryResources.isPublic, true));
-    
-    if (filters.gradeLevel) {
-      query = query.where(eq(libraryResources.gradeLevel, filters.gradeLevel));
-    }
-    
-    if (filters.categoryId) {
-      query = query.where(eq(libraryResources.categoryId, filters.categoryId));
-    }
-    
-    if (filters.subjectId) {
-      query = query.where(eq(libraryResources.subjectId, filters.subjectId));
-    }
-    
-    if (filters.resourceType) {
-      query = query.where(eq(libraryResources.resourceType, filters.resourceType));
-    }
-    
-    if (filters.search) {
-      query = query.where(
-        or(
-          ilike(libraryResources.title, `%${filters.search}%`),
-          ilike(libraryResources.description, `%${filters.search}%`)
-        )
-      );
-    }
-    
-    return await query
-      .orderBy(
-        desc(libraryResources.isFeatured),
-        desc(libraryResources.createdAt)
-      )
-      .limit(filters.limit || 50);
-  }
-
-  async getLibraryResource(resourceId: string): Promise<any> {
-    const [resource] = await db
-      .select()
-      .from(libraryResources)
-      .where(eq(libraryResources.id, resourceId));
-    
-    return resource;
-  }
-
-  async createLibraryResourceAccess(accessData: any): Promise<any> {
-    const [access] = await db
-      .insert(libraryResourceAccess)
-      .values({
-        id: `access_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        ...accessData,
-        accessedAt: new Date()
-      })
-      .returning();
-    
-    return access;
-  }
-
-  async updateResourceStats(resourceId: string, updateType: 'view' | 'download'): Promise<void> {
-    if (updateType === 'view') {
-      await db
-        .update(libraryResources)
-        .set({ 
-          viewCount: sql`${libraryResources.viewCount} + 1` 
-        })
-        .where(eq(libraryResources.id, resourceId));
-    } else if (updateType === 'download') {
-      await db
-        .update(libraryResources)
-        .set({ 
-          downloadCount: sql`${libraryResources.downloadCount} + 1` 
-        })
-        .where(eq(libraryResources.id, resourceId));
-    }
-  }
-}
 
 export const storage = new DatabaseStorage();
