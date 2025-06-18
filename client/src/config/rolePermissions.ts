@@ -297,3 +297,14 @@ export function getRoleDescription(role: UserRole): string {
   };
   return descriptions[role] || "";
 }
+
+// Add CRM module to permissions
+export const CRM_PERMISSION: ModulePermission = {
+  id: "crm",
+  name: "CRM",
+  path: "/crm",
+  icon: "Users",
+  description: "Customer Relationship Management and lead tracking",
+  allowedRoles: ["school_admin", "sales_rep", "manager"],
+  isCore: false
+};

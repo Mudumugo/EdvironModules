@@ -188,6 +188,6 @@ export async function seedCRMData() {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   seedCRMData().then(() => process.exit(0));
 }

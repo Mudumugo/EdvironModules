@@ -28,6 +28,7 @@ import Calendar from "@/pages/Calendar";
 import Analytics from "@/pages/Analytics";
 import Licensing from "@/pages/Licensing";
 import Settings from "@/pages/Settings";
+import CRM from "@/pages/CRM";
 import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
 import TeacherDashboard from "@/pages/TeacherDashboard";
