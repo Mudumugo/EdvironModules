@@ -98,7 +98,7 @@ export function registerPBXRoutes(app: Express) {
   // Create new extension
   app.post('/api/pbx/extensions', 
     isAuthenticated, 
-    requirePermission('manage_pbx'),
+    requirePermission('MANAGE_PBX'),
     async (req, res) => {
       try {
         const { userId, displayName, department, location, deviceType } = req.body;
@@ -134,7 +134,7 @@ export function registerPBXRoutes(app: Express) {
   // Update extension
   app.put('/api/pbx/extensions/:extensionId', 
     isAuthenticated, 
-    requirePermission('manage_pbx'),
+    requirePermission('MANAGE_PBX'),
     async (req, res) => {
       try {
         const { extensionId } = req.params;
@@ -154,7 +154,7 @@ export function registerPBXRoutes(app: Express) {
   // Emergency broadcast endpoint
   app.post('/api/pbx/emergency-broadcast', 
     isAuthenticated, 
-    requirePermission('emergency_broadcast'),
+    requirePermission('EMERGENCY_BROADCAST'),
     async (req, res) => {
       try {
         const { title, message, priority, targetExtensions, targetDepartments } = req.body;
@@ -194,7 +194,7 @@ export function registerPBXRoutes(app: Express) {
   // Page specific extensions or departments
   app.post('/api/pbx/page', 
     isAuthenticated, 
-    requirePermission('page_devices'),
+    requirePermission('PAGE_DEVICES'),
     async (req, res) => {
       try {
         const { targetExtensions, targetDepartments, message } = req.body;
@@ -357,7 +357,7 @@ export function registerPBXRoutes(app: Express) {
   // Create conference room
   app.post('/api/pbx/conference-rooms', 
     isAuthenticated, 
-    requirePermission('manage_pbx'),
+    requirePermission('MANAGE_PBX'),
     async (req, res) => {
       try {
         const { name, description, maxParticipants, requirePin, pin, isRecorded } = req.body;

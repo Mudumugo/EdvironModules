@@ -12,6 +12,7 @@ import { registerUserRoutes } from "./routes/users-simple";
 import { registerLibraryRoutes } from "./routes/library";
 import { registerITRoutes } from "./routes/it";
 import { registerSecurityRoutes } from "./routes/security";
+import { registerPBXRoutes } from "./routes/pbx";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
