@@ -1,94 +1,29 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  MonitorSpeaker, 
-  Monitor, 
-  Users, 
-  Settings, 
-  Power, 
-  Lock, 
-  Unlock, 
-  MessageSquare, 
-  Eye, 
-  EyeOff,
-  Smartphone,
-  Tablet,
-  Laptop,
-  Wifi,
-  WifiOff,
-  Circle,
-  Play,
-  Square,
-  Pause
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-
-interface LiveSessionControlProps {
-  sessionId: string;
-  onClose?: () => void;
-}
-
-interface ConnectedDevice {
-  id: string;
-  deviceId: string;
-  userId: string;
-  deviceType: string;
-  platform: string;
-  browser?: string;
-  screenResolution?: string;
-  isConnected: boolean;
-  lastSeen: string;
-  status: string;
-  isControlled: boolean;
-  controlledBy?: string;
-  capabilities: {
-    camera?: boolean;
-    microphone?: boolean;
-    screenShare?: boolean;
-    remoteControl?: boolean;
-  };
-}
-
-interface SessionParticipant {
-  id: string;
-  userId: string;
-  deviceId: string;
-  role: string;
-  status: string;
-  isAudioMuted: boolean;
-  isVideoMuted: boolean;
-  isScreenSharing: boolean;
-  canBeControlled: boolean;
-  connectionQuality: string;
-  lastActivity: string;
-}
+import {
+  LiveSessionControlProps,
+  WebSocketMessage,
+  useWebSocketConnection,
+  DeviceControlPanel,
+  ParticipantPanel,
+  ScreenSharingPanel,
+  SessionControlBar
+} from "./live-session";
 
 export default function LiveSessionControl({ sessionId, onClose }: LiveSessionControlProps) {
-  const [ws, setWs] = useState<WebSocket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<string>("");
-  const [controlAction, setControlAction] = useState<string>("");
-  const [screenSharingActive, setScreenSharingActive] = useState(false);
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const wsRef = useRef<WebSocket | null>(null);
 
   const { data: session } = useQuery({
     queryKey: ['/api/live-sessions', sessionId],
