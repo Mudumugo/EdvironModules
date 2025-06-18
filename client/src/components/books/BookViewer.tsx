@@ -320,10 +320,10 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   // Track session completion on unmount
   useEffect(() => {
     return () => {
-      if (bookData.xapiEnabled) {
+      if (bookData?.xapiEnabled) {
         const sessionDuration = Math.floor((new Date().getTime() - sessionStartTime.getTime()) / 1000);
         trackPageView(currentPage); // Track final page
-        xapiTracker.trackSessionComplete(bookData.id.toString(), bookData.title, sessionDuration);
+        xapiTracker.trackSessionComplete(bookData?.id?.toString() || '', bookData?.title || '', sessionDuration);
       }
     };
   }, []);
@@ -374,7 +374,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
           goToPage(1);
           break;
         case 'End':
-          goToPage(bookData.totalPages);
+          goToPage(bookData?.totalPages || 0);
           break;
         case 'Escape':
           if (showTableOfContents) {
@@ -396,17 +396,17 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentPage, bookData.totalPages, showTableOfContents, showInteractiveMode, isMultimediaContent, onClose]);
+  }, [currentPage, bookData?.totalPages, showTableOfContents, showInteractiveMode, isMultimediaContent, onClose]);
 
   // Check if we should show interactive content viewer
   if (showInteractiveMode && isMultimediaContent) {
     return (
       <InteractiveContentViewer
-        resourceId={bookData.id}
-        title={bookData.title}
-        content={bookData.content || ''}
-        mediaAssets={bookData.mediaAssets || []}
-        interactiveElements={bookData.interactiveElements || []}
+        resourceId={bookData?.id || 0}
+        title={bookData?.title || ''}
+        content={bookData?.content || ''}
+        mediaAssets={bookData?.mediaAssets || []}
+        interactiveElements={bookData?.interactiveElements || []}
         xapiEnabled={bookData.xapiEnabled || false}
         trackingConfig={bookData.trackingConfig || {}}
         onClose={() => setShowInteractiveMode(false)}
@@ -459,9 +459,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                 >
-                  {bookData.pages && bookData.pages[currentPage - 1] ? (
+                  {bookData?.pages && bookData?.pages[currentPage - 1] ? (
                     <div className="relative w-full h-full flex items-center justify-center">
-                      {bookData.pages[currentPage - 1].startsWith('data:text/html') ? (
+                      {bookData?.pages?.[currentPage - 1]?.startsWith('data:text/html') ? (
                         <iframe
                           src={bookData.pages[currentPage - 1]}
                           className="w-full h-full border-0 rounded-lg"
@@ -474,7 +474,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                         />
                       ) : (
                         <img
-                          src={bookData.pages[currentPage - 1]}
+                          src={bookData?.pages?.[currentPage - 1] || ''}
                           alt={`Page ${currentPage}`}
                           className="object-contain w-full h-full"
                           style={{ 
@@ -514,10 +514,10 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
               showControls ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
             }`}>
               <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                {bookData.title}
+                {bookData?.title || ''}
               </div>
               <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                {currentPage} / {bookData.totalPages}
+                {currentPage} / {bookData?.totalPages || 0}
               </div>
             </div>
             
@@ -544,7 +544,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                 variant="ghost" 
                 size="sm" 
                 onClick={goToNextPage} 
-                disabled={currentPage >= bookData.totalPages}
+                disabled={currentPage >= (bookData?.totalPages || 0)}
                 className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation"
               >
                 <ChevronRight className="h-6 w-6 sm:h-5 sm:w-5" />
@@ -657,13 +657,13 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                   value={currentPage}
                   onChange={(e) => {
                     const page = parseInt(e.target.value);
-                    if (page >= 1 && page <= bookData.totalPages) {
+                    if (page >= 1 && page <= (bookData?.totalPages || 0)) {
                       goToPage(page);
                     }
                   }}
                   className="w-16 px-2 py-1 text-center bg-transparent text-white border-0 focus:outline-none text-sm"
                   min="1"
-                  max={bookData.totalPages}
+                  max={bookData?.totalPages || 0}
                 />
               </div>
               
