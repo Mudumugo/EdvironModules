@@ -1,52 +1,187 @@
-import type { Express, Response } from "express";
+import type { Express } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
-import { db } from "../db";
-import { users, activityLogs } from "@shared/schema";
-import { eq, desc, count, and, gte, sql } from "drizzle-orm";
+import { storage } from "../storage";
 
 export function registerSecurityRoutes(app: Express) {
-  // Get security events from activity logs
-  app.get('/api/security/events', 
-    isAuthenticated, 
-    requirePermission('MANAGE_SECURITY'),
-    async (req: any, res) => {
-      try {
-        // Get recent activity logs that could indicate security events
-        const recentLogs = await db
-          .select({
-            id: activityLogs.id,
-            action: activityLogs.action,
-            userId: activityLogs.userId,
-            ipAddress: activityLogs.ipAddress,
-            userAgent: activityLogs.userAgent,
-            timestamp: activityLogs.timestamp,
-            details: activityLogs.details
-          })
-          .from(activityLogs)
-          .orderBy(desc(activityLogs.timestamp))
-          .limit(50);
+  // Get security zones
+  app.get("/api/security/zones", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const zones = await storage.getSecurityZones();
+      res.json(zones);
+    } catch (error) {
+      console.error("Error fetching security zones:", error);
+      res.status(500).json({ message: "Failed to fetch security zones" });
+    }
+  });
 
-        // Transform activity logs into security events
-        const securityEvents = recentLogs.map(log => {
-          let severity = 'low';
-          let type = 'data_access';
-          let status = 'resolved';
-          let description = log.action;
+  // Create security zone
+  app.post("/api/security/zones", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+    try {
+      const zone = await storage.createSecurityZone(req.body);
+      res.json(zone);
+    } catch (error) {
+      console.error("Error creating security zone:", error);
+      res.status(500).json({ message: "Failed to create security zone" });
+    }
+  });
 
-          // Determine severity and type based on action
-          if (log.action.includes('failed') || log.action.includes('unauthorized')) {
-            severity = 'high';
-            type = 'login_attempt';
-            status = 'investigating';
-          } else if (log.action.includes('admin') || log.action.includes('delete')) {
-            severity = 'medium';
-            type = 'privilege_escalation';
-          } else if (log.action.includes('suspicious') || log.action.includes('blocked')) {
-            severity = 'critical';
-            type = 'suspicious_activity';
-            status = 'active';
-          }
+  // Get cameras for a zone
+  app.get("/api/security/zones/:zoneId/cameras", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const cameras = await storage.getSecurityCamerasByZone(req.params.zoneId);
+      res.json(cameras);
+    } catch (error) {
+      console.error("Error fetching cameras:", error);
+      res.status(500).json({ message: "Failed to fetch cameras" });
+    }
+  });
+
+  // Get all cameras
+  app.get("/api/security/cameras", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const cameras = await storage.getSecurityCameras();
+      res.json(cameras);
+    } catch (error) {
+      console.error("Error fetching cameras:", error);
+      res.status(500).json({ message: "Failed to fetch cameras" });
+    }
+  });
+
+  // Create security camera
+  app.post("/api/security/cameras", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+    try {
+      const camera = await storage.createSecurityCamera(req.body);
+      res.json(camera);
+    } catch (error) {
+      console.error("Error creating camera:", error);
+      res.status(500).json({ message: "Failed to create camera" });
+    }
+  });
+
+  // Get security events
+  app.get("/api/security/events", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const { status, severity, zoneId, limit = 50 } = req.query;
+      const events = await storage.getSecurityEvents({
+        status: status as string,
+        severity: severity as string, 
+        zoneId: zoneId as string,
+        limit: parseInt(limit as string),
+      });
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching security events:", error);
+      res.status(500).json({ message: "Failed to fetch security events" });
+    }
+  });
+
+  // Create security event
+  app.post("/api/security/events", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+    try {
+      const event = await storage.createSecurityEvent(req.body);
+      res.json(event);
+    } catch (error) {
+      console.error("Error creating security event:", error);
+      res.status(500).json({ message: "Failed to create security event" });
+    }
+  });
+
+  // Update security event status
+  app.patch("/api/security/events/:eventId", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+    try {
+      const event = await storage.updateSecurityEvent(req.params.eventId, req.body);
+      res.json(event);
+    } catch (error) {
+      console.error("Error updating security event:", error);
+      res.status(500).json({ message: "Failed to update security event" });
+    }
+  });
+
+  // Get visitor registrations
+  app.get("/api/security/visitors", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const { status, date } = req.query;
+      const visitors = await storage.getVisitorRegistrations({
+        status: status as string,
+        date: date as string,
+      });
+      res.json(visitors);
+    } catch (error) {
+      console.error("Error fetching visitor registrations:", error);
+      res.status(500).json({ message: "Failed to fetch visitor registrations" });
+    }
+  });
+
+  // Register visitor
+  app.post("/api/security/visitors", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+    try {
+      const registration = await storage.createVisitorRegistration(req.body);
+      res.json(registration);
+    } catch (error) {
+      console.error("Error registering visitor:", error);
+      res.status(500).json({ message: "Failed to register visitor" });
+    }
+  });
+
+  // Check out visitor
+  app.patch("/api/security/visitors/:visitorId/checkout", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+    try {
+      const registration = await storage.checkoutVisitor(req.params.visitorId);
+      res.json(registration);
+    } catch (error) {
+      console.error("Error checking out visitor:", error);
+      res.status(500).json({ message: "Failed to check out visitor" });
+    }
+  });
+
+  // Get security calls
+  app.get("/api/security/calls", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const { status, priority } = req.query;
+      const calls = await storage.getSecurityCalls({
+        status: status as string,
+        priority: priority as string,
+      });
+      res.json(calls);
+    } catch (error) {
+      console.error("Error fetching security calls:", error);
+      res.status(500).json({ message: "Failed to fetch security calls" });
+    }
+  });
+
+  // Initiate security call
+  app.post("/api/security/calls", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+    try {
+      const call = await storage.createSecurityCall(req.body);
+      res.json(call);
+    } catch (error) {
+      console.error("Error initiating security call:", error);
+      res.status(500).json({ message: "Failed to initiate security call" });
+    }
+  });
+
+  // Get security metrics/dashboard data
+  app.get("/api/security/metrics", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const metrics = await storage.getSecurityMetrics();
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching security metrics:", error);
+      res.status(500).json({ message: "Failed to fetch security metrics" });
+    }
+  });
+
+  // Get active threats
+  app.get("/api/security/threats", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+    try {
+      const threats = await storage.getActiveThreats();
+      res.json(threats);
+    } catch (error) {
+      console.error("Error fetching active threats:", error);
+      res.status(500).json({ message: "Failed to fetch active threats" });
+    }
+  });
 
           // Extract IP and location info
           const ip = log.ipAddress || '127.0.0.1';

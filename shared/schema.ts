@@ -427,3 +427,132 @@ export const insertLibraryResourceSchema = z.object({});
 export const insertScheduleSchema = z.object({});
 export const insertAttendanceSchema = z.object({});
 export const insertNotificationSchema = z.object({});
+
+// Security and Surveillance schemas
+export const securityZones = pgTable("security_zones", {
+  id: varchar("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  location: varchar("location").notNull(),
+  isActive: boolean("is_active").default(true),
+  riskLevel: varchar("risk_level").notNull().default("low"), // low, medium, high, critical
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const securityCameras = pgTable("security_cameras", {
+  id: varchar("id").primaryKey(),
+  name: varchar("name").notNull(),
+  zoneId: varchar("zone_id").references(() => securityZones.id),
+  ipAddress: varchar("ip_address").notNull(),
+  streamUrl: varchar("stream_url"),
+  isOnline: boolean("is_online").default(false),
+  isRecording: boolean("is_recording").default(false),
+  resolution: varchar("resolution").default("1080p"),
+  orientation: varchar("orientation").default("horizontal"), // horizontal, vertical
+  hasAudio: boolean("has_audio").default(false),
+  lastPing: timestamp("last_ping"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const securityEvents = pgTable("security_events", {
+  id: varchar("id").primaryKey(),
+  type: varchar("type").notNull(), // intrusion, violence, theft, vandalism, suspicious_activity
+  severity: varchar("severity").notNull(), // low, medium, high, critical
+  status: varchar("status").notNull().default("active"), // active, investigating, resolved, false_alarm
+  zoneId: varchar("zone_id").references(() => securityZones.id),
+  cameraId: varchar("camera_id").references(() => securityCameras.id),
+  description: text("description").notNull(),
+  detectedAt: timestamp("detected_at").defaultNow(),
+  resolvedAt: timestamp("resolved_at"),
+  assignedTo: varchar("assigned_to"),
+  imageUrl: varchar("image_url"),
+  videoUrl: varchar("video_url"),
+  metadata: jsonb("metadata"), // AI detection confidence, person count, etc.
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const visitorRegistrations = pgTable("visitor_registrations", {
+  id: varchar("id").primaryKey(),
+  visitorName: varchar("visitor_name").notNull(),
+  visitorPhone: varchar("visitor_phone"),
+  visitorEmail: varchar("visitor_email"),
+  visitPurpose: varchar("visit_purpose").notNull(),
+  hostName: varchar("host_name").notNull(),
+  hostDepartment: varchar("host_department"),
+  checkInTime: timestamp("check_in_time").defaultNow(),
+  checkOutTime: timestamp("check_out_time"),
+  expectedDuration: integer("expected_duration"), // in minutes
+  status: varchar("status").notNull().default("checked_in"), // checked_in, checked_out, overstayed
+  idType: varchar("id_type"), // drivers_license, passport, etc.
+  idNumber: varchar("id_number"),
+  photoUrl: varchar("photo_url"),
+  badgeNumber: varchar("badge_number"),
+  gateUsed: varchar("gate_used").notNull(),
+  securityNotes: text("security_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const securityCalls = pgTable("security_calls", {
+  id: varchar("id").primaryKey(),
+  callType: varchar("call_type").notNull(), // emergency, routine, maintenance
+  fromExtension: varchar("from_extension"),
+  toExtension: varchar("to_extension"),
+  fromZone: varchar("from_zone").references(() => securityZones.id),
+  toZone: varchar("to_zone").references(() => securityZones.id),
+  duration: integer("duration"), // in seconds
+  status: varchar("status").notNull(), // ringing, active, completed, missed, busy
+  priority: varchar("priority").notNull().default("normal"), // low, normal, high, emergency
+  notes: text("notes"),
+  recordingUrl: varchar("recording_url"),
+  startedAt: timestamp("started_at").defaultNow(),
+  endedAt: timestamp("ended_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Relations
+export const securityZonesRelations = relations(securityZones, ({ many }) => ({
+  cameras: many(securityCameras),
+  events: many(securityEvents),
+}));
+
+export const securityCamerasRelations = relations(securityCameras, ({ one, many }) => ({
+  zone: one(securityZones, {
+    fields: [securityCameras.zoneId],
+    references: [securityZones.id],
+  }),
+  events: many(securityEvents),
+}));
+
+export const securityEventsRelations = relations(securityEvents, ({ one }) => ({
+  zone: one(securityZones, {
+    fields: [securityEvents.zoneId],
+    references: [securityZones.id],
+  }),
+  camera: one(securityCameras, {
+    fields: [securityEvents.cameraId],
+    references: [securityCameras.id],
+  }),
+}));
+
+// Types
+export type SecurityZone = typeof securityZones.$inferSelect;
+export type InsertSecurityZone = typeof securityZones.$inferInsert;
+export type SecurityCamera = typeof securityCameras.$inferSelect;
+export type InsertSecurityCamera = typeof securityCameras.$inferInsert;
+export type SecurityEvent = typeof securityEvents.$inferSelect;
+export type InsertSecurityEvent = typeof securityEvents.$inferInsert;
+export type VisitorRegistration = typeof visitorRegistrations.$inferSelect;
+export type InsertVisitorRegistration = typeof visitorRegistrations.$inferInsert;
+export type SecurityCall = typeof securityCalls.$inferSelect;
+export type InsertSecurityCall = typeof securityCalls.$inferInsert;
+
+// Zod schemas
+export const insertSecurityZoneSchema = createInsertSchema(securityZones);
+export const insertSecurityCameraSchema = createInsertSchema(securityCameras);
+export const insertSecurityEventSchema = createInsertSchema(securityEvents);
+export const insertVisitorRegistrationSchema = createInsertSchema(visitorRegistrations);
+export const insertSecurityCallSchema = createInsertSchema(securityCalls);
