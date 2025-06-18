@@ -12,6 +12,7 @@ import { About } from "@/pages/About";
 import { Features } from "@/pages/Features";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
+import InteractiveSignUp from "@/pages/InteractiveSignUp";
 import Dashboard from "@/pages/Dashboard";
 import LearningDashboard from "@/pages/LearningDashboard";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -88,6 +89,7 @@ function Router() {
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/signup" component={SignUp} />
+        <Route path="/interactive-signup" component={InteractiveSignUp} />
         <Route path="/demo" component={Login} />
         <Route path="/features" component={Features} />
         <Route path="/solutions" component={Solutions} />
