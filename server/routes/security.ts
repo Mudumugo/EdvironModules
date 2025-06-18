@@ -46,10 +46,7 @@ export function registerSecurityRoutes(app: Express) {
             firewallStatus: Math.random() > 0.05 ? "secure" : "updating",
             intrusion: {
               attempts: 20 + Math.floor(Math.random() * 15), // 20-34 attempts
-              blocked: function() { 
-                const attempts = this.attempts;
-                return attempts - Math.floor(Math.random() * 2); // Most blocked
-              }(),
+              blocked: 0, // Will be set below
               success: Math.floor(Math.random() * 2) // 0-1 successful
             },
             compliance: 94 + Math.floor(Math.random() * 5) // 94-98% compliance
@@ -134,9 +131,8 @@ export function registerSecurityRoutes(app: Express) {
         };
 
         // Fix the intrusion data structure
-        securityMetrics.systemHealth.intrusion.blocked = 
-          securityMetrics.systemHealth.intrusion.attempts - 
-          Math.floor(Math.random() * 2);
+        const attempts = securityMetrics.systemHealth.intrusion.attempts;
+        securityMetrics.systemHealth.intrusion.blocked = attempts - Math.floor(Math.random() * 2);
 
         res.json(securityMetrics);
       } catch (error) {

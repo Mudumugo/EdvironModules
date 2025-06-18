@@ -152,6 +152,12 @@ export const PERMISSIONS = {
   VIEW_ACCESS_LOGS: "view_access_logs",
   MANAGE_SECURITY_POLICIES: "manage_security_policies",
   MONITOR_ACTIVITIES: "monitor_activities",
+  
+  // PBX Communication permissions
+  MANAGE_PBX: "manage_pbx",
+  EMERGENCY_BROADCAST: "emergency_broadcast",
+  PAGE_DEVICES: "page_devices",
+  VIEW_CALL_LOGS: "view_call_logs",
 } as const;
 
 export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
