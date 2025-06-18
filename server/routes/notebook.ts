@@ -660,7 +660,6 @@ export function registerNotebookRoutes(app: Express) {
         const searchTerm = (search as string).toLowerCase();
         items = items.filter(item => 
           item.title.toLowerCase().includes(searchTerm) ||
-          item.description?.toLowerCase().includes(searchTerm) ||
           item.tags?.some(tag => tag.toLowerCase().includes(searchTerm))
         );
       }
