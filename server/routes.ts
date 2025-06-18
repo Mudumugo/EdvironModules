@@ -44,6 +44,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerAppsHubRoutes(app);
   registerAdminRoutes(app);
   registerTimetableRoutes(app);
+  registerUserProfileRoutes(app);
   registerNotebookModuleRoutes(app);
   registerAuthoringRoutes(app);
 
