@@ -21,6 +21,7 @@ import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
 import TeacherDashboard from "@/pages/TeacherDashboard";
 import UserManagement from "@/pages/UserManagement-simple";
+import PBXDashboard from "@/pages/PBXDashboard";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
@@ -41,6 +42,7 @@ const componentMap: Record<string, any> = {
   'licensing': Licensing,
   'settings': Settings,
   'users': UserManagement,
+  'pbx': PBXDashboard,
 };
 
 function Router() {

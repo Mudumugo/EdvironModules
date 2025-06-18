@@ -28,6 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerLibraryRoutes(app);
   registerITRoutes(app);
   registerSecurityRoutes(app);
+  registerPBXRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;
