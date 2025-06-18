@@ -88,8 +88,9 @@ function Router() {
     return (
       <Switch>
         <Route path="/login" component={Login} />
-        <Route path="/signup" component={SignUp} />
+        <Route path="/signup" component={InteractiveSignUp} />
         <Route path="/interactive-signup" component={InteractiveSignUp} />
+        <Route path="/old-signup" component={SignUp} />
         <Route path="/demo" component={Login} />
         <Route path="/features" component={Features} />
         <Route path="/solutions" component={Solutions} />
