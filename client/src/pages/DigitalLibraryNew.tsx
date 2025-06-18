@@ -56,7 +56,7 @@ const DigitalLibraryNew = () => {
 
   // Transform API response from snake_case to camelCase and add multimedia sample data
   const rawResources = apiResponse?.resources || [];
-  const resources = rawResources.map((resource: any) => ({
+  const resources = rawResources.length > 0 ? rawResources.map((resource: any) => ({
     id: resource.id,
     title: resource.title || 'Untitled',
     type: resource.type || 'book',
@@ -534,7 +534,7 @@ const DigitalLibraryNew = () => {
                   <div className="pt-4">
                     <div className="flex gap-3">
                       <Button 
-                        onClick={() => handleDownload(selectedResource)}
+                        onClick={() => handleSaveToLocker(selectedResource)}
                         className="flex-1"
                       >
                         <Download className="h-4 w-4 mr-2" />

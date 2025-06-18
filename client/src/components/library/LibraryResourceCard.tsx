@@ -159,9 +159,9 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
                     <Eye className="h-4 w-4 mr-1" />
                     Preview
                   </Button>
-                  <Button size="sm" onClick={handleDownload}>
-                    <Download className="h-4 w-4 mr-1" />
-                    Download
+                  <Button size="sm" onClick={handleSaveToLocker}>
+                    <Save className="h-4 w-4 mr-1" />
+                    Save to Locker
                   </Button>
                 </div>
               </div>
@@ -260,10 +260,10 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
           <Button
             size="sm"
             className="flex-1"
-            onClick={handleDownload}
+            onClick={handleSaveToLocker}
           >
-            <Download className="h-3 w-3 mr-1" />
-            Download
+            <Save className="h-3 w-3 mr-1" />
+            Save to Locker
           </Button>
         </div>
       </CardContent>

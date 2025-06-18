@@ -20,7 +20,7 @@ import {
 import { 
   BookOpen, 
   Eye, 
-  Download, 
+  Save, 
   Share2,
   Bookmark
 } from 'lucide-react';
@@ -49,14 +49,14 @@ interface BookPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   resource: BookResource;
-  onDownload?: (resource: BookResource) => void;
+  onSaveToLocker?: (resource: BookResource) => void;
 }
 
 export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
   isOpen,
   onClose,
   resource,
-  onDownload
+  onSaveToLocker
 }) => {
   const [activeTab, setActiveTab] = useState('preview');
   const [isBookViewerOpen, setIsBookViewerOpen] = useState(false);
@@ -157,9 +157,9 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
                   <Share2 className="h-4 w-4 mr-1" />
                   Share
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleDownload}>
-                  <Download className="h-4 w-4 mr-1" />
-                  Download
+                <Button variant="outline" size="sm" onClick={handleSaveToLocker}>
+                  <Save className="h-4 w-4 mr-1" />
+                  Save to Locker
                 </Button>
                 <Button variant="outline" size="sm">
                   <Bookmark className="h-4 w-4 mr-1" />
