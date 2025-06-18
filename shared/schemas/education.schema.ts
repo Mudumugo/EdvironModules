@@ -43,6 +43,22 @@ export const students = pgTable("students", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Parent-Child relationships
+export const parentChildRelationships = pgTable("parent_child_relationships", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  parentUserId: varchar("parent_user_id").notNull().references(() => users.id),
+  childUserId: varchar("child_user_id").notNull().references(() => users.id),
+  relationship: varchar("relationship").default("parent"), // parent, guardian, emergency_contact
+  isPrimary: boolean("is_primary").default(false),
+  canViewGrades: boolean("can_view_grades").default(true),
+  canViewAttendance: boolean("can_view_attendance").default(true),
+  canReceiveNotifications: boolean("can_receive_notifications").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  unique().on(table.parentUserId, table.childUserId)
+]);
+
 // Teachers
 export const teachers = pgTable("teachers", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -397,4 +413,13 @@ export const insertLibraryRecommendationSchema = createInsertSchema(libraryRecom
   accepted: true,
   dismissedAt: true,
   createdAt: true,
+});
+
+// Parent-Child relationship types
+export type InsertParentChildRelationship = typeof parentChildRelationships.$inferInsert;
+export type ParentChildRelationship = typeof parentChildRelationships.$inferSelect;
+export const insertParentChildRelationshipSchema = createInsertSchema(parentChildRelationships).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
