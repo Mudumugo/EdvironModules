@@ -1,49 +1,8 @@
-import {
-  users,
-  userSettings,
-  type User,
-  type UpsertUser,
-  type UserSettings,
-  type InsertUserSettings,
-  liveSessions,
-  type LiveSession,
-  type InsertLiveSession,
-  sessionParticipants,
-  type SessionParticipant,
-  type InsertSessionParticipant,
-  deviceSessions,
-  type DeviceSession,
-  type InsertDeviceSession,
-  screenSharingSessions,
-  type ScreenSharingSession,
-  type InsertScreenSharingSession,
-  deviceControlActions,
-  type DeviceControlAction,
-  type InsertDeviceControlAction,
-  calendarEvents,
-  type CalendarEvent,
-  type InsertCalendarEvent,
-  eventParticipants,
-  type EventParticipant,
-  type InsertEventParticipant,
-  eventRoleTargets,
-  type EventRoleTarget,
-  type InsertEventRoleTarget,
-  eventReminders,
-  type EventReminder,
-  type InsertEventReminder,
-  eventTemplates,
-  type EventTemplate,
-  type InsertEventTemplate,
-  type LibraryCategory,
-  type LibrarySubject, 
-  type LibraryResource
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, and, lte, gte, isNotNull, desc, asc, or, ilike, sql } from "drizzle-orm";
+// Re-export the modular storage system
+export * from "./storage/base/IStorage";
+export { DatabaseStorage, storage } from "./storage/index";
 
-// Interface for storage operations
-export interface IStorage {
+// Legacy interface - use the modular storage system instead
   // User operations - mandatory for Replit Auth
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
