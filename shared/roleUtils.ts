@@ -323,7 +323,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 // Utility functions for role management
 export function hasPermission(userRole: UserRole, userPermissions: Permission[], requiredPermission: Permission): boolean {
   const rolePermissions = ROLE_PERMISSIONS[userRole] || [];
-  return rolePermissions.includes(requiredPermission) || userPermissions.includes(requiredPermission);
+  const permissions = userPermissions || [];
+  return rolePermissions.includes(requiredPermission) || permissions.includes(requiredPermission);
 }
 
 export function hasAnyPermission(userRole: UserRole, userPermissions: Permission[], requiredPermissions: Permission[]): boolean {

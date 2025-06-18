@@ -30,6 +30,7 @@ import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
 import AppsHub from "@/pages/AppsHub";
 import HotCall from "@/pages/HotCall";
 import TimetableManagement from "@/pages/TimetableManagement";
+import SecurityDashboard from "@/pages/SecurityDashboard";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
@@ -56,6 +57,7 @@ const componentMap: Record<string, any> = {
   'apps-hub': AppsHub,
   'hot-call': HotCall,
   'timetable': TimetableManagement,
+  'security-dashboard': SecurityDashboard,
 };
 
 function Router() {
@@ -82,7 +84,9 @@ function Router() {
         {/* Core modules - available to all authenticated users */}
         <Route path="/">
           <RoleProtectedRoute moduleId="dashboard">
-            {user?.role === 'school_admin' ? <AdminDashboard /> : <LearningDashboard />}
+            {user?.role === 'school_admin' ? <AdminDashboard /> : 
+             user?.role === 'school_security' ? <SecurityDashboard /> : 
+             <LearningDashboard />}
           </RoleProtectedRoute>
         </Route>
         
@@ -169,6 +173,12 @@ function Router() {
         </Route>
 
         {/* Security modules - Security Staff + School Admin */}
+        <Route path="/security-dashboard">
+          <RoleProtectedRoute moduleId="security-dashboard">
+            <SecurityDashboard />
+          </RoleProtectedRoute>
+        </Route>
+
         <Route path="/family-controls">
           <RoleProtectedRoute moduleId="family-controls">
             <FamilyControls />

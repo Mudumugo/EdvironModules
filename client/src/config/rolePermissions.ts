@@ -131,6 +131,14 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
 
   // Security modules
   {
+    id: "security-dashboard",
+    name: "Security Dashboard",
+    path: "/security-dashboard",
+    icon: "Shield",
+    description: "Security monitoring, alerts and threat intelligence",
+    allowedRoles: ["school_security", "school_admin"],
+  },
+  {
     id: "family-controls",
     name: "Access Controls",
     path: "/family-controls",

@@ -14,7 +14,7 @@ export function requirePermission(permission: Permission) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasPermission(user.role, user.permissions, permission)) {
+    if (!hasPermission(user.role, user.permissions || [], permission)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permission,
