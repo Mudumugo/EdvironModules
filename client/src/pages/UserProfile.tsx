@@ -97,19 +97,20 @@ export default function UserProfile() {
 
   // Update form data when profile loads
   useEffect(() => {
-    if (profileData) {
+    if (profileData && typeof profileData === 'object') {
+      const profile = profileData as any;
       setFormData({
-        firstName: profileData.firstName || '',
-        lastName: profileData.lastName || '',
-        email: profileData.email || '',
-        phone: profileData.phone || '',
-        address: profileData.address || '',
-        bio: profileData.bio || '',
-        dateOfBirth: profileData.dateOfBirth || '',
-        gradeLevel: profileData.gradeLevel || '',
-        department: profileData.department || '',
-        subjects: profileData.subjects || [],
-        achievements: profileData.achievements || []
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+        address: profile.address || '',
+        bio: profile.bio || '',
+        dateOfBirth: profile.dateOfBirth || '',
+        gradeLevel: profile.gradeLevel || profile.role || '',
+        department: profile.department || profile.role || '',
+        subjects: profile.subjects || [],
+        achievements: profile.achievements || []
       });
     }
   }, [profileData]);
@@ -309,8 +310,8 @@ export default function UserProfile() {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
-                      value={profileData.firstName}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+                      value={formData.firstName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                       disabled={!isEditing}
                     />
                   </div>
@@ -318,8 +319,8 @@ export default function UserProfile() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      value={profileData.lastName}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
+                      value={formData.lastName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                       disabled={!isEditing}
                     />
                   </div>
@@ -328,8 +329,8 @@ export default function UserProfile() {
                     <Input
                       id="email"
                       type="email"
-                      value={profileData.email}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       disabled={!isEditing}
                     />
                   </div>
