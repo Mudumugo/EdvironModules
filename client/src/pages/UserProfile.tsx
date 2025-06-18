@@ -6,6 +6,7 @@ import { useUserProfile } from "./UserProfile/useUserProfile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { isStudent } from "@shared/roleUtils";
+import type { UserRole } from "@shared/schema";
 
 export default function UserProfile() {
   const { user } = useAuth();
@@ -31,7 +32,7 @@ export default function UserProfile() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          {isStudent(user.role) && <TabsTrigger value="academic">Academic</TabsTrigger>}
+          {user.role && isStudent(user.role as UserRole) && <TabsTrigger value="academic">Academic</TabsTrigger>}
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
@@ -40,7 +41,7 @@ export default function UserProfile() {
           <ProfileTab />
         </TabsContent>
 
-        {isStudent(user.role) && (
+        {user.role && isStudent(user.role as UserRole) && (
           <TabsContent value="academic" className="space-y-4">
             <AcademicTab />
           </TabsContent>

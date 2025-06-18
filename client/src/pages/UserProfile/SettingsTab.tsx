@@ -7,6 +7,27 @@ import { Separator } from "@/components/ui/separator";
 import { useUserProfile } from "./useUserProfile";
 import { Bell, Lock, Palette, Globe, Save } from "lucide-react";
 
+interface UserSettingsType {
+  notifications: {
+    email: boolean;
+    push: boolean;
+    assignments: boolean;
+    grades: boolean;
+    announcements: boolean;
+  };
+  privacy: {
+    profileVisible: boolean;
+    contactVisible: boolean;
+    shareProgress: boolean;
+  };
+  preferences: {
+    language: string;
+    timezone: string;
+    theme: string;
+    notifications: boolean;
+  };
+}
+
 export function SettingsTab() {
   const { userSettings, settingsLoading, updateSettingsMutation } = useUserProfile();
 
@@ -14,7 +35,7 @@ export function SettingsTab() {
     return <div>Loading settings...</div>;
   }
 
-  const settings = userSettings || {
+  const defaultSettings: UserSettingsType = {
     notifications: {
       email: true,
       push: true,
