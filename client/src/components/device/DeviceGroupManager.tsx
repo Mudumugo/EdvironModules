@@ -156,235 +156,79 @@ export default function DeviceGroupManager() {
     return GROUP_COLORS.find(c => c.value === color)?.class || GROUP_COLORS[0].class;
   };
 
-  if (groupsLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold">Device Groups</h3>
-          <p className="text-sm text-muted-foreground">
-            Organize devices into groups for easier management
+          <h1 className="text-2xl font-bold">Device Management</h1>
+          <p className="text-muted-foreground">
+            Organize and manage devices with groups and policies
           </p>
         </div>
-        <div className="flex space-x-2">
-          <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Move className="h-4 w-4 mr-2" />
-                Assign Devices
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Assign Devices to Group</DialogTitle>
-                <DialogDescription>
-                  Select devices and assign them to a group
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Select Devices</Label>
-                  <div className="max-h-40 overflow-y-auto border rounded p-2">
-                    {devices.map((device: any) => (
-                      <div key={device.id} className="flex items-center space-x-2 py-1">
-                        <input
-                          type="checkbox"
-                          id={device.id}
-                          checked={selectedDevices.includes(device.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedDevices([...selectedDevices, device.id]);
-                            } else {
-                              setSelectedDevices(selectedDevices.filter(id => id !== device.id));
-                            }
-                          }}
-                        />
-                        <label htmlFor={device.id} className="text-sm">
-                          {device.name} ({device.type})
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Target Group</Label>
-                  <Select value={targetGroupId} onValueChange={setTargetGroupId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {groups.map((group) => (
-                        <SelectItem key={group.id} value={group.id}>
-                          {group.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsAssignDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleAssignDevices} disabled={assignDevicesMutation.isPending}>
-                  Assign Devices
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => { resetForm(); setEditingGroup(null); }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Group
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {editingGroup ? 'Edit Group' : 'Create New Group'}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingGroup ? 'Update group information' : 'Create a new device group for organization'}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Group Name</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Enter group name"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Enter group description"
-                    rows={3}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="color">Color</Label>
-                  <Select
-                    value={formData.color}
-                    onValueChange={(value) => setFormData({ ...formData, color: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GROUP_COLORS.map((color) => (
-                        <SelectItem key={color.value} value={color.value}>
-                          <div className="flex items-center space-x-2">
-                            <div className={`w-3 h-3 rounded-full ${color.class}`} />
-                            <span>{color.label}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button 
-                  onClick={handleSubmit} 
-                  disabled={createGroupMutation.isPending || updateGroupMutation.isPending}
-                >
-                  {editingGroup ? 'Update Group' : 'Create Group'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Dialog open={isCreateDialogOpen} onOpenChange={handleDialogClose}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Group
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {editingGroup ? 'Edit Group' : 'Create New Group'}
+              </DialogTitle>
+              <DialogDescription>
+                {editingGroup ? 'Update group information' : 'Create a new device group for organization'}
+              </DialogDescription>
+            </DialogHeader>
+            <GroupForm
+              onSubmit={handleFormSubmit}
+              onCancel={handleDialogClose}
+              editingGroup={editingGroup}
+              isLoading={createGroupMutation.isPending || updateGroupMutation.isPending}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
-      <Separator />
+      <GroupStats 
+        groups={groups} 
+        devices={devices} 
+        isLoading={groupsLoading} 
+      />
 
-      {groups.length === 0 ? (
-        <Card>
-          <CardContent className="text-center py-12">
-            <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-semibold mb-2">No Groups Created</h3>
-            <p className="text-muted-foreground mb-4">
-              Create your first device group to organize and manage devices more effectively.
-            </p>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create First Group
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {groups.map((group) => (
-            <Card key={group.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{group.name}</CardTitle>
-                  <Badge className={getColorClass(group.color)}>
-                    {group.deviceCount} devices
-                  </Badge>
-                </div>
-                {group.description && (
-                  <CardDescription className="text-sm">
-                    {group.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Smartphone className="h-4 w-4" />
-                    <span>{group.deviceCount} devices</span>
-                  </div>
-                  <div className="flex space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(group)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteGroupMutation.mutate(group.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-2 text-xs text-muted-foreground">
-                  Created {new Date(group.createdAt).toLocaleDateString()}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      <Tabs defaultValue="groups" className="w-full">
+        <TabsList>
+          <TabsTrigger value="groups" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Groups
+          </TabsTrigger>
+          <TabsTrigger value="devices" className="flex items-center gap-2">
+            <Smartphone className="h-4 w-4" />
+            Devices
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="groups" className="space-y-4">
+          <GroupList
+            groups={groups}
+            onEdit={handleEditGroup}
+            onDelete={handleDeleteGroup}
+            onViewDevices={handleViewDevices}
+            isLoading={groupsLoading}
+          />
+        </TabsContent>
+        
+        <TabsContent value="devices" className="space-y-4">
+          <DeviceList
+            devices={devices}
+            groups={groups}
+            onMoveDevice={handleMoveDevice}
+            selectedGroupId={selectedGroupId}
+            isLoading={groupsLoading}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
