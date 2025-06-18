@@ -220,24 +220,61 @@ const DigitalLibraryNew = () => {
 
 
 
-  const handleDownload = (resource: LibraryResource) => {
-    if (resource.fileUrl) {
-      // Create a temporary link and click it to download
-      const link = document.createElement('a');
-      link.href = resource.fileUrl;
-      link.download = resource.title;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
+  const handleSaveToLocker = async (resource: LibraryResource) => {
+    if (!user) {
       toast({
-        title: "Download Started",
-        description: `Downloading: ${resource.title}`,
+        title: "Login Required",
+        description: "Please log in to save resources to your locker",
+        variant: "destructive",
       });
-    } else {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/locker/items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemType: 'library_resource',
+          title: resource.title,
+          content: resource.description,
+          originalResourceId: resource.id.toString(),
+          originalTitle: resource.title,
+          subject: resource.curriculum,
+          gradeLevel: resource.grade,
+          fileUrl: resource.fileUrl,
+          thumbnailUrl: resource.thumbnailUrl,
+          metadata: {
+            type: resource.type,
+            difficulty: resource.difficulty,
+            duration: resource.duration,
+            rating: resource.rating,
+            language: resource.language,
+            tags: resource.tags,
+            accessTier: resource.accessTier,
+            originalAuthor: resource.authorId,
+            savedFromLibrary: true,
+            savedAt: new Date().toISOString(),
+          },
+          tags: resource.tags,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Saved to Locker",
+          description: `"${resource.title}" has been saved to your locker`,
+        });
+      } else {
+        throw new Error('Failed to save to locker');
+      }
+    } catch (error) {
+      console.error('Error saving to locker:', error);
       toast({
-        title: "Download Error",
-        description: "File not available for download",
+        title: "Save Failed",
+        description: "Could not save resource to locker. Please try again.",
         variant: "destructive",
       });
     }
@@ -361,7 +398,7 @@ const DigitalLibraryNew = () => {
                 key={resource.id} 
                 resource={resource} 
                 onPreview={handlePreview}
-                onDownload={handleDownload}
+                onSaveToLocker={handleSaveToLocker}
                 viewMode={viewMode}
               />
             ))}
@@ -387,7 +424,7 @@ const DigitalLibraryNew = () => {
           isOpen={!!selectedResource}
           onClose={() => setSelectedResource(null)}
           resource={selectedResource}
-          onDownload={handleDownload}
+          onSaveToLocker={handleSaveToLocker}
         />
       )}
 

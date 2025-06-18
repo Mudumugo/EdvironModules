@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, FileText, Download, Eye, Clock, Star, Users } from "lucide-react";
+import { BookOpen, FileText, Save, Eye, Clock, Star, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { shouldUseBookViewer, getBookOpenMessage } from "@/lib/bookViewerConfig";
 
@@ -29,14 +29,14 @@ interface LibraryResource {
 interface LibraryResourceCardProps {
   resource: LibraryResource;
   onPreview: (resource: LibraryResource) => void;
-  onDownload: (resource: LibraryResource) => void;
+  onSaveToLocker: (resource: LibraryResource) => void;
   viewMode?: "grid" | "list";
 }
 
 const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
   resource,
   onPreview,
-  onDownload,
+  onSaveToLocker,
   viewMode = "grid"
 }) => {
   const { toast } = useToast();
@@ -90,12 +90,8 @@ const LibraryResourceCard: React.FC<LibraryResourceCardProps> = ({
     });
   };
 
-  const handleDownload = () => {
-    onDownload(resource);
-    toast({
-      title: "Download Started",
-      description: `Downloading ${resource.title}`,
-    });
+  const handleSaveToLocker = () => {
+    onSaveToLocker(resource);
   };
 
   if (viewMode === "list") {

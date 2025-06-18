@@ -107,6 +107,406 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return settings;
   }
+
+  // Security operations implementation
+  async getSecurityZones(): Promise<any[]> {
+    return [
+      {
+        id: "zone_001",
+        name: "Main Entrance",
+        description: "Primary school entrance and reception area",
+        location: "Building A - Ground Floor",
+        isActive: true,
+        riskLevel: "high",
+        cameraCount: 3,
+        lastIncident: "2024-06-17T10:30:00Z",
+      },
+      {
+        id: "zone_002", 
+        name: "Playground",
+        description: "Outdoor playground and sports area",
+        location: "Outdoor - East Side",
+        isActive: true,
+        riskLevel: "medium",
+        cameraCount: 5,
+        lastIncident: null,
+      },
+      {
+        id: "zone_003",
+        name: "Parking Lot",
+        description: "Staff and visitor parking area",
+        location: "Outdoor - North Side",
+        isActive: true,
+        riskLevel: "low",
+        cameraCount: 2,
+        lastIncident: "2024-06-15T14:20:00Z",
+      },
+      {
+        id: "zone_004",
+        name: "Laboratory Wing",
+        description: "Science laboratories and equipment storage",
+        location: "Building B - Second Floor",
+        isActive: true,
+        riskLevel: "medium",
+        cameraCount: 4,
+        lastIncident: null,
+      }
+    ];
+  }
+
+  async createSecurityZone(data: any): Promise<any> {
+    return {
+      id: `zone_${Date.now()}`,
+      ...data,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  async getSecurityCameras(): Promise<any[]> {
+    return [
+      {
+        id: "cam_001",
+        name: "Main Entrance Camera 1",
+        zoneId: "zone_001",
+        zoneName: "Main Entrance",
+        ipAddress: "192.168.1.101",
+        streamUrl: "rtsp://192.168.1.101:554/stream1",
+        isOnline: true,
+        isRecording: true,
+        resolution: "1080p",
+        orientation: "horizontal",
+        hasAudio: true,
+        lastPing: new Date().toISOString(),
+      },
+      {
+        id: "cam_002",
+        name: "Playground Overview",
+        zoneId: "zone_002",
+        zoneName: "Playground",
+        ipAddress: "192.168.1.102",
+        streamUrl: "rtsp://192.168.1.102:554/stream1",
+        isOnline: true,
+        isRecording: true,
+        resolution: "4K",
+        orientation: "horizontal",
+        hasAudio: false,
+        lastPing: new Date().toISOString(),
+      },
+      {
+        id: "cam_003",
+        name: "Parking Entrance",
+        zoneId: "zone_003",
+        zoneName: "Parking Lot",
+        ipAddress: "192.168.1.103",
+        streamUrl: "rtsp://192.168.1.103:554/stream1",
+        isOnline: false,
+        isRecording: false,
+        resolution: "720p",
+        orientation: "horizontal",
+        hasAudio: false,
+        lastPing: "2024-06-17T08:30:00Z",
+      }
+    ];
+  }
+
+  async getSecurityCamerasByZone(zoneId: string): Promise<any[]> {
+    const cameras = await this.getSecurityCameras();
+    return cameras.filter(camera => camera.zoneId === zoneId);
+  }
+
+  async createSecurityCamera(data: any): Promise<any> {
+    return {
+      id: `cam_${Date.now()}`,
+      ...data,
+      isOnline: false,
+      isRecording: false,
+      lastPing: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  async getSecurityEvents(filters: any): Promise<any[]> {
+    const events = [
+      {
+        id: "event_001",
+        type: "intrusion",
+        severity: "high",
+        status: "investigating",
+        zoneId: "zone_001",
+        zoneName: "Main Entrance",
+        cameraId: "cam_001",
+        cameraName: "Main Entrance Camera 1",
+        description: "Unauthorized person detected after hours",
+        detectedAt: "2024-06-17T22:30:00Z",
+        resolvedAt: null,
+        assignedTo: "Security Officer Johnson",
+        imageUrl: "/security/captures/event_001.jpg",
+        metadata: { confidence: 0.92, personCount: 1 },
+      },
+      {
+        id: "event_002",
+        type: "suspicious_activity",
+        severity: "medium",
+        status: "resolved",
+        zoneId: "zone_002",
+        zoneName: "Playground",
+        cameraId: "cam_002",
+        cameraName: "Playground Overview",
+        description: "Individual loitering in playground area",
+        detectedAt: "2024-06-17T18:45:00Z",
+        resolvedAt: "2024-06-17T19:15:00Z",
+        assignedTo: "Security Officer Smith",
+        imageUrl: "/security/captures/event_002.jpg",
+        metadata: { confidence: 0.78, personCount: 1 },
+      },
+      {
+        id: "event_003",
+        type: "vandalism",
+        severity: "medium",
+        status: "active",
+        zoneId: "zone_003",
+        zoneName: "Parking Lot",
+        cameraId: "cam_003",
+        cameraName: "Parking Entrance",
+        description: "Damage to vehicle detected",
+        detectedAt: "2024-06-17T15:20:00Z",
+        resolvedAt: null,
+        assignedTo: null,
+        imageUrl: "/security/captures/event_003.jpg",
+        metadata: { confidence: 0.85, damaged_vehicles: 1 },
+      }
+    ];
+
+    let filteredEvents = events;
+    if (filters.status) {
+      filteredEvents = filteredEvents.filter(event => event.status === filters.status);
+    }
+    if (filters.severity) {
+      filteredEvents = filteredEvents.filter(event => event.severity === filters.severity);
+    }
+    if (filters.zoneId) {
+      filteredEvents = filteredEvents.filter(event => event.zoneId === filters.zoneId);
+    }
+
+    return filteredEvents.slice(0, filters.limit || 50);
+  }
+
+  async createSecurityEvent(data: any): Promise<any> {
+    return {
+      id: `event_${Date.now()}`,
+      ...data,
+      status: "active",
+      detectedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  async updateSecurityEvent(eventId: string, data: any): Promise<any> {
+    return {
+      id: eventId,
+      ...data,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  async getVisitorRegistrations(filters: any): Promise<any[]> {
+    const registrations = [
+      {
+        id: "visitor_001",
+        visitorName: "John Smith",
+        visitorPhone: "+1-555-0123",
+        visitorEmail: "john.smith@example.com",
+        visitPurpose: "Parent Meeting",
+        hostName: "Ms. Johnson",
+        hostDepartment: "Grade 3",
+        checkInTime: "2024-06-18T09:30:00Z",
+        checkOutTime: null,
+        expectedDuration: 60,
+        status: "checked_in",
+        idType: "drivers_license",
+        idNumber: "DL123456789",
+        badgeNumber: "V001",
+        gateUsed: "Main Gate",
+        securityNotes: "Visitor verified, ID checked",
+      },
+      {
+        id: "visitor_002",
+        visitorName: "Sarah Wilson",
+        visitorPhone: "+1-555-0456",
+        visitorEmail: "sarah.wilson@contractor.com",
+        visitPurpose: "Equipment Maintenance",
+        hostName: "Facilities Manager",
+        hostDepartment: "Maintenance",
+        checkInTime: "2024-06-18T08:00:00Z",
+        checkOutTime: "2024-06-18T12:30:00Z",
+        expectedDuration: 240,
+        status: "checked_out",
+        idType: "company_id",
+        idNumber: "CONT789",
+        badgeNumber: "V002",
+        gateUsed: "Service Gate",
+        securityNotes: "Contractor with proper credentials",
+      }
+    ];
+
+    let filteredRegistrations = registrations;
+    if (filters.status) {
+      filteredRegistrations = filteredRegistrations.filter(reg => reg.status === filters.status);
+    }
+    if (filters.date) {
+      const filterDate = new Date(filters.date).toDateString();
+      filteredRegistrations = filteredRegistrations.filter(reg => 
+        new Date(reg.checkInTime).toDateString() === filterDate
+      );
+    }
+
+    return filteredRegistrations;
+  }
+
+  async createVisitorRegistration(data: any): Promise<any> {
+    return {
+      id: `visitor_${Date.now()}`,
+      ...data,
+      checkInTime: new Date().toISOString(),
+      status: "checked_in",
+      badgeNumber: `V${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  async checkoutVisitor(visitorId: string): Promise<any> {
+    return {
+      id: visitorId,
+      checkOutTime: new Date().toISOString(),
+      status: "checked_out",
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  async getSecurityCalls(filters: any): Promise<any[]> {
+    const calls = [
+      {
+        id: "call_001",
+        callType: "emergency",
+        fromExtension: "3001",
+        toExtension: "3000",
+        fromZone: "zone_001",
+        toZone: null,
+        duration: 185,
+        status: "completed",
+        priority: "emergency",
+        notes: "Medical emergency reported in main entrance",
+        startedAt: "2024-06-18T10:15:00Z",
+        endedAt: "2024-06-18T10:18:05Z",
+      },
+      {
+        id: "call_002",
+        callType: "routine",
+        fromExtension: "3002",
+        toExtension: "3003",
+        fromZone: "zone_002",
+        toZone: "zone_004",
+        duration: 45,
+        status: "completed",
+        priority: "normal",
+        notes: "Coordination between zones",
+        startedAt: "2024-06-18T09:30:00Z",
+        endedAt: "2024-06-18T09:30:45Z",
+      },
+      {
+        id: "call_003",
+        callType: "maintenance",
+        fromExtension: "3004",
+        toExtension: "3000",
+        fromZone: "zone_003",
+        toZone: null,
+        duration: null,
+        status: "ringing",
+        priority: "high",
+        notes: "Camera malfunction reported",
+        startedAt: "2024-06-18T11:20:00Z",
+        endedAt: null,
+      }
+    ];
+
+    let filteredCalls = calls;
+    if (filters.status) {
+      filteredCalls = filteredCalls.filter(call => call.status === filters.status);
+    }
+    if (filters.priority) {
+      filteredCalls = filteredCalls.filter(call => call.priority === filters.priority);
+    }
+
+    return filteredCalls;
+  }
+
+  async createSecurityCall(data: any): Promise<any> {
+    return {
+      id: `call_${Date.now()}`,
+      ...data,
+      status: "ringing",
+      startedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    };
+  }
+
+  async getSecurityMetrics(): Promise<any> {
+    return {
+      totalZones: 4,
+      activeCameras: 8,
+      offlineCameras: 2,
+      activeEvents: 2,
+      resolvedEvents: 15,
+      checkedInVisitors: 3,
+      todayVisitors: 12,
+      emergencyCalls: 1,
+      routineCalls: 8,
+      riskLevels: {
+        low: 1,
+        medium: 2,
+        high: 1,
+        critical: 0
+      },
+      eventTypes: {
+        intrusion: 3,
+        suspicious_activity: 8,
+        vandalism: 2,
+        theft: 1,
+        violence: 0
+      },
+      lastUpdate: new Date().toISOString(),
+    };
+  }
+
+  async getActiveThreats(): Promise<any[]> {
+    return [
+      {
+        id: "threat_001",
+        type: "intrusion",
+        severity: "high",
+        zone: "Main Entrance",
+        description: "Unauthorized access attempt detected",
+        detectedAt: "2024-06-18T10:45:00Z",
+        confidence: 0.92,
+        status: "investigating",
+      },
+      {
+        id: "threat_002",
+        type: "suspicious_activity",
+        severity: "medium",
+        zone: "Parking Lot",
+        description: "Individual loitering near vehicles",
+        detectedAt: "2024-06-18T11:20:00Z",
+        confidence: 0.78,
+        status: "monitoring",
+      }
+    ];
+  }
 }
 
 export const storage = new DatabaseStorage();

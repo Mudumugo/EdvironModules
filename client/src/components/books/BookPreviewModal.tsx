@@ -125,9 +125,9 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
     setIsBookViewerOpen(false);
   };
 
-  const handleDownload = () => {
-    if (onDownload) {
-      onDownload(resource);
+  const handleSaveToLocker = () => {
+    if (onSaveToLocker) {
+      onSaveToLocker(resource);
     }
   };
 
