@@ -75,8 +75,10 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
         // Chapter pages
         for (let i = 1; i <= 3; i++) {
           pages.push(`data:image/svg+xml,${encodeURIComponent(generateChapterIntro(`Chapter ${i}`, `Learning Module ${i}`, grade))}`);
-          pages.push(`data:image/svg+xml,${encodeURIComponent(generateGeneralPage(i + 2, resource.title, grade))}`);
-          pages.push(`data:image/svg+xml,${encodeURIComponent(generateQuizPage(i, subject, grade))}`);
+          // Interactive content pages as HTML
+          pages.push(`data:text/html,${encodeURIComponent(generateGeneralPage(i + 2, resource.title, grade))}`);
+          // Interactive quiz pages as HTML
+          pages.push(`data:text/html,${encodeURIComponent(generateQuizPage(i, subject, grade))}`);
         }
         
         // Final Assessment

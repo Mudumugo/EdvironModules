@@ -142,44 +142,294 @@ export const generateQuizPage = (quizNum: number, subject: string, grade: string
     { q: "Why is practice important?", options: ["A) Fun", "B) Learning", "C) Time"], answer: "B" }
   ];
 
-  return `<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
-    <rect width="400" height="600" fill="#fefefe"/>
-    <rect x="20" y="20" width="360" height="560" fill="white" stroke="#e5e7eb" stroke-width="1" rx="10"/>
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter ${quizNum} Quiz</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .quiz-header {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .quiz-header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .quiz-header p {
+      margin: 10px 0 0 0;
+      opacity: 0.9;
+    }
+    .quiz-content {
+      padding: 30px;
+    }
+    .instruction {
+      background: #f0f9ff;
+      border-left: 4px solid #0ea5e9;
+      padding: 15px;
+      margin-bottom: 30px;
+      border-radius: 0 8px 8px 0;
+    }
+    .question {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 2px solid #f3f4f6;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .question:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+    .question h3 {
+      margin: 0 0 15px 0;
+      color: #1f2937;
+      font-size: 16px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fafafa;
+    }
+    .option:hover {
+      background: #f0f9ff;
+      border-color: #3b82f6;
+    }
+    .option input[type="radio"] {
+      margin-right: 12px;
+      scale: 1.2;
+    }
+    .option.selected {
+      background: #dbeafe;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+    }
+    .option.correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #15803d;
+    }
+    .option.incorrect {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #dc2626;
+    }
+    .submit-btn {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      margin-top: 20px;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+    }
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+    .result.show {
+      display: block;
+    }
+    .result.excellent {
+      background: #dcfce7;
+      color: #15803d;
+      border: 2px solid #22c55e;
+    }
+    .result.good {
+      background: #fef3c7;
+      color: #a16207;
+      border: 2px solid #f59e0b;
+    }
+    .result.needs-work {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 2px solid #ef4444;
+    }
+    @keyframes bounce {
+      0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+      40%, 43% { transform: translate3d(0, -10px, 0); }
+      70% { transform: translate3d(0, -5px, 0); }
+      90% { transform: translate3d(0, -2px, 0); }
+    }
+    .animate-bounce {
+      animation: bounce 1s ease infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="quiz-header">
+      <h1>Chapter ${quizNum} Quiz</h1>
+      <p>Test your knowledge • ${grade}</p>
+    </div>
     
-    <!-- Quiz Header -->
-    <rect x="40" y="40" width="320" height="60" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" rx="10"/>
-    <text x="200" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#92400e">Chapter ${quizNum} Quiz</text>
-    <text x="200" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#a16207">Test your knowledge • ${grade}</text>
-    
-    <!-- Instructions -->
-    <text x="40" y="130" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#374151">Instructions:</text>
-    <text x="40" y="150" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">Choose the best answer for each question. Circle your choice.</text>
-    
-    ${questions.map((q, i) => `
-      <g>
-        <!-- Question -->
-        <text x="40" y="${180 + i * 100}" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#1f2937">${i + 1}. ${q.q}</text>
-        
-        <!-- Options -->
-        ${q.options.map((option, j) => `
-          <g>
-            <circle cx="50" cy="${195 + i * 100 + j * 20}" r="6" fill="none" stroke="#9ca3af" stroke-width="1"/>
-            <text x="65" y="${200 + i * 100 + j * 20}" font-family="Arial, sans-serif" font-size="11" fill="#4b5563">${option}</text>
-          </g>
+    <div class="quiz-content">
+      <div class="instruction">
+        <strong>Instructions:</strong> Choose the best answer for each question. Click Submit when you're done!
+      </div>
+      
+      <form id="quizForm">
+        ${questions.map((q, i) => `
+          <div class="question" data-answer="${q.answer}">
+            <h3>${i + 1}. ${q.q}</h3>
+            <div class="options">
+              ${q.options.map((option, j) => `
+                <label class="option" data-value="${String.fromCharCode(65 + j)}">
+                  <input type="radio" name="q${i}" value="${String.fromCharCode(65 + j)}">
+                  ${option}
+                </label>
+              `).join('')}
+            </div>
+          </div>
         `).join('')}
         
-        <!-- Answer Key (hidden) -->
-        <text x="320" y="${180 + i * 100}" font-family="Arial, sans-serif" font-size="8" fill="#d1d5db">Answer: ${q.answer}</text>
-      </g>
-    `).join('')}
-    
-    <!-- Quiz Footer -->
-    <rect x="40" y="520" width="320" height="40" fill="#f0fdf4" stroke="#22c55e" stroke-width="1" rx="6"/>
-    <text x="200" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#15803d">Great job! Check your answers with your teacher.</text>
-    <text x="200" y="555" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#16a34a">Score: ___/3</text>
-    
-    <text x="200" y="580" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#9ca3af">Quiz ${quizNum}</text>
-  </svg>`;
+        <button type="submit" class="submit-btn">Submit Quiz</button>
+      </form>
+      
+      <div id="result" class="result">
+        <h3 id="resultTitle"></h3>
+        <p id="resultMessage"></p>
+        <p id="scoreDisplay"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('quizForm');
+      const result = document.getElementById('result');
+      const resultTitle = document.getElementById('resultTitle');
+      const resultMessage = document.getElementById('resultMessage');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      
+      // Add click handlers for options
+      document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', function() {
+          const radio = this.querySelector('input[type="radio"]');
+          radio.checked = true;
+          
+          // Remove selected class from siblings
+          this.parentNode.querySelectorAll('.option').forEach(opt => {
+            opt.classList.remove('selected');
+          });
+          
+          // Add selected class to clicked option
+          this.classList.add('selected');
+        });
+      });
+      
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let score = 0;
+        const totalQuestions = ${questions.length};
+        
+        document.querySelectorAll('.question').forEach((question, index) => {
+          const correctAnswer = question.dataset.answer;
+          const selectedOption = question.querySelector('input[type="radio"]:checked');
+          
+          if (selectedOption) {
+            const selectedValue = selectedOption.value;
+            const optionElements = question.querySelectorAll('.option');
+            
+            optionElements.forEach(opt => {
+              const optValue = opt.dataset.value;
+              if (optValue === correctAnswer) {
+                opt.classList.add('correct');
+              } else if (optValue === selectedValue && selectedValue !== correctAnswer) {
+                opt.classList.add('incorrect');
+              }
+            });
+            
+            if (selectedValue === correctAnswer) {
+              score++;
+            }
+          }
+        });
+        
+        // Show results
+        const percentage = Math.round((score / totalQuestions) * 100);
+        scoreDisplay.textContent = \`Score: \${score}/\${totalQuestions} (\${percentage}%)\`;
+        
+        if (percentage >= 80) {
+          result.className = 'result show excellent';
+          resultTitle.textContent = '🎉 Excellent!';
+          resultMessage.textContent = 'You have mastered this topic!';
+        } else if (percentage >= 60) {
+          result.className = 'result show good';
+          resultTitle.textContent = '👏 Good job!';
+          resultMessage.textContent = 'You\\'re doing well. Review the incorrect answers.';
+        } else {
+          result.className = 'result show needs-work';
+          resultTitle.textContent = '📚 Keep studying!';
+          resultMessage.textContent = 'Practice more and try again.';
+        }
+        
+        // Scroll to results
+        result.scrollIntoView({ behavior: 'smooth' });
+        
+        // Disable form
+        form.style.opacity = '0.7';
+        form.style.pointerEvents = 'none';
+        
+        // Send xAPI tracking data if available
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage({
+            type: 'quiz_completed',
+            score: score,
+            totalQuestions: totalQuestions,
+            percentage: percentage,
+            subject: '${subject}',
+            grade: '${grade}',
+            quizNumber: ${quizNum}
+          }, '*');
+        }
+      });
+    });
+  </script>
+</body>
+</html>`;
 };
 
 export const generateFinalAssessment = (subject: string, grade: string) => {
@@ -223,34 +473,396 @@ export const generateFinalAssessment = (subject: string, grade: string) => {
 };
 
 export const generateGeneralPage = (pageNum: number, title: string, grade: string) => {
-  const content = [
-    `Welcome to ${title}`,
-    "",
-    `This is page ${pageNum} of your textbook.`,
-    "",
-    "Learning objectives:",
-    "• Understand key concepts",
-    "• Practice new skills",
-    "• Apply knowledge",
-    "",
-    "Take your time to read and understand.",
-    "Ask questions if you need help!",
-    "",
-    "Interactive elements coming soon..."
-  ];
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} - Page ${pageNum}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    .page-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .page-header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .page-header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .page-header p {
+      margin: 10px 0 0 0;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 40px;
+    }
+    .interactive-section {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 20px 0;
+      border-left: 5px solid #4f46e5;
+    }
+    .math-problem {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      transition: all 0.3s ease;
+    }
+    .math-problem:hover {
+      border-color: #4f46e5;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+    }
+    .number-button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+      transition: all 0.2s ease;
+      min-width: 60px;
+    }
+    .number-button:hover {
+      background: #4338ca;
+      transform: translateY(-2px);
+    }
+    .number-button.correct {
+      background: #10b981;
+      animation: bounce 0.6s ease;
+    }
+    .number-button.incorrect {
+      background: #ef4444;
+      animation: shake 0.6s ease;
+    }
+    .feedback {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+    .feedback.correct {
+      background: #d1fae5;
+      color: #065f46;
+      border: 2px solid #10b981;
+    }
+    .feedback.incorrect {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #ef4444;
+    }
+    .progress-bar {
+      background: #e5e7eb;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #4f46e5, #10b981);
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    .learning-objective {
+      background: #fff7ed;
+      border: 2px solid #fb923c;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .learning-objective h3 {
+      color: #ea580c;
+      margin: 0 0 15px 0;
+    }
+    .objective-item {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .objective-item:hover {
+      background: #fef3c7;
+      transform: translateX(5px);
+    }
+    .objective-checkbox {
+      margin-right: 15px;
+      scale: 1.5;
+    }
+    .objective-item.completed {
+      background: #dcfce7;
+      text-decoration: line-through;
+      opacity: 0.8;
+    }
+    @keyframes bounce {
+      0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+      40%, 43% { transform: translate3d(0, -10px, 0); }
+      70% { transform: translate3d(0, -5px, 0); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    .celebration {
+      text-align: center;
+      padding: 30px;
+      display: none;
+    }
+    .celebration.show {
+      display: block;
+      animation: bounce 1s ease;
+    }
+    .interactive-element {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .interactive-element:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(251, 191, 36, 0.3);
+    }
+    .word-highlight {
+      background: #fef3c7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .word-highlight:hover {
+      background: #fbbf24;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>${title}</h1>
+      <p>Page ${pageNum} • ${grade} • Interactive Learning</p>
+    </div>
+    
+    <div class="content">
+      <div class="learning-objective">
+        <h3>📚 Learning Objectives</h3>
+        <p>Check off each objective as you complete it:</p>
+        
+        <div class="objective-item" onclick="toggleObjective(this)">
+          <input type="checkbox" class="objective-checkbox" />
+          <span>Understand key concepts and definitions</span>
+        </div>
+        
+        <div class="objective-item" onclick="toggleObjective(this)">
+          <input type="checkbox" class="objective-checkbox" />
+          <span>Practice new skills through interactive exercises</span>
+        </div>
+        
+        <div class="objective-item" onclick="toggleObjective(this)">
+          <input type="checkbox" class="objective-checkbox" />
+          <span>Apply knowledge to real-world examples</span>
+        </div>
+        
+        <div class="objective-item" onclick="toggleObjective(this)">
+          <input type="checkbox" class="objective-checkbox" />
+          <span>Complete assessment activities</span>
+        </div>
+      </div>
 
-  return `<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
-    <rect width="400" height="600" fill="#f8f9fa"/>
-    <rect x="20" y="20" width="360" height="560" fill="white" stroke="#e5e7eb" stroke-width="1" rx="10"/>
+      <div class="interactive-section">
+        <h2>🎯 Interactive Content</h2>
+        <p>Welcome to <span class="word-highlight" onclick="showDefinition('textbook')">${title}</span>! 
+        This is an interactive learning experience where you can <span class="word-highlight" onclick="showDefinition('engage')">engage</span> 
+        with the content and track your progress.</p>
+        
+        <div class="interactive-element" onclick="startLearningMode()">
+          <h3>🚀 Start Interactive Learning Mode</h3>
+          <p>Click here to begin your personalized learning journey!</p>
+        </div>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" id="pageProgress"></div>
+        </div>
+        <p id="progressText">Page Progress: 0% complete</p>
+      </div>
+
+      <div class="interactive-section">
+        <h2>💡 Quick Knowledge Check</h2>
+        <p>Test your understanding with this quick question:</p>
+        
+        <div class="math-problem">
+          <h3>What helps you learn best?</h3>
+          <div class="button-group">
+            <button class="number-button" onclick="checkLearningStyle('visual', this)">Visual aids</button>
+            <button class="number-button" onclick="checkLearningStyle('hands-on', this)">Hands-on practice</button>
+            <button class="number-button" onclick="checkLearningStyle('all', this)">All methods</button>
+          </div>
+          <div class="feedback" id="learningFeedback"></div>
+        </div>
+      </div>
+      
+      <div class="celebration" id="pageCelebration">
+        <h2>🎉 Great Work!</h2>
+        <p>You've completed this page successfully!</p>
+        <p>Ready to move on to the next section?</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let objectivesCompleted = 0;
+    let totalObjectives = 4;
+    let pageProgress = 0;
     
-    <text x="200" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#1f2937">${title}</text>
-    <text x="200" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">${grade} • Page ${pageNum}</text>
-    <line x1="40" y1="100" x2="360" y2="100" stroke="#e5e7eb" stroke-width="2"/>
+    function toggleObjective(element) {
+      const checkbox = element.querySelector('input[type="checkbox"]');
+      checkbox.checked = !checkbox.checked;
+      
+      if (checkbox.checked) {
+        element.classList.add('completed');
+        objectivesCompleted++;
+      } else {
+        element.classList.remove('completed');
+        objectivesCompleted--;
+      }
+      
+      updateProgress();
+      
+      // Send tracking data
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({
+          type: 'objective_completed',
+          pageNumber: ${pageNum},
+          objectivesCompleted: objectivesCompleted,
+          totalObjectives: totalObjectives,
+          grade: '${grade}'
+        }, '*');
+      }
+    }
     
-    ${content.map((line, i) => `
-      <text x="40" y="${130 + i * 25}" font-family="Arial, sans-serif" font-size="14" fill="#374151">${line}</text>
-    `).join('')}
+    function updateProgress() {
+      const percentage = Math.min((objectivesCompleted / totalObjectives) * 100, 100);
+      document.getElementById('pageProgress').style.width = percentage + '%';
+      document.getElementById('progressText').textContent = \`Page Progress: \${Math.round(percentage)}% complete\`;
+      
+      if (percentage === 100) {
+        setTimeout(() => {
+          document.getElementById('pageCelebration').classList.add('show');
+        }, 500);
+      }
+    }
     
-    <text x="200" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#9ca3af">Page ${pageNum}</text>
-  </svg>`;
+    function showDefinition(word) {
+      const definitions = {
+        'textbook': 'A comprehensive learning resource designed to teach specific subjects',
+        'engage': 'To actively participate and interact with learning materials'
+      };
+      
+      alert('📖 Definition: ' + definitions[word]);
+      
+      // Track interaction
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({
+          type: 'word_definition_viewed',
+          word: word,
+          pageNumber: ${pageNum},
+          grade: '${grade}'
+        }, '*');
+      }
+    }
+    
+    function startLearningMode() {
+      alert('🚀 Interactive Learning Mode activated! You can now interact with all elements on this page.');
+      document.body.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      
+      // Track mode activation
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({
+          type: 'learning_mode_activated',
+          pageNumber: ${pageNum},
+          grade: '${grade}'
+        }, '*');
+      }
+    }
+    
+    function checkLearningStyle(style, button) {
+      const feedback = document.getElementById('learningFeedback');
+      const allButtons = button.parentNode.querySelectorAll('.number-button');
+      
+      // Disable all buttons
+      allButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+      });
+      
+      button.classList.add('correct');
+      
+      const responses = {
+        'visual': 'Great choice! Visual learning helps many students understand concepts better.',
+        'hands-on': 'Excellent! Hands-on practice is key to mastering new skills.',
+        'all': 'Perfect answer! Different learning methods work best for different topics.'
+      };
+      
+      feedback.textContent = '✅ ' + responses[style];
+      feedback.className = 'feedback correct';
+      feedback.style.display = 'block';
+      
+      // Track learning style preference
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({
+          type: 'learning_style_selected',
+          style: style,
+          pageNumber: ${pageNum},
+          grade: '${grade}'
+        }, '*');
+      }
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Send page load tracking
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({
+          type: 'page_loaded',
+          pageNumber: ${pageNum},
+          title: '${title}',
+          grade: '${grade}'
+        }, '*');
+      }
+    });
+  </script>
+</body>
+</html>`;
 };
