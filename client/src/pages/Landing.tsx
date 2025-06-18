@@ -16,7 +16,20 @@ import {
   CheckCircle,
   ArrowRight,
   Menu,
-  X
+  X,
+  Search,
+  Filter,
+  Target,
+  Calendar,
+  Presentation,
+  Notebook,
+  Settings,
+  BookMarked,
+  FileText,
+  GraduationCap,
+  Clock,
+  ChevronDown,
+  ChevronLeft
 } from "lucide-react";
 
 export function Landing() {
@@ -125,7 +138,7 @@ export function Landing() {
               <Card className="border-gray-200 bg-gray-50">
                 <CardContent className="p-4">
                   <div className="flex items-center mb-3">
-                    <PresentationChart className="h-6 w-6 text-gray-600 mr-3" />
+                    <Presentation className="h-6 w-6 text-gray-600 mr-3" />
                     <h4 className="font-semibold text-gray-900">Lesson Planning</h4>
                   </div>
                   <p className="text-sm text-gray-600 mb-3">Advanced lesson planning and curriculum alignment tools.</p>
@@ -607,8 +620,8 @@ export function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, index) => (
-              <div key={index}>
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">{stat.number}</div>
+              <div key={index} className="space-y-2">
+                <div className="text-3xl md:text-4xl font-bold text-blue-600">{stat.number}</div>
                 <div className="text-gray-600">{stat.label}</div>
               </div>
             ))}
@@ -621,164 +634,29 @@ export function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Everything Your School Needs
+              Comprehensive Education Solutions
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              From elementary to high school, Edvirons adapts to your institution's unique needs
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Everything you need to run a modern educational institution, 
+              from learning management to security and analytics.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <feature.icon className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Solutions Section */}
-      <section id="solutions" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Tailored for Every Role
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Specialized dashboards and features designed for each member of your educational community
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            <Card className="border-2 border-green-200 bg-green-50">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
-                  <Users className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">For Students</h3>
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-                    Interactive learning modules
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-                    Digital library access
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-                    Progress tracking
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-                    AI-powered Tech Tutor
-                  </li>
-                </ul>
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  Explore Student Features
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-blue-200 bg-blue-50">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                  <BookOpen className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">For Educators</h3>
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
-                    Class management tools
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
-                    Assignment creation
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
-                    Student analytics
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
-                    Resource sharing
-                  </li>
-                </ul>
-                <Button className="w-full">
-                  Explore Teacher Features
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-purple-200 bg-purple-50">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
-                  <Shield className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">For Administrators</h3>
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
-                    School-wide analytics
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
-                    Security management
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
-                    Device monitoring
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
-                    Staff management
-                  </li>
-                </ul>
-                <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                  Explore Admin Features
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Trusted by Educators Worldwide
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              See what educators are saying about their experience with Edvirons
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-white">
-                <CardContent className="p-6">
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-gray-700 mb-4 italic">"{testimonial.content}"</p>
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-600">{testimonial.role}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <Card key={index} className="h-full">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                      <IconComponent className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
+                    <p className="text-gray-600">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -786,21 +664,22 @@ export function Landing() {
       {/* CTA Section */}
       <section className="py-20 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Transform Your School?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of schools already using Edvirons to enhance education and streamline operations.
+            Join thousands of educators already using EdVirons to create better learning experiences.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/demo">
               <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
+                <Play className="mr-2 h-5 w-5" />
                 Start Free Trial
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-blue-600">
-              Contact Sales
-              <ChevronRight className="ml-2 h-5 w-5" />
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-600">
+              Schedule Demo
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -811,7 +690,7 @@ export function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-2xl font-bold text-blue-400 mb-4">Edvirons</h3>
+              <h3 className="text-2xl font-bold text-blue-400 mb-4">EdVirons</h3>
               <p className="text-gray-400 mb-4">
                 Empowering education through innovative technology solutions.
               </p>
@@ -844,8 +723,16 @@ export function Landing() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Edvirons. All rights reserved.</p>
+          
+          <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-400 text-sm">
+              © 2025 EdVirons. All rights reserved.
+            </p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              <a href="#privacy" className="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
+              <a href="#terms" className="text-gray-400 hover:text-white text-sm">Terms of Service</a>
+              <a href="#cookies" className="text-gray-400 hover:text-white text-sm">Cookie Policy</a>
+            </div>
           </div>
         </div>
       </footer>
