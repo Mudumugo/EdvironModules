@@ -130,7 +130,9 @@ export function Landing() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              <a href="#features" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">Features</a>
+              <Link href="/features">
+                <span className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 cursor-pointer">Features</span>
+              </Link>
               <Link href="/solutions">
                 <span className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 cursor-pointer">Solutions</span>
               </Link>
@@ -404,7 +406,7 @@ export function Landing() {
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#features" className="hover:text-white">Features</a></li>
+                <li><Link href="/features" className="hover:text-white">Features</Link></li>
                 <li><Link href="/solutions" className="hover:text-white">Solutions</Link></li>
                 <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
                 <li><Link href="/demo" className="hover:text-white">Demo</Link></li>
