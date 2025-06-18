@@ -7,7 +7,7 @@ import type { AuthenticatedRequest } from "../../types/auth";
 
 export function registerNotebookRoutes(app: Express) {
   // Get all notebooks for user
-  app.get('/api/notebooks', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/notebooks', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       if (!userId) {
@@ -71,7 +71,7 @@ export function registerNotebookRoutes(app: Express) {
   });
 
   // Create new notebook
-  app.post('/api/notebooks', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.post('/api/notebooks', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       if (!userId) {
@@ -98,7 +98,7 @@ export function registerNotebookRoutes(app: Express) {
   });
 
   // Update notebook
-  app.put('/api/notebooks/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.put('/api/notebooks/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const notebookId = parseInt(req.params.id);
@@ -135,7 +135,7 @@ export function registerNotebookRoutes(app: Express) {
   });
 
   // Delete notebook
-  app.delete('/api/notebooks/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.delete('/api/notebooks/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const notebookId = parseInt(req.params.id);

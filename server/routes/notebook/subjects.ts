@@ -9,7 +9,7 @@ import type { AuthenticatedRequest } from "../../types/auth";
 
 export function registerSubjectRoutes(app: Express) {
   // Get all subjects for a notebook
-  app.get('/api/notebooks/:notebookId/subjects', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/notebooks/:notebookId/subjects', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const notebookId = parseInt(req.params.notebookId);
@@ -46,7 +46,7 @@ export function registerSubjectRoutes(app: Express) {
   });
 
   // Create new subject
-  app.post('/api/notebooks/:notebookId/subjects', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.post('/api/notebooks/:notebookId/subjects', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const notebookId = parseInt(req.params.notebookId);

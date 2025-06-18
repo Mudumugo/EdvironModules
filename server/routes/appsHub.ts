@@ -4,7 +4,7 @@ import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerAppsHubRoutes(app: Express) {
   // Get all apps
-  app.get('/api/apps-hub', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/apps-hub', isAuthenticated, async (req: any, res) => {
     try {
       const apps = [
         {
@@ -161,7 +161,7 @@ export function registerAppsHubRoutes(app: Express) {
   });
 
   // Get app categories
-  app.get('/api/apps-hub/categories', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/apps-hub/categories', isAuthenticated, async (req: any, res) => {
     try {
       const categories = [
         { id: "all", name: "All Apps", count: 8 },
@@ -182,7 +182,7 @@ export function registerAppsHubRoutes(app: Express) {
   });
 
   // Track app usage
-  app.post('/api/apps-hub/track-usage', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/apps-hub/track-usage', isAuthenticated, async (req: any, res) => {
     try {
       const { appId, action } = req.body;
       
