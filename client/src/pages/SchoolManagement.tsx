@@ -71,43 +71,20 @@ export default function SchoolManagement() {
   const [classes, setClasses] = useState<any[]>([]);
   const [classesLoading, setClassesLoading] = useState(false);
 
-  // Fetch students from database
-  const { data: students, isLoading: studentsLoading } = useQuery({
-    queryKey: ['/api/users', 'students'],
-    retry: false,
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-    }
+  // Fetch all users from database  
+  const { data: allUsers, isLoading: usersLoading } = useQuery({
+    queryKey: ['/api/users'],
+    retry: false
   });
 
-  // Fetch teachers from database
-  const { data: teachers, isLoading: teachersLoading } = useQuery({
-    queryKey: ['/api/users', 'teachers'],
-    retry: false,
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-    }
-  });
+  // Filter students and teachers from all users
+  const students = (allUsers as any[])?.filter(user => 
+    user.role?.includes('student')) || [];
+  const teachers = (allUsers as any[])?.filter(user => 
+    user.role === 'teacher') || [];
+  
+  const studentsLoading = usersLoading;
+  const teachersLoading = usersLoading;
 
   // Add mutation for creating students
   const createStudentMutation = useMutation({
@@ -118,8 +95,9 @@ export default function SchoolManagement() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users', 'students'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setIsStudentDialogOpen(false);
+      studentForm.reset();
       toast({
         title: "Success",
         description: "Student created successfully",
@@ -224,35 +202,15 @@ export default function SchoolManagement() {
 
   // Local state mutations for demonstration
   const handleCreateStudent = (data: z.infer<typeof studentSchema>) => {
-    const newStudent = {
-      ...data,
-      id: students.length + 1,
-    };
-    setStudents([...students, newStudent]);
-    setIsStudentDialogOpen(false);
-    studentForm.reset();
-    toast({
-      title: "Success",
-      description: "Student created successfully",
-    });
+    createStudentMutation.mutate(data);
   };
 
   const handleCreateTeacher = (data: z.infer<typeof teacherSchema>) => {
-    const newTeacher = {
-      ...data,
-      id: teachers.length + 1,
-    };
-    setTeachers([...teachers, newTeacher]);
-    setIsTeacherDialogOpen(false);
-    teacherForm.reset();
-    toast({
-      title: "Success",
-      description: "Teacher created successfully",
-    });
+    createTeacherMutation.mutate(data);
   };
 
   const handleCreateClass = (data: z.infer<typeof classSchema>) => {
-    const teacher = teachers.find(t => t.id === parseInt(data.teacherId));
+    const teacher = teachers.find((t: any) => t.id === parseInt(data.teacherId));
     const newClass = {
       ...data,
       id: classes.length + 1,
