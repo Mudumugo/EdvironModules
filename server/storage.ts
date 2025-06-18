@@ -103,6 +103,36 @@ export interface IStorage {
   updateDeviceControlStatus(actionId: string, status: string, responseData?: any): Promise<DeviceControlAction>;
   getDeviceControlActions(sessionId: string): Promise<DeviceControlAction[]>;
   getPendingControlActions(deviceId: string): Promise<DeviceControlAction[]>;
+
+  // Calendar operations
+  createEvent(eventData: InsertCalendarEvent): Promise<CalendarEvent>;
+  updateEvent(eventId: string, updates: Partial<CalendarEvent>): Promise<CalendarEvent>;
+  getEvent(eventId: string): Promise<CalendarEvent | undefined>;
+  getEventsForUser(userId: string, startDate: Date, endDate: Date, tenantId?: string): Promise<CalendarEvent[]>;
+  getEventsByDateRange(startDate: Date, endDate: Date, tenantId?: string): Promise<CalendarEvent[]>;
+  deleteEvent(eventId: string): Promise<void>;
+  
+  // Event participants
+  addEventParticipant(participant: InsertEventParticipant): Promise<EventParticipant>;
+  updateParticipantRSVP(participantId: string, rsvpStatus: string, response?: string): Promise<EventParticipant>;
+  getEventParticipants(eventId: string): Promise<EventParticipant[]>;
+  removeEventParticipant(participantId: string): Promise<void>;
+  
+  // Event role targets
+  addEventRoleTarget(roleTarget: InsertEventRoleTarget): Promise<EventRoleTarget>;
+  getEventRoleTargets(eventId: string): Promise<EventRoleTarget[]>;
+  removeEventRoleTarget(roleTargetId: string): Promise<void>;
+  
+  // Event templates
+  createEventTemplate(template: InsertEventTemplate): Promise<EventTemplate>;
+  getEventTemplates(tenantId: string): Promise<EventTemplate[]>;
+  updateEventTemplate(templateId: string, updates: Partial<EventTemplate>): Promise<EventTemplate>;
+  deleteEventTemplate(templateId: string): Promise<void>;
+  
+  // Advanced calendar queries
+  getUpcomingEventsForUser(userId: string, limit: number): Promise<CalendarEvent[]>;
+  getEventsRequiringApproval(tenantId: string): Promise<CalendarEvent[]>;
+  getUserEventConflicts(userId: string, startDate: Date, endDate: Date): Promise<CalendarEvent[]>;
 }
 
 export class DatabaseStorage implements IStorage {

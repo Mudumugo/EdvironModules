@@ -29,8 +29,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, isSameMonth, isSameDay, parseISO } from "date-fns";
-import { CreateEventDialog } from "./CreateEventDialog";
-import { EventDetailsDialog } from "./EventDetailsDialog";
+import { CreateEventDialog } from "@/components/calendar/CreateEventDialog";
+import { EventDetailsDialog } from "@/components/calendar/EventDetailsDialog";
 
 interface CalendarEvent {
   id: string;

@@ -18,6 +18,7 @@ import TutorHub from "@/pages/TutorHub";
 import FamilyControls from "@/pages/FamilyControls";
 import Scheduling from "@/pages/Scheduling";
 import SchoolCalendar from "@/pages/SchoolCalendar";
+import Calendar from "@/pages/Calendar";
 import Analytics from "@/pages/Analytics";
 import Licensing from "@/pages/Licensing";
 import Settings from "@/pages/Settings";
@@ -148,6 +149,12 @@ function Router() {
         <Route path="/school-calendar">
           <RoleProtectedRoute moduleId="scheduling">
             <SchoolCalendar />
+          </RoleProtectedRoute>
+        </Route>
+        
+        <Route path="/calendar">
+          <RoleProtectedRoute moduleId="scheduling">
+            <Calendar />
           </RoleProtectedRoute>
         </Route>
 
