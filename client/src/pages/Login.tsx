@@ -1,103 +1,90 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { User, GraduationCap, Shield, Settings, Users, BookOpen } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
+import { 
+  Eye, 
+  EyeOff, 
+  CreditCard,
+  QrCode
+} from "lucide-react";
 
-interface UserRole {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<any>;
-  color: string;
-  permissions: string[];
-}
-
-const userRoles: UserRole[] = [
+const DEMO_ACCOUNTS = [
   {
-    id: "demo_student_elementary",
-    name: "Primary Student",
-    description: "Elementary school student (Ages 5-10) - Child-friendly learning interface",
-    icon: BookOpen,
-    color: "bg-blue-500",
-    permissions: ["view_library", "submit_assignments", "view_grades"]
+    role: "Teacher",
+    email: "teacher@edvirons.com",
+    id: "teacher"
   },
   {
-    id: "demo_student_middle",
-    name: "Junior Student", 
-    description: "Middle school student (Ages 11-13) - Subject-focused learning modules",
-    icon: BookOpen,
-    color: "bg-cyan-500",
-    permissions: ["view_library", "submit_assignments", "view_grades", "group_projects"]
+    role: "Admin",
+    email: "admin@edvirons.com", 
+    id: "school_admin"
   },
   {
-    id: "demo_student_high",
-    name: "Senior Student",
-    description: "High school student (Ages 14-18) - Advanced academic tools and research",
-    icon: BookOpen,
-    color: "bg-indigo-500", 
-    permissions: ["view_library", "submit_assignments", "view_grades", "research_tools", "college_prep"]
-  },
-  {
-    id: "teacher",
-    name: "Teacher",
-    description: "Classroom instructor with student management and curriculum access",
-    icon: GraduationCap,
-    color: "bg-green-500",
-    permissions: ["manage_students", "create_assignments", "grade_assignments", "view_analytics"]
-  },
-  {
-    id: "school_admin",
-    name: "School Administrator",
-    description: "Administrative staff with oversight of school operations and staff",
-    icon: Users,
-    color: "bg-purple-500",
-    permissions: ["manage_users", "view_reports", "manage_curriculum", "system_settings"]
-  },
-  {
-    id: "school_it_staff",
-    name: "IT Staff",
-    description: "Technical support with system management and maintenance access",
-    icon: Settings,
-    color: "bg-orange-500",
-    permissions: ["system_admin", "user_support", "technical_maintenance", "data_backup"]
-  },
-  {
-    id: "school_security",
-    name: "Security Staff",
-    description: "Security personnel with monitoring and safety management capabilities",
-    icon: Shield,
-    color: "bg-red-500",
-    permissions: ["security_monitoring", "incident_reporting", "access_control"]
+    role: "Student",
+    email: "student@edvirons.com",
+    id: "demo_student_elementary"
   }
 ];
 
 export default function Login() {
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleRoleLogin = async (role: UserRole) => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
+    
     try {
-      // Create a demo user session for the selected role
-      const response = await apiRequest("POST", "/api/auth/demo-login", {
-        role: role.id,
-        name: `Demo ${role.name}`,
-        email: `demo.${role.id}@edvirons.com`
+      const response = await apiRequest("POST", "/api/auth/login", {
+        email,
+        password
       });
 
       if (response.ok) {
         toast({
           title: "Login Successful",
-          description: `Logged in as ${role.name}`,
+          description: "Welcome back to EdVirons!",
         });
-        // Reload to trigger auth state update
         window.location.reload();
       } else {
         throw new Error("Login failed");
+      }
+    } catch (error) {
+      toast({
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async (account: typeof DEMO_ACCOUNTS[0]) => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/auth/demo-login", {
+        role: account.id,
+        name: `Demo ${account.role}`,
+        email: account.email
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Login Successful",
+          description: `Logged in as ${account.role}`,
+        });
+        window.location.reload();
+      } else {
+        throw new Error("Demo login failed");
       }
     } catch (error) {
       toast({
@@ -111,112 +98,142 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Edvirons Learning Portal
-          </h1>
-          <p className="text-xl text-gray-600 mb-2">
-            Select your role to access the platform
-          </p>
-          <p className="text-sm text-gray-500">
-            Demo environment - Choose any role to explore the system
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">E</span>
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">EdVirons</h1>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
+          <p className="text-gray-600">
+            Been a while! Ready to dive back in? Let's get you signed in and back to Learning!
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {userRoles.map((role) => {
-            const IconComponent = role.icon;
-            const isSelected = selectedRole?.id === role.id;
-            
-            return (
-              <Card
-                key={role.id}
-                className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 ${
-                  isSelected ? 'ring-2 ring-blue-500 shadow-lg' : ''
-                }`}
-                onClick={() => setSelectedRole(role)}
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <Label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              Email Address
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              className="w-full h-12 px-4 text-base border-gray-300 rounded-md"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full h-12 px-4 pr-10 text-base border-gray-300 rounded-md"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
-                <CardHeader className="text-center pb-2">
-                  <div className={`w-16 h-16 ${role.color} rounded-full flex items-center justify-center mx-auto mb-3`}>
-                    <IconComponent className="w-8 h-8 text-white" />
-                  </div>
-                  <CardTitle className="text-lg">{role.name}</CardTitle>
-                  <CardDescription className="text-sm text-center">
-                    {role.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-gray-700 mb-2">Key Permissions:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {role.permissions.slice(0, 2).map((permission) => (
-                        <Badge
-                          key={permission}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          {permission.replace('_', ' ')}
-                        </Badge>
-                      ))}
-                      {role.permissions.length > 2 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{role.permissions.length - 2} more
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-400" />
+                )}
+              </button>
+            </div>
+            <div className="text-right mt-2">
+              <Link href="/forgot-password">
+                <span className="text-sm text-blue-600 hover:text-blue-500 cursor-pointer">
+                  Forgot Password?
+                </span>
+              </Link>
+            </div>
+          </div>
 
-        {selectedRole && (
-          <div className="mt-8 text-center">
-            <Card className="max-w-md mx-auto">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-center gap-2">
-                  <selectedRole.icon className="w-5 h-5" />
-                  Login as {selectedRole.name}
-                </CardTitle>
-                <CardDescription>
-                  You'll have access to {selectedRole.name.toLowerCase()} features and permissions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Full Permissions:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {selectedRole.permissions.map((permission) => (
-                        <Badge
-                          key={permission}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          {permission.replace('_', ' ')}
-                        </Badge>
-                      ))}
-                    </div>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 h-12 text-base font-medium rounded-md"
+          >
+            {isLoading ? "Signing In..." : "Sign In"}
+          </Button>
+        </form>
+
+        {/* Demo Accounts */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-4">
+            <h3 className="font-medium text-gray-900 mb-3 text-sm">Demo Accounts</h3>
+            <div className="space-y-2">
+              {DEMO_ACCOUNTS.map((account) => (
+                <div key={account.id} className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200">
+                  <div className="text-sm">
+                    <span className="font-medium text-blue-600">{account.role}:</span>
+                    <span className="text-gray-600 ml-1">{account.email}</span>
                   </div>
                   <Button
-                    onClick={() => handleRoleLogin(selectedRole)}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoLogin(account)}
                     disabled={isLoading}
-                    className="w-full"
-                    size="lg"
+                    className="text-blue-600 border-blue-300 hover:bg-blue-50 px-4 py-1 h-8"
                   >
-                    {isLoading ? "Logging in..." : `Login as ${selectedRole.name}`}
+                    Use
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="mt-8 text-center text-xs text-gray-500">
-          <p>This is a demonstration environment. In production, users would authenticate through secure login credentials.</p>
+        {/* Alternative Login Methods */}
+        <div className="text-center">
+          <p className="text-gray-500 mb-4 text-sm">Or continue with</p>
+          <div className="flex space-x-4 justify-center">
+            <Button
+              variant="outline"
+              className="flex items-center space-x-2 px-6 py-2 h-10 border-gray-300"
+              onClick={() => toast({ title: "Coming Soon", description: "NFC login will be available soon" })}
+            >
+              <CreditCard className="h-4 w-4" />
+              <span>NFC Card</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex items-center space-x-2 px-6 py-2 h-10 border-gray-300"
+              onClick={() => toast({ title: "Coming Soon", description: "QR code login will be available soon" })}
+            >
+              <QrCode className="h-4 w-4" />
+              <span>QR Code</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Sign Up Link */}
+        <div className="text-center">
+          <p className="text-gray-600 text-sm">
+            Don't have an account?{" "}
+            <Link href="/signup">
+              <span className="text-blue-600 hover:text-blue-500 font-medium cursor-pointer">
+                Sign Up
+              </span>
+            </Link>
+          </p>
         </div>
       </div>
     </div>
