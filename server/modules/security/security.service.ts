@@ -21,8 +21,9 @@ export class SecurityService {
         description: "Primary school entrance and reception area",
         location: "Building A - Ground Floor",
         isActive: true,
-        cameraCount: 4,
-        lastActivity: new Date()
+        riskLevel: "high",
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         id: "zone_002", 
@@ -30,8 +31,9 @@ export class SecurityService {
         description: "Student dining and common area",
         location: "Building B - First Floor",
         isActive: true,
-        cameraCount: 6,
-        lastActivity: new Date()
+        riskLevel: "medium",
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         id: "zone_003",
@@ -39,8 +41,9 @@ export class SecurityService {
         description: "Study area and resource center",
         location: "Building C - Second Floor", 
         isActive: true,
-        cameraCount: 3,
-        lastActivity: new Date()
+        riskLevel: "low",
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ];
   }
@@ -50,31 +53,43 @@ export class SecurityService {
       {
         id: "cam_001",
         name: "Main Gate Camera 1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        orientation: "north",
         zoneId: "zone_001",
-        location: "North Entrance",
-        status: "online" as const,
+        ipAddress: "192.168.1.101",
         streamUrl: "https://demo.stream/cam1",
+        isOnline: true,
         isRecording: true,
+        resolution: "1080p",
         lastPing: new Date()
       },
       {
         id: "cam_002", 
         name: "Reception Camera",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        orientation: "south",
         zoneId: "zone_001",
-        location: "Reception Desk",
-        status: "online" as const,
+        ipAddress: "192.168.1.102",
         streamUrl: "https://demo.stream/cam2",
+        isOnline: true,
         isRecording: true,
+        resolution: "720p",
         lastPing: new Date()
       },
       {
         id: "cam_003",
         name: "Cafeteria Overview",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        orientation: "center",
         zoneId: "zone_002",
-        location: "Center Ceiling",
-        status: "offline" as const,
+        ipAddress: "192.168.1.103",
         streamUrl: "https://demo.stream/cam3", 
+        isOnline: false,
         isRecording: false,
+        resolution: "1080p",
         lastPing: new Date(Date.now() - 3600000)
       }
     ];
@@ -86,25 +101,51 @@ export class SecurityService {
     const allEvents = [
       {
         id: "event_001",
-        type: "unauthorized_access" as const,
-        severity: "high" as const,
+        type: "unauthorized_access",
+        severity: "high",
         title: "Unauthorized Entry Detected",
         description: "Motion detected in restricted area after hours",
         zoneId: "zone_001",
         cameraId: "cam_001",
-        timestamp: new Date(Date.now() - 1800000),
-        status: "active" as const
+        createdAt: new Date(Date.now() - 1800000),
+        updatedAt: new Date(Date.now() - 1800000),
+        status: "active",
+        assignedTo: null,
+        resolvedAt: null,
+        alertTriggered: true,
+        responseTime: null,
+        incidentId: null,
+        priority: "high",
+        videoUrl: null,
+        metadata: {},
+        reportedBy: "system",
+        occurredAt: new Date(Date.now() - 1800000),
+        detectedAt: new Date(Date.now() - 1800000),
+        imageUrl: null
       },
       {
         id: "event_002",
-        type: "system_alert" as const,
-        severity: "medium" as const,
+        type: "system_alert",
+        severity: "medium",
         title: "Camera Offline",
         description: "Cafeteria camera lost connection",
         zoneId: "zone_002", 
         cameraId: "cam_003",
-        timestamp: new Date(Date.now() - 3600000),
-        status: "acknowledged" as const
+        createdAt: new Date(Date.now() - 3600000),
+        updatedAt: new Date(Date.now() - 3600000),
+        status: "acknowledged",
+        assignedTo: null,
+        resolvedAt: null,
+        alertTriggered: true,
+        responseTime: null,
+        incidentId: null,
+        priority: "medium",
+        videoUrl: null,
+        metadata: {},
+        reportedBy: "system",
+        occurredAt: new Date(Date.now() - 3600000),
+        detectedAt: new Date(Date.now() - 3600000),
+        imageUrl: null
       }
     ];
 
@@ -123,16 +164,23 @@ export class SecurityService {
     return [
       {
         id: "visitor_001",
-        firstName: "John",
-        lastName: "Smith",
-        email: "john.smith@example.com",
-        phone: "+1234567890",
-        purpose: "Parent Meeting",
+        visitorName: "John Smith",
+        visitorPhone: "+1234567890",
+        visitorEmail: "john.smith@example.com",
+        visitPurpose: "Parent Meeting",
         hostName: "Ms. Johnson",
-        department: "Grade 3",
-        checkInTime: new Date(Date.now() - 7200000),
-        status: "checked_in" as const,
-        badgeNumber: "V001"
+        hostDepartment: "Grade 3",
+        expectedDuration: 60,
+        arrivalTime: new Date(Date.now() - 7200000),
+        departureTime: null,
+        badgeNumber: "V001",
+        vehiclePlate: null,
+        emergencyContact: "+1234567890",
+        isVaccinated: true,
+        status: "checked_in",
+        securityNotes: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ];
   }
@@ -172,9 +220,22 @@ export class SecurityService {
       title: eventData.title || "New Security Event",
       description: eventData.description || "",
       zoneId: eventData.zoneId || "zone_001",
-      timestamp: new Date(),
+      cameraId: eventData.cameraId || null,
       status: "active",
-      ...eventData
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      assignedTo: null,
+      resolvedAt: null,
+      alertTriggered: true,
+      responseTime: null,
+      incidentId: null,
+      priority: eventData.severity || "medium",
+      videoUrl: null,
+      metadata: {},
+      reportedBy: "system",
+      occurredAt: new Date(),
+      detectedAt: new Date(),
+      imageUrl: null
     };
     return newEvent;
   }
