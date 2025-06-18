@@ -175,9 +175,9 @@ export class SecurityService {
         hostDepartment: "Grade 3",
         expectedDuration: 60,
         checkInTime: new Date(Date.now() - 7200000),
-        departureTime: null,
+        checkOutTime: null,
         badgeNumber: "V001",
-        vehiclePlate: null,
+
         emergencyContact: "+1234567890",
         isVaccinated: true,
         status: "checked_in",
@@ -192,14 +192,19 @@ export class SecurityService {
     return [
       {
         id: "call_001",
-        type: "emergency" as const,
-        caller: "Security Desk",
-        location: "Main Entrance",
-        description: "Medical emergency in lobby",
-        priority: "critical" as const,
-        timestamp: new Date(Date.now() - 900000),
-        status: "in_progress" as const,
-        assignedTo: "Nurse Station"
+        callType: "emergency",
+        fromExtension: "101",
+        toExtension: "911", 
+        fromZone: "zone_001",
+        toZone: null,
+        duration: 15,
+        notes: "Medical emergency in lobby",
+        priority: "critical",
+        startedAt: new Date(Date.now() - 900000),
+        endedAt: new Date(Date.now() - 885000),
+        status: "in_progress",
+        recordingUrl: null,
+        createdAt: new Date()
       }
     ];
   }
@@ -229,7 +234,7 @@ export class SecurityService {
       updatedAt: new Date(),
       assignedTo: null,
       resolvedAt: null,
-      alertTriggered: true,
+      isActive: true,
       responseTime: null,
       incidentId: null,
       priority: eventData.severity || "medium",
@@ -254,11 +259,9 @@ export class SecurityService {
       hostDepartment: visitorData.hostDepartment || "",
       expectedDuration: visitorData.expectedDuration || 60,
       checkInTime: new Date(),
-      departureTime: null,
+      checkOutTime: null,
       badgeNumber: `V${String(Date.now()).slice(-3)}`,
-      vehiclePlate: visitorData.vehiclePlate || null,
-      emergencyContact: visitorData.emergencyContact || null,
-      isVaccinated: visitorData.isVaccinated || false,
+      gateUsed: "main_entrance",
       status: "checked_in",
       securityNotes: null,
       createdAt: new Date(),
