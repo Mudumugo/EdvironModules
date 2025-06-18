@@ -407,8 +407,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
         content={bookData?.content || ''}
         mediaAssets={bookData?.mediaAssets || []}
         interactiveElements={bookData?.interactiveElements || []}
-        xapiEnabled={bookData.xapiEnabled || false}
-        trackingConfig={bookData.trackingConfig || {}}
+        xapiEnabled={bookData?.xapiEnabled || false}
+        trackingConfig={bookData?.trackingConfig || {}}
         onClose={() => setShowInteractiveMode(false)}
       />
     );

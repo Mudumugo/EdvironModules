@@ -1,19 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
-import { PERMISSIONS, type Permission, type UserRole } from '@shared/schema';
+import { PERMISSIONS, type Permission, type UserRole, type User } from '@shared/schema';
+
+// Extended request type for authenticated requests
+export interface AuthenticatedRequest extends Request {
+  user?: User;
+}
 
 
 
 // Middleware to check if user has specific permission
 export function requirePermission(permission: Permission) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasPermission(user.role as any, (user.permissions || []) as any[], permission)) {
+    if (!hasPermission(user.role as UserRole, (user.permissions || []) as Permission[], permission)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permission,
@@ -27,14 +32,14 @@ export function requirePermission(permission: Permission) {
 
 // Middleware to check if user has any of the specified permissions
 export function requireAnyPermission(permissions: Permission[]) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasAnyPermission(user.role as UserRole, [], permissions)) {
+    if (!hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], permissions)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permissions,
@@ -93,14 +98,14 @@ export function requireSameTenant() {
 
 // Middleware to check if user can access student data (teachers can access their students, admins can access all)
 export function requireStudentAccess() {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    const canAccessStudents = hasAnyPermission(user.role as UserRole, [], [
+    const canAccessStudents = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
       PERMISSIONS.VIEW_STUDENT_RECORDS,
       PERMISSIONS.MANAGE_CLASSES,
       PERMISSIONS.VIEW_ALL_ANALYTICS
