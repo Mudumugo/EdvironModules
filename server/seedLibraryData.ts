@@ -1,5 +1,4 @@
 import { db } from "./db";
-import { libraryCategories, librarySubjects, libraryResources } from "@shared/schema";
 
 // Seed data for different grade levels
 export async function seedLibraryData() {

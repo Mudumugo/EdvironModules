@@ -255,7 +255,7 @@ function PrimaryLayout({ categories, resources, layout, onResourceAccess }: {
   categories: any[];
   resources: any[];
   layout: any;
-  onResourceAccess: (resource: any, type: string) => void;
+  onResourceAccess: (resource: any, type: 'view' | 'save_to_locker') => void;
 }) {
   const [activeTab, setActiveTab] = useState('subjects');
 
@@ -391,7 +391,7 @@ function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, 
   resources: any[];
   layout: any;
   gradeLevel: string;
-  onResourceAccess: (resource: any, type: string) => void;
+  onResourceAccess: (resource: any, type: 'view' | 'save_to_locker') => void;
 }) {
   return (
     <div className="space-y-8">
@@ -545,7 +545,7 @@ function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, 
 function ResourceCard({ resource, layout, onAccess }: {
   resource: any;
   layout: any;
-  onAccess: (resource: any, type: string) => void;
+  onAccess: (resource: any, type: 'view' | 'save_to_locker') => void;
 }) {
   const ResourceIcon = getResourceIcon(resource.resourceType);
   
