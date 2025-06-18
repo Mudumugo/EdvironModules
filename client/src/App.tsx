@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
+import { Solutions } from "@/pages/Solutions";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import LearningDashboard from "@/pages/LearningDashboard";
@@ -83,6 +84,7 @@ function Router() {
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/demo" component={Login} />
+        <Route path="/solutions" component={Solutions} />
         <Route component={Landing} />
       </Switch>
     );
