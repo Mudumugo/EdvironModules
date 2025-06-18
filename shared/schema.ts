@@ -212,11 +212,12 @@ export const insertUserSettingsSchema = createInsertSchema(userSettings);
 
 // Remove duplicate library definitions - they're imported from education.schema
 
-// Re-export xAPI schemas
+// Re-export schemas
 export * from "./schemas/xapi.schema";
 export * from "./schemas/education.schema";
 export * from "./schemas/mdm.schema";
 export * from "./schemas/activity.schema";
+export * from "./schemas/signup.schema";
 
 // Timetable schema
 export const timetableEntries = pgTable("timetable_entries", {

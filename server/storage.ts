@@ -109,6 +109,91 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Signup operations
+  async createSignupRequest(request: any): Promise<any> {
+    // Mock implementation - in real app, would use database
+    console.log("Creating signup request:", request);
+    return { ...request, createdAt: new Date() };
+  }
+
+  async getSignupRequest(id: string): Promise<any> {
+    // Mock implementation
+    console.log("Getting signup request:", id);
+    return {
+      id,
+      email: "test@example.com",
+      firstName: "Test",
+      lastName: "User",
+      accountType: "student",
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      isVerified: false,
+    };
+  }
+
+  async updateSignupRequest(id: string, updates: any): Promise<any> {
+    // Mock implementation
+    console.log("Updating signup request:", id, updates);
+    return { id, ...updates };
+  }
+
+  async createVerificationRequest(request: any): Promise<any> {
+    // Mock implementation
+    console.log("Creating verification request:", request);
+    return { ...request, createdAt: new Date() };
+  }
+
+  async getVerificationRequest(userId: string, code: string): Promise<any> {
+    // Mock implementation - always return valid for demo
+    console.log("Getting verification request:", userId, code);
+    return {
+      id: "verification-1",
+      userId,
+      verificationCode: code,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+      isVerified: false,
+    };
+  }
+
+  async updateVerificationRequest(id: string, updates: any): Promise<any> {
+    // Mock implementation
+    console.log("Updating verification request:", id, updates);
+    return { id, ...updates };
+  }
+
+  async createSchoolDemoRequest(request: any): Promise<any> {
+    // Mock implementation
+    console.log("Creating school demo request:", request);
+    return { ...request, createdAt: new Date() };
+  }
+
+  async getSchoolDemoRequestByEmail(email: string): Promise<any> {
+    // Mock implementation - return null for demo
+    console.log("Getting school demo request by email:", email);
+    return null;
+  }
+
+  async createFamilyAccount(account: any): Promise<any> {
+    // Mock implementation
+    console.log("Creating family account:", account);
+    return { ...account, createdAt: new Date() };
+  }
+
+  async createChildProfile(profile: any): Promise<any> {
+    // Mock implementation
+    console.log("Creating child profile:", profile);
+    return { ...profile, createdAt: new Date() };
+  }
+
+  async setUserPassword(userId: string, hashedPassword: string): Promise<void> {
+    // Mock implementation
+    console.log("Setting user password for:", userId);
+  }
+
+  async getUserByEmail(email: string): Promise<any> {
+    // Mock implementation - return null for demo (no existing users)
+    console.log("Getting user by email:", email);
+    return null;
+  }
   // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
