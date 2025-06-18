@@ -28,6 +28,16 @@ export default function DeviceManagement() {
   // Track page view with xAPI
   useXapiPageTracking("Device Management", "device-management");
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/devices"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/devices/stats"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/device-groups"] });
+    toast({
+      title: "Refreshed",
+      description: "Device data has been refreshed successfully.",
+    });
+  };
+
   const { data: deviceData, isLoading: devicesLoading, refetch } = useQuery({
     queryKey: ['/api/devices', filters]
   });
@@ -66,7 +76,7 @@ export default function DeviceManagement() {
   };
 
   // Mock data for development
-  const devices = deviceData?.devices || [
+  const mockDevices = [
     {
       id: "dev-001",
       name: "Student Laptop 001",
@@ -101,6 +111,8 @@ export default function DeviceManagement() {
       restrictions: []
     }
   ];
+
+  const devices = deviceData?.devices || mockDevices;
 
   const stats = deviceStats || {
     total: 156,
@@ -174,7 +186,16 @@ export default function DeviceManagement() {
         </div>
 
         <TabsContent value="overview" className="space-y-6">
-          <DeviceStats stats={stats || { total: 0, online: 0, offline: 0, active: 0, restricted: 0, maintenance: 0, batteryLow: 0, lastUpdate: new Date().toISOString() }} />
+          <DeviceStats stats={stats || { 
+            total: 0, 
+            online: 0, 
+            offline: 0, 
+            active: 0, 
+            restricted: 0, 
+            maintenance: 0, 
+            batteryLow: 0, 
+            lastUpdate: new Date().toISOString() 
+          }} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -264,7 +285,7 @@ export default function DeviceManagement() {
                   </CardDescription>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Last updated: {stats.lastUpdate}
+                  Last updated: {stats?.lastUpdate ? new Date(stats.lastUpdate).toLocaleString() : 'Never'}
                 </div>
               </div>
             </CardHeader>
