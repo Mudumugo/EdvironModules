@@ -4,7 +4,15 @@ import { PERMISSIONS, type Permission, type UserRole, type User } from '@shared/
 
 // Extended request type for authenticated requests
 export interface AuthenticatedRequest extends Request {
-  user?: User;
+  user?: User & {
+    claims?: {
+      sub: string;
+      email?: string;
+      first_name?: string;
+      last_name?: string;
+      profile_image_url?: string;
+    };
+  };
 }
 
 

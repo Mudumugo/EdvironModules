@@ -6,7 +6,7 @@ import { PERMISSIONS } from "@shared/schema";
 
 export function registerAdminRoutes(app: Express) {
   // Set grade rollover for a student
-  app.post("/api/admin/grade-rollover", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
+  app.post("/api/admin/grade-rollover", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { userId, rolloverDate, nextGradeLevel } = req.body;
       

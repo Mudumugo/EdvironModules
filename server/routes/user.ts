@@ -21,7 +21,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Get users by role
-  app.get("/api/users", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
+  app.get("/api/users", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { role, tenantId } = req.query;
       const users = await storage.getUsersByRole(role as string, tenantId as string);

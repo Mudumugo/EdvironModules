@@ -236,7 +236,6 @@ export class SecurityService {
       updatedAt: new Date(),
       assignedTo: null,
       resolvedAt: null,
-      responseTime: null,
       incidentId: null,
       priority: eventData.severity || "medium",
       videoUrl: null,
