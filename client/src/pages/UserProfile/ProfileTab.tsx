@@ -63,7 +63,7 @@ export function ProfileTab() {
               <Label htmlFor="role">Role</Label>
               <div className="flex items-center gap-2">
                 <Badge variant="secondary">
-                  {getRoleDisplayName(user.role)}
+                  {getRoleDisplayName(user?.role || '')}
                 </Badge>
               </div>
             </div>

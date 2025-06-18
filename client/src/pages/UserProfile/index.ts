@@ -1,2 +1,2 @@
-import UserProfile from './UserProfile';
-export default UserProfile;
+// Re-export the main UserProfile component
+export { default } from '../UserProfile';

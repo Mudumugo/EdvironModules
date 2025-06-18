@@ -8,7 +8,7 @@ import { useUserProfile } from "./useUserProfile";
 import { Bell, Lock, Palette, Globe, Save } from "lucide-react";
 
 export function SettingsTab() {
-  const { userSettings, settingsLoading, settingsMutation } = useUserProfile();
+  const { userSettings, settingsLoading, updateSettingsMutation } = useUserProfile();
 
   if (settingsLoading) {
     return <div>Loading settings...</div>;
