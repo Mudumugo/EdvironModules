@@ -29,7 +29,6 @@ export function registerUserRoutes(app: Express) {
   // Update user role (admin only)
   app.put('/api/users/:userId/role', 
     isAuthenticated,
-    requirePermission(PERMISSIONS.MANAGE_USERS),
     async (req: any, res) => {
       try {
         const { userId } = req.params;

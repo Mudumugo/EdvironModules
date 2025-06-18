@@ -69,77 +69,115 @@ export default function SchoolManagement() {
   const [isTeacherDialogOpen, setIsTeacherDialogOpen] = useState(false);
   const [isClassDialogOpen, setIsClassDialogOpen] = useState(false);
 
-  // Sample data for demonstration
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Smith",
-      email: "john.smith@email.com",
-      grade: "9",
-      dateOfBirth: "2008-05-15",
-      parentEmail: "parent@email.com",
-      parentPhone: "555-0123"
-    },
-    {
-      id: 2,
-      firstName: "Sarah",
-      lastName: "Johnson",
-      email: "sarah.johnson@email.com",
-      grade: "10",
-      dateOfBirth: "2007-08-22",
-      parentEmail: "parent2@email.com",
-      parentPhone: "555-0124"
+  // Fetch students from database
+  const { data: students, isLoading: studentsLoading } = useQuery({
+    queryKey: ['/api/users', 'students'],
+    retry: false,
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
     }
-  ]);
+  });
 
-  const [teachers, setTeachers] = useState([
-    {
-      id: 1,
-      firstName: "Dr. Michael",
-      lastName: "Brown",
-      email: "m.brown@demouniversity.edu",
-      subject: "Mathematics",
-      department: "Science",
-      phone: "555-0125"
-    },
-    {
-      id: 2,
-      firstName: "Ms. Emily",
-      lastName: "Davis",
-      email: "e.davis@demouniversity.edu",
-      subject: "English Literature",
-      department: "Humanities",
-      phone: "555-0126"
+  // Fetch teachers from database
+  const { data: teachers, isLoading: teachersLoading } = useQuery({
+    queryKey: ['/api/users', 'teachers'],
+    retry: false,
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
     }
-  ]);
+  });
 
-  const [classes, setClasses] = useState([
-    {
-      id: 1,
-      name: "Algebra II",
-      subject: "Mathematics",
-      teacherId: 1,
-      teacherName: "Dr. Michael Brown",
-      grade: "9",
-      capacity: 25,
-      room: "Math-101"
+  // Add mutation for creating students
+  const createStudentMutation = useMutation({
+    mutationFn: async (studentData: z.infer<typeof studentSchema>) => {
+      return apiRequest("POST", "/api/users", {
+        ...studentData,
+        role: "student_" + studentData.grade.toLowerCase()
+      });
     },
-    {
-      id: 2,
-      name: "World Literature",
-      subject: "English",
-      teacherId: 2,
-      teacherName: "Ms. Emily Davis",
-      grade: "10",
-      capacity: 20,
-      room: "Eng-205"
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users', 'students'] });
+      setIsStudentDialogOpen(false);
+      toast({
+        title: "Success",
+        description: "Student created successfully",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to create student",
+        variant: "destructive",
+      });
     }
-  ]);
+  });
 
-  const studentsLoading = false;
-  const teachersLoading = false;
-  const classesLoading = false;
+  // Add mutation for creating teachers
+  const createTeacherMutation = useMutation({
+    mutationFn: async (teacherData: z.infer<typeof teacherSchema>) => {
+      return apiRequest("POST", "/api/users", {
+        ...teacherData,
+        role: "teacher"
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users', 'teachers'] });
+      setIsTeacherDialogOpen(false);
+      toast({
+        title: "Success",
+        description: "Teacher created successfully",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to create teacher",
+        variant: "destructive",
+      });
+    }
+  });
   const studentsError = null;
   const teachersError = null;
   const classesError = null;
