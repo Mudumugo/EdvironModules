@@ -2,34 +2,15 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { format, startOfWeek, addDays, parseISO, isSameDay, addWeeks, subWeeks } from "date-fns";
+import { addWeeks, subWeeks } from "date-fns";
 import { 
   Calendar,
-  Clock,
   Plus,
-  Search,
-  Filter,
-  MapPin,
-  Users,
   BookOpen,
   Video,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Edit,
-  Trash2,
   Bell,
   AlertCircle,
   CheckCircle,
@@ -40,14 +21,24 @@ import {
   Building
 } from "lucide-react";
 
-// Form schemas
-const eventSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  type: z.string().min(1, "Event type is required"),
-  startDate: z.string().min(1, "Start date is required"),
-  startTime: z.string().min(1, "Start time is required"),
-  endDate: z.string().min(1, "End date is required"),
+// Import modular components
+import { CalendarView } from "@/components/scheduling/CalendarView";
+import { EventDialog } from "@/components/scheduling/EventDialog";
+import { ScheduleFilters } from "@/components/scheduling/ScheduleFilters";
+
+// Calendar event interface
+interface CalendarEvent {
+  id: string;
+  title: string;
+  type: 'class' | 'meeting' | 'event' | 'exam';
+  startTime: string;
+  endTime: string;
+  date: Date;
+  room?: string;
+  participants?: string[];
+  description?: string;
+  color?: string;
+}
   endTime: z.string().min(1, "End time is required"),
   location: z.string().optional(),
   isVirtual: z.boolean().default(false),

@@ -1,200 +1,284 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Filter, Calendar, Grid, List, Users, BookOpen } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import {
+  Filter,
+  Search,
+  Users,
+  MapPin,
+  Calendar,
+  X,
+  Settings
+} from "lucide-react";
 
 interface ScheduleFiltersProps {
-  selectedClass: string;
-  onClassChange: (value: string) => void;
-  selectedTeacher: string;
-  onTeacherChange: (value: string) => void;
-  selectedSubject: string;
-  onSubjectChange: (value: string) => void;
-  selectedWeek: string;
-  onWeekChange: (value: string) => void;
-  viewMode: 'week' | 'day';
-  onViewModeChange: (value: 'week' | 'day') => void;
-  classes: any[];
-  teachers: any[];
+  onFilterChange: (filters: any) => void;
+  availableRooms: string[];
+  availableParticipants: string[];
 }
 
 export function ScheduleFilters({
-  selectedClass,
-  onClassChange,
-  selectedTeacher,
-  onTeacherChange,
-  selectedSubject,
-  onSubjectChange,
-  selectedWeek,
-  onWeekChange,
-  viewMode,
-  onViewModeChange,
-  classes,
-  teachers
+  onFilterChange,
+  availableRooms,
+  availableParticipants
 }: ScheduleFiltersProps) {
-  const subjects = [
-    'Mathematics', 'Physics', 'Chemistry', 'Biology', 
-    'English', 'History', 'Geography', 'Computer Science',
-    'Physical Education', 'Art', 'Music'
-  ];
+  const [filters, setFilters] = useState({
+    search: '',
+    eventType: 'all',
+    room: 'all',
+    participant: 'all',
+    dateRange: 'week',
+    showConflicts: false,
+    showAvailableSlots: false
+  });
 
-  const weeks = [
-    { value: 'current', label: 'Current Week' },
-    { value: 'next', label: 'Next Week' },
-    { value: 'week-1', label: 'Week 1' },
-    { value: 'week-2', label: 'Week 2' },
-    { value: 'week-3', label: 'Week 3' },
-    { value: 'week-4', label: 'Week 4' },
-  ];
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const getActiveFiltersCount = () => {
-    let count = 0;
-    if (selectedClass !== 'all') count++;
-    if (selectedTeacher !== 'all') count++;
-    if (selectedSubject !== 'all') count++;
-    return count;
+  const updateFilters = (newFilters: any) => {
+    const updatedFilters = { ...filters, ...newFilters };
+    setFilters(updatedFilters);
+    onFilterChange({
+      ...updatedFilters,
+      participants: selectedParticipants
+    });
+  };
+
+  const addParticipant = (participant: string) => {
+    if (!selectedParticipants.includes(participant)) {
+      const newParticipants = [...selectedParticipants, participant];
+      setSelectedParticipants(newParticipants);
+      updateFilters({ participants: newParticipants });
+    }
+  };
+
+  const removeParticipant = (participant: string) => {
+    const newParticipants = selectedParticipants.filter(p => p !== participant);
+    setSelectedParticipants(newParticipants);
+    updateFilters({ participants: newParticipants });
   };
 
   const clearAllFilters = () => {
-    onClassChange('all');
-    onTeacherChange('all');
-    onSubjectChange('all');
+    const defaultFilters = {
+      search: '',
+      eventType: 'all',
+      room: 'all',
+      participant: 'all',
+      dateRange: 'week',
+      showConflicts: false,
+      showAvailableSlots: false
+    };
+    setFilters(defaultFilters);
+    setSelectedParticipants([]);
+    onFilterChange({ ...defaultFilters, participants: [] });
   };
+
+  const eventTypes = [
+    { value: 'all', label: 'All Events' },
+    { value: 'class', label: 'Classes' },
+    { value: 'meeting', label: 'Meetings' },
+    { value: 'event', label: 'Events' },
+    { value: 'exam', label: 'Exams' }
+  ];
+
+  const dateRanges = [
+    { value: 'today', label: 'Today' },
+    { value: 'week', label: 'This Week' },
+    { value: 'month', label: 'This Month' },
+    { value: 'custom', label: 'Custom Range' }
+  ];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Filter className="h-5 w-5" />
-          Schedule Filters
-          {getActiveFiltersCount() > 0 && (
-            <Badge variant="secondary">
-              {getActiveFiltersCount()} active
-            </Badge>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Class</label>
-            <Select value={selectedClass} onValueChange={onClassChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="All classes" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Classes</SelectItem>
-                {classes.map((cls) => (
-                  <SelectItem key={cls.id} value={cls.id.toString()}>
-                    {cls.name} - {cls.grade}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Teacher</label>
-            <Select value={selectedTeacher} onValueChange={onTeacherChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="All teachers" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Teachers</SelectItem>
-                {teachers.map((teacher) => (
-                  <SelectItem key={teacher.id} value={teacher.id}>
-                    {teacher.firstName} {teacher.lastName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Subject</label>
-            <Select value={selectedSubject} onValueChange={onSubjectChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="All subjects" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Subjects</SelectItem>
-                {subjects.map((subject) => (
-                  <SelectItem key={subject} value={subject}>
-                    {subject}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Week</label>
-            <Select value={selectedWeek} onValueChange={onWeekChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select week" />
-              </SelectTrigger>
-              <SelectContent>
-                {weeks.map((week) => (
-                  <SelectItem key={week.value} value={week.value}>
-                    {week.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-2 border-t">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Schedule Filters
+          </CardTitle>
           <div className="flex items-center gap-2">
-            {getActiveFiltersCount() > 0 && (
-              <Button variant="outline" size="sm" onClick={clearAllFilters}>
-                Clear Filters
-              </Button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1">
             <Button
-              variant={viewMode === "week" ? "default" : "outline"}
+              variant="ghost"
               size="sm"
-              onClick={() => onViewModeChange("week")}
+              onClick={() => setIsExpanded(!isExpanded)}
             >
-              <Grid className="h-4 w-4 mr-2" />
-              Week
+              <Settings className="h-4 w-4" />
             </Button>
-            <Button
-              variant={viewMode === "day" ? "default" : "outline"}
-              size="sm"
-              onClick={() => onViewModeChange("day")}
-            >
-              <List className="h-4 w-4 mr-2" />
-              Day
+            <Button variant="outline" size="sm" onClick={clearAllFilters}>
+              Clear All
             </Button>
           </div>
         </div>
+      </CardHeader>
 
-        {/* Active Filters Display */}
-        {getActiveFiltersCount() > 0 && (
-          <div className="flex flex-wrap gap-2 pt-2 border-t">
-            <span className="text-sm font-medium">Active filters:</span>
-            {selectedClass !== 'all' && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                <BookOpen className="h-3 w-3" />
-                Class: {classes.find(c => c.id.toString() === selectedClass)?.name}
-              </Badge>
-            )}
-            {selectedTeacher !== 'all' && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                Teacher: {teachers.find(t => t.id === selectedTeacher)?.firstName}
-              </Badge>
-            )}
-            {selectedSubject !== 'all' && (
-              <Badge variant="outline">
-                Subject: {selectedSubject}
-              </Badge>
-            )}
+      <CardContent className="space-y-4">
+        {/* Search */}
+        <div className="space-y-2">
+          <Label htmlFor="search">Search Events</Label>
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="search"
+              className="pl-8"
+              placeholder="Search by title, description..."
+              value={filters.search}
+              onChange={(e) => updateFilters({ search: e.target.value })}
+            />
+          </div>
+        </div>
+
+        {/* Quick Filters Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Event Type */}
+          <div className="space-y-2">
+            <Label>Event Type</Label>
+            <Select
+              value={filters.eventType}
+              onValueChange={(value) => updateFilters({ eventType: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {eventTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Room Filter */}
+          <div className="space-y-2">
+            <Label>Room</Label>
+            <Select
+              value={filters.room}
+              onValueChange={(value) => updateFilters({ room: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Rooms</SelectItem>
+                {availableRooms.map((room) => (
+                  <SelectItem key={room} value={room}>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      {room}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Date Range */}
+          <div className="space-y-2">
+            <Label>Date Range</Label>
+            <Select
+              value={filters.dateRange}
+              onValueChange={(value) => updateFilters({ dateRange: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {dateRanges.map((range) => (
+                  <SelectItem key={range.value} value={range.value}>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      {range.label}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Participant Filter */}
+          <div className="space-y-2">
+            <Label>Add Participant</Label>
+            <Select onValueChange={addParticipant}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select participant" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableParticipants
+                  .filter(p => !selectedParticipants.includes(p))
+                  .map((participant) => (
+                    <SelectItem key={participant} value={participant}>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        {participant}
+                      </div>
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Selected Participants */}
+        {selectedParticipants.length > 0 && (
+          <div className="space-y-2">
+            <Label>Selected Participants</Label>
+            <div className="flex flex-wrap gap-2">
+              {selectedParticipants.map((participant) => (
+                <Badge key={participant} variant="secondary" className="flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  {participant}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-red-500"
+                    onClick={() => removeParticipant(participant)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Advanced Options */}
+        {isExpanded && (
+          <div className="space-y-4 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="showConflicts">Show Conflicts</Label>
+                <p className="text-sm text-muted-foreground">
+                  Highlight scheduling conflicts
+                </p>
+              </div>
+              <Switch
+                id="showConflicts"
+                checked={filters.showConflicts}
+                onCheckedChange={(checked) => updateFilters({ showConflicts: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="showAvailableSlots">Show Available Slots</Label>
+                <p className="text-sm text-muted-foreground">
+                  Highlight available time slots
+                </p>
+              </div>
+              <Switch
+                id="showAvailableSlots"
+                checked={filters.showAvailableSlots}
+                onCheckedChange={(checked) => updateFilters({ showAvailableSlots: checked })}
+              />
+            </div>
           </div>
         )}
       </CardContent>
