@@ -1,59 +1,25 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Plus, Edit, Trash2, Users, Smartphone, Move } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Users, Smartphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-
-interface DeviceGroup {
-  id: string;
-  name: string;
-  description: string;
-  deviceCount: number;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface GroupFormData {
-  name: string;
-  description: string;
-  color: string;
-}
-
-interface AssignDeviceData {
-  deviceIds: string[];
-  groupId: string;
-}
-
-const GROUP_COLORS = [
-  { value: "blue", label: "Blue", class: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
-  { value: "green", label: "Green", class: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
-  { value: "yellow", label: "Yellow", class: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" },
-  { value: "red", label: "Red", class: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
-  { value: "purple", label: "Purple", class: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200" },
-  { value: "orange", label: "Orange", class: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200" }
-];
+import { 
+  GroupList, 
+  GroupForm, 
+  DeviceList, 
+  GroupStats,
+  DeviceGroup,
+  Device,
+  GroupFormType
+} from './modules';
 
 export default function DeviceGroupManager() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<DeviceGroup | null>(null);
-  const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
-  const [targetGroupId, setTargetGroupId] = useState<string>('');
-  const [formData, setFormData] = useState<GroupFormData>({
-    name: '',
-    description: '',
-    color: 'blue'
-  });
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -62,7 +28,7 @@ export default function DeviceGroupManager() {
     retry: false,
   });
 
-  const { data: devices = [] } = useQuery<any[]>({
+  const { data: devices = [] } = useQuery<Device[]>({
     queryKey: ['/api/devices'],
     retry: false,
   });
