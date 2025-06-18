@@ -44,18 +44,19 @@ export function SettingsTab() {
       announcements: true,
     },
     privacy: {
-      profileVisibility: 'school' as const,
-      showEmail: false,
-      showPhone: false,
-      allowMessages: true,
+      profileVisible: true,
+      contactVisible: false,
+      shareProgress: true,
     },
     preferences: {
-      theme: 'auto' as const,
       language: 'en',
       timezone: 'UTC',
-      dashboard: [],
+      theme: 'light',
+      notifications: true,
     }
   };
+
+  const settings = (userSettings as UserSettingsType) || defaultSettings;
 
   return (
     <div className="space-y-6">
