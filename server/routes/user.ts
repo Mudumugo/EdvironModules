@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
-import { requirePermission } from "../roleMiddleware";
+import { requirePermission, AuthenticatedRequest } from "../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
 import { storage } from "../storage";
 
