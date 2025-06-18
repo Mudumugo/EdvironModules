@@ -934,7 +934,6 @@ export const leads = pgTable("leads", {
   lastName: varchar("last_name").notNull(),
   email: varchar("email").notNull(),
   phone: varchar("phone"),
-  dateOfBirth: date("date_of_birth"),
   age: integer("age"),
   accountType: varchar("account_type").notNull(), // individual, family, school
   interests: text("interests").array().default([]),
