@@ -936,8 +936,8 @@ export const leads = pgTable("leads", {
   phone: varchar("phone"),
   age: integer("age"),
   accountType: varchar("account_type").notNull(), // individual, family, school
-  interests: text("interests").array().default([]),
-  location: jsonb("location"), // { county, constituency, ward }
+  interests: jsonb("interests"), // array of interest strings
+  location: varchar("location"), // location string
   source: varchar("source").default("website"), // website, referral, social, etc
   status: varchar("status").default("new"), // new, contacted, qualified, converted, lost
   priority: varchar("priority").default("medium"), // low, medium, high
