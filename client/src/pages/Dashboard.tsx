@@ -20,6 +20,8 @@ import {
   Globe
 } from "lucide-react";
 import { Link } from "wouter";
+import { UserRole } from "@shared/schema";
+import ITDashboard from "./ITDashboard";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -519,6 +521,11 @@ export default function Dashboard() {
       </div>
     </div>
   );
+
+  // Render specialized IT Dashboard for IT staff
+  if (user?.role === "school_it_staff") {
+    return <ITDashboard />;
+  }
 
   // Return appropriate dashboard based on academic level
   if (academicLevel === 'primary') return renderPrimaryDashboard();
