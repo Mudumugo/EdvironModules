@@ -134,8 +134,10 @@ export function Landing() {
               <Link href="/solutions">
                 <span className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 cursor-pointer">Solutions</span>
               </Link>
-              <a href="#testimonials" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">Testimonials</a>
-              <a href="#pricing" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">Pricing</a>
+              <Link href="/cbe-overview">
+                <span className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 cursor-pointer">CBE Overview</span>
+              </Link>
+              <a href="#about" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">About</a>
               <div className="border-t border-gray-200 pt-4 pb-3">
                 <Link href="/login">
                   <Button variant="ghost" className="w-full mb-2">Sign In</Button>

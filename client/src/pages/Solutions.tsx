@@ -141,7 +141,9 @@ export function Solutions() {
                 <Link href="/solutions">
                   <span className="text-blue-600 px-3 py-2 text-sm font-medium cursor-pointer">Solutions</span>
                 </Link>
-                <a href="#overview" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">C&E Overview</a>
+                <Link href="/cbe-overview">
+                  <span className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium cursor-pointer">CBE Overview</span>
+                </Link>
                 <a href="#about" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">About</a>
               </div>
             </div>
