@@ -1,59 +1,21 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import BookAuthoringWorkflow from "@/components/authoring/BookAuthoringWorkflow";
+import { Plus, BookOpen, FileText, BarChart3, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  PenTool,
-  BookOpen,
-  Eye,
-  Download,
-  Star,
-  DollarSign,
-  TrendingUp,
-  FileText,
-  Video,
-  Gamepad2,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  Plus,
-  Edit,
-  Send,
-  BarChart3
-} from "lucide-react";
-
-interface AuthoringStats {
-  totalContent: number;
-  published: number;
-  inReview: number;
-  drafts: number;
-  viewsThisMonth: number;
-  downloadsThisMonth: number;
-  avgRating: number;
-  revenue: number;
-}
-
-interface ContentItem {
-  id: string;
-  title: string;
-  status: string;
-  type: string;
-  subject: string;
-  grade: string;
-  views: number;
-  rating: number | null;
-  lastModified: string;
-  publishedDate?: string;
-  submittedDate?: string;
-}
+  AuthoringStatsOverview,
+  RecentContent,
+  ContentCreationForm,
+  type AuthoringStats,
+  type ContentItem,
+  type ContentFormData,
+  type Taxonomy
+} from "@/components/authoring/modules";
 
 export default function AuthoringDashboard() {
   const { toast } = useToast();
@@ -70,7 +32,7 @@ export default function AuthoringDashboard() {
   const { data: taxonomy } = useQuery({
     queryKey: ["/api/authoring/taxonomy"],
     retry: false,
-  });
+  }) as { data: Taxonomy | undefined };
 
   const stats = dashboardData?.stats || {
     totalContent: 0,
@@ -85,36 +47,29 @@ export default function AuthoringDashboard() {
 
   const recentContent = dashboardData?.recentContent || [];
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      published: { variant: "default" as const, icon: CheckCircle, color: "text-green-600" },
-      in_review: { variant: "secondary" as const, icon: Clock, color: "text-yellow-600" },
-      draft: { variant: "outline" as const, icon: Edit, color: "text-gray-600" },
-      rejected: { variant: "destructive" as const, icon: AlertCircle, color: "text-red-600" }
-    };
+  // Create content mutation
+  const createContentMutation = useMutation({
+    mutationFn: async (contentData: ContentFormData) => {
+      return apiRequest("POST", "/api/authoring/content", contentData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Content created successfully!",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/authoring/dashboard"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create content",
+        variant: "destructive",
+      });
+    },
+  });
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
-    const Icon = config.icon;
-
-    return (
-      <Badge variant={config.variant} className="flex items-center gap-1">
-        <Icon className="h-3 w-3" />
-        {status.replace('_', ' ').toUpperCase()}
-      </Badge>
-    );
-  };
-
-  const getContentTypeIcon = (type: string) => {
-    const icons = {
-      textbook: BookOpen,
-      video: Video,
-      interactive: Gamepad2,
-      simulation: BarChart3,
-      assessment: FileText
-    };
-    
-    const Icon = icons[type as keyof typeof icons] || FileText;
-    return <Icon className="h-4 w-4" />;
+  const handleCreateContent = (data: ContentFormData) => {
+    createContentMutation.mutate(data);
   };
 
   if (isLoading) {
