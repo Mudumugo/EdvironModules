@@ -560,3 +560,183 @@ export const insertSecurityCameraSchema = createInsertSchema(securityCameras);
 export const insertSecurityEventSchema = createInsertSchema(securityEvents);
 export const insertVisitorRegistrationSchema = createInsertSchema(visitorRegistrations);
 export const insertSecurityCallSchema = createInsertSchema(securityCalls);
+
+// Live class session management tables
+export const liveSessions = pgTable("live_sessions", {
+  id: varchar("id").primaryKey().notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  teacherId: varchar("teacher_id").notNull().references(() => users.id),
+  classId: varchar("class_id").notNull(),
+  sessionType: varchar("session_type").notNull().default("lecture"), // lecture, review, lab, discussion, office-hours
+  status: varchar("status").notNull().default("scheduled"), // scheduled, live, paused, ended, cancelled
+  scheduledTime: timestamp("scheduled_time").notNull(),
+  actualStartTime: timestamp("actual_start_time"),
+  actualEndTime: timestamp("actual_end_time"),
+  duration: integer("duration").notNull().default(60), // in minutes
+  maxParticipants: integer("max_participants").default(50),
+  currentParticipants: integer("current_participants").default(0),
+  recordingEnabled: boolean("recording_enabled").default(true),
+  recordingUrl: varchar("recording_url"),
+  screenSharingEnabled: boolean("screen_sharing_enabled").default(true),
+  deviceControlEnabled: boolean("device_control_enabled").default(true),
+  chatEnabled: boolean("chat_enabled").default(true),
+  settings: jsonb("settings").default({}), // session-specific settings
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const sessionParticipants = pgTable("session_participants", {
+  id: varchar("id").primaryKey().notNull(),
+  sessionId: varchar("session_id").notNull().references(() => liveSessions.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  deviceId: varchar("device_id").notNull(),
+  role: varchar("role").notNull().default("student"), // teacher, student, observer
+  status: varchar("status").notNull().default("offline"), // online, offline, away, disconnected
+  joinedAt: timestamp("joined_at"),
+  leftAt: timestamp("left_at"),
+  totalDuration: integer("total_duration").default(0), // in seconds
+  deviceInfo: jsonb("device_info").default({}), // browser, OS, screen resolution, etc.
+  connectionQuality: varchar("connection_quality").default("good"), // excellent, good, fair, poor
+  isAudioMuted: boolean("is_audio_muted").default(true),
+  isVideoMuted: boolean("is_video_muted").default(true),
+  isScreenSharing: boolean("is_screen_sharing").default(false),
+  canBeControlled: boolean("can_be_controlled").default(false), // for device control
+  lastActivity: timestamp("last_activity").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const deviceSessions = pgTable("device_sessions", {
+  id: varchar("id").primaryKey().notNull(),
+  deviceId: varchar("device_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  sessionId: varchar("session_id").references(() => liveSessions.id),
+  deviceType: varchar("device_type").notNull(), // desktop, tablet, mobile, smart_board
+  platform: varchar("platform").notNull(), // windows, macos, ios, android, chromeos
+  browser: varchar("browser"), // chrome, firefox, safari, edge
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  screenResolution: varchar("screen_resolution"),
+  capabilities: jsonb("capabilities").default({}), // screen sharing, camera, microphone, etc.
+  isControlled: boolean("is_controlled").default(false),
+  controlledBy: varchar("controlled_by").references(() => users.id),
+  lastHeartbeat: timestamp("last_heartbeat").defaultNow(),
+  status: varchar("status").notNull().default("active"), // active, inactive, suspended
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const screenSharingSessions = pgTable("screen_sharing_sessions", {
+  id: varchar("id").primaryKey().notNull(),
+  sessionId: varchar("session_id").notNull().references(() => liveSessions.id, { onDelete: "cascade" }),
+  presenterId: varchar("presenter_id").notNull().references(() => users.id),
+  presenterDeviceId: varchar("presenter_device_id").notNull(),
+  shareType: varchar("share_type").notNull(), // screen, window, application, whiteboard
+  isActive: boolean("is_active").default(true),
+  viewers: text("viewers").array().default([]), // array of user IDs
+  quality: varchar("quality").default("medium"), // low, medium, high, ultra
+  streamUrl: varchar("stream_url"),
+  recordingEnabled: boolean("recording_enabled").default(false),
+  startedAt: timestamp("started_at").defaultNow(),
+  endedAt: timestamp("ended_at"),
+  metadata: jsonb("metadata").default({}), // resolution, fps, bitrate, etc.
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const deviceControlActions = pgTable("device_control_actions", {
+  id: varchar("id").primaryKey().notNull(),
+  sessionId: varchar("session_id").notNull().references(() => liveSessions.id, { onDelete: "cascade" }),
+  controllerId: varchar("controller_id").notNull().references(() => users.id),
+  targetDeviceId: varchar("target_device_id").notNull(),
+  targetUserId: varchar("target_user_id").notNull().references(() => users.id),
+  actionType: varchar("action_type").notNull(), // lock_screen, unlock_screen, restrict_apps, allow_apps, send_message, remote_control
+  actionData: jsonb("action_data").default({}), // specific action parameters
+  status: varchar("status").notNull().default("pending"), // pending, executed, failed, cancelled
+  executedAt: timestamp("executed_at"),
+  responseData: jsonb("response_data").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Relations for live sessions
+export const liveSessionsRelations = relations(liveSessions, ({ one, many }) => ({
+  teacher: one(users, {
+    fields: [liveSessions.teacherId],
+    references: [users.id],
+  }),
+  participants: many(sessionParticipants),
+  screenSharingSessions: many(screenSharingSessions),
+  deviceControlActions: many(deviceControlActions),
+}));
+
+export const sessionParticipantsRelations = relations(sessionParticipants, ({ one }) => ({
+  session: one(liveSessions, {
+    fields: [sessionParticipants.sessionId],
+    references: [liveSessions.id],
+  }),
+  user: one(users, {
+    fields: [sessionParticipants.userId],
+    references: [users.id],
+  }),
+}));
+
+export const deviceSessionsRelations = relations(deviceSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [deviceSessions.userId],
+    references: [users.id],
+  }),
+  session: one(liveSessions, {
+    fields: [deviceSessions.sessionId],
+    references: [liveSessions.id],
+  }),
+  controller: one(users, {
+    fields: [deviceSessions.controlledBy],
+    references: [users.id],
+  }),
+}));
+
+export const screenSharingSessionsRelations = relations(screenSharingSessions, ({ one }) => ({
+  session: one(liveSessions, {
+    fields: [screenSharingSessions.sessionId],
+    references: [liveSessions.id],
+  }),
+  presenter: one(users, {
+    fields: [screenSharingSessions.presenterId],
+    references: [users.id],
+  }),
+}));
+
+export const deviceControlActionsRelations = relations(deviceControlActions, ({ one }) => ({
+  session: one(liveSessions, {
+    fields: [deviceControlActions.sessionId],
+    references: [liveSessions.id],
+  }),
+  controller: one(users, {
+    fields: [deviceControlActions.controllerId],
+    references: [users.id],
+  }),
+  targetUser: one(users, {
+    fields: [deviceControlActions.targetUserId],
+    references: [users.id],
+  }),
+}));
+
+// Types for live sessions
+export type LiveSession = typeof liveSessions.$inferSelect;
+export type InsertLiveSession = typeof liveSessions.$inferInsert;
+export type SessionParticipant = typeof sessionParticipants.$inferSelect;
+export type InsertSessionParticipant = typeof sessionParticipants.$inferInsert;
+export type DeviceSession = typeof deviceSessions.$inferSelect;
+export type InsertDeviceSession = typeof deviceSessions.$inferInsert;
+export type ScreenSharingSession = typeof screenSharingSessions.$inferSelect;
+export type InsertScreenSharingSession = typeof screenSharingSessions.$inferInsert;
+export type DeviceControlAction = typeof deviceControlActions.$inferSelect;
+export type InsertDeviceControlAction = typeof deviceControlActions.$inferInsert;
+
+// Zod schemas for live sessions
+export const insertLiveSessionSchema = createInsertSchema(liveSessions);
+export const insertSessionParticipantSchema = createInsertSchema(sessionParticipants);
+export const insertDeviceSessionSchema = createInsertSchema(deviceSessions);
+export const insertScreenSharingSessionSchema = createInsertSchema(screenSharingSessions);
+export const insertDeviceControlActionSchema = createInsertSchema(deviceControlActions);

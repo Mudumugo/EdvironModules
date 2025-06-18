@@ -8,12 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Plus, Video, Users, Calendar, Clock, Play, Square, Settings } from "lucide-react";
+import { Plus, Video, Users, Calendar, Clock, Play, Square, Settings, Monitor } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import LiveSessionControl from "./LiveSessionControl";
 
 export default function LiveSessionPanel() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [controlSessionId, setControlSessionId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -109,13 +111,23 @@ export default function LiveSessionPanel() {
     );
   }
 
+  // Show session control interface if a session is selected
+  if (controlSessionId) {
+    return (
+      <LiveSessionControl 
+        sessionId={controlSessionId} 
+        onClose={() => setControlSessionId(null)}
+      />
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
             <CardTitle>Live Sessions</CardTitle>
-            <CardDescription>Schedule and manage live video sessions</CardDescription>
+            <CardDescription>Schedule and manage live video sessions with device control</CardDescription>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
@@ -284,13 +296,16 @@ export default function LiveSessionPanel() {
                 <div className="flex gap-2">
                   {isLive ? (
                     <>
-                      <Button className="bg-red-500 hover:bg-red-600">
-                        <Square className="h-4 w-4 mr-2" />
-                        End Session
+                      <Button 
+                        className="bg-blue-500 hover:bg-blue-600"
+                        onClick={() => setControlSessionId(session.id)}
+                      >
+                        <Monitor className="h-4 w-4 mr-2" />
+                        Control Session
                       </Button>
                       <Button variant="outline">
                         <Settings className="h-4 w-4 mr-2" />
-                        Manage
+                        Settings
                       </Button>
                     </>
                   ) : isUpcoming ? (
@@ -299,9 +314,12 @@ export default function LiveSessionPanel() {
                         <Play className="h-4 w-4 mr-2" />
                         Start Session
                       </Button>
-                      <Button variant="outline">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Settings
+                      <Button 
+                        variant="outline"
+                        onClick={() => setControlSessionId(session.id)}
+                      >
+                        <Monitor className="h-4 w-4 mr-2" />
+                        Prepare
                       </Button>
                     </>
                   ) : (

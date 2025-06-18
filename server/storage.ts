@@ -40,6 +40,39 @@ export interface IStorage {
   createSecurityCall(data: any): Promise<any>;
   getSecurityMetrics(): Promise<any>;
   getActiveThreats(): Promise<any[]>;
+
+  // Live session operations
+  createLiveSession(session: InsertLiveSession): Promise<LiveSession>;
+  updateLiveSession(sessionId: string, updates: Partial<LiveSession>): Promise<LiveSession>;
+  getLiveSession(sessionId: string): Promise<LiveSession | undefined>;
+  getLiveSessionsByTeacher(teacherId: string): Promise<LiveSession[]>;
+  getActiveLiveSessions(tenantId?: string): Promise<LiveSession[]>;
+  deleteLiveSession(sessionId: string): Promise<void>;
+
+  // Session participants
+  addSessionParticipant(participant: InsertSessionParticipant): Promise<SessionParticipant>;
+  updateParticipantStatus(participantId: string, status: string): Promise<SessionParticipant>;
+  getSessionParticipants(sessionId: string): Promise<SessionParticipant[]>;
+  removeSessionParticipant(participantId: string): Promise<void>;
+
+  // Device management
+  registerDevice(device: InsertDeviceSession): Promise<DeviceSession>;
+  updateDeviceStatus(deviceId: string, status: string): Promise<DeviceSession>;
+  getSessionDevices(sessionId: string): Promise<DeviceSession[]>;
+  getDevicesByUser(userId: string): Promise<DeviceSession[]>;
+  updateDeviceHeartbeat(deviceId: string): Promise<void>;
+
+  // Screen sharing
+  startScreenSharing(screenShare: InsertScreenSharingSession): Promise<ScreenSharingSession>;
+  stopScreenSharing(screenShareId: string): Promise<void>;
+  getActiveScreenSharing(sessionId: string): Promise<ScreenSharingSession | undefined>;
+  updateScreenSharingViewers(screenShareId: string, viewers: string[]): Promise<ScreenSharingSession>;
+
+  // Device control
+  createDeviceControlAction(action: InsertDeviceControlAction): Promise<DeviceControlAction>;
+  updateDeviceControlStatus(actionId: string, status: string, responseData?: any): Promise<DeviceControlAction>;
+  getDeviceControlActions(sessionId: string): Promise<DeviceControlAction[]>;
+  getPendingControlActions(deviceId: string): Promise<DeviceControlAction[]>;
 }
 
 export class DatabaseStorage implements IStorage {
