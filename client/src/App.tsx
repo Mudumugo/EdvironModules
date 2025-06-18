@@ -86,6 +86,7 @@ function Router() {
           <RoleProtectedRoute moduleId="dashboard">
             {user?.role === 'school_admin' ? <AdminDashboard /> : 
              user?.role === 'school_security' ? <SecurityDashboard /> : 
+             user?.role === 'school_it_staff' ? <DeviceManagement /> : 
              <LearningDashboard />}
           </RoleProtectedRoute>
         </Route>
