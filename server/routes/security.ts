@@ -1,11 +1,12 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { storage } from "../storage";
+import { PERMISSIONS } from "@shared/schema";
 
 export function registerSecurityRoutes(app: Express) {
   // Get security zones
-  app.get("/api/security/zones", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+  app.get("/api/security/zones", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
     try {
       const zones = await storage.getSecurityZones();
       res.json(zones);
@@ -16,7 +17,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create security zone
-  app.post("/api/security/zones", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+  app.post("/api/security/zones", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
     try {
       const zone = await storage.createSecurityZone(req.body);
       res.json(zone);
@@ -38,7 +39,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get all cameras
-  app.get("/api/security/cameras", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+  app.get("/api/security/cameras", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
     try {
       const cameras = await storage.getSecurityCameras();
       res.json(cameras);
@@ -49,7 +50,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create security camera
-  app.post("/api/security/cameras", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+  app.post("/api/security/cameras", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
     try {
       const camera = await storage.createSecurityCamera(req.body);
       res.json(camera);
@@ -60,7 +61,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get security events
-  app.get("/api/security/events", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+  app.get("/api/security/events", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
     try {
       const { status, severity, zoneId, limit = 50 } = req.query;
       const events = await storage.getSecurityEvents({
@@ -77,7 +78,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create security event
-  app.post("/api/security/events", isAuthenticated, requirePermission("SECURITY_MANAGE"), async (req, res) => {
+  app.post("/api/security/events", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
     try {
       const event = await storage.createSecurityEvent(req.body);
       res.json(event);
@@ -99,7 +100,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get visitor registrations
-  app.get("/api/security/visitors", isAuthenticated, requirePermission("SECURITY_VIEW"), async (req, res) => {
+  app.get("/api/security/visitors", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
     try {
       const { status, date } = req.query;
       const visitors = await storage.getVisitorRegistrations({

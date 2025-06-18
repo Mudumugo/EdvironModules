@@ -75,14 +75,14 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
           pages.push(`data:text/html,${encodeURIComponent(resource.content)}`);
         } 
         // Check if book has a file URL
-        else if (resource.file_url && resource.file_url.trim() !== '') {
+        else if (resource.fileUrl && resource.fileUrl.trim() !== '') {
           // Display information about the file
           const fileInfoPage = `
             <div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;">
               <h1>${resource.title}</h1>
               <p>by ${author}</p>
               <hr style="margin: 20px 0;">
-              <p>This book has a file resource: <br><code>${resource.file_url}</code></p>
+              <p>This book has a file resource: <br><code>${resource.fileUrl}</code></p>
               <p>File-based content would be loaded here in a full implementation.</p>
             </div>
           `;

@@ -88,7 +88,7 @@ const DigitalLibraryNew = () => {
       trackMediaInteractions: true,
       trackAssessments: true
     }
-  }));
+  })) : sampleResources;
 
   // Generate sample multimedia content based on type
   function generateSampleContent(type: string): string {
