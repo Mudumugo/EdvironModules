@@ -1,13 +1,12 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
 import { PERMISSIONS, type Permission, type UserRole } from '@shared/schema';
-import type { AuthenticatedRequest } from './types/auth';
 
 
 
 // Middleware to check if user has specific permission
 export function requirePermission(permission: Permission) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
@@ -28,7 +27,7 @@ export function requirePermission(permission: Permission) {
 
 // Middleware to check if user has any of the specified permissions
 export function requireAnyPermission(permissions: Permission[]) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
@@ -72,7 +71,7 @@ export function requireRole(roles: UserRole | UserRole[]) {
 
 // Middleware to check if user belongs to same tenant
 export function requireSameTenant() {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
     const targetTenantId = req.params.tenantId || req.body.tenantId || req.query.tenantId;
     
@@ -94,7 +93,7 @@ export function requireSameTenant() {
 
 // Middleware to check if user can access student data (teachers can access their students, admins can access all)
 export function requireStudentAccess() {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
@@ -119,8 +118,8 @@ export function requireStudentAccess() {
 }
 
 // Helper to check resource ownership
-export function requireResourceOwnership(getResourceOwnerId: (req: AuthenticatedRequest) => string | Promise<string>) {
-  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export function requireResourceOwnership(getResourceOwnerId: (req: Request) => string | Promise<string>) {
+  return async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
