@@ -18,7 +18,6 @@ import { registerPBXRoutes } from "./routes/pbx";
 import { registerParentRoutes } from "./routes/parent";
 import { registerParentManagementRoutes } from "./routes/parentManagement";
 import { registerAppsHubRoutes } from "./routes/appsHub";
-import { registerAdminRoutes } from "./routes/admin";
 import { registerTimetableRoutes } from "./routes/timetable";
 import { registerNotebookModuleRoutes } from "./routes/notebook/index";
 
@@ -33,8 +32,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerMediaRoutes(app);
   registerLicensingRoutes(app);
   registerTenantRoutes(app);
-  registerUserRoutes(app);
-  registerLibraryRoutes(app);
   registerITRoutes(app);
   registerSecurityRoutes(app);
   registerPBXRoutes(app);
