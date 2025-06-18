@@ -255,9 +255,142 @@ export type Class = typeof classes.$inferSelect;
 export const insertTimetableEntrySchema = createInsertSchema(timetableEntries);
 export const insertClassSchema = createInsertSchema(classes);
 
-export const insertStudentSchema = z.object({});
-export const insertTeacherSchema = z.object({});
-export const insertSubjectSchema = z.object({});
+// Digital Notebook Schema
+export const notebooks = pgTable("notebooks", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  isShared: boolean("is_shared").default(false),
+  sharedWith: text("shared_with").array(), // Array of user IDs who can access
+  color: varchar("color", { length: 20 }).default("#3b82f6"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  tenantId: varchar("tenant_id", { length: 255 }).default("default"),
+});
+
+export const subjects = pgTable("subjects", {
+  id: serial("id").primaryKey(),
+  notebookId: integer("notebook_id").notNull().references(() => notebooks.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  color: varchar("color", { length: 20 }).default("#3b82f6"),
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const chapters = pgTable("chapters", {
+  id: serial("id").primaryKey(),
+  subjectId: integer("subject_id").notNull().references(() => subjects.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const topics = pgTable("topics", {
+  id: serial("id").primaryKey(),
+  chapterId: integer("chapter_id").notNull().references(() => chapters.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const pages = pgTable("pages", {
+  id: serial("id").primaryKey(),
+  topicId: integer("topic_id").notNull().references(() => topics.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content"), // Rich text content
+  contentType: varchar("content_type", { length: 50 }).default("richtext"), // richtext, markdown, plain
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const stickyNotes = pgTable("sticky_notes", {
+  id: serial("id").primaryKey(),
+  pageId: integer("page_id").notNull().references(() => pages.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  color: varchar("color", { length: 20 }).default("#fbbf24"),
+  positionX: integer("position_x").default(0),
+  positionY: integer("position_y").default(0),
+  width: integer("width").default(200),
+  height: integer("height").default(150),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Relations
+export const notebooksRelations = relations(notebooks, ({ many }) => ({
+  subjects: many(subjects),
+}));
+
+export const subjectsRelations = relations(subjects, ({ one, many }) => ({
+  notebook: one(notebooks, {
+    fields: [subjects.notebookId],
+    references: [notebooks.id],
+  }),
+  chapters: many(chapters),
+}));
+
+export const chaptersRelations = relations(chapters, ({ one, many }) => ({
+  subject: one(subjects, {
+    fields: [chapters.subjectId],
+    references: [subjects.id],
+  }),
+  topics: many(topics),
+}));
+
+export const topicsRelations = relations(topics, ({ one, many }) => ({
+  chapter: one(chapters, {
+    fields: [topics.chapterId],
+    references: [chapters.id],
+  }),
+  pages: many(pages),
+}));
+
+export const pagesRelations = relations(pages, ({ one, many }) => ({
+  topic: one(topics, {
+    fields: [pages.topicId],
+    references: [topics.id],
+  }),
+  stickyNotes: many(stickyNotes),
+}));
+
+export const stickyNotesRelations = relations(stickyNotes, ({ one }) => ({
+  page: one(pages, {
+    fields: [stickyNotes.pageId],
+    references: [pages.id],
+  }),
+}));
+
+// Types
+export type InsertNotebook = typeof notebooks.$inferInsert;
+export type Notebook = typeof notebooks.$inferSelect;
+export type InsertSubject = typeof subjects.$inferInsert;
+export type Subject = typeof subjects.$inferSelect;
+export type InsertChapter = typeof chapters.$inferInsert;
+export type Chapter = typeof chapters.$inferSelect;
+export type InsertTopic = typeof topics.$inferInsert;
+export type Topic = typeof topics.$inferSelect;
+export type InsertPage = typeof pages.$inferInsert;
+export type Page = typeof pages.$inferSelect;
+export type InsertStickyNote = typeof stickyNotes.$inferInsert;
+export type StickyNote = typeof stickyNotes.$inferSelect;
+
+// Schemas
+export const insertNotebookSchema = createInsertSchema(notebooks);
+export const insertSubjectSchema = createInsertSchema(subjects);
+export const insertChapterSchema = createInsertSchema(chapters);
+export const insertTopicSchema = createInsertSchema(topics);
+export const insertPageSchema = createInsertSchema(pages);
+export const insertStickyNoteSchema = createInsertSchema(stickyNotes);
+
 export const insertLibraryResourceSchema = z.object({});
 export const insertScheduleSchema = z.object({});
 export const insertAttendanceSchema = z.object({});
