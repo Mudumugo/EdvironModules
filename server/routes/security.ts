@@ -2,16 +2,15 @@ import type { Express, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { db } from "../db";
-import { activityLogs, users } from "@shared/schema";
+import { users, activityLogs } from "@shared/schema";
 import { eq, desc, count, and, gte, sql } from "drizzle-orm";
-import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerSecurityRoutes(app: Express) {
   // Get security events from activity logs
   app.get('/api/security/events', 
     isAuthenticated, 
     requirePermission('MANAGE_SECURITY'),
-    async (req: AuthenticatedRequest, res) => {
+    async (req: any, res) => {
       try {
         // Get recent activity logs that could indicate security events
         const recentLogs = await db
@@ -79,7 +78,7 @@ export function registerSecurityRoutes(app: Express) {
   app.get('/api/security/metrics', 
     isAuthenticated, 
     requirePermission('MANAGE_SECURITY'),
-    async (req: AuthenticatedRequest, res) => {
+    async (req: any, res) => {
       try {
         const now = new Date();
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -164,7 +163,7 @@ export function registerSecurityRoutes(app: Express) {
   app.get('/api/security/threats', 
     isAuthenticated, 
     requirePermission('MANAGE_SECURITY'),
-    async (req: AuthenticatedRequest, res) => {
+    async (req: any, res) => {
       try {
         const now = new Date();
         const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -228,7 +227,7 @@ export function registerSecurityRoutes(app: Express) {
   app.post('/api/security/events', 
     isAuthenticated, 
     requirePermission('MANAGE_SECURITY'),
-    async (req: AuthenticatedRequest, res) => {
+    async (req: any, res) => {
       try {
         const { type, severity, description, ipAddress } = req.body;
         const userId = req.user?.id;
@@ -260,7 +259,7 @@ export function registerSecurityRoutes(app: Express) {
   app.get('/api/security/compliance', 
     isAuthenticated, 
     requirePermission('MANAGE_SECURITY'),
-    async (req: AuthenticatedRequest, res) => {
+    async (req: any, res) => {
       try {
         // In a real implementation, this would check actual compliance metrics
         const compliance = {

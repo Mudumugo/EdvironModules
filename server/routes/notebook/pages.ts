@@ -3,13 +3,12 @@ import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
 import { pages, topics, chapters } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
-import type { AuthenticatedRequest } from "../../types/auth";
 
 
 
 export function registerPageRoutes(app: Express) {
   // Get all pages for a topic
-  app.get('/api/topics/:topicId/pages', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/topics/:topicId/pages', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const topicId = parseInt(req.params.topicId);
@@ -52,7 +51,7 @@ export function registerPageRoutes(app: Express) {
   });
 
   // Create new page
-  app.post('/api/topics/:topicId/pages', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.post('/api/topics/:topicId/pages', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const topicId = parseInt(req.params.topicId);
@@ -102,7 +101,7 @@ export function registerPageRoutes(app: Express) {
   });
 
   // Update page
-  app.put('/api/pages/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.put('/api/pages/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const pageId = parseInt(req.params.id);

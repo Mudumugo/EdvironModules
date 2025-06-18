@@ -4,13 +4,12 @@ import { db } from "../db";
 import { users } from "@shared/schema";
 import { parentChildRelationships } from "@shared/schemas/education.schema";
 import { eq, and } from "drizzle-orm";
-import type { AuthenticatedRequest } from "../types/auth";
 
 
 
 export function registerParentRoutes(app: Express) {
   // Get parent's children and their information
-  app.get('/api/parent/children', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/parent/children', isAuthenticated, async (req: any, res) => {
     try {
       const sessionUser = (req.session as any)?.user;
       const userId = sessionUser?.id || req.user?.claims?.sub;
@@ -52,7 +51,7 @@ export function registerParentRoutes(app: Express) {
   });
 
   // Get announcements relevant to parent's children
-  app.get('/api/parent/announcements', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/parent/announcements', isAuthenticated, async (req: any, res) => {
     try {
       const sessionUser = (req.session as any)?.user;
       const userId = sessionUser?.id || req.user?.claims?.sub;
@@ -100,7 +99,7 @@ export function registerParentRoutes(app: Express) {
   });
 
   // Get messages from teachers about parent's children
-  app.get('/api/parent/messages', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/parent/messages', isAuthenticated, async (req: any, res) => {
     try {
       const sessionUser = (req.session as any)?.user;
       const userId = sessionUser?.id || req.user?.claims?.sub;
@@ -164,7 +163,7 @@ export function registerParentRoutes(app: Express) {
   });
 
   // Get child's academic progress (restricted to parent's children only)
-  app.get('/api/parent/child/:childId/progress', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/parent/child/:childId/progress', isAuthenticated, async (req: any, res) => {
     try {
       const sessionUser = (req.session as any)?.user;
       const userId = sessionUser?.id || req.user?.claims?.sub;
@@ -259,7 +258,7 @@ export function registerParentRoutes(app: Express) {
   });
 
   // Get child's attendance (restricted to parent's children only)
-  app.get('/api/parent/child/:childId/attendance', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/parent/child/:childId/attendance', isAuthenticated, async (req: any, res) => {
     try {
       const sessionUser = (req.session as any)?.user;
       const userId = sessionUser?.id || req.user?.claims?.sub;

@@ -1,6 +1,5 @@
 import type { Express, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
-import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerAppsHubRoutes(app: Express) {
   // Get all apps

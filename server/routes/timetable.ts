@@ -5,11 +5,10 @@ import { timetableEntries, classes } from "@shared/schema";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
-import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerTimetableRoutes(app: Express) {
   // Get all timetable entries with optional filters
-  app.get('/api/timetable/entries', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/timetable/entries', isAuthenticated, async (req: any, res: Response) => {
     try {
       const { semester, classId, academicYear } = req.query;
       
@@ -44,7 +43,7 @@ export function registerTimetableRoutes(app: Express) {
   });
 
   // Get timetable entries for a specific teacher
-  app.get('/api/timetable/teacher/:teacherId', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/timetable/teacher/:teacherId', isAuthenticated, async (req: any, res: Response) => {
     try {
       const { teacherId } = req.params;
       const { semester, academicYear } = req.query;
@@ -71,7 +70,7 @@ export function registerTimetableRoutes(app: Express) {
   });
 
   // Get timetable entries for a specific class
-  app.get('/api/timetable/class/:classId', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/timetable/class/:classId', isAuthenticated, async (req: any, res: Response) => {
     try {
       const { classId } = req.params;
       const { semester, academicYear } = req.query;
@@ -101,7 +100,7 @@ export function registerTimetableRoutes(app: Express) {
   app.post('/api/timetable/entries', 
     isAuthenticated, 
     requirePermission(PERMISSIONS.MANAGE_SCHOOL_SETTINGS),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: any, res: Response) => {
       try {
         const entryData = req.body;
         
@@ -137,7 +136,7 @@ export function registerTimetableRoutes(app: Express) {
   app.put('/api/timetable/entries/:id', 
     isAuthenticated, 
     requirePermission(PERMISSIONS.MANAGE_SCHOOL_SETTINGS),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: any, res: Response) => {
       try {
         const { id } = req.params;
         const entryData = req.body;
@@ -181,7 +180,7 @@ export function registerTimetableRoutes(app: Express) {
   app.delete('/api/timetable/entries/:id', 
     isAuthenticated, 
     requirePermission(PERMISSIONS.MANAGE_SCHOOL_SETTINGS),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: any, res: Response) => {
       try {
         const { id } = req.params;
         
@@ -202,7 +201,7 @@ export function registerTimetableRoutes(app: Express) {
   );
 
   // Get all classes
-  app.get('/api/classes', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/classes', isAuthenticated, async (req: any, res: Response) => {
     try {
       const classList = await db.select()
         .from(classes)
@@ -220,7 +219,7 @@ export function registerTimetableRoutes(app: Express) {
   app.post('/api/classes', 
     isAuthenticated, 
     requirePermission(PERMISSIONS.MANAGE_SCHOOL_SETTINGS),
-    async (req: AuthenticatedRequest, res: Response) => {
+    async (req: any, res: Response) => {
       try {
         const classData = req.body;
         
@@ -238,7 +237,7 @@ export function registerTimetableRoutes(app: Express) {
   );
 
   // Get teachers for dropdown
-  app.get('/api/users/teachers', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/users/teachers', isAuthenticated, async (req: any, res: Response) => {
     try {
       // Mock data for now - would fetch from users table with teacher role in real implementation
       const teachers = [

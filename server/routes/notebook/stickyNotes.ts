@@ -3,13 +3,12 @@ import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
 import { stickyNotes, pages } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
-import type { AuthenticatedRequest } from "../../types/auth";
 
 
 
 export function registerStickyNoteRoutes(app: Express) {
   // Get all sticky notes for a page
-  app.get('/api/pages/:pageId/sticky-notes', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/pages/:pageId/sticky-notes', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const pageId = parseInt(req.params.pageId);
@@ -56,7 +55,7 @@ export function registerStickyNoteRoutes(app: Express) {
   });
 
   // Create new sticky note
-  app.post('/api/pages/:pageId/sticky-notes', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.post('/api/pages/:pageId/sticky-notes', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const pageId = parseInt(req.params.pageId);
@@ -111,7 +110,7 @@ export function registerStickyNoteRoutes(app: Express) {
   });
 
   // Update sticky note
-  app.put('/api/sticky-notes/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.put('/api/sticky-notes/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const stickyNoteId = parseInt(req.params.id);
@@ -149,7 +148,7 @@ export function registerStickyNoteRoutes(app: Express) {
   });
 
   // Delete sticky note
-  app.delete('/api/sticky-notes/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.delete('/api/sticky-notes/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const stickyNoteId = parseInt(req.params.id);

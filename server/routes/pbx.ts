@@ -1,11 +1,10 @@
 import type { Express, Response, NextFunction } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
-import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerPBXRoutes(app: Express) {
   // User-specific extension data
-  app.get('/api/pbx/user-extension/:extension', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/pbx/user-extension/:extension', isAuthenticated, async (req: any, res) => {
     try {
       const { extension } = req.params;
       const userId = req.user?.id;
@@ -43,7 +42,7 @@ export function registerPBXRoutes(app: Express) {
   });
 
   // User-specific call logs
-  app.get('/api/pbx/user-call-logs/:extension', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/pbx/user-call-logs/:extension', isAuthenticated, async (req: any, res) => {
     try {
       const { extension } = req.params;
       const userId = req.user?.id;
@@ -77,7 +76,7 @@ export function registerPBXRoutes(app: Express) {
   });
 
   // Call forwarding control
-  app.post('/api/pbx/call-forward', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/pbx/call-forward', isAuthenticated, async (req: any, res) => {
     try {
       const { extension, forwardTo, enabled } = req.body;
       const userId = req.user?.id;

@@ -41,6 +41,7 @@ export const activityLogs = pgTable("activity_logs", {
   details: jsonb("details").default({}),
   ipAddress: varchar("ip_address"),
   userAgent: text("user_agent"),
+  timestamp: timestamp("timestamp").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

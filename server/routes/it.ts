@@ -1,11 +1,10 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requireRole } from "../roleMiddleware";
-import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerITRoutes(app: Express) {
   // Device management routes
-  app.get('/api/it/devices', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/it/devices', isAuthenticated, async (req: any, res) => {
     try {
       // Mock device data - in real implementation, this would come from MDM/device management system
       const devices = Array.from({ length: 24 }, (_, i) => ({
@@ -30,7 +29,7 @@ export function registerITRoutes(app: Express) {
     }
   });
 
-  app.get('/api/it/device-groups', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/it/device-groups', isAuthenticated, async (req: any, res) => {
     try {
       const groups = [
         {
@@ -72,7 +71,7 @@ export function registerITRoutes(app: Express) {
     }
   });
 
-  app.get('/api/it/zones', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/it/zones', isAuthenticated, async (req: any, res) => {
     try {
       const zones = [
         {
@@ -112,7 +111,7 @@ export function registerITRoutes(app: Express) {
     }
   });
 
-  app.get('/api/it/policies', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/it/policies', isAuthenticated, async (req: any, res) => {
     try {
       const policies = [
         {
@@ -148,7 +147,7 @@ export function registerITRoutes(app: Express) {
     }
   });
 
-  app.post('/api/it/device-groups', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/it/device-groups', isAuthenticated, async (req: any, res) => {
     try {
       const { name, description, devices, zone } = req.body;
 
@@ -182,7 +181,7 @@ export function registerITRoutes(app: Express) {
     }
   });
 
-  app.post('/api/it/devices/bulk-action', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/it/devices/bulk-action', isAuthenticated, async (req: any, res) => {
     try {
       const { action, deviceIds, groupIds } = req.body;
 
@@ -218,7 +217,7 @@ export function registerITRoutes(app: Express) {
     }
   });
 
-  app.post('/api/it/devices/exam-lock', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/it/devices/exam-lock', isAuthenticated, async (req: any, res) => {
     try {
       const { deviceIds, groupIds, lockDuration = 180 } = req.body;
 

@@ -3,7 +3,6 @@ import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
 import { notebooks, subjects } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
-import type { AuthenticatedRequest } from "../../types/auth";
 
 export function registerNotebookRoutes(app: Express) {
   // Get all notebooks for user
@@ -28,7 +27,7 @@ export function registerNotebookRoutes(app: Express) {
   });
 
   // Get notebook with full hierarchy
-  app.get('/api/notebooks/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/notebooks/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const notebookId = parseInt(req.params.id);

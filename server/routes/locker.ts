@@ -3,7 +3,6 @@ import { isAuthenticated } from "../replitAuth";
 import { db } from "../db";
 import { lockerItems } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
-import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerLockerRoutes(app: Express) {
   // Get user's locker items

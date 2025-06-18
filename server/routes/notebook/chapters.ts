@@ -3,13 +3,12 @@ import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
 import { chapters, subjects, notebooks } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
-import type { AuthenticatedRequest } from "../../types/auth";
 
 
 
 export function registerChapterRoutes(app: Express) {
   // Get all chapters for a subject
-  app.get('/api/subjects/:subjectId/chapters', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.get('/api/subjects/:subjectId/chapters', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const subjectId = parseInt(req.params.subjectId);
@@ -44,7 +43,7 @@ export function registerChapterRoutes(app: Express) {
   });
 
   // Create new chapter
-  app.post('/api/subjects/:subjectId/chapters', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  app.post('/api/subjects/:subjectId/chapters', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       const subjectId = parseInt(req.params.subjectId);
