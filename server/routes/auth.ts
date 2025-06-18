@@ -31,7 +31,7 @@ export async function registerAuthRoutes(app: Express) {
         tenantId: 'demo_tenant',
         isActive: true,
         gradeLevel: role.includes('student') ? 'Grade 5' : null,
-        department: role === 'teacher' ? 'General Education' : role === 'school_admin' ? 'Administration' : role === 'school_it_staff' ? 'Information Technology' : role === 'school_security' ? 'Security' : null
+        department: role === 'teacher' ? 'General Education' : role === 'school_admin' ? 'Administration' : role === 'it_staff' ? 'Information Technology' : role === 'security_staff' ? 'Security' : null
       });
 
       // Create a demo session and save it

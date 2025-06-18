@@ -15,19 +15,34 @@ import {
 
 const DEMO_ACCOUNTS = [
   {
+    role: "Student",
+    email: "student@edvirons.com",
+    id: "demo_student_elementary",
+    color: "bg-blue-500"
+  },
+  {
     role: "Teacher",
     email: "teacher@edvirons.com",
-    id: "teacher"
+    id: "teacher",
+    color: "bg-green-500"
   },
   {
-    role: "Admin", 
+    role: "School Administrator",
     email: "admin@edvirons.com",
-    id: "school_admin"
+    id: "school_admin",
+    color: "bg-purple-500"
   },
   {
-    role: "Student",
-    email: "student@edvirons.com", 
-    id: "demo_student_elementary"
+    role: "IT Staff",
+    email: "it@edvirons.com",
+    id: "it_staff",
+    color: "bg-orange-500"
+  },
+  {
+    role: "Security Staff",
+    email: "security@edvirons.com",
+    id: "security_staff",
+    color: "bg-red-500"
   }
 ];
 
@@ -182,9 +197,12 @@ export default function Login() {
             <div className="space-y-2">
               {DEMO_ACCOUNTS.map((account) => (
                 <div key={account.id} className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:bg-gray-50 transition-colors">
-                  <div className="text-sm">
-                    <span className="font-medium text-blue-600">{account.role}:</span>
-                    <span className="text-gray-600 ml-1">{account.email}</span>
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${account.color}`}></div>
+                    <div className="text-sm">
+                      <span className="font-medium text-gray-900">{account.role}</span>
+                      <div className="text-gray-500 text-xs">{account.email}</div>
+                    </div>
                   </div>
                   <Button
                     variant="outline"
