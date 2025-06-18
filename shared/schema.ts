@@ -926,3 +926,91 @@ export const insertSessionParticipantSchema = createInsertSchema(sessionParticip
 export const insertDeviceSessionSchema = createInsertSchema(deviceSessions);
 export const insertScreenSharingSessionSchema = createInsertSchema(screenSharingSessions);
 export const insertDeviceControlActionSchema = createInsertSchema(deviceControlActions);
+
+// CRM - Leads table for managing signups and potential customers
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone"),
+  dateOfBirth: date("date_of_birth"),
+  age: integer("age"),
+  accountType: varchar("account_type").notNull(), // individual, family, school
+  interests: text("interests").array().default([]),
+  location: jsonb("location"), // { county, constituency, ward }
+  source: varchar("source").default("website"), // website, referral, social, etc
+  status: varchar("status").default("new"), // new, contacted, qualified, converted, lost
+  priority: varchar("priority").default("medium"), // low, medium, high
+  assignedTo: varchar("assigned_to"), // user ID of assigned sales rep
+  notes: text("notes"),
+  lastContactDate: timestamp("last_contact_date"),
+  nextFollowUpDate: timestamp("next_follow_up_date"),
+  convertedAt: timestamp("converted_at"),
+  tenantId: varchar("tenant_id").notNull(),
+  metadata: jsonb("metadata"), // Additional form data from signup
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// CRM - Activities table for tracking interactions with leads
+export const leadActivities = pgTable("lead_activities", {
+  id: serial("id").primaryKey(),
+  leadId: integer("lead_id").notNull().references(() => leads.id, { onDelete: "cascade" }),
+  type: varchar("type").notNull(), // call, email, meeting, note, status_change
+  subject: varchar("subject").notNull(),
+  description: text("description"),
+  outcome: varchar("outcome"), // successful, no_answer, left_message, etc
+  scheduledDate: timestamp("scheduled_date"),
+  completedDate: timestamp("completed_date"),
+  createdBy: varchar("created_by").notNull(), // user ID
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// CRM - Demo requests table
+export const demoRequests = pgTable("demo_requests", {
+  id: serial("id").primaryKey(),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone"),
+  organization: varchar("organization"),
+  role: varchar("role"),
+  numberOfStudents: integer("number_of_students"),
+  preferredDate: timestamp("preferred_date"),
+  preferredTime: varchar("preferred_time"),
+  message: text("message"),
+  status: varchar("status").default("pending"), // pending, scheduled, completed, cancelled
+  assignedTo: varchar("assigned_to"),
+  scheduledDate: timestamp("scheduled_date"),
+  completedDate: timestamp("completed_date"),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// CRM Relations
+export const leadsRelations = relations(leads, ({ many }) => ({
+  activities: many(leadActivities),
+}));
+
+export const leadActivitiesRelations = relations(leadActivities, ({ one }) => ({
+  lead: one(leads, {
+    fields: [leadActivities.leadId],
+    references: [leads.id],
+  }),
+}));
+
+// CRM Types
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = typeof leads.$inferInsert;
+export type LeadActivity = typeof leadActivities.$inferSelect;
+export type InsertLeadActivity = typeof leadActivities.$inferInsert;
+export type DemoRequest = typeof demoRequests.$inferSelect;
+export type InsertDemoRequest = typeof demoRequests.$inferInsert;
+
+// CRM Zod schemas for validation
+export const insertLeadSchema = createInsertSchema(leads);
+export const insertLeadActivitySchema = createInsertSchema(leadActivities);
+export const insertDemoRequestSchema = createInsertSchema(demoRequests);
