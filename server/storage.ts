@@ -5,9 +5,24 @@ import {
   type UpsertUser,
   type UserSettings,
   type InsertUserSettings,
+  liveSessions,
+  type LiveSession,
+  type InsertLiveSession,
+  sessionParticipants,
+  type SessionParticipant,
+  type InsertSessionParticipant,
+  deviceSessions,
+  type DeviceSession,
+  type InsertDeviceSession,
+  screenSharingSessions,
+  type ScreenSharingSession,
+  type InsertScreenSharingSession,
+  deviceControlActions,
+  type DeviceControlAction,
+  type InsertDeviceControlAction,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, lte, isNotNull } from "drizzle-orm";
+import { eq, and, lte, isNotNull, desc, asc } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -557,6 +572,213 @@ export class DatabaseStorage implements IStorage {
         status: "monitoring",
       }
     ];
+  }
+
+  // Live session operations
+  async createLiveSession(sessionData: InsertLiveSession): Promise<LiveSession> {
+    const [session] = await db
+      .insert(liveSessions)
+      .values(sessionData)
+      .returning();
+    return session;
+  }
+
+  async updateLiveSession(sessionId: string, updates: Partial<LiveSession>): Promise<LiveSession> {
+    const [session] = await db
+      .update(liveSessions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(liveSessions.id, sessionId))
+      .returning();
+    return session;
+  }
+
+  async getLiveSession(sessionId: string): Promise<LiveSession | undefined> {
+    const [session] = await db
+      .select()
+      .from(liveSessions)
+      .where(eq(liveSessions.id, sessionId));
+    return session;
+  }
+
+  async getLiveSessionsByTeacher(teacherId: string): Promise<LiveSession[]> {
+    return await db
+      .select()
+      .from(liveSessions)
+      .where(eq(liveSessions.teacherId, teacherId))
+      .orderBy(desc(liveSessions.scheduledTime));
+  }
+
+  async getActiveLiveSessions(tenantId?: string): Promise<LiveSession[]> {
+    const conditions = [eq(liveSessions.status, "live")];
+    if (tenantId) {
+      conditions.push(eq(liveSessions.tenantId, tenantId));
+    }
+    
+    return await db
+      .select()
+      .from(liveSessions)
+      .where(and(...conditions))
+      .orderBy(asc(liveSessions.scheduledTime));
+  }
+
+  async deleteLiveSession(sessionId: string): Promise<void> {
+    await db
+      .delete(liveSessions)
+      .where(eq(liveSessions.id, sessionId));
+  }
+
+  // Session participants
+  async addSessionParticipant(participantData: InsertSessionParticipant): Promise<SessionParticipant> {
+    const [participant] = await db
+      .insert(sessionParticipants)
+      .values(participantData)
+      .returning();
+    return participant;
+  }
+
+  async updateParticipantStatus(participantId: string, status: string): Promise<SessionParticipant> {
+    const [participant] = await db
+      .update(sessionParticipants)
+      .set({ status, lastActivity: new Date() })
+      .where(eq(sessionParticipants.id, participantId))
+      .returning();
+    return participant;
+  }
+
+  async getSessionParticipants(sessionId: string): Promise<SessionParticipant[]> {
+    return await db
+      .select()
+      .from(sessionParticipants)
+      .where(eq(sessionParticipants.sessionId, sessionId))
+      .orderBy(asc(sessionParticipants.joinedAt));
+  }
+
+  async removeSessionParticipant(participantId: string): Promise<void> {
+    await db
+      .delete(sessionParticipants)
+      .where(eq(sessionParticipants.id, participantId));
+  }
+
+  // Device management
+  async registerDevice(deviceData: InsertDeviceSession): Promise<DeviceSession> {
+    const [device] = await db
+      .insert(deviceSessions)
+      .values(deviceData)
+      .returning();
+    return device;
+  }
+
+  async updateDeviceStatus(deviceId: string, status: string): Promise<DeviceSession> {
+    const [device] = await db
+      .update(deviceSessions)
+      .set({ status, lastHeartbeat: new Date(), updatedAt: new Date() })
+      .where(eq(deviceSessions.deviceId, deviceId))
+      .returning();
+    return device;
+  }
+
+  async getSessionDevices(sessionId: string): Promise<DeviceSession[]> {
+    return await db
+      .select()
+      .from(deviceSessions)
+      .where(eq(deviceSessions.sessionId, sessionId))
+      .orderBy(desc(deviceSessions.lastHeartbeat));
+  }
+
+  async getDevicesByUser(userId: string): Promise<DeviceSession[]> {
+    return await db
+      .select()
+      .from(deviceSessions)
+      .where(eq(deviceSessions.userId, userId))
+      .orderBy(desc(deviceSessions.lastHeartbeat));
+  }
+
+  async updateDeviceHeartbeat(deviceId: string): Promise<void> {
+    await db
+      .update(deviceSessions)
+      .set({ lastHeartbeat: new Date() })
+      .where(eq(deviceSessions.deviceId, deviceId));
+  }
+
+  // Screen sharing
+  async startScreenSharing(screenShareData: InsertScreenSharingSession): Promise<ScreenSharingSession> {
+    const [screenShare] = await db
+      .insert(screenSharingSessions)
+      .values(screenShareData)
+      .returning();
+    return screenShare;
+  }
+
+  async stopScreenSharing(screenShareId: string): Promise<void> {
+    await db
+      .update(screenSharingSessions)
+      .set({ isActive: false, endedAt: new Date() })
+      .where(eq(screenSharingSessions.id, screenShareId));
+  }
+
+  async getActiveScreenSharing(sessionId: string): Promise<ScreenSharingSession | undefined> {
+    const [screenShare] = await db
+      .select()
+      .from(screenSharingSessions)
+      .where(and(
+        eq(screenSharingSessions.sessionId, sessionId),
+        eq(screenSharingSessions.isActive, true)
+      ));
+    return screenShare;
+  }
+
+  async updateScreenSharingViewers(screenShareId: string, viewers: string[]): Promise<ScreenSharingSession> {
+    const [screenShare] = await db
+      .update(screenSharingSessions)
+      .set({ viewers })
+      .where(eq(screenSharingSessions.id, screenShareId))
+      .returning();
+    return screenShare;
+  }
+
+  // Device control
+  async createDeviceControlAction(actionData: InsertDeviceControlAction): Promise<DeviceControlAction> {
+    const [action] = await db
+      .insert(deviceControlActions)
+      .values(actionData)
+      .returning();
+    return action;
+  }
+
+  async updateDeviceControlStatus(actionId: string, status: string, responseData?: any): Promise<DeviceControlAction> {
+    const updateData: any = { status };
+    if (status === "executed") {
+      updateData.executedAt = new Date();
+    }
+    if (responseData) {
+      updateData.responseData = responseData;
+    }
+
+    const [action] = await db
+      .update(deviceControlActions)
+      .set(updateData)
+      .where(eq(deviceControlActions.id, actionId))
+      .returning();
+    return action;
+  }
+
+  async getDeviceControlActions(sessionId: string): Promise<DeviceControlAction[]> {
+    return await db
+      .select()
+      .from(deviceControlActions)
+      .where(eq(deviceControlActions.sessionId, sessionId))
+      .orderBy(desc(deviceControlActions.createdAt));
+  }
+
+  async getPendingControlActions(deviceId: string): Promise<DeviceControlAction[]> {
+    return await db
+      .select()
+      .from(deviceControlActions)
+      .where(and(
+        eq(deviceControlActions.targetDeviceId, deviceId),
+        eq(deviceControlActions.status, "pending")
+      ))
+      .orderBy(asc(deviceControlActions.createdAt));
   }
 }
 

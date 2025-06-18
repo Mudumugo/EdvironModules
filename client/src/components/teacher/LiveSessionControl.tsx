@@ -16,7 +16,7 @@ import {
   VideoOff, 
   Mic, 
   MicOff, 
-  Screen, 
+  MonitorSpeaker, 
   Monitor, 
   Users, 
   Settings, 
@@ -29,7 +29,6 @@ import {
   Smartphone,
   Tablet,
   Laptop,
-  MonitorSpeaker,
   Wifi,
   WifiOff,
   Circle,
@@ -374,12 +373,12 @@ export default function LiveSessionControl({ sessionId, onClose }: LiveSessionCo
             
             {!screenSharingActive ? (
               <Button onClick={handleStartScreenShare} variant="outline">
-                <Screen className="h-4 w-4 mr-2" />
+                <MonitorSpeaker className="h-4 w-4 mr-2" />
                 Share Screen
               </Button>
             ) : (
               <Button onClick={handleStopScreenShare} variant="outline">
-                <Screen className="h-4 w-4 mr-2" />
+                <MonitorSpeaker className="h-4 w-4 mr-2" />
                 Stop Sharing
               </Button>
             )}
@@ -430,7 +429,7 @@ export default function LiveSessionControl({ sessionId, onClose }: LiveSessionCo
                             <Video className="h-4 w-4 text-green-500" />
                           )}
                           {participant.isScreenSharing && (
-                            <Screen className="h-4 w-4 text-blue-500" />
+                            <MonitorSpeaker className="h-4 w-4 text-blue-500" />
                           )}
                         </div>
                       </div>
@@ -616,10 +615,10 @@ export default function LiveSessionControl({ sessionId, onClose }: LiveSessionCo
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Screen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <MonitorSpeaker className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground mb-4">No active screen sharing</p>
                   <Button onClick={handleStartScreenShare}>
-                    <Screen className="h-4 w-4 mr-2" />
+                    <MonitorSpeaker className="h-4 w-4 mr-2" />
                     Start Screen Sharing
                   </Button>
                 </div>
