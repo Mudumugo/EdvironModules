@@ -5,11 +5,7 @@ import { chapters, subjects, notebooks } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
 
 interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
+  user?: any;
 }
 
 export function registerChapterRoutes(app: Express) {

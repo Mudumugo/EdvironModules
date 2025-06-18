@@ -5,11 +5,7 @@ import { notebooks, subjects } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
 
 interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
+  user?: any;
 }
 
 export function registerNotebookRoutes(app: Express) {
@@ -94,7 +90,6 @@ export function registerNotebookRoutes(app: Express) {
           title: name,
           description,
           color,
-          gradeLevel,
         })
         .returning();
 
@@ -123,7 +118,6 @@ export function registerNotebookRoutes(app: Express) {
           title: name,
           description,
           color,
-          gradeLevel,
           updatedAt: new Date(),
         })
         .where(and(

@@ -5,11 +5,7 @@ import { pages, topics, chapters } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
 
 interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
+  user?: any;
 }
 
 export function registerPageRoutes(app: Express) {

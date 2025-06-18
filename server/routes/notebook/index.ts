@@ -1,14 +1,12 @@
 import type { Express } from "express";
+import { registerNotebookRoutes } from "./notebooks";
+import { registerSubjectRoutes } from "./subjects";
+import { registerChapterRoutes } from "./chapters";
+import { registerTopicRoutes } from "./topics";
+import { registerPageRoutes } from "./pages";
+import { registerStickyNoteRoutes } from "./stickyNotes";
 
 export function registerNotebookModuleRoutes(app: Express) {
-  // Import and register all notebook-related routes
-  const { registerNotebookRoutes } = require("./notebooks");
-  const { registerSubjectRoutes } = require("./subjects");
-  const { registerChapterRoutes } = require("./chapters");
-  const { registerTopicRoutes } = require("./topics");
-  const { registerPageRoutes } = require("./pages");
-  const { registerStickyNoteRoutes } = require("./stickyNotes");
-
   registerNotebookRoutes(app);
   registerSubjectRoutes(app);
   registerChapterRoutes(app);
