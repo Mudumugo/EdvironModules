@@ -112,9 +112,9 @@ export default function DeviceManagement() {
     }
   ];
 
-  const devices = deviceData?.devices || mockDevices;
+  const devices = mockDevices;
 
-  const stats = deviceStats || {
+  const stats = {
     total: 156,
     online: 142,
     offline: 14,
@@ -186,16 +186,7 @@ export default function DeviceManagement() {
         </div>
 
         <TabsContent value="overview" className="space-y-6">
-          <DeviceStats stats={stats || { 
-            total: 0, 
-            online: 0, 
-            offline: 0, 
-            active: 0, 
-            restricted: 0, 
-            maintenance: 0, 
-            batteryLow: 0, 
-            lastUpdate: new Date().toISOString() 
-          }} />
+          <DeviceStats stats={stats} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -285,7 +276,7 @@ export default function DeviceManagement() {
                   </CardDescription>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Last updated: {stats?.lastUpdate ? new Date(stats.lastUpdate).toLocaleString() : 'Never'}
+                  Last updated: {new Date().toLocaleString()}
                 </div>
               </div>
             </CardHeader>
