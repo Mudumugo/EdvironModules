@@ -129,6 +129,21 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     description: "Security settings and access control management",
     allowedRoles: ["school_security", "school_admin"],
   },
+
+  // Communication modules
+  {
+    id: "pbx",
+    name: "Phone System",
+    path: "/pbx",
+    icon: "Phone",
+    description: "Campus phone system and communication center",
+    allowedRoles: [
+      "school_admin", "school_it_staff", "school_security", "teacher", 
+      "principal", "vice_principal", "office_staff", "receptionist", 
+      "secretary", "registrar", "nurse", "counselor"
+    ],
+    isCore: true
+  },
 ];
 
 export function getAccessibleModules(userRole: UserRole): ModulePermission[] {

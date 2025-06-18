@@ -17,7 +17,8 @@ import {
   Presentation,
   CloudDownload,
   IdCard,
-  FlaskRound
+  FlaskRound,
+  Phone
 } from "lucide-react";
 
 // Icon mapping for dynamic module loading
@@ -35,7 +36,8 @@ const iconMap: Record<string, any> = {
   Presentation,
   CloudDownload,
   IdCard,
-  FlaskRound
+  FlaskRound,
+  Phone
 };
 
 interface SidebarProps {
