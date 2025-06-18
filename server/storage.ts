@@ -133,6 +133,14 @@ export interface IStorage {
   getUpcomingEventsForUser(userId: string, limit: number): Promise<CalendarEvent[]>;
   getEventsRequiringApproval(tenantId: string): Promise<CalendarEvent[]>;
   getUserEventConflicts(userId: string, startDate: Date, endDate: Date): Promise<CalendarEvent[]>;
+
+  // Library operations
+  getLibraryCategories(gradeLevel?: string): Promise<any[]>;
+  getLibrarySubjects(gradeLevel?: string, categoryId?: string): Promise<any[]>;
+  getLibraryResources(filters: any): Promise<any[]>;
+  getLibraryResource(resourceId: string): Promise<any>;
+  createLibraryResourceAccess(access: any): Promise<any>;
+  updateResourceStats(resourceId: string, updateType: 'view' | 'download'): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {

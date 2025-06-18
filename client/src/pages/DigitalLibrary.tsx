@@ -1,857 +1,600 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { BookOpen } from "lucide-react";
-import { LibrarySearch } from "../components/library/LibrarySearch";
-import { ResourceCard } from "../components/library/ResourceCard";
-import { LibraryTabs } from "../components/library/LibraryTabs";
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  BookOpen, 
+  FileText, 
+  Video, 
+  Headphones, 
+  Gamepad2, 
+  GraduationCap,
+  Search,
+  Filter,
+  Heart,
+  Download,
+  Eye,
+  Star,
+  Bookmark,
+  Play,
+  Clock,
+  Award,
+  Sparkles
+} from 'lucide-react';
+import type { LibraryCategory, LibrarySubject, LibraryResource } from '@shared/schema';
 
-interface LibraryResource {
-  id: number;
-  title: string;
-  type: string;
-  author?: string;
-  subject?: string;
-  grade?: string;
-  curriculum?: string;
-  difficulty?: string;
-  description?: string;
-  content?: string;
-  thumbnailUrl?: string;
-  fileUrl?: string;
-  duration?: number;
-  language: string;
-  rating?: number;
-  totalCopies: number;
-  availableCopies: number;
-  tags: string[];
-  learningObjectives: string[];
-  prerequisites: string[];
-  isPhysical: boolean;
-  isDigital: boolean;
-  isPublic: boolean;
-  isActive: boolean;
-  isFeatured: boolean;
-  isRestricted: boolean;
-  tenantId: string;
-  addedBy: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Age-appropriate layouts based on grade level
+const getLayoutConfig = (gradeLevel: string) => {
+  switch (gradeLevel) {
+    case 'primary':
+      return {
+        headerColor: 'from-blue-500 to-purple-600',
+        title: 'Welcome to Primary Learning! 🎓',
+        subtitle: 'Continue your learning journey with engaging activities and lessons',
+        cardStyle: 'rounded-xl shadow-lg hover:shadow-xl transition-all duration-200',
+        buttonStyle: 'rounded-full px-6 py-2 font-medium',
+        iconSize: 'w-12 h-12',
+        spacing: 'gap-4'
+      };
+    case 'junior_secondary':
+      return {
+        headerColor: 'from-teal-500 to-green-600',
+        title: 'CBE Junior Secondary Education 📚',
+        subtitle: 'Competency-Based Education | Grades 7-9 | VCU Aligned',
+        cardStyle: 'rounded-lg shadow-md hover:shadow-lg transition-all duration-200',
+        buttonStyle: 'rounded-lg px-4 py-2',
+        iconSize: 'w-10 h-10',
+        spacing: 'gap-6'
+      };
+    case 'senior_secondary':
+      return {
+        headerColor: 'from-purple-600 to-indigo-700',
+        title: 'CBE Senior Secondary Education 🎯',
+        subtitle: 'Competency-Based Education | Grades 10-12 | VCU Aligned',
+        cardStyle: 'rounded-lg shadow-md hover:shadow-lg transition-all duration-200',
+        buttonStyle: 'rounded-lg px-4 py-2',
+        iconSize: 'w-10 h-10',
+        spacing: 'gap-6'
+      };
+    default:
+      return {
+        headerColor: 'from-blue-500 to-purple-600',
+        title: 'Digital Library',
+        subtitle: 'Explore educational resources',
+        cardStyle: 'rounded-lg shadow-md hover:shadow-lg transition-all duration-200',
+        buttonStyle: 'rounded-lg px-4 py-2',
+        iconSize: 'w-10 h-10',
+        spacing: 'gap-6'
+      };
+  }
+};
 
-interface LibraryBorrowing {
-  id: number;
-  borrowedAt: string;
-  dueDate: string;
-  returnedAt?: string;
-  status: string;
-  renewalCount: number;
-  maxRenewals: number;
-  resource: {
-    id: number;
-    title: string;
-    author?: string;
-    type: string;
-    thumbnailUrl?: string;
+const getResourceIcon = (type: string) => {
+  switch (type) {
+    case 'book':
+      return BookOpen;
+    case 'worksheet':
+      return FileText;
+    case 'video':
+      return Video;
+    case 'audio':
+      return Headphones;
+    case 'game':
+      return Gamepad2;
+    case 'guide':
+      return GraduationCap;
+    default:
+      return BookOpen;
+  }
+};
+
+const getResourceTypeColor = (type: string) => {
+  const colors = {
+    book: 'bg-blue-500',
+    worksheet: 'bg-green-500',
+    video: 'bg-red-500',
+    audio: 'bg-purple-500',
+    game: 'bg-orange-500',
+    guide: 'bg-teal-500'
   };
-}
-
-interface LibraryReservation {
-  id: number;
-  reservedAt: string;
-  expiresAt: string;
-  status: string;
-  priority: number;
-  resource: {
-    id: number;
-    title: string;
-    author?: string;
-    type: string;
-    thumbnailUrl?: string;
-    availableCopies: number;
-  };
-}
+  return colors[type] || 'bg-gray-500';
+};
 
 export default function DigitalLibrary() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [selectedGrade, setSelectedGrade] = useState("");
-  const [sortBy, setSortBy] = useState("title");
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedResource, setSelectedResource] = useState<LibraryResource | null>(null);
-  const [showFeatured, setShowFeatured] = useState(false);
-  const [showAvailable, setShowAvailable] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const { user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedResourceType, setSelectedResourceType] = useState('all');
 
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const gradeLevel = user?.gradeLevel || 'primary';
+  const layout = getLayoutConfig(gradeLevel);
 
-  // Fetch library resources
-  const { data: resourcesData, isLoading: resourcesLoading } = useQuery({
-    queryKey: [
-      "/api/library/resources", 
-      searchQuery, 
-      selectedCategory, 
-      selectedType, 
-      selectedGrade, 
-      sortBy, 
-      sortOrder, 
-      showFeatured, 
-      showAvailable,
-      currentPage
-    ],
-    queryFn: () => {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: "12",
-        sortBy,
-        sortOrder,
-        ...(searchQuery && { search: searchQuery }),
-        ...(selectedCategory && { category: selectedCategory }),
-        ...(selectedType && { type: selectedType }),
-        ...(selectedGrade && { grade: selectedGrade }),
-        ...(showFeatured && { featured: "true" }),
-        ...(showAvailable && { available: "true" })
+  // Fetch categories for current grade level
+  const { data: categories = [] } = useQuery<LibraryCategory[]>({
+    queryKey: ['/api/library/categories', gradeLevel],
+    queryFn: () => apiRequest('GET', `/api/library/categories?gradeLevel=${gradeLevel}`),
+  });
+
+  // Fetch subjects for current grade level
+  const { data: subjects = [] } = useQuery<LibrarySubject[]>({
+    queryKey: ['/api/library/subjects', gradeLevel, selectedCategory],
+    queryFn: () => apiRequest('GET', `/api/library/subjects?gradeLevel=${gradeLevel}&categoryId=${selectedCategory !== 'all' ? selectedCategory : ''}`),
+  });
+
+  // Fetch resources
+  const { data: resources = [] } = useQuery<LibraryResource[]>({
+    queryKey: ['/api/library/resources', gradeLevel, selectedCategory, selectedResourceType, searchTerm],
+    queryFn: () => apiRequest('GET', '/api/library/resources', {
+      gradeLevel,
+      categoryId: selectedCategory !== 'all' ? selectedCategory : undefined,
+      resourceType: selectedResourceType !== 'all' ? selectedResourceType : undefined,
+      search: searchTerm || undefined
+    }),
+  });
+
+  // Get featured resources
+  const featuredResources = resources.filter(r => r.isFeatured);
+  const recentResources = resources.slice(0, 8);
+
+  const resourceTypes = [
+    { id: 'all', name: 'All Resources', icon: BookOpen },
+    { id: 'book', name: 'Digital Books', icon: BookOpen },
+    { id: 'worksheet', name: 'Worksheets', icon: FileText },
+    { id: 'video', name: 'Video Content', icon: Video },
+    { id: 'audio', name: 'Audio Lessons', icon: Headphones },
+    { id: 'game', name: 'Learning Games', icon: Gamepad2 },
+    { id: 'guide', name: 'Teacher Guides', icon: GraduationCap }
+  ];
+
+  const handleResourceAccess = async (resource: LibraryResource, accessType: 'view' | 'save_to_locker') => {
+    try {
+      await apiRequest('POST', '/api/library/access', {
+        resourceId: resource.id,
+        accessType
       });
-      return fetch(`/api/library/resources?${params}`).then(res => res.json());
+      
+      if (accessType === 'view') {
+        // Open resource viewer
+        window.open(`/library/viewer/${resource.id}`, '_blank');
+      }
+    } catch (error) {
+      console.error('Failed to access resource:', error);
     }
-  });
-
-  // Fetch featured resources
-  const { data: featuredResources } = useQuery({
-    queryKey: ["/api/library/featured"],
-    queryFn: () => fetch("/api/library/featured").then(res => res.json())
-  });
-
-  // Fetch user's borrowings
-  const { data: borrowings } = useQuery({
-    queryKey: ["/api/library/my-borrowings"],
-    queryFn: () => fetch("/api/library/my-borrowings").then(res => res.json())
-  });
-
-  // Fetch user's reservations
-  const { data: reservations } = useQuery({
-    queryKey: ["/api/library/my-reservations"],
-    queryFn: () => fetch("/api/library/my-reservations").then(res => res.json())
-  });
-
-  // Fetch library statistics
-  const { data: stats } = useQuery({
-    queryKey: ["/api/library/stats"],
-    queryFn: () => fetch("/api/library/stats").then(res => res.json())
-  });
-
-  // Borrow resource mutation
-  const borrowMutation = useMutation({
-    mutationFn: async (resourceId: number) => {
-      return apiRequest("POST", `/api/library/resources/${resourceId}/borrow`, {
-        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Resource borrowed successfully!"
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/library/resources"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/library/my-borrowings"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to borrow resource",
-        variant: "destructive"
-      });
-    }
-  });
-
-  // Return resource mutation
-  const returnMutation = useMutation({
-    mutationFn: async (resourceId: number) => {
-      return apiRequest("POST", `/api/library/resources/${resourceId}/return`, {});
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Resource returned successfully!"
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/library/resources"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/library/my-borrowings"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to return resource",
-        variant: "destructive"
-      });
-    }
-  });
-
-  // Reserve resource mutation
-  const reserveMutation = useMutation({
-    mutationFn: async (resourceId: number) => {
-      return apiRequest("POST", `/api/library/resources/${resourceId}/reserve`, {});
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Resource reserved successfully!"
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/library/resources"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/library/my-reservations"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to reserve resource",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const handleSearch = () => {
-    setCurrentPage(1);
   };
 
-  const handleBorrow = (resourceId: number) => {
-    borrowMutation.mutate(resourceId);
-  };
-
-  const handleReturn = (resourceId: number) => {
-    returnMutation.mutate(resourceId);
-  };
-
-  const handleReserve = (resourceId: number) => {
-    reserveMutation.mutate(resourceId);
-  };
-
-  const getStatusBadge = (resource: LibraryResource) => {
-    if (!resource.isActive) {
-      return <Badge variant="destructive">Inactive</Badge>;
-    }
-    if (resource.isPhysical) {
-      return <Badge variant="default">Physical</Badge>;
-    }
-    if (resource.isFeatured) {
-      return <Badge variant="secondary">Featured</Badge>;
-    }
-    return <Badge variant="outline">Available</Badge>;
-  };
-
-  const getActionButton = (resource: LibraryResource) => {
-    if (resource.fileUrl) {
-      return (
-        <Button 
-          onClick={() => window.open(resource.fileUrl, '_blank')}
-          size="sm"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Access
-        </Button>
-      );
-    }
-    
-    return (
-      <Button 
-        onClick={() => setSelectedResource(resource)}
-        variant="outline"
-        size="sm"
-      >
-        <Eye className="h-4 w-4 mr-2" />
-        View
-      </Button>
-    );
-  };
-
-  const ResourceCard = ({ resource }: { resource: LibraryResource }) => (
-    <Card className="h-full hover:shadow-lg transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start gap-2">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg leading-tight mb-1 truncate">
-              {resource.title}
-            </CardTitle>
-            {resource.author && (
-              <CardDescription className="text-sm text-muted-foreground">
-                by {resource.author}
-              </CardDescription>
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header */}
+      <div className={`bg-gradient-to-r ${layout.headerColor} text-white`}>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">{layout.title}</h1>
+            <p className="text-lg opacity-90 mb-6">{layout.subtitle}</p>
+            
+            {gradeLevel === 'primary' && (
+              <div className="flex justify-center gap-4 mb-6">
+                <Button variant="secondary" className={layout.buttonStyle}>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Continue Learning
+                </Button>
+                <Button variant="outline" className={`${layout.buttonStyle} bg-white/10 border-white/20 text-white hover:bg-white/20`}>
+                  Learning Goals
+                </Button>
+              </div>
             )}
           </div>
-          {getStatusBadge(resource)}
         </div>
-      </CardHeader>
-      
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {resource.thumbnailUrl && (
-            <div className="w-full h-32 bg-muted rounded-md flex items-center justify-center overflow-hidden">
-              <img 
-                src={resource.thumbnailUrl} 
-                alt={resource.title}
-                className="w-full h-full object-cover"
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        {/* Search and Filters */}
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search resources..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
               />
             </div>
-          )}
-          
-          <div className="flex flex-wrap gap-1">
-            <Badge variant="outline" className="text-xs">
-              {resource.type}
-            </Badge>
-            {resource.subject && (
-              <Badge variant="outline" className="text-xs">
-                {resource.subject}
-              </Badge>
-            )}
-            {resource.grade && (
-              <Badge variant="outline" className="text-xs">
-                Grade {resource.grade}
-              </Badge>
-            )}
-          </div>
-          
-          {resource.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {resource.description}
-            </p>
-          )}
-          
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />
-                {resource.totalCopies}
-              </span>
-              {resource.rating && (
-                <span className="flex items-center gap-1">
-                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                  {resource.rating.toFixed(1)}
-                </span>
-              )}
+            <div className="flex gap-2">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-3 py-2 border rounded-lg bg-background"
+              >
+                <option value="all">All Categories</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
+              </select>
+              <select
+                value={selectedResourceType}
+                onChange={(e) => setSelectedResourceType(e.target.value)}
+                className="px-3 py-2 border rounded-lg bg-background"
+              >
+                {resourceTypes.map(type => (
+                  <option key={type.id} value={type.id}>{type.name}</option>
+                ))}
+              </select>
             </div>
-            {resource.duration ? (
-              <span>{resource.duration} min</span>
-            ) : (
-              <span>{resource.language.toUpperCase()}</span>
+          </div>
+        </div>
+
+        {gradeLevel === 'primary' ? (
+          <PrimaryLayout 
+            categories={categories} 
+            resources={resources}
+            layout={layout}
+            onResourceAccess={handleResourceAccess}
+          />
+        ) : (
+          <SecondaryLayout 
+            categories={categories} 
+            subjects={subjects}
+            resources={resources}
+            layout={layout}
+            gradeLevel={gradeLevel}
+            onResourceAccess={handleResourceAccess}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Primary school layout with simpler, more colorful design
+function PrimaryLayout({ categories, resources, layout, onResourceAccess }) {
+  const [activeTab, setActiveTab] = useState('subjects');
+
+  return (
+    <div className="space-y-8">
+      {/* Quick Access Sections */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        <Card className="bg-gradient-to-br from-blue-100 to-blue-200 border-0">
+          <CardContent className="p-4 text-center">
+            <BookOpen className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+            <h3 className="font-semibold text-blue-800">New Books</h3>
+            <p className="text-sm text-blue-600">Added this week</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-green-100 to-green-200 border-0">
+          <CardContent className="p-4 text-center">
+            <FileText className="w-8 h-8 mx-auto mb-2 text-green-600" />
+            <h3 className="font-semibold text-green-800">Popular Worksheets</h3>
+            <p className="text-sm text-green-600">Most accessed</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-purple-100 to-purple-200 border-0">
+          <CardContent className="p-4 text-center">
+            <Headphones className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+            <h3 className="font-semibold text-purple-800">Audio Lessons</h3>
+            <p className="text-sm text-purple-600">Listen and learn</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* CBE Subjects */}
+      <div>
+        <h2 className="text-2xl font-bold mb-6 text-center">CBE Subjects</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categories.map(category => (
+            <Card key={category.id} className={`${layout.cardStyle} bg-gradient-to-br ${category.color || 'from-blue-500 to-blue-600'} text-white`}>
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">{category.name}</h3>
+                    <p className="text-sm opacity-90">Learning Resources</p>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <p className="text-sm opacity-90 mb-3">Available Resources:</p>
+                  <div className="flex justify-between text-center">
+                    <div>
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <BookOpen className="w-4 h-4" />
+                      </div>
+                      <p className="text-xs">Books</p>
+                    </div>
+                    <div>
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <p className="text-xs">Worksheets</p>
+                    </div>
+                    <div>
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <Video className="w-4 h-4" />
+                      </div>
+                      <p className="text-xs">Videos</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-0">
+                  View All
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Resource Type Tabs */}
+      <Tabs defaultValue="books" className="mt-8">
+        <TabsList className="grid grid-cols-3 md:grid-cols-6 mb-6">
+          <TabsTrigger value="books" className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden md:inline">Digital Books</span>
+          </TabsTrigger>
+          <TabsTrigger value="worksheets" className="flex items-center gap-2">
+            <FileText className="w-4 h-4" />
+            <span className="hidden md:inline">Worksheets</span>
+          </TabsTrigger>
+          <TabsTrigger value="videos" className="flex items-center gap-2">
+            <Video className="w-4 h-4" />
+            <span className="hidden md:inline">Video Content</span>
+          </TabsTrigger>
+          <TabsTrigger value="audio" className="flex items-center gap-2">
+            <Headphones className="w-4 h-4" />
+            <span className="hidden md:inline">Audio Lessons</span>
+          </TabsTrigger>
+          <TabsTrigger value="games" className="flex items-center gap-2">
+            <Gamepad2 className="w-4 h-4" />
+            <span className="hidden md:inline">Learning Games</span>
+          </TabsTrigger>
+          <TabsTrigger value="guides" className="flex items-center gap-2">
+            <GraduationCap className="w-4 h-4" />
+            <span className="hidden md:inline">Teacher Guides</span>
+          </TabsTrigger>
+        </TabsList>
+
+        {['books', 'worksheets', 'videos', 'audio', 'games', 'guides'].map(type => (
+          <TabsContent key={type} value={type}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {resources.filter(r => r.resourceType === type.slice(0, -1)).map(resource => (
+                <ResourceCard 
+                  key={resource.id} 
+                  resource={resource} 
+                  layout={layout}
+                  onAccess={onResourceAccess}
+                />
+              ))}
+            </div>
+          </TabsContent>
+        ))}
+      </Tabs>
+    </div>
+  );
+}
+
+// Secondary school layout with more sophisticated design
+function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, onResourceAccess }) {
+  return (
+    <div className="space-y-8">
+      {/* Main Learning Areas */}
+      <div>
+        <h2 className="text-2xl font-bold mb-6">CBE Learning Areas - {gradeLevel === 'junior_secondary' ? 'Junior Secondary' : 'Senior Secondary'}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {categories.slice(0, 8).map(category => (
+            <Card key={category.id} className={`${layout.cardStyle} bg-gradient-to-br ${category.color || 'from-blue-500 to-blue-600'} text-white`}>
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold">{category.name}</h3>
+                    <p className="text-xs opacity-90">Core Competencies</p>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="flex justify-between text-center text-xs">
+                    <div>
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <BookOpen className="w-3 h-3" />
+                      </div>
+                      <p>Books</p>
+                    </div>
+                    <div>
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <FileText className="w-3 h-3" />
+                      </div>
+                      <p>Worksheets</p>
+                    </div>
+                    <div>
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <Video className="w-3 h-3" />
+                      </div>
+                      <p>Videos</p>
+                    </div>
+                    <div>
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <Award className="w-3 h-3" />
+                      </div>
+                      <p>Assessments</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <Button variant="secondary" size="sm" className="w-full bg-white/20 hover:bg-white/30 text-white border-0">
+                  <span className="text-xs">Explore Learning Area</span>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Learning Resource Hub */}
+      <div>
+        <h2 className="text-2xl font-bold mb-6">Learning Resource Hub</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { title: 'VCU Past Papers', desc: 'Examination preparation', color: 'from-red-500 to-red-600', icon: FileText },
+            { title: 'Scholarship Applications', desc: 'Funding opportunities', color: 'from-blue-500 to-blue-600', icon: Award },
+            { title: 'Advanced Workshops', desc: 'Skills development', color: 'from-purple-500 to-purple-600', icon: GraduationCap },
+            { title: 'Career Pathways', desc: 'Future planning', color: 'from-green-500 to-green-600', icon: BookOpen }
+          ].map((item, index) => (
+            <Card key={index} className={`${layout.cardStyle} bg-gradient-to-br ${item.color} text-white`}>
+              <CardContent className="p-6">
+                <item.icon className="w-8 h-8 mb-3" />
+                <h3 className="font-bold mb-2">{item.title}</h3>
+                <p className="text-sm opacity-90 mb-4">{item.desc}</p>
+                <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0">
+                  Explore
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Career Pathways (for Senior Secondary) */}
+      {gradeLevel === 'senior_secondary' && (
+        <div>
+          <h2 className="text-2xl font-bold mb-6">CBE Career Pathways & Learning Routes</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { 
+                title: 'STEM Careers', 
+                desc: 'Science, Technology, Engineering & Mathematics paths',
+                color: 'from-blue-500 to-blue-600',
+                subjects: ['Physics', 'Chemistry', 'Biology', 'Mathematics']
+              },
+              { 
+                title: 'Health & Life Sciences', 
+                desc: 'Healthcare and life science career options',
+                color: 'from-red-500 to-red-600',
+                subjects: ['Biology', 'Chemistry', 'Health Science', 'Psychology']
+              },
+              { 
+                title: 'Business & Entrepreneurship', 
+                desc: 'Commerce and business management paths',
+                color: 'from-green-500 to-green-600',
+                subjects: ['Economics', 'Business Studies', 'Accounting', 'Marketing']
+              }
+            ].map((pathway, index) => (
+              <Card key={index} className={`${layout.cardStyle} bg-gradient-to-br ${pathway.color} text-white`}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg mb-2">{pathway.title}</h3>
+                  <p className="text-sm opacity-90 mb-4">{pathway.desc}</p>
+                  <div className="mb-4">
+                    <p className="text-xs font-medium mb-2">Key Subjects:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {pathway.subjects.map((subject, idx) => (
+                        <Badge key={idx} variant="secondary" className="bg-white/20 text-white text-xs">
+                          {subject}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <Button variant="secondary" size="sm" className="w-full bg-white/20 hover:bg-white/30 text-white border-0">
+                    Explore Pathway
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Resources */}
+      <div>
+        <h2 className="text-2xl font-bold mb-6">Recently Added Resources</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {resources.slice(0, 8).map(resource => (
+            <ResourceCard 
+              key={resource.id} 
+              resource={resource} 
+              layout={layout}
+              onAccess={onResourceAccess}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Resource card component
+function ResourceCard({ resource, layout, onAccess }) {
+  const ResourceIcon = getResourceIcon(resource.resourceType);
+  
+  return (
+    <Card className={`${layout.cardStyle} group cursor-pointer`}>
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3 mb-3">
+          <div className={`w-10 h-10 ${getResourceTypeColor(resource.resourceType)} rounded-lg flex items-center justify-center flex-shrink-0`}>
+            <ResourceIcon className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors">
+              {resource.title}
+            </h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              {resource.resourceType.charAt(0).toUpperCase() + resource.resourceType.slice(1)}
+            </p>
+          </div>
+        </div>
+        
+        {resource.description && (
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+            {resource.description}
+          </p>
+        )}
+        
+        <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1">
+              <Eye className="w-3 h-3" />
+              {resource.viewCount || 0}
+            </span>
+            {resource.rating && (
+              <span className="flex items-center gap-1">
+                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                {resource.rating}
+              </span>
             )}
           </div>
-          
-          <div className="flex gap-2">
-            {getActionButton(resource)}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setSelectedResource(resource)}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>{resource.title}</DialogTitle>
-                  <DialogDescription>
-                    {resource.author && `by ${resource.author}`}
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <div className="space-y-4">
-                  {resource.thumbnailUrl && (
-                    <div className="w-48 h-64 mx-auto bg-muted rounded-md overflow-hidden">
-                      <img 
-                        src={resource.thumbnailUrl} 
-                        alt={resource.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    {resource.subject && (
-                      <div>
-                        <span className="font-medium">Subject:</span> {resource.subject}
-                      </div>
-                    )}
-                    {resource.curriculum && (
-                      <div>
-                        <span className="font-medium">Curriculum:</span> {resource.curriculum}
-                      </div>
-                    )}
-                    {resource.grade && (
-                      <div>
-                        <span className="font-medium">Grade:</span> {resource.grade}
-                      </div>
-                    )}
-                    {resource.difficulty && (
-                      <div>
-                        <span className="font-medium">Difficulty:</span> {resource.difficulty}
-                      </div>
-                    )}
-                    {resource.language && (
-                      <div>
-                        <span className="font-medium">Language:</span> {resource.language}
-                      </div>
-                    )}
-                    {resource.type && (
-                      <div>
-                        <span className="font-medium">Type:</span> {resource.type}
-                      </div>
-                    )}
-                  </div>
-                  
-                  {resource.description && (
-                    <div>
-                      <h4 className="font-medium mb-2">Description</h4>
-                      <p className="text-sm text-muted-foreground">{resource.description}</p>
-                    </div>
-                  )}
-                  
-                  {resource.tags.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Tags</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {resource.tags.map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+          {resource.duration && (
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {resource.duration}m
+            </span>
+          )}
+        </div>
+        
+        <div className="flex gap-2">
+          <Button 
+            size="sm" 
+            className="flex-1" 
+            onClick={() => onAccess(resource, 'view')}
+          >
+            <Play className="w-3 h-3 mr-1" />
+            View
+          </Button>
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => onAccess(resource, 'save_to_locker')}
+          >
+            <Bookmark className="w-3 h-3" />
+          </Button>
         </div>
       </CardContent>
     </Card>
-  );
-
-  return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Digital Library</h1>
-          <p className="text-muted-foreground">
-            Discover, borrow, and manage your educational resources
-          </p>
-        </div>
-        
-        {stats && (
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="text-center">
-              <div className="font-bold text-lg">{stats.totalResources}</div>
-              <div className="text-muted-foreground">Total Resources</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-lg">{stats.availableResources}</div>
-              <div className="text-muted-foreground">Available</div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Tabs defaultValue="browse" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="browse">Browse</TabsTrigger>
-          <TabsTrigger value="borrowed">
-            My Borrowed ({borrowings?.length || 0})
-          </TabsTrigger>
-          <TabsTrigger value="reserved">
-            My Reserved ({reservations?.length || 0})
-          </TabsTrigger>
-          <TabsTrigger value="featured">Featured</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="browse" className="space-y-6">
-          {/* Search and Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Search className="h-5 w-5" />
-                Search & Filter
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <Input
-                    placeholder="Search by title, author, description..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                </div>
-                <Button onClick={handleSearch}>
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="book">Book</SelectItem>
-                    <SelectItem value="ebook">E-Book</SelectItem>
-                    <SelectItem value="video">Video</SelectItem>
-                    <SelectItem value="audio">Audio</SelectItem>
-                    <SelectItem value="document">Document</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="Fiction">Fiction</SelectItem>
-                    <SelectItem value="Non-Fiction">Non-Fiction</SelectItem>
-                    <SelectItem value="Reference">Reference</SelectItem>
-                    <SelectItem value="Textbook">Textbook</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Grade" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Grades</SelectItem>
-                    <SelectItem value="K">Kindergarten</SelectItem>
-                    <SelectItem value="1">Grade 1</SelectItem>
-                    <SelectItem value="2">Grade 2</SelectItem>
-                    <SelectItem value="3">Grade 3</SelectItem>
-                    <SelectItem value="4">Grade 4</SelectItem>
-                    <SelectItem value="5">Grade 5</SelectItem>
-                    <SelectItem value="6">Grade 6</SelectItem>
-                    <SelectItem value="7">Grade 7</SelectItem>
-                    <SelectItem value="8">Grade 8</SelectItem>
-                    <SelectItem value="9">Grade 9</SelectItem>
-                    <SelectItem value="10">Grade 10</SelectItem>
-                    <SelectItem value="11">Grade 11</SelectItem>
-                    <SelectItem value="12">Grade 12</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="title">Title</SelectItem>
-                    <SelectItem value="author">Author</SelectItem>
-                    <SelectItem value="publicationYear">Year</SelectItem>
-                    <SelectItem value="rating">Rating</SelectItem>
-                    <SelectItem value="viewCount">Popularity</SelectItem>
-                    <SelectItem value="createdAt">Date Added</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <div className="flex gap-2">
-                  <Button
-                    variant={sortOrder === "asc" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSortOrder("asc")}
-                  >
-                    <SortAsc className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={sortOrder === "desc" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSortOrder("desc")}
-                  >
-                    <SortDesc className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="flex gap-4 items-center">
-                <Button
-                  variant={showFeatured ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowFeatured(!showFeatured)}
-                >
-                  <Star className="h-4 w-4 mr-2" />
-                  Featured Only
-                </Button>
-                
-                <Button
-                  variant={showAvailable ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowAvailable(!showAvailable)}
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Available Only
-                </Button>
-                
-                <div className="ml-auto flex gap-2">
-                  <Button
-                    variant={viewMode === "grid" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("grid")}
-                  >
-                    <Grid className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === "list" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("list")}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Resources Grid */}
-          {resourcesLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardHeader>
-                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-32 bg-muted rounded mb-4"></div>
-                    <div className="space-y-2">
-                      <div className="h-3 bg-muted rounded"></div>
-                      <div className="h-3 bg-muted rounded w-2/3"></div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className={
-              viewMode === "grid" 
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                : "space-y-4"
-            }>
-              {resourcesData?.resources?.map((resource: LibraryResource) => (
-                <ResourceCard key={resource.id} resource={resource} />
-              ))}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {resourcesData?.pagination && resourcesData.pagination.pages > 1 && (
-            <div className="flex justify-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span className="flex items-center px-4">
-                Page {currentPage} of {resourcesData.pagination.pages}
-              </span>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(Math.min(resourcesData.pagination.pages, currentPage + 1))}
-                disabled={currentPage === resourcesData.pagination.pages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="borrowed" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookMarked className="h-5 w-5" />
-                My Borrowed Resources
-              </CardTitle>
-              <CardDescription>
-                Manage your currently borrowed items and track due dates
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {borrowings && borrowings.length > 0 ? (
-                <div className="space-y-4">
-                  {borrowings.map((borrowing: LibraryBorrowing) => (
-                    <Card key={borrowing.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            {borrowing.resource.thumbnailUrl && (
-                              <div className="w-16 h-20 bg-muted rounded overflow-hidden">
-                                <img 
-                                  src={borrowing.resource.thumbnailUrl} 
-                                  alt={borrowing.resource.title}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
-                            <div>
-                              <h4 className="font-medium">{borrowing.resource.title}</h4>
-                              {borrowing.resource.author && (
-                                <p className="text-sm text-muted-foreground">
-                                  by {borrowing.resource.author}
-                                </p>
-                              )}
-                              <div className="flex items-center gap-4 mt-2 text-sm">
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="h-4 w-4" />
-                                  Due: {new Date(borrowing.dueDate).toLocaleDateString()}
-                                </span>
-                                <Badge variant={borrowing.status === 'overdue' ? 'destructive' : 'default'}>
-                                  {borrowing.status}
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            {borrowing.renewalCount < borrowing.maxRenewals && (
-                              <Button variant="outline" size="sm">
-                                <RefreshCw className="h-4 w-4 mr-2" />
-                                Renew
-                              </Button>
-                            )}
-                            <Button 
-                              onClick={() => handleReturn(borrowing.resource.id)}
-                              disabled={returnMutation.isPending}
-                              size="sm"
-                            >
-                              Return
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <BookMarked className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No borrowed resources</h3>
-                  <p className="text-muted-foreground">
-                    Start exploring the library to borrow resources
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="reserved" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                My Reservations
-              </CardTitle>
-              <CardDescription>
-                Track your reserved items and queue position
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {reservations && reservations.length > 0 ? (
-                <div className="space-y-4">
-                  {reservations.map((reservation: LibraryReservation) => (
-                    <Card key={reservation.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            {reservation.resource.thumbnailUrl && (
-                              <div className="w-16 h-20 bg-muted rounded overflow-hidden">
-                                <img 
-                                  src={reservation.resource.thumbnailUrl} 
-                                  alt={reservation.resource.title}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
-                            <div>
-                              <h4 className="font-medium">{reservation.resource.title}</h4>
-                              {reservation.resource.author && (
-                                <p className="text-sm text-muted-foreground">
-                                  by {reservation.resource.author}
-                                </p>
-                              )}
-                              <div className="flex items-center gap-4 mt-2 text-sm">
-                                <span>Queue Position: #{reservation.priority}</span>
-                                <Badge variant="outline">
-                                  {reservation.status}
-                                </Badge>
-                                <span className="text-muted-foreground">
-                                  Expires: {new Date(reservation.expiresAt).toLocaleDateString()}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm text-muted-foreground">
-                              {reservation.resource.availableCopies} available
-                            </div>
-                            {reservation.status === 'ready' && (
-                              <Button size="sm" className="mt-2">
-                                Borrow Now
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Clock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No reservations</h3>
-                  <p className="text-muted-foreground">
-                    Reserve unavailable resources to get them when they become available
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="featured" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5" />
-                Featured Resources
-              </CardTitle>
-              <CardDescription>
-                Curated selection of recommended educational materials
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {featuredResources && featuredResources.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {featuredResources.map((resource: LibraryResource) => (
-                    <ResourceCard key={resource.id} resource={resource} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Star className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No featured resources</h3>
-                  <p className="text-muted-foreground">
-                    Check back later for curated recommendations
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
   );
 }

@@ -1,184 +1,128 @@
-import type { Express, Request, Response } from "express";
-import { isAuthenticated } from "../replitAuth";
-import { requirePermission } from "../roleMiddleware";
-import { PERMISSIONS } from "@shared/schema";
+import type { Express } from "express";
 import { storage } from "../storage";
+import { isAuthenticated } from "../replitAuth";
+import type { AuthenticatedRequest } from "../types";
 
 export function registerLibraryRoutes(app: Express) {
-
-  // Get library resources - public access for library browsing
-  app.get("/api/library/resources", async (req: Request, res: Response) => {
+  // Get library categories
+  app.get('/api/library/categories', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const filters = req.query as {
-        category?: string;
-        subject?: string;
-        gradeLevel?: string;
-        type?: string;
+      const { gradeLevel } = req.query;
+      const categories = await storage.getLibraryCategories(gradeLevel as string);
+      res.json(categories);
+    } catch (error) {
+      console.error('Error fetching library categories:', error);
+      res.status(500).json({ message: 'Failed to fetch categories' });
+    }
+  });
+
+  // Get library subjects
+  app.get('/api/library/subjects', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { gradeLevel, categoryId } = req.query;
+      const subjects = await storage.getLibrarySubjects(
+        gradeLevel as string, 
+        categoryId as string
+      );
+      res.json(subjects);
+    } catch (error) {
+      console.error('Error fetching library subjects:', error);
+      res.status(500).json({ message: 'Failed to fetch subjects' });
+    }
+  });
+
+  // Get library resources
+  app.get('/api/library/resources', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+    try {
+      const filters = {
+        gradeLevel: req.query.gradeLevel as string,
+        categoryId: req.query.categoryId as string,
+        subjectId: req.query.subjectId as string,
+        resourceType: req.query.resourceType as string,
+        search: req.query.search as string,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : 50
       };
-      // Library resources with comprehensive educational content
-      const resources = [
-        {
-          id: "resource_001",
-          title: "Introduction to Mathematics",
-          author: "Dr. Smith",
-          type: "book",
-          category: "Textbook",
-          subject: "Mathematics",
-          grade: "Grade 5",
-          curriculum: "CBE",
-          description: "Basic mathematics concepts for young learners",
-          thumbnail: "/api/placeholder/200/150",
-          fileUrl: "#",
-          difficulty: "medium",
-          duration: 45,
-          tags: ["mathematics", "grade5", "textbook"],
-          viewCount: 150,
-          rating: "4.5"
-        },
-        {
-          id: "resource_002",
-          title: "Science Experiments for Kids",
-          author: "Prof. Johnson",
-          type: "video",
-          category: "Educational Video",
-          subject: "Science",
-          grade: "Grade 4",
-          curriculum: "CBE",
-          description: "Interactive science experiments and demonstrations",
-          thumbnail: "/api/placeholder/200/150",
-          fileUrl: "#",
-          difficulty: "easy",
-          duration: 30,
-          tags: ["science", "experiments", "grade4"],
-          viewCount: 89,
-          rating: "4.8"
-        },
-        {
-          id: "resource_003",
-          title: "English Literature Classics",
-          author: "Dr. Williams",
-          type: "book",
-          category: "Literature",
-          subject: "English",
-          grade: "Grade 6",
-          curriculum: "CBE",
-          description: "Classic and modern literature for young readers",
-          thumbnail: "/api/placeholder/200/150",
-          fileUrl: "#",
-          difficulty: "medium",
-          duration: 60,
-          tags: ["english", "literature", "grade6"],
-          viewCount: 234,
-          rating: "4.3"
-        },
-        {
-          id: "resource_004",
-          title: "Interactive Geography",
-          author: "Earth Sciences Team",
-          type: "interactive",
-          category: "Interactive Content",
-          subject: "Geography",
-          grade: "Grade 5",
-          curriculum: "CBE",
-          description: "Explore world geography through interactive maps and quizzes",
-          thumbnail: "/api/placeholder/200/150",
-          fileUrl: "#",
-          difficulty: "medium",
-          duration: 40,
-          tags: ["geography", "interactive", "grade5"],
-          viewCount: 312,
-          rating: "4.7"
-        }
-      ];
-      res.json({ resources });
+
+      const resources = await storage.getLibraryResources(filters);
+      res.json(resources);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch library resources" });
+      console.error('Error fetching library resources:', error);
+      res.status(500).json({ message: 'Failed to fetch resources' });
     }
   });
 
-  // Get user's locker items
-  app.get("/api/library/locker/:userId", isAuthenticated, async (req: Request, res: Response) => {
+  // Get single resource
+  app.get('/api/library/resources/:id', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const { userId } = req.params;
-      // Mock locker items for now
-      const items = [
-        {
-          id: "locker_001",
-          userId,
-          resourceId: 1,
-          resourceType: "book",
-          title: "Saved Math Book",
-          resourceData: { notes: "Chapter 5 is important" },
-          lastAccessed: new Date(),
-          savedAt: new Date(),
-          tags: ["math", "important"],
-          notes: "Review for exam",
-          isStarred: true,
-          gradeLevel: "elementary"
-        }
-      ];
-      res.json(items);
+      const resource = await storage.getLibraryResource(req.params.id);
+      if (!resource) {
+        return res.status(404).json({ message: 'Resource not found' });
+      }
+      res.json(resource);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch locker items" });
+      console.error('Error fetching library resource:', error);
+      res.status(500).json({ message: 'Failed to fetch resource' });
     }
   });
 
-  // Save resource to locker
-  app.post("/api/library/locker/:userId", isAuthenticated, async (req: Request, res: Response) => {
+  // Record resource access
+  app.post('/api/library/access', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const { userId } = req.params;
-      const { resourceId, resourceData } = req.body;
-      // Mock save to locker
-      const item = {
-        id: `locker_${Date.now()}`,
-        userId,
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+
+      const { resourceId, accessType } = req.body;
+      
+      // Create access record
+      await storage.createLibraryResourceAccess({
         resourceId,
-        resourceType: resourceData.type || "document",
-        title: resourceData.title || "Untitled Resource",
-        resourceData,
-        savedAt: new Date(),
-        tags: resourceData.tags || [],
-        notes: "",
-        isStarred: false,
-        gradeLevel: resourceData.gradeLevel
-      };
-      res.json(item);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to save to locker" });
-    }
-  });
+        userId,
+        accessType
+      });
 
-  // Remove from locker
-  app.delete("/api/library/locker/:userId/:itemId", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const { userId, itemId } = req.params;
-      // Mock remove from locker
+      // Update resource stats
+      if (accessType === 'view') {
+        await storage.updateResourceStats(resourceId, 'view');
+      }
+
       res.json({ success: true });
     } catch (error) {
-      res.status(500).json({ message: "Failed to remove from locker" });
+      console.error('Error recording resource access:', error);
+      res.status(500).json({ message: 'Failed to record access' });
     }
   });
 
-  // Update locker item
-  app.patch("/api/library/locker/:userId/:itemId", isAuthenticated, async (req: Request, res: Response) => {
+  // Get resource viewer (for opening resources)
+  app.get('/api/library/viewer/:id', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const { userId, itemId } = req.params;
-      // Mock update locker item
-      const item = {
-        id: itemId,
-        userId,
-        resourceId: 1,
-        resourceType: "book",
-        title: "Updated Item",
-        resourceData: {},
-        savedAt: new Date(),
-        tags: [],
-        isStarred: false,
-        ...req.body
-      };
-      res.json(item);
+      const resource = await storage.getLibraryResource(req.params.id);
+      if (!resource) {
+        return res.status(404).json({ message: 'Resource not found' });
+      }
+
+      // Record view access
+      const userId = req.user?.claims?.sub;
+      if (userId) {
+        await storage.createLibraryResourceAccess({
+          resourceId: resource.id,
+          userId,
+          accessType: 'view'
+        });
+        await storage.updateResourceStats(resource.id, 'view');
+      }
+
+      // Return resource data for viewer
+      res.json({
+        resource,
+        viewerUrl: `/library/viewer/${resource.id}`,
+        fileUrl: resource.fileUrl,
+        canDownload: false // Security: no direct downloads
+      });
     } catch (error) {
-      res.status(500).json({ message: "Failed to update locker item" });
+      console.error('Error accessing resource viewer:', error);
+      res.status(500).json({ message: 'Failed to access resource' });
     }
   });
 }
