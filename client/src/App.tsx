@@ -53,6 +53,7 @@ const componentMap: Record<string, any> = {
   'parent-portal-admin': ParentPortalAdmin,
   'apps-hub': AppsHub,
   'hot-call': HotCall,
+  'timetable': TimetableManagement,
 };
 
 function Router() {
