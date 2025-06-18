@@ -40,7 +40,8 @@ export function registerAdminRoutes(app: Express) {
   app.get("/api/admin/pending-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
     try {
       const pendingUsers = await storage.getUsersByRole("student");
-      const usersWithRollovers = pendingUsers.filter(user => user.gradeRolloverDate && user.nextGradeLevel);
+      // const usersWithRollovers = pendingUsers.filter(user => user.gradeRolloverDate && user.nextGradeLevel);
+      const usersWithRollovers = pendingUsers; // Temporary until grade rollover fields are added
       res.json(usersWithRollovers);
     } catch (error) {
       console.error("Error fetching pending rollovers:", error);

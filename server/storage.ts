@@ -90,32 +90,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async processGradeRollovers(): Promise<User[]> {
-    const now = new Date();
-    const usersToRollover = await db.select().from(users).where(
-      and(
-        isNotNull(users.gradeRolloverDate),
-        lte(users.gradeRolloverDate, now),
-        isNotNull(users.nextGradeLevel)
-      )
-    );
-
-    const rolledOverUsers: User[] = [];
-    for (const user of usersToRollover) {
-      const [updatedUser] = await db
-        .update(users)
-        .set({
-          gradeLevel: user.nextGradeLevel,
-          gradeRolloverDate: null,
-          nextGradeLevel: null,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, user.id))
-        .returning();
-      
-      rolledOverUsers.push(updatedUser);
-    }
-
-    return rolledOverUsers;
+    // Grade rollover functionality to be implemented when schema includes rollover fields
+    return [];
   }
 
   async getUsersByRole(role: string, tenantId?: string): Promise<User[]> {

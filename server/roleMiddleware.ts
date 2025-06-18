@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
-import { type Permission, type UserRole } from '@shared/schema';
+import { PERMISSIONS, type Permission, type UserRole } from '@shared/schema';
 import type { AuthenticatedRequest } from './types/auth';
 
 
@@ -102,9 +102,9 @@ export function requireStudentAccess() {
     }
 
     const canAccessStudents = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
-      'view_student_records',
-      'manage_classes',
-      'view_all_analytics'
+      PERMISSIONS.VIEW_STUDENT_RECORDS,
+      PERMISSIONS.MANAGE_CLASSES,
+      PERMISSIONS.VIEW_ALL_ANALYTICS
     ]);
 
     if (!canAccessStudents) {
