@@ -69,7 +69,7 @@ export default function SchoolCalendar() {
   const queryClient = useQueryClient();
 
   // Fetch events for current month
-  const { data: events = [], isLoading } = useQuery({
+  const { data: events = [], isLoading, refetch } = useQuery<CalendarEvent[]>({
     queryKey: ['/api/calendar/events', format(currentMonth, 'yyyy-MM')],
     queryFn: () => apiRequest('GET', '/api/calendar/events', {
       start: format(startOfMonth(currentMonth), 'yyyy-MM-dd'),
@@ -128,18 +128,19 @@ export default function SchoolCalendar() {
   // RSVP mutation
   const rsvpMutation = useMutation({
     mutationFn: ({ eventId, status, response }: { eventId: string; status: string; response?: string }) =>
-      apiRequest('POST', `/api/calendar/events/${eventId}/rsvp`, { status, response }),
+      apiRequest('POST', `/api/calendar/events/${eventId}/rsvp`, { rsvpStatus: status, response }),
     onSuccess: () => {
       toast({
         title: "RSVP Updated",
         description: "Your response has been recorded",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+      refetch();
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to update RSVP",
+        description: error.message || "Failed to update RSVP",
         variant: "destructive",
       });
     }
@@ -422,8 +423,6 @@ export default function SchoolCalendar() {
 
       {/* Dialogs */}
       <CreateEventDialog 
-        open={showCreateDialog} 
-        onOpenChange={setShowCreateDialog}
         onEventCreated={() => {
           queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
           queryClient.invalidateQueries({ queryKey: ['/api/calendar/upcoming'] });
@@ -432,17 +431,13 @@ export default function SchoolCalendar() {
 
       <EventDetailsDialog
         event={selectedEvent}
-        open={showEventDialog}
-        onOpenChange={setShowEventDialog}
-        onEventUpdated={() => {
-          queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
-          queryClient.invalidateQueries({ queryKey: ['/api/calendar/upcoming'] });
+        isOpen={showEventDetails}
+        onOpenChange={setShowEventDetails}
+        onEdit={(event) => {
+          setSelectedEvent(event);
+          setShowCreateDialog(true);
         }}
-        onRSVP={(status, response) => {
-          if (selectedEvent) {
-            rsvpMutation.mutate({ eventId: selectedEvent.id, status, response });
-          }
-        }}
+        onRSVP={handleRSVP}
       />
     </div>
   );
