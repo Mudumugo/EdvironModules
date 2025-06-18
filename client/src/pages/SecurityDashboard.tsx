@@ -1,36 +1,21 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useSecurityModule } from "@/hooks/useSecurityModule";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { 
-  Shield, 
-  Camera, 
-  AlertTriangle, 
-  Phone, 
-  Users, 
-  Activity,
-  Eye,
-  PhoneCall,
-  UserPlus,
-  MapPin,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  AlertCircle
-} from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import CameraGrid from "@/components/security/CameraGrid";
 import SecurityEventsList from "@/components/security/SecurityEventsList";
-import VisitorRegistrationForm from "@/components/security/VisitorRegistrationForm";
 import SecurityCallsPanel from "@/components/security/SecurityCallsPanel";
+import {
+  SecurityHeader,
+  SecurityMetrics,
+  SecurityOverview,
+  VisitorManagement,
+  EventDetailsDialog
+} from "@/components/security/modules";
 
 export default function SecurityDashboard() {
   const [selectedZone, setSelectedZone] = useState<string>("all");
@@ -67,11 +52,20 @@ export default function SecurityDashboard() {
     setIsEventDialogOpen(true);
   };
 
+  const handleVisitorRegister = (data: any) => {
+    console.log('Visitor registered:', data);
+  };
+
+  const handleEmergencyCall = () => {
+    console.log('Emergency call initiated');
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active": return "destructive";
       case "resolved": return "default";
       case "investigating": return "secondary";
+      case "checked_in": return "default";
       default: return "outline";
     }
   };
@@ -96,40 +90,10 @@ export default function SecurityDashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Security Dashboard</h1>
-          <p className="text-muted-foreground">
-            Monitor campus security, manage incidents, and coordinate responses
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Register Visitor
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Register New Visitor</DialogTitle>
-              </DialogHeader>
-              <VisitorRegistrationForm 
-                onSubmit={(data) => {
-                  console.log('Visitor registered:', data);
-                }}
-                onCancel={() => {}}
-              />
-            </DialogContent>
-          </Dialog>
-          <Button>
-            <Phone className="mr-2 h-4 w-4" />
-            Emergency Call
-          </Button>
-        </div>
-      </div>
+      <SecurityHeader 
+        onVisitorRegister={handleVisitorRegister}
+        onEmergencyCall={handleEmergencyCall}
+      />
 
       {/* Active Threats Alert */}
       {threats && threats.length > 0 && (
@@ -146,63 +110,7 @@ export default function SecurityDashboard() {
         </Alert>
       )}
 
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Cameras</CardTitle>
-            <Camera className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{(metrics as any)?.activeCameras || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {(metrics as any)?.totalCameras || 0} total cameras
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Events</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{(metrics as any)?.openEvents || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {(metrics as any)?.todayEvents || 0} today
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Visitors Today</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{(metrics as any)?.visitorsToday || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {(metrics as any)?.activeVisitors || 0} currently on campus
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">System Status</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-2">
-              <div className="text-2xl font-bold text-green-600">Online</div>
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              All systems operational
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <SecurityMetrics metrics={metrics} />
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="overview" className="space-y-4">
@@ -215,45 +123,11 @@ export default function SecurityDashboard() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recent Events */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Security Events</CardTitle>
-                <CardDescription>Latest incidents and alerts</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <SecurityEventsList 
-                  events={securityEvents?.slice(0, 5) || []} 
-                  isLoading={eventsLoading}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Zone Status */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Security Zones</CardTitle>
-                <CardDescription>Zone monitoring status</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {zones?.map((zone: any) => (
-                  <div key={zone.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="font-medium">{zone.name}</p>
-                        <p className="text-sm text-muted-foreground">{zone.description}</p>
-                      </div>
-                    </div>
-                    <Badge variant={zone.status === "active" ? "default" : "secondary"}>
-                      {zone.status}
-                    </Badge>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
+          <SecurityOverview 
+            securityEvents={securityEvents}
+            eventsLoading={eventsLoading}
+            zones={zones}
+          />
         </TabsContent>
 
         <TabsContent value="cameras">
@@ -305,37 +179,10 @@ export default function SecurityDashboard() {
               <CardDescription>Gate registration and visitor tracking</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {securityVisitors?.map((visitor: any) => (
-                  <div key={visitor.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                        <Users className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{visitor.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {visitor.purpose} • {visitor.hostName}
-                        </p>
-                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3" />
-                          <span>Check-in: {new Date(visitor.checkInTime).toLocaleTimeString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant={getStatusColor(visitor.status)}>
-                        {visitor.status}
-                      </Badge>
-                      {visitor.status === "checked_in" && (
-                        <Button size="sm" variant="outline">
-                          Check Out
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <VisitorManagement 
+                securityVisitors={securityVisitors}
+                getStatusColor={getStatusColor}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -353,53 +200,13 @@ export default function SecurityDashboard() {
         </TabsContent>
       </Tabs>
 
-      {/* Event Details Dialog */}
-      <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Security Event Details</DialogTitle>
-          </DialogHeader>
-          {selectedEvent && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium">Event Type</Label>
-                  <p className="text-sm">{selectedEvent.type}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Severity</Label>
-                  <Badge variant={getSeverityColor(selectedEvent.severity)}>
-                    {selectedEvent.severity}
-                  </Badge>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Status</Label>
-                  <Badge variant={getStatusColor(selectedEvent.status)}>
-                    {selectedEvent.status}
-                  </Badge>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Time</Label>
-                  <p className="text-sm">{new Date(selectedEvent.timestamp).toLocaleString()}</p>
-                </div>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Description</Label>
-                <p className="text-sm mt-1">{selectedEvent.description}</p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Location</Label>
-                <p className="text-sm mt-1">{selectedEvent.location}</p>
-              </div>
-              <div className="flex space-x-2">
-                <Button>Investigate</Button>
-                <Button variant="outline">Assign Officer</Button>
-                <Button variant="outline">Mark Resolved</Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <EventDetailsDialog
+        isOpen={isEventDialogOpen}
+        onClose={() => setIsEventDialogOpen(false)}
+        selectedEvent={selectedEvent}
+        getStatusColor={getStatusColor}
+        getSeverityColor={getSeverityColor}
+      />
     </div>
   );
 }
