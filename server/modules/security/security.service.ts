@@ -62,6 +62,7 @@ export class SecurityService {
         isOnline: true,
         isRecording: true,
         resolution: "1080p",
+        hasAudio: true,
         lastPing: new Date()
       },
       {
@@ -76,6 +77,7 @@ export class SecurityService {
         isOnline: true,
         isRecording: true,
         resolution: "720p",
+        hasAudio: false,
         lastPing: new Date()
       },
       {
@@ -90,6 +92,7 @@ export class SecurityService {
         isOnline: false,
         isRecording: false,
         resolution: "1080p",
+        hasAudio: true,
         lastPing: new Date(Date.now() - 3600000)
       }
     ];
@@ -171,7 +174,7 @@ export class SecurityService {
         hostName: "Ms. Johnson",
         hostDepartment: "Grade 3",
         expectedDuration: 60,
-        arrivalTime: new Date(Date.now() - 7200000),
+        checkInTime: new Date(Date.now() - 7200000),
         departureTime: null,
         badgeNumber: "V001",
         vehiclePlate: null,
@@ -243,15 +246,23 @@ export class SecurityService {
   async createVisitorRegistration(visitorData: Partial<VisitorRegistration>): Promise<VisitorRegistration> {
     const newVisitor: VisitorRegistration = {
       id: `visitor_${Date.now()}`,
-      firstName: visitorData.firstName || "",
-      lastName: visitorData.lastName || "",
-      purpose: visitorData.purpose || "",
+      visitorName: visitorData.visitorName || "",
+      visitorPhone: visitorData.visitorPhone || null,
+      visitorEmail: visitorData.visitorEmail || null,
+      visitPurpose: visitorData.visitPurpose || "",
       hostName: visitorData.hostName || "",
-      department: visitorData.department || "",
+      hostDepartment: visitorData.hostDepartment || "",
+      expectedDuration: visitorData.expectedDuration || 60,
       checkInTime: new Date(),
-      status: "checked_in",
+      departureTime: null,
       badgeNumber: `V${String(Date.now()).slice(-3)}`,
-      ...visitorData
+      vehiclePlate: visitorData.vehiclePlate || null,
+      emergencyContact: visitorData.emergencyContact || null,
+      isVaccinated: visitorData.isVaccinated || false,
+      status: "checked_in",
+      securityNotes: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
     return newVisitor;
   }
@@ -259,14 +270,19 @@ export class SecurityService {
   async createSecurityCall(callData: Partial<SecurityCall>): Promise<SecurityCall> {
     const newCall: SecurityCall = {
       id: `call_${Date.now()}`,
-      type: callData.type || "routine",
-      caller: callData.caller || "Anonymous",
-      location: callData.location || "Unknown",
-      description: callData.description || "",
-      priority: callData.priority || "medium",
-      timestamp: new Date(),
-      status: "open",
-      ...callData
+      callType: callData.callType || "routine",
+      fromExtension: callData.fromExtension || "000",
+      toExtension: callData.toExtension || "911",
+      fromZone: callData.fromZone || null,
+      toZone: callData.toZone || null,
+      duration: null,
+      status: "ringing",
+      priority: callData.priority || "normal",
+      notes: callData.notes || "",
+      recordingUrl: null,
+      startedAt: new Date(),
+      endedAt: null,
+      createdAt: new Date()
     };
     return newCall;
   }
