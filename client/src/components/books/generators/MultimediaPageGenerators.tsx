@@ -1,4 +1,10 @@
-// Advanced multimedia page generators for interactive content
+// This file has been refactored - use the new modular generators:
+// - CoverPageGenerator.ts for cover pages
+// - InteractivePageGenerator.ts for interactive content  
+// - VideoPageGenerator.ts for video content
+// - SciencePageGenerator.ts for science experiments
+
+// Legacy function for backward compatibility
 export const generateMultimediaCoverPage = (title: string, author: string, subject: string, grade: string) => {
   return `<!DOCTYPE html>
 <html lang="en">
