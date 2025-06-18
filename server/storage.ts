@@ -1110,26 +1110,104 @@ export class DatabaseStorage implements IStorage {
 
   // Library operations - simplified to return mock data for now
   async getLibraryCategories(gradeLevel?: string): Promise<any[]> {
-    // Return sample categories for the grade level
-    const categories = [
-      { id: 'math', name: 'Mathematics', gradeLevel: gradeLevel || 'primary', icon: 'calculator', color: 'blue' },
-      { id: 'science', name: 'Science', gradeLevel: gradeLevel || 'primary', icon: 'flask', color: 'green' },
-      { id: 'language', name: 'Language Arts', gradeLevel: gradeLevel || 'primary', icon: 'book', color: 'purple' },
-      { id: 'social', name: 'Social Studies', gradeLevel: gradeLevel || 'primary', icon: 'globe', color: 'orange' },
+    if (gradeLevel === 'junior_secondary') {
+      return [
+        { id: 'mathematics', name: 'Mathematics', gradeLevel: 'junior_secondary', icon: 'calculator', color: 'teal' },
+        { id: 'english', name: 'English Language', gradeLevel: 'junior_secondary', icon: 'book', color: 'blue' },
+        { id: 'kiswahili', name: 'Kiswahili', gradeLevel: 'junior_secondary', icon: 'globe', color: 'green' },
+        { id: 'science', name: 'Integrated Science', gradeLevel: 'junior_secondary', icon: 'flask', color: 'purple' },
+        { id: 'social_studies', name: 'Social Studies', gradeLevel: 'junior_secondary', icon: 'users', color: 'orange' },
+        { id: 'pre_technical', name: 'Pre-Technical Studies', gradeLevel: 'junior_secondary', icon: 'cog', color: 'red' },
+        { id: 'creative_arts', name: 'Creative Arts', gradeLevel: 'junior_secondary', icon: 'palette', color: 'pink' },
+        { id: 'sports', name: 'Sports & PE', gradeLevel: 'junior_secondary', icon: 'zap', color: 'yellow' }
+      ];
+    }
+    
+    if (gradeLevel === 'senior_secondary') {
+      return [
+        { id: 'mathematics', name: 'Mathematics', gradeLevel: 'senior_secondary', icon: 'calculator', color: 'purple' },
+        { id: 'english', name: 'English', gradeLevel: 'senior_secondary', icon: 'book', color: 'blue' },
+        { id: 'kiswahili', name: 'Kiswahili', gradeLevel: 'senior_secondary', icon: 'globe', color: 'green' },
+        { id: 'biology', name: 'Biology', gradeLevel: 'senior_secondary', icon: 'leaf', color: 'green' },
+        { id: 'chemistry', name: 'Chemistry', gradeLevel: 'senior_secondary', icon: 'flask', color: 'blue' },
+        { id: 'physics', name: 'Physics', gradeLevel: 'senior_secondary', icon: 'zap', color: 'yellow' },
+        { id: 'history', name: 'History & Government', gradeLevel: 'senior_secondary', icon: 'clock', color: 'brown' },
+        { id: 'geography', name: 'Geography', gradeLevel: 'senior_secondary', icon: 'map', color: 'teal' },
+        { id: 'computer', name: 'Computer Studies', gradeLevel: 'senior_secondary', icon: 'monitor', color: 'gray' }
+      ];
+    }
+    
+    // Primary level categories
+    return [
+      { id: 'math', name: 'Mathematics', gradeLevel: 'primary', icon: 'calculator', color: 'blue' },
+      { id: 'english', name: 'English', gradeLevel: 'primary', icon: 'book', color: 'green' },
+      { id: 'kiswahili', name: 'Kiswahili', gradeLevel: 'primary', icon: 'globe', color: 'orange' },
+      { id: 'science', name: 'Science & Technology', gradeLevel: 'primary', icon: 'flask', color: 'purple' },
+      { id: 'social', name: 'Social Studies', gradeLevel: 'primary', icon: 'users', color: 'red' },
+      { id: 'creative', name: 'Creative Arts', gradeLevel: 'primary', icon: 'palette', color: 'pink' }
     ];
-    return categories;
   }
 
   async getLibrarySubjects(gradeLevel?: string, categoryId?: string): Promise<any[]> {
-    // Return sample subjects for the grade level and category
-    const subjects = [
-      { id: 'arithmetic', name: 'Arithmetic', categoryId: 'math', gradeLevel: gradeLevel || 'primary' },
-      { id: 'algebra', name: 'Algebra', categoryId: 'math', gradeLevel: gradeLevel || 'junior_secondary' },
-      { id: 'biology', name: 'Biology', categoryId: 'science', gradeLevel: gradeLevel || 'primary' },
-      { id: 'chemistry', name: 'Chemistry', categoryId: 'science', gradeLevel: gradeLevel || 'senior_secondary' },
-      { id: 'reading', name: 'Reading', categoryId: 'language', gradeLevel: gradeLevel || 'primary' },
-      { id: 'writing', name: 'Writing', categoryId: 'language', gradeLevel: gradeLevel || 'primary' },
-    ];
+    let subjects: any[] = [];
+    
+    if (gradeLevel === 'junior_secondary') {
+      subjects = [
+        // Mathematics
+        { id: 'js_numbers', name: 'Numbers & Operations', categoryId: 'mathematics', gradeLevel: 'junior_secondary', competency: 'Number Sense' },
+        { id: 'js_algebra', name: 'Algebraic Thinking', categoryId: 'mathematics', gradeLevel: 'junior_secondary', competency: 'Patterns & Algebra' },
+        { id: 'js_geometry', name: 'Geometry & Measurement', categoryId: 'mathematics', gradeLevel: 'junior_secondary', competency: 'Spatial Reasoning' },
+        { id: 'js_statistics', name: 'Data & Probability', categoryId: 'mathematics', gradeLevel: 'junior_secondary', competency: 'Data Analysis' },
+        
+        // English Language
+        { id: 'js_listening', name: 'Listening & Speaking', categoryId: 'english', gradeLevel: 'junior_secondary', competency: 'Communication' },
+        { id: 'js_reading', name: 'Reading Comprehension', categoryId: 'english', gradeLevel: 'junior_secondary', competency: 'Literacy' },
+        { id: 'js_writing', name: 'Writing Skills', categoryId: 'english', gradeLevel: 'junior_secondary', competency: 'Written Expression' },
+        { id: 'js_literature', name: 'Literature Appreciation', categoryId: 'english', gradeLevel: 'junior_secondary', competency: 'Literary Analysis' },
+        
+        // Kiswahili
+        { id: 'js_mazungumzo', name: 'Mazungumzo na Sikiliza', categoryId: 'kiswahili', gradeLevel: 'junior_secondary', competency: 'Mawasiliano' },
+        { id: 'js_kusoma', name: 'Kusoma na Kuelewa', categoryId: 'kiswahili', gradeLevel: 'junior_secondary', competency: 'Ujuzi wa Kusoma' },
+        { id: 'js_kuandika', name: 'Kuandika na Lugha', categoryId: 'kiswahili', gradeLevel: 'junior_secondary', competency: 'Maandiko' },
+        
+        // Integrated Science
+        { id: 'js_biology_basics', name: 'Living Things & Environment', categoryId: 'science', gradeLevel: 'junior_secondary', competency: 'Life Science' },
+        { id: 'js_chemistry_basics', name: 'Matter & Materials', categoryId: 'science', gradeLevel: 'junior_secondary', competency: 'Physical Science' },
+        { id: 'js_physics_basics', name: 'Energy & Forces', categoryId: 'science', gradeLevel: 'junior_secondary', competency: 'Physical Science' },
+        { id: 'js_earth_science', name: 'Earth & Space Science', categoryId: 'science', gradeLevel: 'junior_secondary', competency: 'Earth Science' }
+      ];
+    } else if (gradeLevel === 'senior_secondary') {
+      subjects = [
+        // Mathematics
+        { id: 'ss_calculus', name: 'Calculus & Analysis', categoryId: 'mathematics', gradeLevel: 'senior_secondary', competency: 'Advanced Mathematics' },
+        { id: 'ss_statistics', name: 'Statistics & Probability', categoryId: 'mathematics', gradeLevel: 'senior_secondary', competency: 'Data Science' },
+        { id: 'ss_geometry', name: 'Advanced Geometry', categoryId: 'mathematics', gradeLevel: 'senior_secondary', competency: 'Spatial Analysis' },
+        
+        // Sciences
+        { id: 'ss_molecular_bio', name: 'Molecular Biology', categoryId: 'biology', gradeLevel: 'senior_secondary', competency: 'Life Science Research' },
+        { id: 'ss_ecology', name: 'Ecology & Environment', categoryId: 'biology', gradeLevel: 'senior_secondary', competency: 'Environmental Science' },
+        { id: 'ss_organic_chem', name: 'Organic Chemistry', categoryId: 'chemistry', gradeLevel: 'senior_secondary', competency: 'Chemical Analysis' },
+        { id: 'ss_physical_chem', name: 'Physical Chemistry', categoryId: 'chemistry', gradeLevel: 'senior_secondary', competency: 'Chemical Principles' },
+        { id: 'ss_mechanics', name: 'Mechanics & Motion', categoryId: 'physics', gradeLevel: 'senior_secondary', competency: 'Physics Principles' },
+        { id: 'ss_electromagnetism', name: 'Electricity & Magnetism', categoryId: 'physics', gradeLevel: 'senior_secondary', competency: 'Electromagnetic Theory' },
+        
+        // Languages
+        { id: 'ss_advanced_english', name: 'Advanced Literature', categoryId: 'english', gradeLevel: 'senior_secondary', competency: 'Literary Criticism' },
+        { id: 'ss_composition', name: 'Academic Writing', categoryId: 'english', gradeLevel: 'senior_secondary', competency: 'Research Skills' },
+        
+        // Computer Studies
+        { id: 'ss_programming', name: 'Programming Fundamentals', categoryId: 'computer', gradeLevel: 'senior_secondary', competency: 'Computational Thinking' },
+        { id: 'ss_databases', name: 'Database Management', categoryId: 'computer', gradeLevel: 'senior_secondary', competency: 'Information Systems' }
+      ];
+    } else {
+      // Primary subjects
+      subjects = [
+        { id: 'arithmetic', name: 'Number Operations', categoryId: 'math', gradeLevel: 'primary', competency: 'Basic Numeracy' },
+        { id: 'reading', name: 'Reading Skills', categoryId: 'english', gradeLevel: 'primary', competency: 'Literacy Development' },
+        { id: 'science_basics', name: 'Science Exploration', categoryId: 'science', gradeLevel: 'primary', competency: 'Scientific Inquiry' },
+        { id: 'social_basics', name: 'Community Studies', categoryId: 'social', gradeLevel: 'primary', competency: 'Social Awareness' }
+      ];
+    }
     
     if (categoryId && categoryId !== 'all') {
       return subjects.filter(s => s.categoryId === categoryId);
