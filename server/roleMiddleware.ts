@@ -34,7 +34,7 @@ export function requireAnyPermission(permissions: Permission[]) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], permissions)) {
+    if (!hasAnyPermission(user.role as UserRole, [], permissions)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permissions,
@@ -100,7 +100,7 @@ export function requireStudentAccess() {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    const canAccessStudents = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
+    const canAccessStudents = hasAnyPermission(user.role as UserRole, [], [
       PERMISSIONS.VIEW_STUDENT_RECORDS,
       PERMISSIONS.MANAGE_CLASSES,
       PERMISSIONS.VIEW_ALL_ANALYTICS

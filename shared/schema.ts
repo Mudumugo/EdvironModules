@@ -461,11 +461,14 @@ export const securityCameras = pgTable("security_cameras", {
 export const securityEvents = pgTable("security_events", {
   id: varchar("id").primaryKey(),
   type: varchar("type").notNull(), // intrusion, violence, theft, vandalism, suspicious_activity
+  title: varchar("title").notNull(),
   severity: varchar("severity").notNull(), // low, medium, high, critical
   status: varchar("status").notNull().default("active"), // active, investigating, resolved, false_alarm
   zoneId: varchar("zone_id").references(() => securityZones.id),
   cameraId: varchar("camera_id").references(() => securityCameras.id),
   description: text("description").notNull(),
+  reportedBy: varchar("reported_by").notNull(),
+  occurredAt: timestamp("occurred_at").defaultNow(),
   detectedAt: timestamp("detected_at").defaultNow(),
   resolvedAt: timestamp("resolved_at"),
   assignedTo: varchar("assigned_to"),
