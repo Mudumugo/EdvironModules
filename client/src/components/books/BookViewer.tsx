@@ -63,8 +63,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Detect if this is multimedia/interactive content
-  const isMultimediaContent = bookData.isInteractive || bookData.hasVideo || bookData.hasAudio || 
-                             bookData.type === 'interactive' || bookData.type === 'html5';
+  const isMultimediaContent = bookData?.isInteractive || bookData?.hasVideo || bookData?.hasAudio || 
+                             bookData?.type === 'interactive' || bookData?.type === 'html5';
 
   // Animation helper functions
   const getPageTransitionTransform = (): string => {

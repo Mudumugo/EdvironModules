@@ -341,7 +341,7 @@ export default function AuthoringDashboard() {
                           <SelectValue placeholder="Select subject" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(taxonomy?.subjects || []).map((subject: string) => (
+                          {((taxonomy as any)?.subjects || []).map((subject: string) => (
                             <SelectItem key={subject} value={subject.toLowerCase()}>
                               {subject}
                             </SelectItem>
@@ -357,7 +357,7 @@ export default function AuthoringDashboard() {
                           <SelectValue placeholder="Select grade" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(taxonomy?.gradelevels || []).map((grade: string) => (
+                          {((taxonomy as any)?.gradelevels || []).map((grade: string) => (
                             <SelectItem key={grade} value={grade.toLowerCase()}>
                               {grade}
                             </SelectItem>
@@ -376,7 +376,7 @@ export default function AuthoringDashboard() {
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {taxonomy?.contentTypes?.map((type: string) => (
+                        {((taxonomy as any)?.contentTypes || []).map((type: string) => (
                           <SelectItem key={type} value={type}>
                             {type.replace('_', ' ').charAt(0).toUpperCase() + type.slice(1)}
                           </SelectItem>
@@ -392,7 +392,7 @@ export default function AuthoringDashboard() {
                         <SelectValue placeholder="Select curriculum" />
                       </SelectTrigger>
                       <SelectContent>
-                        {taxonomy?.curricula?.map((curriculum: string) => (
+                        {((taxonomy as any)?.curricula || []).map((curriculum: string) => (
                           <SelectItem key={curriculum} value={curriculum.toLowerCase()}>
                             {curriculum}
                           </SelectItem>
