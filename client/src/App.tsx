@@ -107,6 +107,12 @@ function Router() {
           </RoleProtectedRoute>
         </Route>
 
+        <Route path="/user-profile">
+          <RoleProtectedRoute moduleId="user-profile">
+            <UserProfile />
+          </RoleProtectedRoute>
+        </Route>
+
         {/* Student and Teacher modules */}
         <Route path="/digital-library">
           <RoleProtectedRoute moduleId="digital-library">
