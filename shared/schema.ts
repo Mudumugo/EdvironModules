@@ -178,6 +178,8 @@ export const PERMISSIONS = {
   INSTALL_SOFTWARE: "install_software",
   
   // Security permissions
+  SECURITY_VIEW: "security_view",
+  SECURITY_MANAGE: "security_manage",
   VIEW_ACCESS_LOGS: "view_access_logs",
   MANAGE_SECURITY_POLICIES: "manage_security_policies",
   MONITOR_ACTIVITIES: "monitor_activities",

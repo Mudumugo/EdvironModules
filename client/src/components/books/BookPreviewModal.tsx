@@ -70,9 +70,9 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
         let pages = [];
         
         // Check if book has actual content stored in database
-        if (resource.content && resource.content.trim() !== '' && resource.content !== 'multimedia_demo') {
+        if ((resource as any).content && (resource as any).content.trim() !== '' && (resource as any).content !== 'multimedia_demo') {
           // Use the actual HTML content from the database
-          pages.push(`data:text/html,${encodeURIComponent(resource.content)}`);
+          pages.push(`data:text/html,${encodeURIComponent((resource as any).content)}`);
         } 
         // Check if book has a file URL
         else if (resource.fileUrl && resource.fileUrl.trim() !== '') {
@@ -186,7 +186,7 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
       {/* Book Viewer Modal */}
       {isBookViewerOpen && bookData && (
         <BookViewer
-          worksheetData={bookData}
+          resource={resource}
           onClose={handleCloseViewer}
         />
       )}
