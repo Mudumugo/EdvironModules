@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { 
-  User, 
+  User as UserIcon, 
   Mail, 
   Phone, 
   MapPin, 
@@ -37,6 +37,7 @@ import {
   Globe,
   Camera
 } from "lucide-react";
+import type { User } from "@shared/schema";
 
 interface UserSettings {
   notifications: {
@@ -69,7 +70,7 @@ export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
 
   // Fetch user profile from API
-  const { data: profileData, isLoading: profileLoading } = useQuery({
+  const { data: profileData, isLoading: profileLoading } = useQuery<User>({
     queryKey: ["/api/user/profile"],
     retry: false,
   });
@@ -97,20 +98,19 @@ export default function UserProfile() {
 
   // Update form data when profile loads
   useEffect(() => {
-    if (profileData && typeof profileData === 'object') {
-      const profile = profileData as any;
+    if (profileData) {
       setFormData({
-        firstName: profile.firstName || '',
-        lastName: profile.lastName || '',
-        email: profile.email || '',
-        phone: profile.phone || '',
-        address: profile.address || '',
-        bio: profile.bio || '',
-        dateOfBirth: profile.dateOfBirth || '',
-        gradeLevel: profile.gradeLevel || profile.role || '',
-        department: profile.department || profile.role || '',
-        subjects: profile.subjects || [],
-        achievements: profile.achievements || []
+        firstName: profileData.firstName || '',
+        lastName: profileData.lastName || '',
+        email: profileData.email || '',
+        phone: (profileData as any).phone || '',
+        address: (profileData as any).address || '',
+        bio: (profileData as any).bio || '',
+        dateOfBirth: (profileData as any).dateOfBirth || '',
+        gradeLevel: profileData.gradeLevel || '',
+        department: profileData.department || '',
+        subjects: (profileData as any).subjects || [],
+        achievements: (profileData as any).achievements || []
       });
     }
   }, [profileData]);
@@ -338,8 +338,8 @@ export default function UserProfile() {
                     <Label htmlFor="phone">Phone</Label>
                     <Input
                       id="phone"
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                       disabled={!isEditing}
                     />
                   </div>
@@ -349,8 +349,8 @@ export default function UserProfile() {
                   <Label htmlFor="address">Address</Label>
                   <Input
                     id="address"
-                    value={profileData.address}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, address: e.target.value }))}
+                    value={formData.address}
+                    onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                     disabled={!isEditing}
                   />
                 </div>
@@ -359,8 +359,8 @@ export default function UserProfile() {
                   <Label htmlFor="bio">Bio</Label>
                   <Textarea
                     id="bio"
-                    value={profileData.bio}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
+                    value={formData.bio}
+                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                     disabled={!isEditing}
                     placeholder="Tell us about yourself..."
                     className="min-h-[100px]"
@@ -373,8 +373,8 @@ export default function UserProfile() {
                     <Input
                       id="dateOfBirth"
                       type="date"
-                      value={profileData.dateOfBirth}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      value={formData.dateOfBirth}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                       disabled={!isEditing}
                     />
                   </div>
