@@ -1,6 +1,16 @@
-import { IStorage } from "./base/IStorage";
-import { UserStorage } from "./user/UserStorage";
-import { LibraryStorage } from "./library/LibraryStorage";
+
+import {
+  users,
+  userSettings,
+  type User,
+  type UpsertUser,
+  type UserSettings,
+  type InsertUserSettings,
+  type LibraryCategory,
+  type LibraryResource
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, ilike, or } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
