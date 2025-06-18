@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
+import DeviceGroupManager from "@/components/it/DeviceGroupManager";
 import { 
   Monitor, 
   Server, 
@@ -217,6 +218,7 @@ export default function ITDashboard() {
       <Tabs defaultValue="performance" className="space-y-4">
         <TabsList>
           <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="devices">Device Groups</TabsTrigger>
           <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
@@ -476,6 +478,10 @@ export default function ITDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="devices" className="space-y-4">
+          <DeviceGroupManager />
         </TabsContent>
       </Tabs>
 
