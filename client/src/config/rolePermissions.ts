@@ -58,6 +58,20 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     allowedRoles: ["student_elementary", "teacher", "school_admin", "school_it_staff", "school_security"],
     isCore: true
   },
+  {
+    id: "user-profile",
+    name: "My Profile",
+    path: "/user-profile",
+    icon: "User",
+    description: "Manage your personal information and settings",
+    allowedRoles: [
+      "student_elementary", "student_middle", "student_high", "student_college",
+      "teacher", "tutor", "principal", "vice_principal", "counselor", "librarian",
+      "school_admin", "district_admin", "super_admin", "school_security", 
+      "school_it_staff", "parent"
+    ],
+    isCore: true
+  },
 
   // Educational modules
   {
