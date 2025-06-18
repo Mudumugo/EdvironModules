@@ -132,8 +132,9 @@ export default function SchoolManagement() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users', 'teachers'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setIsTeacherDialogOpen(false);
+      teacherForm.reset();
       toast({
         title: "Success",
         description: "Teacher created successfully",
