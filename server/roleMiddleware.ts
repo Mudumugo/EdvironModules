@@ -76,7 +76,7 @@ export function requireRole(roles: UserRole | UserRole[]) {
 
 // Middleware to check if user belongs to same tenant
 export function requireSameTenant() {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const user = req.user;
     const targetTenantId = req.params.tenantId || req.body.tenantId || req.query.tenantId;
     
@@ -84,10 +84,10 @@ export function requireSameTenant() {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (targetTenantId && user.tenantId !== targetTenantId) {
+    if (targetTenantId && (user as any).tenantId !== targetTenantId) {
       return res.status(403).json({ 
         message: 'Access denied: Different tenant',
-        userTenant: user.tenantId,
+        userTenant: (user as any).tenantId,
         requestedTenant: targetTenantId
       });
     }
@@ -123,8 +123,8 @@ export function requireStudentAccess() {
 }
 
 // Helper to check resource ownership
-export function requireResourceOwnership(getResourceOwnerId: (req: Request) => string | Promise<string>) {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export function requireResourceOwnership(getResourceOwnerId: (req: AuthenticatedRequest) => string | Promise<string>) {
+  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const user = req.user;
     
     if (!user) {
@@ -135,8 +135,8 @@ export function requireResourceOwnership(getResourceOwnerId: (req: Request) => s
       const resourceOwnerId = await getResourceOwnerId(req);
       
       // Allow access if user owns the resource or has admin permissions
-      const isOwner = user.id === resourceOwnerId;
-      const hasAdminAccess = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
+      const isOwner = (user as any).id === resourceOwnerId;
+      const hasAdminAccess = hasAnyPermission((user as any).role as UserRole, ((user as any).permissions || []) as Permission[], [
         PERMISSIONS.MANAGE_USERS,
         PERMISSIONS.VIEW_ALL_ANALYTICS
       ]);
@@ -144,7 +144,7 @@ export function requireResourceOwnership(getResourceOwnerId: (req: Request) => s
       if (!isOwner && !hasAdminAccess) {
         return res.status(403).json({ 
           message: 'Access denied: Resource ownership required',
-          userRole: user.role
+          userRole: (user as any).role
         });
       }
 
@@ -155,4 +155,3 @@ export function requireResourceOwnership(getResourceOwnerId: (req: Request) => s
   };
 }
 
-export type { AuthenticatedRequest };

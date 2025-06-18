@@ -347,7 +347,7 @@ export default function SecurityDashboard() {
               <CardDescription>Emergency calls and PBX system</CardDescription>
             </CardHeader>
             <CardContent>
-              <SecurityCallsPanel calls={securityCalls} isLoading={callsLoading} />
+              <SecurityCallsPanel />
             </CardContent>
           </Card>
         </TabsContent>
