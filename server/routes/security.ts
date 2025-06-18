@@ -1,12 +1,10 @@
-import type { Express, Request, Response, NextFunction } from "express";
+import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
-import { requirePermission } from "../roleMiddleware";
 import { storage } from "../storage";
-import { PERMISSIONS } from "@shared/schema";
 
 export function registerSecurityRoutes(app: Express) {
   // Get security zones
-  app.get("/api/security/zones", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/zones", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const zones = await storage.getSecurityZones();
       res.json(zones);
@@ -17,7 +15,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create security zone
-  app.post("/api/security/zones", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
+  app.post("/api/security/zones", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const zone = await storage.createSecurityZone(req.body);
       res.json(zone);
@@ -28,7 +26,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get cameras for a zone
-  app.get("/api/security/zones/:zoneId/cameras", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/zones/:zoneId/cameras", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const cameras = await storage.getSecurityCamerasByZone(req.params.zoneId);
       res.json(cameras);
@@ -39,7 +37,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get all cameras
-  app.get("/api/security/cameras", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/cameras", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const cameras = await storage.getSecurityCameras();
       res.json(cameras);
@@ -50,7 +48,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create security camera
-  app.post("/api/security/cameras", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
+  app.post("/api/security/cameras", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const camera = await storage.createSecurityCamera(req.body);
       res.json(camera);
@@ -61,7 +59,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get security events
-  app.get("/api/security/events", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/events", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { status, severity, zoneId, limit = 50 } = req.query;
       const events = await storage.getSecurityEvents({
@@ -78,7 +76,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create security event
-  app.post("/api/security/events", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
+  app.post("/api/security/events", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const event = await storage.createSecurityEvent(req.body);
       res.json(event);
@@ -89,7 +87,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Update security event
-  app.put("/api/security/events/:eventId", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
+  app.put("/api/security/events/:eventId", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const event = await storage.updateSecurityEvent(req.params.eventId, req.body);
       res.json(event);
@@ -100,7 +98,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get visitor registrations
-  app.get("/api/security/visitors", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/visitors", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { status, date } = req.query;
       const visitors = await storage.getVisitorRegistrations({
@@ -115,7 +113,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create visitor registration
-  app.post("/api/security/visitors", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
+  app.post("/api/security/visitors", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const visitor = await storage.createVisitorRegistration(req.body);
       res.json(visitor);
@@ -126,7 +124,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Checkout visitor
-  app.put("/api/security/visitors/:visitorId/checkout", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
+  app.put("/api/security/visitors/:visitorId/checkout", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const visitor = await storage.checkoutVisitor(req.params.visitorId);
       res.json(visitor);
@@ -137,7 +135,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get security calls
-  app.get("/api/security/calls", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/calls", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { status, type } = req.query;
       const calls = await storage.getSecurityCalls({
@@ -152,7 +150,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Create security call
-  app.post("/api/security/calls", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_MANAGE), async (req: Request, res: Response) => {
+  app.post("/api/security/calls", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const call = await storage.createSecurityCall(req.body);
       res.json(call);
@@ -163,7 +161,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get security metrics
-  app.get("/api/security/metrics", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/metrics", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const metrics = await storage.getSecurityMetrics();
       res.json(metrics);
@@ -174,7 +172,7 @@ export function registerSecurityRoutes(app: Express) {
   });
 
   // Get active threats
-  app.get("/api/security/threats", isAuthenticated, requirePermission(PERMISSIONS.SECURITY_VIEW), async (req: Request, res: Response) => {
+  app.get("/api/security/threats", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const threats = await storage.getActiveThreats();
       res.json(threats);
