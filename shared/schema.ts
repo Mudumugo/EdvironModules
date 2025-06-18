@@ -97,6 +97,35 @@ export const USER_ROLES = {
   SCHOOL_SECURITY: "school_security",
   SCHOOL_IT_STAFF: "school_it_staff",
   
+  // Non-teaching staff
+  OFFICE_STAFF: "office_staff",
+  RECEPTIONIST: "receptionist",
+  SECRETARY: "secretary",
+  REGISTRAR: "registrar",
+  ACCOUNTANT: "accountant",
+  FINANCE_OFFICER: "finance_officer",
+  CUSTODIAN: "custodian",
+  MAINTENANCE_STAFF: "maintenance_staff",
+  GROUNDSKEEPER: "groundskeeper",
+  CAFETERIA_STAFF: "cafeteria_staff",
+  KITCHEN_MANAGER: "kitchen_manager",
+  BUS_DRIVER: "bus_driver",
+  TRANSPORT_COORDINATOR: "transport_coordinator",
+  NURSE: "nurse",
+  HEALTH_AIDE: "health_aide",
+  PSYCHOLOGIST: "psychologist",
+  SOCIAL_WORKER: "social_worker",
+  SPEECH_THERAPIST: "speech_therapist",
+  OCCUPATIONAL_THERAPIST: "occupational_therapist",
+  SPECIAL_EDUCATION_AIDE: "special_education_aide",
+  TEACHING_ASSISTANT: "teaching_assistant",
+  PARAPROFESSIONAL: "paraprofessional",
+  MEDIA_SPECIALIST: "media_specialist",
+  TECHNOLOGY_COORDINATOR: "technology_coordinator",
+  ATHLETIC_DIRECTOR: "athletic_director",
+  COACH: "coach",
+  ACTIVITY_COORDINATOR: "activity_coordinator",
+  
   // Family
   PARENT: "parent"
 } as const;

@@ -11,6 +11,48 @@ export const ROLE_HIERARCHY = {
   [USER_ROLES.TUTOR]: 40,
   [USER_ROLES.COUNSELOR]: 45,
   [USER_ROLES.LIBRARIAN]: 35,
+  
+  // Non-teaching staff - Office and Administrative
+  [USER_ROLES.OFFICE_STAFF]: 32,
+  [USER_ROLES.RECEPTIONIST]: 32,
+  [USER_ROLES.SECRETARY]: 35,
+  [USER_ROLES.REGISTRAR]: 38,
+  [USER_ROLES.ACCOUNTANT]: 35,
+  [USER_ROLES.FINANCE_OFFICER]: 38,
+  
+  // Non-teaching staff - Maintenance and Facilities
+  [USER_ROLES.CUSTODIAN]: 30,
+  [USER_ROLES.MAINTENANCE_STAFF]: 30,
+  [USER_ROLES.GROUNDSKEEPER]: 30,
+  
+  // Non-teaching staff - Food Services
+  [USER_ROLES.CAFETERIA_STAFF]: 30,
+  [USER_ROLES.KITCHEN_MANAGER]: 35,
+  
+  // Non-teaching staff - Transportation
+  [USER_ROLES.BUS_DRIVER]: 30,
+  [USER_ROLES.TRANSPORT_COORDINATOR]: 35,
+  
+  // Non-teaching staff - Health and Wellness
+  [USER_ROLES.NURSE]: 42,
+  [USER_ROLES.HEALTH_AIDE]: 35,
+  [USER_ROLES.PSYCHOLOGIST]: 45,
+  [USER_ROLES.SOCIAL_WORKER]: 45,
+  [USER_ROLES.SPEECH_THERAPIST]: 42,
+  [USER_ROLES.OCCUPATIONAL_THERAPIST]: 42,
+  
+  // Non-teaching staff - Educational Support
+  [USER_ROLES.SPECIAL_EDUCATION_AIDE]: 35,
+  [USER_ROLES.TEACHING_ASSISTANT]: 35,
+  [USER_ROLES.PARAPROFESSIONAL]: 35,
+  [USER_ROLES.MEDIA_SPECIALIST]: 38,
+  [USER_ROLES.TECHNOLOGY_COORDINATOR]: 40,
+  
+  // Non-teaching staff - Athletics and Activities
+  [USER_ROLES.ATHLETIC_DIRECTOR]: 45,
+  [USER_ROLES.COACH]: 38,
+  [USER_ROLES.ACTIVITY_COORDINATOR]: 35,
+  
   [USER_ROLES.PARENT]: 30,
   [USER_ROLES.STUDENT_COLLEGE]: 25,
   [USER_ROLES.STUDENT_HIGH]: 20,
@@ -127,6 +169,148 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     PERMISSIONS.VIEW_SCHEDULE,
   ],
   
+  // Non-teaching staff - Office and Administrative
+  [USER_ROLES.OFFICE_STAFF]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.RECEPTIONIST]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.SECRETARY]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+  ],
+  [USER_ROLES.REGISTRAR]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.MANAGE_SCHOOL_SETTINGS,
+    PERMISSIONS.VIEW_SCHEDULE,
+  ],
+  [USER_ROLES.ACCOUNTANT]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.FINANCE_OFFICER]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+    PERMISSIONS.MANAGE_SCHOOL_SETTINGS,
+  ],
+  
+  // Non-teaching staff - Maintenance and Facilities
+  [USER_ROLES.CUSTODIAN]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.MAINTENANCE_STAFF]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.GROUNDSKEEPER]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  
+  // Non-teaching staff - Food Services
+  [USER_ROLES.CAFETERIA_STAFF]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.KITCHEN_MANAGER]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+    PERMISSIONS.MANAGE_SCHOOL_SETTINGS,
+  ],
+  
+  // Non-teaching staff - Transportation
+  [USER_ROLES.BUS_DRIVER]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.TRANSPORT_COORDINATOR]: [
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+    PERMISSIONS.MANAGE_SCHOOL_SETTINGS,
+  ],
+  
+  // Non-teaching staff - Health and Wellness
+  [USER_ROLES.NURSE]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.HEALTH_AIDE]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.PSYCHOLOGIST]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.SOCIAL_WORKER]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.SPEECH_THERAPIST]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.OCCUPATIONAL_THERAPIST]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  
+  // Non-teaching staff - Educational Support
+  [USER_ROLES.SPECIAL_EDUCATION_AIDE]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.TEACHING_ASSISTANT]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.PARAPROFESSIONAL]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.MEDIA_SPECIALIST]: [
+    PERMISSIONS.ACCESS_LIBRARY,
+    PERMISSIONS.VIEW_SCHEDULE,
+  ],
+  [USER_ROLES.TECHNOLOGY_COORDINATOR]: [
+    PERMISSIONS.MANAGE_DEVICES,
+    PERMISSIONS.CONFIGURE_SYSTEMS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  
+  // Non-teaching staff - Athletics and Activities
+  [USER_ROLES.ATHLETIC_DIRECTOR]: [
+    PERMISSIONS.MANAGE_SCHOOL_SETTINGS,
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.COACH]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  [USER_ROLES.ACTIVITY_COORDINATOR]: [
+    PERMISSIONS.VIEW_STUDENT_RECORDS,
+    PERMISSIONS.VIEW_SCHEDULE,
+    PERMISSIONS.ACCESS_LIBRARY,
+  ],
+  
   // Parent permissions
   [USER_ROLES.PARENT]: [
     PERMISSIONS.VIEW_OWN_GRADES,
@@ -161,7 +345,24 @@ export function isAdmin(role: UserRole): boolean {
 }
 
 export function isStaff(role: UserRole): boolean {
-  return ["school_it_staff", "school_security", "counselor", "librarian"].includes(role);
+  const staffRoles = [
+    "school_it_staff", "school_security", "counselor", "librarian",
+    // Non-teaching staff - Office and Administrative
+    "office_staff", "receptionist", "secretary", "registrar", "accountant", "finance_officer",
+    // Non-teaching staff - Maintenance and Facilities
+    "custodian", "maintenance_staff", "groundskeeper",
+    // Non-teaching staff - Food Services
+    "cafeteria_staff", "kitchen_manager",
+    // Non-teaching staff - Transportation
+    "bus_driver", "transport_coordinator",
+    // Non-teaching staff - Health and Wellness
+    "nurse", "health_aide", "psychologist", "social_worker", "speech_therapist", "occupational_therapist",
+    // Non-teaching staff - Educational Support
+    "special_education_aide", "teaching_assistant", "paraprofessional", "media_specialist", "technology_coordinator",
+    // Non-teaching staff - Athletics and Activities
+    "athletic_director", "coach", "activity_coordinator"
+  ];
+  return staffRoles.includes(role);
 }
 
 export function canManageUser(currentUserRole: UserRole, targetUserRole: UserRole): boolean {
@@ -185,6 +386,48 @@ export function getRoleDisplayName(role: UserRole): string {
     [USER_ROLES.SCHOOL_SECURITY]: "Security Staff",
     [USER_ROLES.COUNSELOR]: "Counselor",
     [USER_ROLES.LIBRARIAN]: "Librarian",
+    
+    // Non-teaching staff - Office and Administrative
+    [USER_ROLES.OFFICE_STAFF]: "Office Staff",
+    [USER_ROLES.RECEPTIONIST]: "Receptionist",
+    [USER_ROLES.SECRETARY]: "Secretary",
+    [USER_ROLES.REGISTRAR]: "Registrar",
+    [USER_ROLES.ACCOUNTANT]: "Accountant",
+    [USER_ROLES.FINANCE_OFFICER]: "Finance Officer",
+    
+    // Non-teaching staff - Maintenance and Facilities
+    [USER_ROLES.CUSTODIAN]: "Custodian",
+    [USER_ROLES.MAINTENANCE_STAFF]: "Maintenance Staff",
+    [USER_ROLES.GROUNDSKEEPER]: "Groundskeeper",
+    
+    // Non-teaching staff - Food Services
+    [USER_ROLES.CAFETERIA_STAFF]: "Cafeteria Staff",
+    [USER_ROLES.KITCHEN_MANAGER]: "Kitchen Manager",
+    
+    // Non-teaching staff - Transportation
+    [USER_ROLES.BUS_DRIVER]: "Bus Driver",
+    [USER_ROLES.TRANSPORT_COORDINATOR]: "Transport Coordinator",
+    
+    // Non-teaching staff - Health and Wellness
+    [USER_ROLES.NURSE]: "School Nurse",
+    [USER_ROLES.HEALTH_AIDE]: "Health Aide",
+    [USER_ROLES.PSYCHOLOGIST]: "School Psychologist",
+    [USER_ROLES.SOCIAL_WORKER]: "Social Worker",
+    [USER_ROLES.SPEECH_THERAPIST]: "Speech Therapist",
+    [USER_ROLES.OCCUPATIONAL_THERAPIST]: "Occupational Therapist",
+    
+    // Non-teaching staff - Educational Support
+    [USER_ROLES.SPECIAL_EDUCATION_AIDE]: "Special Education Aide",
+    [USER_ROLES.TEACHING_ASSISTANT]: "Teaching Assistant",
+    [USER_ROLES.PARAPROFESSIONAL]: "Paraprofessional",
+    [USER_ROLES.MEDIA_SPECIALIST]: "Media Specialist",
+    [USER_ROLES.TECHNOLOGY_COORDINATOR]: "Technology Coordinator",
+    
+    // Non-teaching staff - Athletics and Activities
+    [USER_ROLES.ATHLETIC_DIRECTOR]: "Athletic Director",
+    [USER_ROLES.COACH]: "Coach",
+    [USER_ROLES.ACTIVITY_COORDINATOR]: "Activity Coordinator",
+    
     [USER_ROLES.PARENT]: "Parent",
   };
   return roleNames[role] || role;
