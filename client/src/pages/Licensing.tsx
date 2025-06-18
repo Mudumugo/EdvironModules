@@ -40,13 +40,13 @@ export default function Licensing() {
     return <div>Loading...</div>;
   }
 
-  // Mock subscription plans
+  // Mock subscription plans in KSH
   const plans: SubscriptionPlan[] = [
     {
       id: 1,
       name: "Basic",
-      price: 29,
-      currency: "USD",
+      price: 3000,
+      currency: "KSH",
       interval: "month",
       features: [
         "Up to 100 students",
@@ -65,8 +65,8 @@ export default function Licensing() {
     {
       id: 2,
       name: "Professional",
-      price: 99,
-      currency: "USD",
+      price: 10000,
+      currency: "KSH",
       interval: "month",
       features: [
         "Up to 500 students",
@@ -86,8 +86,8 @@ export default function Licensing() {
     {
       id: 3,
       name: "Enterprise",
-      price: 299,
-      currency: "USD",
+      price: 30000,
+      currency: "KSH",
       interval: "month",
       features: [
         "Unlimited students",
@@ -114,9 +114,9 @@ export default function Licensing() {
     status: "active",
     startDate: "2024-01-01",
     endDate: "2024-12-31",
-    amount: 99,
-    currency: "USD",
-    paymentMethod: "Stripe",
+    amount: 10000,
+    currency: "KSH",
+    paymentMethod: "M-Pesa",
     autoRenew: true,
     usage: {
       students: 247,
@@ -135,28 +135,28 @@ export default function Licensing() {
     {
       id: 1,
       date: "2024-01-01",
-      amount: 99,
-      currency: "USD",
+      amount: 10000,
+      currency: "KSH",
       status: "paid",
-      method: "Credit Card",
+      method: "M-Pesa",
       invoice: "INV-2024-001"
     },
     {
       id: 2,
       date: "2023-12-01",
-      amount: 99,
-      currency: "USD",
+      amount: 10000,
+      currency: "KSH",
       status: "paid",
-      method: "Credit Card",
+      method: "M-Pesa",
       invoice: "INV-2023-012"
     },
     {
       id: 3,
       date: "2023-11-01",
-      amount: 99,
-      currency: "USD",
+      amount: 10000,
+      currency: "KSH",
       status: "paid",
-      method: "Credit Card",
+      method: "Bank Transfer",
       invoice: "INV-2023-011"
     }
   ];
