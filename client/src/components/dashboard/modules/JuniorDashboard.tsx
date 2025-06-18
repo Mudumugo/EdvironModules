@@ -12,6 +12,7 @@ import {
 import { DashboardHeader } from "../shared/DashboardHeader";
 import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module } from "../shared/ModuleCard";
+import { TechTutorCard } from "../shared/TechTutorCard";
 
 interface JuniorDashboardProps {
   user?: any;
@@ -22,6 +23,14 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Modules");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  const techTutorModule = {
+    id: "tech-tutor",
+    title: "Tech Tutor",
+    description: "Master essential technology skills with personalized AI tutoring",
+    category: "Learning",
+    isExternal: true
+  };
 
   const modules: Module[] = [
     {
@@ -117,13 +126,14 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
   const categories = ["All Modules", "Learning", "Academic", "Personal", "Social", "Analytics"];
 
   const filteredModules = useMemo(() => {
-    return modules.filter(module => {
+    const allModules = [techTutorModule, ...modules];
+    return allModules.filter(module => {
       const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            module.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === "All Modules" || module.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, modules]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -144,13 +154,48 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
           onViewModeChange={setViewMode}
         />
 
-        <ModuleGrid 
-          modules={filteredModules}
-          viewMode={viewMode}
-          onModuleClick={(moduleId) => {
-            console.log(`Opening module: ${moduleId}`);
-          }}
-        />
+        <div className={
+          viewMode === "grid" 
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            : "space-y-4"
+        }>
+          {filteredModules.map((module) => {
+            if (module.id === "tech-tutor") {
+              return (
+                <TechTutorCard 
+                  key={module.id}
+                  variant="junior"
+                  viewMode={viewMode}
+                  onClick={() => {
+                    console.log("Opening Tech Tutor external app with SSO...");
+                    // Future: Implement SSO redirect to Tech Tutor
+                  }}
+                />
+              );
+            }
+            return (
+              <div key={module.id}>
+                <ModuleGrid 
+                  modules={[module]}
+                  viewMode={viewMode}
+                  onModuleClick={(moduleId) => {
+                    console.log(`Opening module: ${moduleId}`);
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        {filteredModules.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <BookOpen className="h-12 w-12 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No modules found</h3>
+            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+          </div>
+        )}
       </div>
     </div>
   );

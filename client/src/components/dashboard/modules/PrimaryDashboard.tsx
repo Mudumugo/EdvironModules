@@ -10,6 +10,7 @@ import {
 import { DashboardHeader } from "../shared/DashboardHeader";
 import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module } from "../shared/ModuleCard";
+import { TechTutorCard } from "../shared/TechTutorCard";
 
 interface PrimaryDashboardProps {
   user?: any;
@@ -91,12 +92,25 @@ export function PrimaryDashboard({ user }: PrimaryDashboardProps) {
           user={user}
         />
 
-        <ModuleGrid 
-          modules={modules}
-          onModuleClick={(moduleId) => {
-            console.log(`Opening module: ${moduleId}`);
-          }}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <TechTutorCard 
+            variant="primary"
+            onClick={() => {
+              console.log("Opening Tech Tutor external app with SSO...");
+              // Future: Implement SSO redirect to Tech Tutor
+            }}
+          />
+          {modules.map((module) => (
+            <div key={module.id}>
+              <ModuleGrid 
+                modules={[module]}
+                onModuleClick={(moduleId) => {
+                  console.log(`Opening module: ${moduleId}`);
+                }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
