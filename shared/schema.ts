@@ -325,6 +325,33 @@ export const stickyNotes = pgTable("sticky_notes", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Locker items for saving annotated library resources
+export const lockerItems = pgTable("locker_items", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull().references(() => users.id),
+  itemType: varchar("item_type", { length: 50 }).notNull(), // 'notebook', 'resource', 'bookmark'
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  originalResourceId: integer("original_resource_id"),
+  content: text("content"),
+  annotations: jsonb("annotations"),
+  metadata: jsonb("metadata"),
+  fileUrl: varchar("file_url", { length: 500 }),
+  thumbnailUrl: varchar("thumbnail_url", { length: 500 }),
+  tags: text("tags").array(),
+  category: varchar("category", { length: 100 }),
+  subject: varchar("subject", { length: 100 }),
+  gradeLevel: varchar("grade_level", { length: 50 }),
+  isPrivate: boolean("is_private").default(true),
+  isOfflineAvailable: boolean("is_offline_available").default(false),
+  sizeMb: decimal("size_mb", { precision: 10, scale: 2 }),
+  views: integer("views").default(0),
+  lastAccessed: timestamp("last_accessed"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  tenantId: varchar("tenant_id", { length: 255 }).default("default"),
+});
+
 // Relations
 export const notebooksRelations = relations(notebooks, ({ many }) => ({
   subjects: many(subjects),
@@ -382,6 +409,8 @@ export type InsertPage = typeof pages.$inferInsert;
 export type Page = typeof pages.$inferSelect;
 export type InsertStickyNote = typeof stickyNotes.$inferInsert;
 export type StickyNote = typeof stickyNotes.$inferSelect;
+export type InsertLockerItem = typeof lockerItems.$inferInsert;
+export type LockerItem = typeof lockerItems.$inferSelect;
 
 // Schemas
 export const insertNotebookSchema = createInsertSchema(notebooks);
