@@ -1,7 +1,8 @@
 // Security module hook - isolated from other modules
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { SecurityZone, SecurityCamera, SecurityEvent, VisitorRegistration, SecurityCall, SecurityMetrics } from "@shared/types/security.types";
+import { SecurityMetrics, ThreatAlert } from "@shared/types/security.types";
+import { SecurityZone, SecurityCamera, SecurityEvent, VisitorRegistration, SecurityCall } from "@shared/schema";
 
 export function useSecurityModule() {
   const queryClient = useQueryClient();

@@ -7,9 +7,10 @@ interface SecurityEventsListProps {
   events: any[];
   onEventClick?: (event: any) => void;
   compact?: boolean;
+  isLoading?: boolean;
 }
 
-export default function SecurityEventsList({ events, onEventClick, compact = false }: SecurityEventsListProps) {
+export default function SecurityEventsList({ events, onEventClick, compact = false, isLoading = false }: SecurityEventsListProps) {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical": return "destructive";
