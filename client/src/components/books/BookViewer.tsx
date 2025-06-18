@@ -208,7 +208,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   };
 
   const goToNextPage = () => {
-    if (currentPage < bookData.totalPages && !isPageTurning) {
+    if (currentPage < (bookData?.totalPages || 0) && !isPageTurning) {
       animatePageTurn('next', currentPage + 1);
     }
   };
@@ -220,7 +220,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   };
 
   const goToPage = (page: number) => {
-    if (page >= 1 && page <= bookData.totalPages && page !== currentPage && !isPageTurning) {
+    if (page >= 1 && page <= (bookData?.totalPages || 0) && page !== currentPage && !isPageTurning) {
       const direction = page > currentPage ? 'next' : 'prev';
       animatePageTurn(direction, page);
     }
@@ -276,13 +276,13 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
 
   // xAPI tracking functions
   const trackPageView = (page: number) => {
-    if (bookData.xapiEnabled) {
+    if (bookData?.xapiEnabled) {
       const timeOnPage = Math.floor((new Date().getTime() - pageStartTime.getTime()) / 1000);
       xapiTracker.trackReadingProgress(
-        bookData.id.toString(),
-        bookData.title,
+        bookData?.id?.toString() || '',
+        bookData?.title || '',
         page,
-        bookData.totalPages,
+        bookData?.totalPages || 0,
         timeOnPage
       );
     }
@@ -305,17 +305,17 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     );
     
     // Track bookmark action
-    if (bookData.xapiEnabled) {
-      xapiTracker.trackBookmark(action, bookData.id.toString(), bookData.title, page);
+    if (bookData?.xapiEnabled) {
+      xapiTracker.trackBookmark(action, bookData?.id?.toString() || '', bookData?.title || '', page);
     }
   };
 
   // Initialize xAPI tracking on component mount
   useEffect(() => {
-    if (bookData.xapiEnabled) {
-      xapiTracker.trackAccessed(bookData.id.toString(), bookData.title, bookData.type || 'book');
+    if (bookData?.xapiEnabled) {
+      xapiTracker.trackAccessed(bookData?.id?.toString() || '', bookData?.title || '', bookData?.type || 'book');
     }
-  }, [bookData.id, bookData.title, bookData.xapiEnabled, bookData.type]);
+  }, [bookData?.id, bookData?.title, bookData?.xapiEnabled, bookData?.type]);
 
   // Track session completion on unmount
   useEffect(() => {
