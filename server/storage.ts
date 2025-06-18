@@ -82,8 +82,6 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({
-        gradeRolloverDate: rolloverDate,
-        nextGradeLevel: nextGradeLevel,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))

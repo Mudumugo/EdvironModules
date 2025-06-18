@@ -1,12 +1,11 @@
-// Security module types - isolated from other modules
 export interface SecurityZone {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   location: string;
   isActive: boolean;
-  cameraCount: number;
-  lastActivity?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SecurityCamera {
@@ -14,61 +13,91 @@ export interface SecurityCamera {
   name: string;
   zoneId: string;
   location: string;
+  ipAddress: string;
   status: 'online' | 'offline' | 'maintenance';
-  streamUrl: string;
-  lastPing?: Date;
   isRecording: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SecurityEvent {
   id: string;
-  type: 'intrusion' | 'unauthorized_access' | 'emergency' | 'maintenance' | 'system_alert';
+  type: 'intrusion' | 'unauthorized_access' | 'equipment_failure' | 'maintenance' | 'other';
   severity: 'low' | 'medium' | 'high' | 'critical';
-  title: string;
-  description: string;
-  zoneId: string;
+  zoneId?: string;
   cameraId?: string;
-  timestamp: Date;
-  status: 'active' | 'acknowledged' | 'resolved';
+  description: string;
+  status: 'open' | 'investigating' | 'resolved' | 'closed';
+  reportedBy: string;
   assignedTo?: string;
+  occurredAt: Date;
+  resolvedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface VisitorRegistration {
   id: string;
-  firstName: string;
-  lastName: string;
-  email?: string;
-  phone?: string;
+  visitorName: string;
+  visitorPhone?: string;
+  visitorEmail?: string;
   purpose: string;
   hostName: string;
-  department: string;
+  hostDepartment?: string;
   checkInTime: Date;
   checkOutTime?: Date;
   status: 'checked_in' | 'checked_out' | 'expired';
   badgeNumber?: string;
-  photoId?: string;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SecurityCall {
   id: string;
-  type: 'emergency' | 'routine' | 'maintenance' | 'alert';
   caller: string;
-  location: string;
+  callerPhone?: string;
+  type: 'emergency' | 'maintenance' | 'visitor' | 'general' | 'security_concern';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  timestamp: Date;
-  status: 'open' | 'in_progress' | 'resolved';
+  location?: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'escalated';
   assignedTo?: string;
-  responseTime?: number;
+  response?: string;
+  callTime: Date;
+  resolvedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SecurityMetrics {
   totalZones: number;
   activeCameras: number;
   offlineCameras: number;
-  activeAlerts: number;
-  todayVisitors: number;
-  todayIncidents: number;
-  averageResponseTime: number;
-  systemHealth: 'excellent' | 'good' | 'fair' | 'poor';
+  openEvents: number;
+  criticalEvents: number;
+  activeVisitors: number;
+  pendingCalls: number;
+  monthlyIncidents: number;
 }
+
+export interface ThreatAlert {
+  id: string;
+  type: 'unauthorized_access' | 'equipment_tampering' | 'intrusion' | 'system_breach';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  location: string;
+  description: string;
+  detectedAt: Date;
+  status: 'active' | 'investigating' | 'resolved';
+  assignedTo?: string;
+}
+
+export type SecurityModuleData = {
+  zones: SecurityZone[];
+  cameras: SecurityCamera[];
+  events: SecurityEvent[];
+  visitors: VisitorRegistration[];
+  calls: SecurityCall[];
+  metrics: SecurityMetrics;
+  threats: ThreatAlert[];
+};
