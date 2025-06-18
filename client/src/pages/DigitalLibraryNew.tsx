@@ -120,7 +120,7 @@ const DigitalLibraryNew = () => {
     }
   ];
 
-  // Transform API response from snake_case to camelCase and add multimedia sample data
+  // Transform API response and add multimedia sample data
   const rawResources = apiResponse?.resources || [];
   const resources = rawResources.length > 0 ? rawResources.map((resource: any) => ({
     id: resource.id,
@@ -134,8 +134,8 @@ const DigitalLibraryNew = () => {
     tags: resource.tags || [],
     viewCount: resource.viewCount || 0,
     rating: resource.rating || "0",
-    thumbnailUrl: resource.thumbnail_url,
-    fileUrl: resource.file_url,
+    thumbnailUrl: resource.thumbnail,
+    fileUrl: resource.fileUrl,
     accessTier: resource.accessTier || 'free',
     isPublished: resource.isPublished !== false,
     authorId: resource.authorId || 'unknown-author',
