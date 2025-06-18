@@ -1,16 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
 import { type Permission, type UserRole } from '@shared/schema';
+import type { AuthenticatedRequest } from './types/auth';
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: UserRole;
-    permissions: Permission[];
-    tenantId: string;
-    claims?: any;
-  };
-}
+
 
 // Middleware to check if user has specific permission
 export function requirePermission(permission: Permission) {

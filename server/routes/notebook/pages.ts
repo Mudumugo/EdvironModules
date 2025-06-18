@@ -1,12 +1,11 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Response } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
 import { pages, topics, chapters } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
+import type { AuthenticatedRequest } from "../../types/auth";
 
-interface AuthenticatedRequest extends Request {
-  user?: any;
-}
+
 
 export function registerPageRoutes(app: Express) {
   // Get all pages for a topic

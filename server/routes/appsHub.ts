@@ -1,14 +1,6 @@
-import type { Express, Request } from "express";
+import type { Express, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
-
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
-  session?: any;
-}
+import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerAppsHubRoutes(app: Express) {
   // Get all apps

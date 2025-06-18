@@ -5,14 +5,7 @@ import { users } from "@shared/schema";
 import { parentChildRelationships } from "@shared/schemas/education.schema";
 import { eq, and } from "drizzle-orm";
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
-  session?: any;
-}
+
 
 export function registerParentRoutes(app: Express) {
   // Get parent's children and their information

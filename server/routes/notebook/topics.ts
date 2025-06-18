@@ -1,12 +1,11 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Response } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
 import { topics, chapters, subjects } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
+import type { AuthenticatedRequest } from "../../types/auth";
 
-interface AuthenticatedRequest extends Request {
-  user?: any;
-}
+
 
 export function registerTopicRoutes(app: Express) {
   // Get all topics for a chapter
