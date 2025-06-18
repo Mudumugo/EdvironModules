@@ -18,7 +18,8 @@ import {
   CloudDownload,
   IdCard,
   FlaskRound,
-  Phone
+  Phone,
+  PenTool
 } from "lucide-react";
 
 // Icon mapping for dynamic module loading
@@ -37,7 +38,8 @@ const iconMap: Record<string, any> = {
   CloudDownload,
   IdCard,
   FlaskRound,
-  Phone
+  Phone,
+  PenTool
 };
 
 interface SidebarProps {

@@ -84,6 +84,14 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     description: "Class schedules and timetables",
     allowedRoles: ["teacher", "school_admin"],
   },
+  {
+    id: "authoring-dashboard",
+    name: "Content Authoring",
+    path: "/authoring-dashboard",
+    icon: "PenTool",
+    description: "Create and manage educational content for global library",
+    allowedRoles: ["teacher", "tutor", "librarian", "school_admin"],
+  },
 
   // Administrative modules
   {
