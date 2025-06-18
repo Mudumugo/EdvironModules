@@ -190,7 +190,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     icon: "Phone",
     description: "Quick access to priority extensions and emergency contacts",
     allowedRoles: [
-      "school_admin", "school_it_staff", "school_security", "teacher", 
+      "school_admin", "it_staff", "security_staff", "teacher", 
       "principal", "vice_principal", "office_staff", "receptionist", 
       "secretary", "registrar", "nurse", "counselor"
     ],

@@ -466,6 +466,9 @@ export function getRoleDisplayName(role: UserRole): string {
     [USER_ROLES.ACTIVITY_COORDINATOR]: "Activity Coordinator",
     
     [USER_ROLES.PARENT]: "Parent",
+    [USER_ROLES.IT_STAFF]: "IT Staff",
+    [USER_ROLES.SECURITY_STAFF]: "Security Staff",
+    [USER_ROLES.DEMO_STUDENT_ELEMENTARY]: "Demo Elementary Student"
   };
   return roleNames[role] || role;
 }
