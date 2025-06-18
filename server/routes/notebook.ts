@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { eq, and, desc, asc } from "drizzle-orm";
+import { eq, and, desc, asc, sql } from "drizzle-orm";
 import { db } from "../db";
 import { 
   notebooks, 
@@ -7,9 +7,39 @@ import {
   chapters, 
   topics, 
   pages, 
-  stickyNotes 
+  stickyNotes,
+  libraryResources
 } from "@shared/schema";
 import { isAuthenticated } from "../replitAuth";
+
+// Define locker items table since it's not in shared schema yet
+import { pgTable, serial, varchar, text, integer, boolean, decimal, timestamp, jsonb } from "drizzle-orm/pg-core";
+
+const lockerItems = pgTable("locker_items", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  itemType: varchar("item_type", { length: 50 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  originalResourceId: integer("original_resource_id"),
+  content: text("content"),
+  annotations: jsonb("annotations"),
+  metadata: jsonb("metadata"),
+  fileUrl: varchar("file_url", { length: 500 }),
+  thumbnailUrl: varchar("thumbnail_url", { length: 500 }),
+  tags: text("tags").array(),
+  category: varchar("category", { length: 100 }),
+  subject: varchar("subject", { length: 100 }),
+  gradeLevel: varchar("grade_level", { length: 50 }),
+  isPrivate: boolean("is_private").default(true),
+  isOfflineAvailable: boolean("is_offline_available").default(false),
+  sizeMb: decimal("size_mb", { precision: 10, scale: 2 }),
+  views: integer("views").default(0),
+  lastAccessed: timestamp("last_accessed"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  tenantId: varchar("tenant_id", { length: 255 }).default("default"),
+});
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -594,6 +624,228 @@ export function registerNotebookRoutes(app: Express) {
     } catch (error) {
       console.error("Error deleting sticky note:", error);
       res.status(500).json({ message: "Failed to delete sticky note" });
+    }
+  });
+
+  // LOCKER ITEMS ROUTES (for saved library resources with annotations)
+
+  // Get all locker items for the authenticated user
+  app.get('/api/locker/items', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { type, category, search } = req.query;
+
+      // Build query conditions
+      const conditions = [eq(lockerItems.userId, userId)];
+      
+      if (type && type !== 'all') {
+        conditions.push(eq(lockerItems.itemType, type as string));
+      }
+      
+      if (category && category !== 'all') {
+        conditions.push(eq(lockerItems.category, category as string));
+      }
+
+      let items = await db.select()
+        .from(lockerItems)
+        .where(and(...conditions))
+        .orderBy(desc(lockerItems.updatedAt));
+
+      // Apply search filter if provided
+      if (search) {
+        const searchTerm = (search as string).toLowerCase();
+        items = items.filter(item => 
+          item.title.toLowerCase().includes(searchTerm) ||
+          item.description?.toLowerCase().includes(searchTerm) ||
+          item.tags?.some(tag => tag.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      res.json(items);
+    } catch (error) {
+      console.error("Error fetching locker items:", error);
+      res.status(500).json({ message: "Failed to fetch locker items" });
+    }
+  });
+
+  // Save an annotated library resource to locker
+  app.post('/api/locker/save-resource', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { 
+        resourceId, 
+        annotations, 
+        notes, 
+        title, 
+        description,
+        tags,
+        isPrivate = true,
+        makeOfflineAvailable = false
+      } = req.body;
+
+      // Get the original resource details
+      const [originalResource] = await db.select()
+        .from(libraryResources)
+        .where(eq(libraryResources.id, resourceId))
+        .limit(1);
+
+      if (!originalResource) {
+        return res.status(404).json({ message: "Original resource not found" });
+      }
+
+      // Check if this resource is already saved by the user
+      const existingItem = await db.select()
+        .from(lockerItems)
+        .where(and(
+          eq(lockerItems.userId, userId),
+          eq(lockerItems.originalResourceId, resourceId)
+        ))
+        .limit(1);
+
+      if (existingItem.length > 0) {
+        // Update existing item with new annotations
+        const [updatedItem] = await db.update(lockerItems)
+          .set({
+            annotations,
+            content: notes,
+            tags: tags || [],
+            isPrivate,
+            isOfflineAvailable: makeOfflineAvailable,
+            updatedAt: new Date(),
+            lastAccessed: new Date(),
+            views: existingItem[0].views + 1
+          })
+          .where(eq(lockerItems.id, existingItem[0].id))
+          .returning();
+
+        return res.json(updatedItem);
+      }
+
+      // Create new locker item
+      const [newItem] = await db.insert(lockerItems).values({
+        userId,
+        itemType: 'resource',
+        title: title || originalResource.title,
+        description: description || originalResource.description,
+        originalResourceId: resourceId,
+        content: notes || '',
+        annotations,
+        metadata: {
+          originalTitle: originalResource.title,
+          originalAuthor: originalResource.author,
+          resourceType: originalResource.type,
+          isbn: originalResource.isbn,
+          curriculum: originalResource.curriculum,
+          gradeLevel: originalResource.grade
+        },
+        fileUrl: originalResource.file_url,
+        thumbnailUrl: originalResource.thumbnail_url,
+        tags: tags || [],
+        category: originalResource.type || 'resource',
+        subject: originalResource.subject,
+        gradeLevel: originalResource.grade,
+        isPrivate,
+        isOfflineAvailable: makeOfflineAvailable,
+        sizeMb: originalResource.size ? parseFloat(originalResource.size) : 0,
+        views: 1,
+        lastAccessed: new Date(),
+        tenantId: 'default'
+      }).returning();
+
+      res.status(201).json(newItem);
+    } catch (error) {
+      console.error("Error saving resource to locker:", error);
+      res.status(500).json({ message: "Failed to save resource to locker" });
+    }
+  });
+
+  // Update locker item
+  app.put('/api/locker/items/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id;
+      const { title, description, content, annotations, tags, isPrivate, isOfflineAvailable } = req.body;
+
+      const [updatedItem] = await db.update(lockerItems)
+        .set({
+          title,
+          description,
+          content,
+          annotations,
+          tags,
+          isPrivate,
+          isOfflineAvailable,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(lockerItems.id, parseInt(id)),
+          eq(lockerItems.userId, userId!)
+        ))
+        .returning();
+
+      if (!updatedItem) {
+        return res.status(404).json({ message: "Locker item not found" });
+      }
+
+      res.json(updatedItem);
+    } catch (error) {
+      console.error("Error updating locker item:", error);
+      res.status(500).json({ message: "Failed to update locker item" });
+    }
+  });
+
+  // Delete locker item
+  app.delete('/api/locker/items/:id', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id;
+
+      const [deletedItem] = await db.delete(lockerItems)
+        .where(and(
+          eq(lockerItems.id, parseInt(id)),
+          eq(lockerItems.userId, userId!)
+        ))
+        .returning();
+
+      if (!deletedItem) {
+        return res.status(404).json({ message: "Locker item not found" });
+      }
+
+      res.json({ message: "Item removed from locker successfully" });
+    } catch (error) {
+      console.error("Error deleting locker item:", error);
+      res.status(500).json({ message: "Failed to remove item from locker" });
+    }
+  });
+
+  // Update access tracking
+  app.post('/api/locker/items/:id/access', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id;
+
+      await db.update(lockerItems)
+        .set({
+          views: sql`${lockerItems.views} + 1`,
+          lastAccessed: new Date()
+        })
+        .where(and(
+          eq(lockerItems.id, parseInt(id)),
+          eq(lockerItems.userId, userId!)
+        ));
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating access:", error);
+      res.status(500).json({ message: "Failed to update access" });
     }
   });
 }
