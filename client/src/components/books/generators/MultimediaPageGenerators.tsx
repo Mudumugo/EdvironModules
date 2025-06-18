@@ -1,10 +1,21 @@
-// This file has been refactored - use the new modular generators:
-// - CoverPageGenerator.ts for cover pages
-// - InteractivePageGenerator.ts for interactive content  
-// - VideoPageGenerator.ts for video content
-// - SciencePageGenerator.ts for science experiments
+// DEPRECATED: This file has been refactored into modular generators
+// Use the new focused generator files instead:
+//
+// - CoverPageGenerator.ts - Themed cover pages and table of contents
+// - InteractivePageGenerator.ts - Interactive content, drag-drop, quizzes
+// - VideoPageGenerator.ts - Video content with interactive controls  
+// - SciencePageGenerator.ts - Science experiments and educational simulations
+//
+// This file is kept for backward compatibility but should not be modified.
+// New features should be added to the appropriate specialized generator.
 
-// Legacy function for backward compatibility
+// Re-export the new modular functions
+export { generateCoverPage, generateTableOfContentsPage } from './CoverPageGenerator';
+export { generateInteractivePage, generateClickableHotspotPage } from './InteractivePageGenerator';
+export { generateVideoPage, generateInteractiveVideoPage } from './VideoPageGenerator';
+export { generateScienceExperimentPage, generatePeriodicTablePage } from './SciencePageGenerator';
+
+// Legacy function for backward compatibility - will be removed in future version
 export const generateMultimediaCoverPage = (title: string, author: string, subject: string, grade: string) => {
   return `<!DOCTYPE html>
 <html lang="en">
