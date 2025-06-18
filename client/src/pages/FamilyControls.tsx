@@ -1,83 +1,202 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { Progress } from "@/components/ui/progress";
-import { format, parseISO } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Shield, Users, Clock, Activity, Settings2 } from "lucide-react";
 import { 
-  Shield,
-  Users,
-  Clock,
-  Activity,
-  Target,
-  Lock,
-  Plus,
-  BarChart3,
-  PieChart,
-  TrendingUp
-} from "lucide-react";
-
-// Hooks and components
-import { useFamilyControls, childSchema, restrictionSchema } from "@/hooks/useFamilyControls";
-import { useFormDialog } from "@/hooks/useFormDialog";
-import { ChildProfileCard } from "@/components/family-controls/ChildProfileCard";
-import { RestrictionCard } from "@/components/family-controls/RestrictionCard";
-import { ActivityLogItem } from "@/components/family-controls/ActivityLogItem";
+  DeviceOverview, 
+  TimeRestrictions, 
+  AppRestrictions, 
+  ContentFilters,
+  type FamilyMember,
+  type TimeRestriction,
+  type AppRestriction,
+  type ContentFilter,
+  type Device,
+  type TimeRestrictionFormType,
+  type AppRestrictionFormType,
+  type ContentFilterFormType
+} from "@/components/family/modules";
 
 export default function FamilyControls() {
-  const { 
-    children, 
-    restrictions, 
-    activityLogs, 
-    addChild, 
-    addRestriction, 
-    updateRestriction, 
-    removeRestriction 
-  } = useFamilyControls();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<string>("all");
 
-  // View states
-  const [selectedChild, setSelectedChild] = useState<string>("all");
-  const [selectedTimeframe, setSelectedTimeframe] = useState("week");
+  // Mock data - replace with actual API calls
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([
+    {
+      id: "1",
+      name: "Emma Johnson",
+      email: "emma@example.com",
+      role: "child",
+      age: 12,
+      profileImage: "/api/placeholder/40/40",
+      devices: [
+        {
+          id: "device-1",
+          name: "Emma's iPad",
+          type: "tablet",
+          userId: "1",
+          isOnline: true,
+          lastSeen: new Date().toISOString(),
+          batteryLevel: 85,
+          location: "Home",
+        },
+        {
+          id: "device-2",
+          name: "Emma's Phone",
+          type: "phone",
+          userId: "1",
+          isOnline: false,
+          lastSeen: new Date(Date.now() - 3600000).toISOString(),
+          batteryLevel: 15,
+        },
+      ],
+    },
+    {
+      id: "2",
+      name: "Alex Johnson",
+      email: "alex@example.com",
+      role: "child",
+      age: 15,
+      devices: [
+        {
+          id: "device-3",
+          name: "Alex's Laptop",
+          type: "laptop",
+          userId: "2",
+          isOnline: true,
+          lastSeen: new Date().toISOString(),
+          batteryLevel: 92,
+          location: "School",
+        },
+      ],
+    },
+  ]);
 
-  // Form dialogs
-  const childDialog = useFormDialog(childSchema, addChild, {
-    firstName: "",
-    lastName: "",
-    grade: "",
-    age: "",
-    school: "",
-  });
+  const [timeRestrictions, setTimeRestrictions] = useState<TimeRestriction[]>([
+    {
+      id: "1",
+      deviceId: "device-1",
+      dayOfWeek: 1,
+      startTime: "09:00",
+      endTime: "17:00",
+      isActive: true,
+    },
+    {
+      id: "2",
+      deviceId: "device-2",
+      dayOfWeek: 6,
+      startTime: "10:00",
+      endTime: "20:00",
+      isActive: true,
+    },
+  ]);
 
-  const restrictionDialog = useFormDialog(restrictionSchema, addRestriction, {
-    childId: "",
-    type: "screen-time",
-    value: "",
-    description: "",
-    isActive: true,
-  });
+  const [appRestrictions, setAppRestrictions] = useState<AppRestriction[]>([
+    {
+      id: "1",
+      deviceId: "device-1",
+      appName: "TikTok",
+      packageName: "com.zhiliaoapp.musically",
+      isBlocked: true,
+      timeLimit: 60,
+      usedTime: 45,
+    },
+    {
+      id: "2",
+      deviceId: "device-3",
+      appName: "Instagram",
+      packageName: "com.instagram.android",
+      isBlocked: false,
+      timeLimit: 120,
+      usedTime: 89,
+    },
+  ]);
 
-  // Filter functions
-  const filteredChildren = selectedChild === "all" ? children : children.filter(child => child.id === selectedChild);
-  const filteredActivities = selectedChild === "all" ? activityLogs : activityLogs.filter(log => log.childId === selectedChild);
-  const filteredRestrictions = selectedChild === "all" ? restrictions : restrictions.filter(restriction => restriction.childId === selectedChild);
+  const [contentFilters, setContentFilters] = useState<ContentFilter[]>([
+    {
+      id: "1",
+      deviceId: "device-1",
+      category: "social",
+      isBlocked: true,
+      ageRating: "13+",
+    },
+    {
+      id: "2",
+      deviceId: "device-2",
+      category: "games",
+      isBlocked: false,
+      ageRating: "E10+",
+    },
+  ]);
+
+  // Get all devices for form selections
+  const allDevices: Device[] = familyMembers.flatMap(member => member.devices);
 
   // Statistics
-  const totalChildren = children.length;
-  const activeRestrictions = restrictions.filter(r => r.isActive).length;
-  const todayActivities = activityLogs.filter(log => 
-    format(parseISO(log.timestamp), "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
+  const totalDevices = allDevices.length;
+  const onlineDevices = allDevices.filter(d => d.isOnline).length;
+  const activeRestrictions = timeRestrictions.filter(r => r.isActive).length + 
+                           appRestrictions.filter(r => r.isBlocked).length + 
+                           contentFilters.filter(f => f.isBlocked).length;
+  const protectedDevices = allDevices.filter(d => 
+    familyMembers.find(m => m.devices.includes(d))?.role === 'child'
   ).length;
-  const averageScreenTime = children.reduce((acc, child) => acc + child.totalScreenTime, 0) / children.length;
 
-  const handleRestrictionToggle = (id: string, isActive: boolean) => {
-    updateRestriction(id, { isActive });
+  // Handler functions
+  const handleAddTimeRestriction = (restriction: TimeRestrictionFormType) => {
+    const newRestriction: TimeRestriction = {
+      id: Date.now().toString(),
+      ...restriction,
+    };
+    setTimeRestrictions(prev => [...prev, newRestriction]);
+  };
+
+  const handleUpdateTimeRestriction = (id: string, restriction: Partial<TimeRestrictionFormType>) => {
+    setTimeRestrictions(prev => prev.map(r => r.id === id ? { ...r, ...restriction } : r));
+  };
+
+  const handleDeleteTimeRestriction = (id: string) => {
+    setTimeRestrictions(prev => prev.filter(r => r.id !== id));
+  };
+
+  const handleAddAppRestriction = (restriction: AppRestrictionFormType) => {
+    const newRestriction: AppRestriction = {
+      id: Date.now().toString(),
+      ...restriction,
+    };
+    setAppRestrictions(prev => [...prev, newRestriction]);
+  };
+
+  const handleUpdateAppRestriction = (id: string, restriction: Partial<AppRestrictionFormType>) => {
+    setAppRestrictions(prev => prev.map(r => r.id === id ? { ...r, ...restriction } : r));
+  };
+
+  const handleDeleteAppRestriction = (id: string) => {
+    setAppRestrictions(prev => prev.filter(r => r.id !== id));
+  };
+
+  const handleAddContentFilter = (filter: ContentFilterFormType) => {
+    const newFilter: ContentFilter = {
+      id: Date.now().toString(),
+      ...filter,
+    };
+    setContentFilters(prev => [...prev, newFilter]);
+  };
+
+  const handleUpdateContentFilter = (id: string, filter: Partial<ContentFilterFormType>) => {
+    setContentFilters(prev => prev.map(f => f.id === id ? { ...f, ...filter } : f));
+  };
+
+  const handleDeleteContentFilter = (id: string) => {
+    setContentFilters(prev => prev.filter(f => f.id !== id));
+  };
+
+  const handleDeviceSettings = (deviceId: string) => {
+    // Navigate to device-specific settings
+    console.log("Open device settings for:", deviceId);
   };
 
   return (
@@ -413,174 +532,61 @@ export default function FamilyControls() {
       </Card>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="children" className="space-y-4 sm:space-y-6">
+      <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
         <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto">
-          <TabsTrigger value="children" className="text-xs sm:text-sm">
-            <span className="hidden sm:inline">Children ({filteredChildren.length})</span>
-            <span className="sm:hidden">Kids ({filteredChildren.length})</span>
+          <TabsTrigger value="overview" className="text-xs sm:text-sm">
+            Device Overview
           </TabsTrigger>
-          <TabsTrigger value="restrictions" className="text-xs sm:text-sm">
-            <span className="hidden sm:inline">Restrictions ({filteredRestrictions.length})</span>
-            <span className="sm:hidden">Rules ({filteredRestrictions.length})</span>
+          <TabsTrigger value="time" className="text-xs sm:text-sm">
+            Time Restrictions
           </TabsTrigger>
-          <TabsTrigger value="activity" className="text-xs sm:text-sm col-span-2 lg:col-span-1">
-            <span className="hidden sm:inline">Activity Log ({filteredActivities.length})</span>
-            <span className="sm:hidden">Activity ({filteredActivities.length})</span>
+          <TabsTrigger value="apps" className="text-xs sm:text-sm">
+            App Controls
           </TabsTrigger>
-          <TabsTrigger value="reports" className="text-xs sm:text-sm lg:col-span-1">
-            <span className="hidden sm:inline">Reports</span>
-            <span className="sm:hidden">Stats</span>
+          <TabsTrigger value="content" className="text-xs sm:text-sm">
+            Content Filters
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="children" className="space-y-4 sm:space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            {filteredChildren.map((child) => (
-              <ChildProfileCard 
-                key={child.id} 
-                child={child}
-                onViewDetails={(childId) => console.log("View details for:", childId)}
-                onSettings={(childId) => console.log("Settings for:", childId)}
-              />
-            ))}
-          </div>
+        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+          <DeviceOverview
+            familyMembers={familyMembers}
+            onDeviceSettings={handleDeviceSettings}
+            isLoading={isLoading}
+          />
         </TabsContent>
 
-        <TabsContent value="restrictions" className="space-y-4 sm:space-y-6">
-          <div className="space-y-3 sm:space-y-4">
-            {filteredRestrictions.map((restriction) => {
-              const child = children.find(c => c.id === restriction.childId);
-              return (
-                <RestrictionCard 
-                  key={restriction.id} 
-                  restriction={restriction}
-                  child={child}
-                  onToggle={handleRestrictionToggle}
-                  onDelete={removeRestriction}
-                />
-              );
-            })}
-          </div>
+        <TabsContent value="time" className="space-y-4 sm:space-y-6">
+          <TimeRestrictions
+            restrictions={timeRestrictions}
+            devices={allDevices}
+            onAdd={handleAddTimeRestriction}
+            onUpdate={handleUpdateTimeRestriction}
+            onDelete={handleDeleteTimeRestriction}
+            isLoading={isLoading}
+          />
         </TabsContent>
 
-        <TabsContent value="activity" className="space-y-4 sm:space-y-6">
-          <div className="space-y-2 sm:space-y-3">
-            {filteredActivities.map((activity) => {
-              const child = children.find(c => c.id === activity.childId);
-              return (
-                <ActivityLogItem 
-                  key={activity.id} 
-                  activity={activity}
-                  child={child}
-                />
-              );
-            })}
-          </div>
+        <TabsContent value="apps" className="space-y-4 sm:space-y-6">
+          <AppRestrictions
+            restrictions={appRestrictions}
+            devices={allDevices}
+            onAdd={handleAddAppRestriction}
+            onUpdate={handleUpdateAppRestriction}
+            onDelete={handleDeleteAppRestriction}
+            isLoading={isLoading}
+          />
         </TabsContent>
 
-        <TabsContent value="reports" className="space-y-4 sm:space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Weekly Screen Time
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {children.map((child) => (
-                    <div key={child.id} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{child.firstName}</span>
-                        <span className="text-sm">{child.totalScreenTime}h / {child.weeklyGoal}h</span>
-                      </div>
-                      <Progress 
-                        value={(child.totalScreenTime / child.weeklyGoal) * 100} 
-                        className="h-2"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChart className="h-5 w-5" />
-                  Learning Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {children.map((child) => (
-                    <div key={child.id} className="space-y-2">
-                      <h4 className="font-medium">{child.firstName}</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {Object.entries(child.weeklyProgress).map(([subject, progress]) => (
-                          <div key={subject} className="flex items-center justify-between text-sm">
-                            <span className="capitalize">{subject}</span>
-                            <span>{progress}%</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Activity Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Total Learning Sessions</span>
-                    <span className="font-medium">{activityLogs.filter(log => log.type === 'learning').length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Achievements Earned</span>
-                    <span className="font-medium">{activityLogs.filter(log => log.type === 'achievement').length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Restrictions Triggered</span>
-                    <span className="font-medium">{activityLogs.filter(log => log.type === 'restriction').length}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5" />
-                  Goals & Targets
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Weekly Goal Progress</span>
-                    <span className="font-medium">
-                      {Math.round((children.reduce((acc, child) => acc + (child.totalScreenTime / child.weeklyGoal), 0) / children.length) * 100)}%
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Average Study Score</span>
-                    <span className="font-medium">
-                      {Math.round(activityLogs.filter(log => log.score).reduce((acc, log) => acc + log.score!, 0) / activityLogs.filter(log => log.score).length)}%
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="content" className="space-y-4 sm:space-y-6">
+          <ContentFilters
+            filters={contentFilters}
+            devices={allDevices}
+            onAdd={handleAddContentFilter}
+            onUpdate={handleUpdateContentFilter}
+            onDelete={handleDeleteContentFilter}
+            isLoading={isLoading}
+          />
         </TabsContent>
       </Tabs>
     </div>
