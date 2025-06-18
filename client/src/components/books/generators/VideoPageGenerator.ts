@@ -100,7 +100,7 @@ export const generateVideoLessonPage = (videoUrl: string, title: string, descrip
       <div class="chapters-list">
         ${chapters.map(chapter => `
           <div class="chapter-item" onclick="seekToTime(${chapter.time})">
-            <div class="chapter-time">${formatTime(chapter.time)}</div>
+            <div class="chapter-time">${Math.floor(chapter.time / 60)}:${String(Math.floor(chapter.time % 60)).padStart(2, '0')}</div>
             <div class="chapter-title">${chapter.title}</div>
           </div>
         `).join('')}
@@ -119,7 +119,6 @@ export const generateVideoLessonPage = (videoUrl: string, title: string, descrip
       const mins = Math.floor(seconds / 60);
       const secs = Math.floor(seconds % 60);
       return mins + ':' + (secs < 10 ? '0' : '') + secs;
-      return \`\${mins}:\${secs.toString().padStart(2, '0')}\`;
     }
   </script>
 </body>
