@@ -32,6 +32,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerMediaRoutes(app);
   registerLicensingRoutes(app);
   registerTenantRoutes(app);
+  registerUserRoutes(app);
+  registerLibraryRoutes(app);
   registerITRoutes(app);
   registerSecurityRoutes(app);
   registerPBXRoutes(app);

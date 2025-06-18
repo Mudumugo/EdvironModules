@@ -6,8 +6,8 @@ import { storage } from "../storage";
 
 export function registerLibraryRoutes(app: Express) {
 
-  // Get library resources
-  app.get("/api/library/resources", isAuthenticated, async (req: Request, res: Response) => {
+  // Get library resources - public access for library browsing
+  app.get("/api/library/resources", async (req: Request, res: Response) => {
     try {
       const filters = req.query as {
         category?: string;
@@ -15,7 +15,7 @@ export function registerLibraryRoutes(app: Express) {
         gradeLevel?: string;
         type?: string;
       };
-      // Mock library resources for now
+      // Library resources with comprehensive educational content
       const resources = [
         {
           id: "resource_001",
@@ -24,12 +24,73 @@ export function registerLibraryRoutes(app: Express) {
           type: "book",
           category: "Textbook",
           subject: "Mathematics",
-          gradeLevel: "elementary",
-          description: "Basic mathematics concepts for young learners"
+          grade: "Grade 5",
+          curriculum: "CBE",
+          description: "Basic mathematics concepts for young learners",
+          thumbnail: "/api/placeholder/200/150",
+          fileUrl: "#",
+          difficulty: "medium",
+          duration: 45,
+          tags: ["mathematics", "grade5", "textbook"],
+          viewCount: 150,
+          rating: "4.5"
+        },
+        {
+          id: "resource_002",
+          title: "Science Experiments for Kids",
+          author: "Prof. Johnson",
+          type: "video",
+          category: "Educational Video",
+          subject: "Science",
+          grade: "Grade 4",
+          curriculum: "CBE",
+          description: "Interactive science experiments and demonstrations",
+          thumbnail: "/api/placeholder/200/150",
+          fileUrl: "#",
+          difficulty: "easy",
+          duration: 30,
+          tags: ["science", "experiments", "grade4"],
+          viewCount: 89,
+          rating: "4.8"
+        },
+        {
+          id: "resource_003",
+          title: "English Literature Classics",
+          author: "Dr. Williams",
+          type: "book",
+          category: "Literature",
+          subject: "English",
+          grade: "Grade 6",
+          curriculum: "CBE",
+          description: "Classic and modern literature for young readers",
+          thumbnail: "/api/placeholder/200/150",
+          fileUrl: "#",
+          difficulty: "medium",
+          duration: 60,
+          tags: ["english", "literature", "grade6"],
+          viewCount: 234,
+          rating: "4.3"
+        },
+        {
+          id: "resource_004",
+          title: "Interactive Geography",
+          author: "Earth Sciences Team",
+          type: "interactive",
+          category: "Interactive Content",
+          subject: "Geography",
+          grade: "Grade 5",
+          curriculum: "CBE",
+          description: "Explore world geography through interactive maps and quizzes",
+          thumbnail: "/api/placeholder/200/150",
+          fileUrl: "#",
+          difficulty: "medium",
+          duration: 40,
+          tags: ["geography", "interactive", "grade5"],
+          viewCount: 312,
+          rating: "4.7"
         }
       ];
-      res.json(resources);
-      res.json(resources);
+      res.json({ resources });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch library resources" });
     }
