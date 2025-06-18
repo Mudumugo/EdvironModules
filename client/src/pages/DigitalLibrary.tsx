@@ -121,7 +121,7 @@ export default function DigitalLibrary() {
     queryKey: [`/api/library/categories?gradeLevel=${gradeLevel}`],
   });
 
-  // Fetch subjects for current grade level
+  // Fetch subjects for current grade level with resource counts
   const { data: subjectsResponse = [] } = useQuery({
     queryKey: [`/api/library/subjects?gradeLevel=${gradeLevel}${selectedCategory !== 'all' ? `&categoryId=${selectedCategory}` : ''}`],
   });

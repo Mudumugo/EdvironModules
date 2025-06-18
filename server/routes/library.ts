@@ -16,7 +16,7 @@ export function registerLibraryRoutes(app: Express) {
     }
   });
 
-  // Get library subjects
+  // Get library subjects with resource counts
   app.get('/api/library/subjects', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const { gradeLevel, categoryId } = req.query;
@@ -24,7 +24,17 @@ export function registerLibraryRoutes(app: Express) {
         gradeLevel as string, 
         categoryId as string
       );
-      res.json(subjects);
+      
+      // Get resource counts for each subject
+      const resourceCounts = await storage.getResourceCountsBySubject(gradeLevel as string);
+      
+      // Add resource counts to subjects
+      const subjectsWithCounts = subjects.map(subject => ({
+        ...subject,
+        resourceCounts: resourceCounts[subject.id] || { books: 0, worksheets: 0, quizzes: 0 }
+      }));
+      
+      res.json(subjectsWithCounts);
     } catch (error) {
       console.error('Error fetching library subjects:', error);
       res.status(500).json({ message: 'Failed to fetch subjects' });

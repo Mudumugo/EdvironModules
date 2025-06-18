@@ -144,6 +144,7 @@ export interface IStorage {
   getLibraryResource(resourceId: string): Promise<any>;
   createLibraryResourceAccess(access: any): Promise<any>;
   updateResourceStats(resourceId: string, updateType: 'view' | 'download'): Promise<void>;
+  getResourceCountsBySubject(gradeLevel: string): Promise<{ [subjectId: string]: { books: number, worksheets: number, quizzes: number } }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1217,7 +1218,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLibraryResources(filters: any): Promise<any[]> {
-    // Return sample resources
+    // Generate resources based on grade level and subject
+    const { gradeLevel, categoryId, subjectId } = filters;
+    
+    if (gradeLevel === 'junior_secondary') {
+      return this.generateJuniorSecondaryResources(categoryId, subjectId);
+    } else if (gradeLevel === 'senior_secondary') {
+      return this.generateSeniorSecondaryResources(categoryId, subjectId);
+    }
+    
+    // Primary resources
     const resources = [
       {
         id: 'math-basics-1',
@@ -1309,6 +1319,92 @@ export class DatabaseStorage implements IStorage {
   async updateResourceStats(resourceId: string, updateType: 'view' | 'download'): Promise<void> {
     // Mock implementation - in real app this would update database
     console.log(`Updated ${updateType} stats for resource ${resourceId}`);
+  }
+
+  private generateJuniorSecondaryResources(categoryId?: string, subjectId?: string): any[] {
+    const resources = [
+      // Mathematics resources
+      { id: 'js-math-1', title: 'Number Systems & Operations', resourceType: 'book', categoryId: 'mathematics', subjectId: 'js_numbers', gradeLevel: 'junior_secondary' },
+      { id: 'js-math-2', title: 'Algebra Fundamentals', resourceType: 'worksheet', categoryId: 'mathematics', subjectId: 'js_algebra', gradeLevel: 'junior_secondary' },
+      { id: 'js-math-3', title: 'Geometry Practice', resourceType: 'quiz', categoryId: 'mathematics', subjectId: 'js_geometry', gradeLevel: 'junior_secondary' },
+      { id: 'js-math-4', title: 'Statistics & Data', resourceType: 'book', categoryId: 'mathematics', subjectId: 'js_statistics', gradeLevel: 'junior_secondary' },
+      
+      // English resources
+      { id: 'js-eng-1', title: 'Communication Skills', resourceType: 'book', categoryId: 'english', subjectId: 'js_listening', gradeLevel: 'junior_secondary' },
+      { id: 'js-eng-2', title: 'Reading Comprehension', resourceType: 'worksheet', categoryId: 'english', subjectId: 'js_reading', gradeLevel: 'junior_secondary' },
+      { id: 'js-eng-3', title: 'Creative Writing', resourceType: 'book', categoryId: 'english', subjectId: 'js_writing', gradeLevel: 'junior_secondary' },
+      { id: 'js-eng-4', title: 'Literature Analysis', resourceType: 'quiz', categoryId: 'english', subjectId: 'js_literature', gradeLevel: 'junior_secondary' },
+      
+      // Kiswahili resources
+      { id: 'js-kis-1', title: 'Mazungumzo na Mawasiliano', resourceType: 'book', categoryId: 'kiswahili', subjectId: 'js_mazungumzo', gradeLevel: 'junior_secondary' },
+      { id: 'js-kis-2', title: 'Ujuzi wa Kusoma', resourceType: 'worksheet', categoryId: 'kiswahili', subjectId: 'js_kusoma', gradeLevel: 'junior_secondary' },
+      { id: 'js-kis-3', title: 'Maandishi ya Kiswahili', resourceType: 'quiz', categoryId: 'kiswahili', subjectId: 'js_kuandika', gradeLevel: 'junior_secondary' },
+      
+      // Science resources
+      { id: 'js-sci-1', title: 'Living Things Study', resourceType: 'book', categoryId: 'science', subjectId: 'js_biology_basics', gradeLevel: 'junior_secondary' },
+      { id: 'js-sci-2', title: 'Matter & Materials', resourceType: 'worksheet', categoryId: 'science', subjectId: 'js_chemistry_basics', gradeLevel: 'junior_secondary' },
+      { id: 'js-sci-3', title: 'Energy & Forces', resourceType: 'quiz', categoryId: 'science', subjectId: 'js_physics_basics', gradeLevel: 'junior_secondary' },
+      { id: 'js-sci-4', title: 'Earth Science', resourceType: 'book', categoryId: 'science', subjectId: 'js_earth_science', gradeLevel: 'junior_secondary' }
+    ];
+
+    if (categoryId && categoryId !== 'all') {
+      return resources.filter(r => r.categoryId === categoryId);
+    }
+    if (subjectId) {
+      return resources.filter(r => r.subjectId === subjectId);
+    }
+    return resources;
+  }
+
+  private generateSeniorSecondaryResources(categoryId?: string, subjectId?: string): any[] {
+    const resources = [
+      // Mathematics resources
+      { id: 'ss-math-1', title: 'Advanced Calculus', resourceType: 'book', categoryId: 'mathematics', subjectId: 'ss_calculus', gradeLevel: 'senior_secondary' },
+      { id: 'ss-math-2', title: 'Statistics & Probability', resourceType: 'worksheet', categoryId: 'mathematics', subjectId: 'ss_statistics', gradeLevel: 'senior_secondary' },
+      { id: 'ss-math-3', title: 'Geometric Analysis', resourceType: 'quiz', categoryId: 'mathematics', subjectId: 'ss_geometry', gradeLevel: 'senior_secondary' },
+      
+      // Science resources
+      { id: 'ss-bio-1', title: 'Molecular Biology', resourceType: 'book', categoryId: 'biology', subjectId: 'ss_molecular_bio', gradeLevel: 'senior_secondary' },
+      { id: 'ss-bio-2', title: 'Ecology Studies', resourceType: 'worksheet', categoryId: 'biology', subjectId: 'ss_ecology', gradeLevel: 'senior_secondary' },
+      { id: 'ss-chem-1', title: 'Organic Chemistry', resourceType: 'book', categoryId: 'chemistry', subjectId: 'ss_organic_chem', gradeLevel: 'senior_secondary' },
+      { id: 'ss-chem-2', title: 'Physical Chemistry', resourceType: 'quiz', categoryId: 'chemistry', subjectId: 'ss_physical_chem', gradeLevel: 'senior_secondary' },
+      { id: 'ss-phy-1', title: 'Mechanics & Motion', resourceType: 'book', categoryId: 'physics', subjectId: 'ss_mechanics', gradeLevel: 'senior_secondary' },
+      { id: 'ss-phy-2', title: 'Electromagnetism', resourceType: 'worksheet', categoryId: 'physics', subjectId: 'ss_electromagnetism', gradeLevel: 'senior_secondary' },
+      
+      // Languages
+      { id: 'ss-eng-1', title: 'Advanced Literature', resourceType: 'book', categoryId: 'english', subjectId: 'ss_advanced_english', gradeLevel: 'senior_secondary' },
+      { id: 'ss-eng-2', title: 'Academic Writing', resourceType: 'worksheet', categoryId: 'english', subjectId: 'ss_composition', gradeLevel: 'senior_secondary' },
+      
+      // Computer Studies
+      { id: 'ss-comp-1', title: 'Programming Basics', resourceType: 'book', categoryId: 'computer', subjectId: 'ss_programming', gradeLevel: 'senior_secondary' },
+      { id: 'ss-comp-2', title: 'Database Management', resourceType: 'quiz', categoryId: 'computer', subjectId: 'ss_databases', gradeLevel: 'senior_secondary' }
+    ];
+
+    if (categoryId && categoryId !== 'all') {
+      return resources.filter(r => r.categoryId === categoryId);
+    }
+    if (subjectId) {
+      return resources.filter(r => r.subjectId === subjectId);
+    }
+    return resources;
+  }
+
+  async getResourceCountsBySubject(gradeLevel: string): Promise<{ [subjectId: string]: { books: number, worksheets: number, quizzes: number } }> {
+    const allResources = await this.getLibraryResources({ gradeLevel });
+    const counts: { [subjectId: string]: { books: number, worksheets: number, quizzes: number } } = {};
+    
+    allResources.forEach(resource => {
+      const subjectId = resource.subjectId || resource.categoryId;
+      if (!counts[subjectId]) {
+        counts[subjectId] = { books: 0, worksheets: 0, quizzes: 0 };
+      }
+      
+      if (resource.resourceType === 'book') counts[subjectId].books++;
+      else if (resource.resourceType === 'worksheet') counts[subjectId].worksheets++;
+      else if (resource.resourceType === 'quiz') counts[subjectId].quizzes++;
+    });
+    
+    return counts;
   }
 }
 
