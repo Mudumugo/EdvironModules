@@ -54,6 +54,72 @@ const DigitalLibraryNew = () => {
     enabled: true, // Allow library access without authentication
   });
 
+  // Sample resources for demonstration
+  const sampleResources = [
+    {
+      id: "1",
+      title: "Mathematics Grade 5",
+      type: "book",
+      grade: "Grade 5",
+      curriculum: "CBE",
+      thumbnailUrl: "/api/placeholder/200/150",
+      fileUrl: "#",
+      difficulty: "medium",
+      duration: 45,
+      tags: ["mathematics", "grade5", "textbook"],
+      viewCount: 150,
+      rating: "4.5",
+      accessTier: "free",
+      isPublished: true,
+      authorId: "math-publisher",
+      language: "English",
+      isInteractive: false,
+      hasVideo: false,
+      hasAudio: false,
+      xapiEnabled: true,
+      content: `<div class="textbook-content"><h2>Chapter 1: Numbers and Operations</h2><p>Learn about addition, subtraction, multiplication and division...</p></div>`,
+      mediaAssets: [],
+      interactiveElements: [],
+      trackingConfig: {
+        trackingEnabled: true,
+        trackReadingProgress: true,
+        trackMediaInteractions: false,
+        trackAssessments: false
+      }
+    },
+    {
+      id: "2",
+      title: "Science Experiments",
+      type: "video",
+      grade: "Grade 4",
+      curriculum: "CBE",
+      thumbnailUrl: "/api/placeholder/200/150",
+      fileUrl: "#",
+      difficulty: "easy",
+      duration: 30,
+      tags: ["science", "experiments", "grade4"],
+      viewCount: 89,
+      rating: "4.8",
+      accessTier: "free",
+      isPublished: true,
+      authorId: "science-academy",
+      language: "English",
+      isInteractive: false,
+      hasVideo: true,
+      hasAudio: true,
+      xapiEnabled: true,
+      content: `<div class="video-content"><h2>Simple Science Experiments</h2><video controls><source src="#" type="video/mp4"></video></div>`,
+      mediaAssets: [{ type: "video", url: "#" }],
+      interactiveElements: [],
+      trackingConfig: {
+        trackingEnabled: true,
+        trackReadingProgress: false,
+        trackMediaInteractions: true,
+        trackAssessments: false
+      }
+    }
+  ];
+
   // Transform API response from snake_case to camelCase and add multimedia sample data
   const rawResources = apiResponse?.resources || [];
   const resources = rawResources.length > 0 ? rawResources.map((resource: any) => ({
