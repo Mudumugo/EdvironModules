@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useSecurityModule } from "@/hooks/useSecurityModule";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,41 +39,28 @@ export default function SecurityDashboard() {
 
   // Using the security module hook
   const {
-    metrics,
-    zones,
-    cameras,
-    events,
-    visitors,
-    calls,
-    threats,
-    isLoading: { 
-      metrics: metricsLoading,
-      zones: zonesLoading,
-      cameras: camerasLoading,
-      events: eventsLoading,
-      visitors: visitorsLoading,
-      calls: callsLoading,
-      threats: threatsLoading
-    },
-    createEvent,
-    createVisitor,
-    createCall
+    useSecurityZones,
+    useSecurityCameras,
+    useSecurityEvents,
+    useSecurityVisitors,
+    useSecurityCalls,
+    useSecurityMetrics,
+    createSecurityEvent,
+    createVisitorRegistration,
+    createSecurityCall
   } = useSecurityModule();
 
-  // Fetch additional data
-  const { data: additionalThreats } = useQuery({
-    queryKey: ["/api/security/threats"],
-  });
+  // Fetch security data
+  const { data: zones = [], isLoading: zonesLoading } = useSecurityZones();
+  const { data: cameras = [], isLoading: camerasLoading } = useSecurityCameras();
+  const { data: securityEvents = [], isLoading: eventsLoading } = useSecurityEvents();
+  const { data: securityVisitors = [], isLoading: visitorsLoading } = useSecurityVisitors();
+  const { data: securityCalls = [], isLoading: callsLoading } = useSecurityCalls();
+  const { data: metrics = {}, isLoading: metricsLoading } = useSecurityMetrics();
 
-  // Fetch security events
-  const { data: events, isLoading: eventsLoading } = useQuery({
-    queryKey: selectedZone === "all" ? ["/api/security/events"] : ["/api/security/events", { zoneId: selectedZone }],
-  });
-
-  // Fetch visitor registrations
-  const { data: visitors, isLoading: visitorsLoading } = useQuery({
-    queryKey: ["/api/security/visitors"],
-  });
+  // Mock threats data for now
+  const threats: any[] = [];
+  const threatsLoading = false;
 
   const handleEventClick = (event: any) => {
     setSelectedEvent(event);
