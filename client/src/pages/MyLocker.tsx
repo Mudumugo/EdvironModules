@@ -326,7 +326,9 @@ export default function MyLocker() {
                   <h4 className="font-medium mb-2">Your Annotations</h4>
                   <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
                     <pre className="whitespace-pre-wrap text-sm">
-                      {JSON.stringify(selectedLockerItem.annotations, null, 2)}
+                      {typeof selectedLockerItem.annotations === 'string' 
+                        ? selectedLockerItem.annotations 
+                        : JSON.stringify(selectedLockerItem.annotations, null, 2)}
                     </pre>
                   </div>
                 </div>
