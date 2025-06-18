@@ -14,16 +14,14 @@ import {
   TrendingUp
 } from "lucide-react";
 import { Link } from "wouter";
-import { UserRole } from "@shared/schema";
-
 interface SeniorDashboardProps {
   user: any;
   stats: any;
 }
 
 export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
-  const isTeacher = user?.role === UserRole.TEACHER;
-  const isAdmin = user?.role === UserRole.ADMIN;
+  const isTeacher = user?.role === 'TEACHER';
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
