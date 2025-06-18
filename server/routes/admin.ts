@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requireRole } from "../roleMiddleware";
 import { storage } from "../storage";
@@ -13,7 +13,7 @@ export function registerAdminRoutes(app: Express) {
   app.get('/api/admin/dashboard/stats', 
     isAuthenticated, 
     requireRole(["school_admin"]), 
-    async (req: any, res) => {
+    async (req: Request, res: Response) => {
       try {
         const { timeframe = 'thisMonth' } = req.query;
         
@@ -84,7 +84,7 @@ export function registerAdminRoutes(app: Express) {
   app.get('/api/admin/dashboard/activity', 
     isAuthenticated, 
     requireRole(["school_admin"]), 
-    async (req: any, res) => {
+    async (req: Request, res: Response) => {
       try {
         // Provide mock recent activity data since activityLogs might be empty
         const mockActivity = [
@@ -138,7 +138,7 @@ export function registerAdminRoutes(app: Express) {
   app.get('/api/admin/dashboard/alerts', 
     isAuthenticated, 
     requireRole(["school_admin"]), 
-    async (req: any, res) => {
+    async (req: Request, res: Response) => {
       try {
         // Provide mock alerts data since notifications table might be empty  
         const mockAlerts = [
@@ -170,7 +170,7 @@ export function registerAdminRoutes(app: Express) {
   app.get('/api/admin/dashboard/performance', 
     isAuthenticated, 
     requireRole(["school_admin"]), 
-    async (req: any, res) => {
+    async (req: Request, res: Response) => {
       try {
         // This would typically aggregate data from various sources
         // For now, we'll provide calculated metrics
@@ -210,7 +210,7 @@ export function registerAdminRoutes(app: Express) {
   app.get('/api/admin/dashboard/enrollment-trends', 
     isAuthenticated, 
     requireRole(["school_admin"]), 
-    async (req: any, res) => {
+    async (req: Request, res: Response) => {
       try {
         // Get enrollment data for the last 12 months
         const enrollmentTrends = await db
@@ -238,7 +238,7 @@ export function registerAdminRoutes(app: Express) {
   app.post('/api/admin/log-action', 
     isAuthenticated, 
     requireRole(["school_admin"]), 
-    async (req: any, res) => {
+    async (req: Request, res: Response) => {
       try {
         const { action, target, details } = req.body;
         const userId = req.user?.id;
