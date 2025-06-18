@@ -5,11 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Shield, Users, Clock, Activity, Settings2 } from "lucide-react";
 import { 
+  FamilyStatsOverview,
   DeviceOverview, 
   TimeRestrictions, 
   AppRestrictions, 
   ContentFilters,
   type FamilyMember,
+  type FamilyStats,
   type TimeRestriction,
   type AppRestriction,
   type ContentFilter,
