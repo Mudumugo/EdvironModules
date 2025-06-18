@@ -461,10 +461,12 @@ function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, 
                     <div className="p-2 bg-white/20 rounded-lg">
                       <BookOpen className="h-5 w-5" />
                     </div>
-                    {subject.name}
+                    <div className="flex-1">
+                      <div className="font-bold">{subject.name}</div>
+                    </div>
                   </CardTitle>
                   <CardDescription className="text-white/90 text-sm">
-                    {subject.competency || 'Learning Resources'}
+                    {subject.competency || subject.description || 'CBE Learning Resources'}
                   </CardDescription>
                 </CardHeader>
                 
