@@ -152,6 +152,20 @@ function Router() {
           </RoleProtectedRoute>
         </Route>
 
+        {/* Communication modules - Multiple roles */}
+        <Route path="/pbx">
+          <RoleProtectedRoute moduleId="pbx">
+            <PBXDashboard />
+          </RoleProtectedRoute>
+        </Route>
+
+        {/* Parent modules - Parent role only */}
+        <Route path="/parent-portal">
+          <RoleProtectedRoute moduleId="parent-portal">
+            <ParentPortal />
+          </RoleProtectedRoute>
+        </Route>
+
         <Route component={NotFound} />
       </Switch>
     </Layout>
