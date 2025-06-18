@@ -181,6 +181,7 @@ export const PERMISSIONS = {
   VIEW_ACCESS_LOGS: "view_access_logs",
   MANAGE_SECURITY_POLICIES: "manage_security_policies",
   MONITOR_ACTIVITIES: "monitor_activities",
+  MANAGE_SECURITY: "manage_security",
   
   // PBX Communication permissions
   MANAGE_PBX: "manage_pbx",

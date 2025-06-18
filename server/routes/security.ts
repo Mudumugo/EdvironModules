@@ -1,252 +1,297 @@
 import type { Express } from "express";
 import { isAuthenticated } from "../replitAuth";
-import { requireRole } from "../roleMiddleware";
+import { requirePermission } from "../roleMiddleware";
+import { db } from "../db";
+import { activityLogs, users } from "@shared/schema";
+import { eq, desc, count, and, gte, sql } from "drizzle-orm";
+
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    role: string;
+    claims?: any;
+  };
+  session?: any;
+}
 
 export function registerSecurityRoutes(app: Express) {
-  // Security metrics endpoint - only accessible by security staff and school admins
+  // Get security events from activity logs
+  app.get('/api/security/events', 
+    isAuthenticated, 
+    requirePermission('MANAGE_SECURITY'),
+    async (req: AuthenticatedRequest, res) => {
+      try {
+        // Get recent activity logs that could indicate security events
+        const recentLogs = await db
+          .select({
+            id: activityLogs.id,
+            action: activityLogs.action,
+            userId: activityLogs.userId,
+            ipAddress: activityLogs.ipAddress,
+            userAgent: activityLogs.userAgent,
+            timestamp: activityLogs.timestamp,
+            details: activityLogs.details
+          })
+          .from(activityLogs)
+          .orderBy(desc(activityLogs.timestamp))
+          .limit(50);
+
+        // Transform activity logs into security events
+        const securityEvents = recentLogs.map(log => {
+          let severity = 'low';
+          let type = 'data_access';
+          let status = 'resolved';
+          let description = log.action;
+
+          // Determine severity and type based on action
+          if (log.action.includes('failed') || log.action.includes('unauthorized')) {
+            severity = 'high';
+            type = 'login_attempt';
+            status = 'investigating';
+          } else if (log.action.includes('admin') || log.action.includes('delete')) {
+            severity = 'medium';
+            type = 'privilege_escalation';
+          } else if (log.action.includes('suspicious') || log.action.includes('blocked')) {
+            severity = 'critical';
+            type = 'suspicious_activity';
+            status = 'active';
+          }
+
+          // Extract IP and location info
+          const ip = log.ipAddress || '127.0.0.1';
+          const location = ip.startsWith('192.168') ? 'Internal Network' : 
+                          ip.startsWith('10.') ? 'Campus Network' : 'External';
+
+          return {
+            id: log.id.toString(),
+            type,
+            severity,
+            user: log.userId || 'system',
+            ip,
+            location,
+            timestamp: log.timestamp.toISOString(),
+            description: description || 'System activity',
+            status
+          };
+        });
+
+        res.json(securityEvents);
+      } catch (error) {
+        console.error('Error fetching security events:', error);
+        res.status(500).json({ error: 'Failed to fetch security events' });
+      }
+    }
+  );
+
+  // Get security metrics
   app.get('/api/security/metrics', 
     isAuthenticated, 
-    requireRole(['school_security', 'school_admin']), 
-    async (req, res) => {
+    requirePermission('MANAGE_SECURITY'),
+    async (req: AuthenticatedRequest, res) => {
       try {
-        // Simulate real-time security data collection
-        const currentTime = new Date();
-        const timeOffset = Math.floor(Math.random() * 360); // Random time variations
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 
-        const securityMetrics = {
-          accessControl: {
-            totalAccessPoints: 45,
-            securePoints: Math.floor(Math.random() * 2) === 0 ? 43 : 45, // Occasionally show issues
-            alertsActive: Math.floor(Math.random() * 3), // 0-2 active alerts
-            lastIncident: `${Math.floor(Math.random() * 12) + 1} hours ago`
-          },
-          surveillance: {
-            cameras: {
-              total: 32,
-              online: 30 + Math.floor(Math.random() * 3), // 30-32 online
-              offline: Math.floor(Math.random() * 3), // 0-2 offline
-              alerts: Math.floor(Math.random() * 2) // 0-1 alerts
-            },
-            coverage: 92 + Math.floor(Math.random() * 6), // 92-97% coverage
-            recordingStatus: Math.random() > 0.1 ? "active" : "maintenance"
-          },
-          incidents: {
-            today: Math.floor(Math.random() * 5), // 0-4 incidents today
-            thisWeek: 15 + Math.floor(Math.random() * 10), // 15-24 this week
-            resolved: 15 + Math.floor(Math.random() * 8), // Most resolved
-            pending: Math.floor(Math.random() * 4) // 0-3 pending
-          },
-          personnel: {
-            onDuty: 6 + Math.floor(Math.random() * 4), // 6-9 on duty
-            totalStaff: 12,
-            locations: ["Main Building", "Library", "Sports Complex", "Parking", "Perimeter"],
-            lastRollCall: `${Math.floor(Math.random() * 4) + 1} hours ago`
-          },
-          systemHealth: {
-            firewallStatus: Math.random() > 0.05 ? "secure" : "updating",
-            intrusion: {
-              attempts: 20 + Math.floor(Math.random() * 15), // 20-34 attempts
-              blocked: 0, // Will be set below
-              success: Math.floor(Math.random() * 2) // 0-1 successful
-            },
-            compliance: 94 + Math.floor(Math.random() * 5) // 94-98% compliance
-          },
-          recentEvents: [
-            {
-              id: 1,
-              type: "patrol_completed",
-              message: "Perimeter check completed - North gate",
-              timestamp: new Date(currentTime.getTime() - (15 * 60 * 1000)), // 15 min ago
-              severity: "info"
-            },
-            {
-              id: 2,
-              type: "access_denied",
-              message: "Unauthorized access attempt - Side entrance",
-              timestamp: new Date(currentTime.getTime() - (32 * 60 * 1000)), // 32 min ago
-              severity: "warning"
-            },
-            {
-              id: 3,
-              type: "patrol_completed",
-              message: "Security patrol completed - Building A",
-              timestamp: new Date(currentTime.getTime() - (60 * 60 * 1000)), // 1 hour ago
-              severity: "info"
-            },
-            {
-              id: 4,
-              type: "maintenance",
-              message: "Camera maintenance completed - Parking lot",
-              timestamp: new Date(currentTime.getTime() - (120 * 60 * 1000)), // 2 hours ago
-              severity: "info"
-            }
-          ],
-          accessLogs: [
-            {
-              id: 1,
-              user: "John Smith (Staff)",
-              location: "Main Entrance",
-              status: "authorized",
-              timestamp: new Date(currentTime.getTime() - (5 * 60 * 1000))
-            },
-            {
-              id: 2,
-              user: "Unknown Card",
-              location: "Emergency Exit A",
-              status: "denied",
-              timestamp: new Date(currentTime.getTime() - (12 * 60 * 1000))
-            },
-            {
-              id: 3,
-              user: "Maria Garcia (Teacher)",
-              location: "Staff Entrance",
-              status: "authorized",
-              timestamp: new Date(currentTime.getTime() - (18 * 60 * 1000))
-            }
-          ],
-          activeIncidents: [
-            {
-              id: 1,
-              title: "Unauthorized Access Attempt",
-              description: "Emergency Exit A - Card swipe denied",
-              priority: "high",
-              timestamp: new Date(currentTime.getTime() - (32 * 60 * 1000)),
-              status: "active"
-            },
-            {
-              id: 2,
-              title: "Camera Malfunction",
-              description: "Parking lot camera offline",
-              priority: "medium",
-              timestamp: new Date(currentTime.getTime() - (60 * 60 * 1000)),
-              status: "investigating"
-            }
-          ].filter(() => Math.random() > 0.3), // Sometimes no active incidents
-          cameraGrid: Array.from({ length: 16 }, (_, i) => ({
-            id: i + 1,
-            name: `Cam ${i + 1}`,
-            status: i === 5 || i === 12 ? "offline" : (i === 8 ? "alert" : "online"),
-            location: `Zone ${Math.floor(i / 4) + 1}`
-          }))
-        };
+        // Get failed login attempts (last week vs previous week)
+        const failedLoginsThisWeek = await db
+          .select({ count: count() })
+          .from(activityLogs)
+          .where(and(
+            sql`${activityLogs.action} LIKE '%failed%' OR ${activityLogs.action} LIKE '%unauthorized%'`,
+            gte(activityLogs.timestamp, weekAgo)
+          ));
 
-        // Fix the intrusion data structure
-        const attempts = securityMetrics.systemHealth.intrusion.attempts;
-        securityMetrics.systemHealth.intrusion.blocked = attempts - Math.floor(Math.random() * 2);
+        const failedLoginsLastWeek = await db
+          .select({ count: count() })
+          .from(activityLogs)
+          .where(and(
+            sql`${activityLogs.action} LIKE '%failed%' OR ${activityLogs.action} LIKE '%unauthorized%'`,
+            gte(activityLogs.timestamp, twoWeeksAgo),
+            sql`${activityLogs.timestamp} < ${weekAgo}`
+          ));
 
-        res.json(securityMetrics);
-      } catch (error) {
-        console.error("Error fetching security metrics:", error);
-        res.status(500).json({ message: "Failed to fetch security metrics" });
-      }
-    }
-  );
+        // Get active threats (critical events)
+        const activeThreats = await db
+          .select({ count: count() })
+          .from(activityLogs)
+          .where(and(
+            sql`${activityLogs.action} LIKE '%suspicious%' OR ${activityLogs.action} LIKE '%blocked%'`,
+            gte(activityLogs.timestamp, weekAgo)
+          ));
 
-  // Security alerts endpoint
-  app.get('/api/security/alerts', 
-    isAuthenticated, 
-    requireRole(['school_security', 'school_admin']), 
-    async (req, res) => {
-      try {
-        const alerts = [
+        // Calculate metrics
+        const thisWeekFailed = failedLoginsThisWeek[0]?.count || 0;
+        const lastWeekFailed = failedLoginsLastWeek[0]?.count || 1; // Avoid division by zero
+        const failedLoginChange = Math.round(((thisWeekFailed - lastWeekFailed) / lastWeekFailed) * 100);
+
+        const activeThreatsCount = activeThreats[0]?.count || 0;
+
+        // Calculate security score based on various factors
+        let securityScore = 100;
+        securityScore -= Math.min(thisWeekFailed * 2, 30); // Reduce score for failed logins
+        securityScore -= Math.min(activeThreatsCount * 10, 40); // Reduce score for active threats
+        securityScore = Math.max(securityScore, 0);
+
+        const metrics = [
           {
-            id: 1,
-            type: "access_violation",
-            title: "Unauthorized Access Attempt",
-            message: "Multiple failed card swipes at Emergency Exit A",
-            severity: "high",
-            timestamp: new Date(),
-            acknowledged: false
+            name: 'Failed Login Attempts',
+            value: thisWeekFailed,
+            change: failedLoginChange,
+            status: failedLoginChange <= 0 ? 'good' : failedLoginChange < 50 ? 'warning' : 'critical'
           },
           {
-            id: 2,
-            type: "equipment_failure",
-            title: "Camera Offline",
-            message: "Parking lot surveillance camera not responding",
-            severity: "medium",
-            timestamp: new Date(Date.now() - 60 * 60 * 1000),
-            acknowledged: false
+            name: 'Active Threats',
+            value: activeThreatsCount,
+            change: 0, // Could calculate if we had historical data
+            status: activeThreatsCount === 0 ? 'good' : activeThreatsCount < 5 ? 'warning' : 'critical'
+          },
+          {
+            name: 'System Vulnerabilities',
+            value: 0, // This would come from vulnerability scanning
+            change: 0,
+            status: 'good'
+          },
+          {
+            name: 'Security Score',
+            value: securityScore,
+            change: 5, // Placeholder - would calculate from historical data
+            status: securityScore >= 80 ? 'good' : securityScore >= 60 ? 'warning' : 'critical'
           }
-        ].filter(() => Math.random() > 0.5); // Sometimes no alerts
-
-        res.json({ alerts });
-      } catch (error) {
-        console.error("Error fetching security alerts:", error);
-        res.status(500).json({ message: "Failed to fetch security alerts" });
-      }
-    }
-  );
-
-  // Incident management endpoints
-  app.post('/api/security/incidents', 
-    isAuthenticated, 
-    requireRole(['school_security', 'school_admin']), 
-    async (req, res) => {
-      try {
-        const { title, description, priority, location } = req.body;
-        
-        const newIncident = {
-          id: Date.now(),
-          title,
-          description,
-          priority,
-          location,
-          status: "active",
-          reportedBy: req.user?.id,
-          timestamp: new Date(),
-          updates: []
-        };
-
-        // In a real implementation, this would save to database
-        res.json({ success: true, incident: newIncident });
-      } catch (error) {
-        console.error("Error creating incident:", error);
-        res.status(500).json({ message: "Failed to create incident" });
-      }
-    }
-  );
-
-  // Emergency alert endpoint
-  app.post('/api/security/emergency-alert', 
-    isAuthenticated, 
-    requireRole(['school_security', 'school_admin']), 
-    async (req, res) => {
-      try {
-        const { type, message, severity } = req.body;
-        
-        // In a real implementation, this would trigger emergency protocols
-        console.log(`EMERGENCY ALERT: ${type} - ${message} (${severity})`);
-        
-        res.json({ 
-          success: true, 
-          message: "Emergency alert broadcasted",
-          alertId: Date.now()
-        });
-      } catch (error) {
-        console.error("Error sending emergency alert:", error);
-        res.status(500).json({ message: "Failed to send emergency alert" });
-      }
-    }
-  );
-
-  // Access control status endpoint
-  app.get('/api/security/access-control', 
-    isAuthenticated, 
-    requireRole(['school_security', 'school_admin']), 
-    async (req, res) => {
-      try {
-        const accessPoints = [
-          { name: "Main Entrance", status: "secure", lastActivity: "5 min ago" },
-          { name: "Staff Entrance", status: "secure", lastActivity: "12 min ago" },
-          { name: "Emergency Exit A", status: "alert", lastActivity: "32 min ago" },
-          { name: "Parking Gate", status: "secure", lastActivity: "45 min ago" },
-          { name: "Service Entrance", status: "maintenance", lastActivity: "2 hours ago" }
         ];
 
-        res.json({ accessPoints });
+        res.json(metrics);
       } catch (error) {
-        console.error("Error fetching access control status:", error);
-        res.status(500).json({ message: "Failed to fetch access control status" });
+        console.error('Error fetching security metrics:', error);
+        res.status(500).json({ error: 'Failed to fetch security metrics' });
+      }
+    }
+  );
+
+  // Get threat intelligence
+  app.get('/api/security/threats', 
+    isAuthenticated, 
+    requirePermission('MANAGE_SECURITY'),
+    async (req: AuthenticatedRequest, res) => {
+      try {
+        const now = new Date();
+        const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+        // Get blocked IPs from activity logs
+        const blockedIPs = await db
+          .select({
+            ip: activityLogs.ipAddress,
+            attempts: count()
+          })
+          .from(activityLogs)
+          .where(and(
+            sql`${activityLogs.action} LIKE '%blocked%' OR ${activityLogs.action} LIKE '%failed%'`,
+            gte(activityLogs.timestamp, dayAgo),
+            sql`${activityLogs.ipAddress} IS NOT NULL`
+          ))
+          .groupBy(activityLogs.ipAddress)
+          .orderBy(desc(count()))
+          .limit(10);
+
+        // Get threat types from recent activity
+        const threatActivity = await db
+          .select({
+            action: activityLogs.action,
+            count: count()
+          })
+          .from(activityLogs)
+          .where(and(
+            sql`${activityLogs.action} LIKE '%attack%' OR ${activityLogs.action} LIKE '%suspicious%' OR ${activityLogs.action} LIKE '%scan%'`,
+            gte(activityLogs.timestamp, dayAgo)
+          ))
+          .groupBy(activityLogs.action);
+
+        const threatIntel = {
+          blockedIPs: blockedIPs.map(ip => ({
+            ip: ip.ip,
+            attempts: ip.attempts
+          })),
+          activeThreats: threatActivity.map(threat => ({
+            type: threat.action,
+            count: threat.count,
+            severity: threat.action.includes('attack') ? 'high' : 
+                     threat.action.includes('suspicious') ? 'medium' : 'low'
+          })),
+          summary: {
+            totalBlockedIPs: blockedIPs.length,
+            totalThreats: threatActivity.reduce((sum, t) => sum + t.count, 0),
+            lastUpdated: now.toISOString()
+          }
+        };
+
+        res.json(threatIntel);
+      } catch (error) {
+        console.error('Error fetching threat intelligence:', error);
+        res.status(500).json({ error: 'Failed to fetch threat intelligence' });
+      }
+    }
+  );
+
+  // Log security event
+  app.post('/api/security/events', 
+    isAuthenticated, 
+    requirePermission('MANAGE_SECURITY'),
+    async (req: AuthenticatedRequest, res) => {
+      try {
+        const { type, severity, description, ipAddress } = req.body;
+        const userId = req.user?.id;
+
+        // Create activity log entry for the security event
+        await db.insert(activityLogs).values({
+          action: `security_event_${type}`,
+          userId: userId || 'system',
+          ipAddress: ipAddress || req.ip,
+          userAgent: req.get('User-Agent'),
+          details: JSON.stringify({ 
+            type, 
+            severity, 
+            description,
+            reportedBy: userId 
+          }),
+          timestamp: new Date()
+        });
+
+        res.json({ success: true, message: 'Security event logged successfully' });
+      } catch (error) {
+        console.error('Error logging security event:', error);
+        res.status(500).json({ error: 'Failed to log security event' });
+      }
+    }
+  );
+
+  // Get compliance status
+  app.get('/api/security/compliance', 
+    isAuthenticated, 
+    requirePermission('MANAGE_SECURITY'),
+    async (req: AuthenticatedRequest, res) => {
+      try {
+        // In a real implementation, this would check actual compliance metrics
+        const compliance = {
+          standards: {
+            ferpa: { status: 'compliant', lastAudit: '2024-01-01', nextAudit: '2024-07-01' },
+            coppa: { status: 'compliant', lastAudit: '2024-01-15', nextAudit: '2024-07-15' },
+            iso27001: { status: 'in_progress', lastAudit: '2023-12-01', nextAudit: '2024-06-01' },
+            soc2: { status: 'certified', lastAudit: '2024-01-01', nextAudit: '2024-12-01' }
+          },
+          policies: {
+            passwordPolicy: { status: 'enforced', lastReview: '2024-01-01', nextReview: '2024-04-01' },
+            dataRetention: { status: 'active', lastReview: '2024-01-15', nextReview: '2024-04-15' },
+            accessControl: { status: 'implemented', lastReview: '2024-01-01', nextReview: '2024-04-01' },
+            incidentResponse: { status: 'review_due', lastReview: '2023-10-01', nextReview: '2024-01-01' }
+          },
+          score: 85,
+          lastAssessment: new Date().toISOString()
+        };
+
+        res.json(compliance);
+      } catch (error) {
+        console.error('Error fetching compliance status:', error);
+        res.status(500).json({ error: 'Failed to fetch compliance status' });
       }
     }
   );
