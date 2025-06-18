@@ -2,14 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requireRole } from "../roleMiddleware";
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
-  session?: any;
-}
+import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerITRoutes(app: Express) {
   // Device management routes

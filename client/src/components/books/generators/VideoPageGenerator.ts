@@ -117,7 +117,8 @@ export const generateVideoLessonPage = (videoUrl: string, title: string, descrip
     
     function formatTime(seconds) {
       const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
+      const secs = Math.floor(seconds % 60);
+      return mins + ':' + (secs < 10 ? '0' : '') + secs;
       return \`\${mins}:\${secs.toString().padStart(2, '0')}\`;
     }
   </script>

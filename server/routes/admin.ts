@@ -6,14 +6,7 @@ import { db } from "../db";
 import { users, activityLogs, notifications } from "@shared/schema";
 import { sql, eq, and, gte, desc, count } from "drizzle-orm";
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
-  session?: any;
-}
+import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerAdminRoutes(app: Express) {
   // Get dashboard statistics
