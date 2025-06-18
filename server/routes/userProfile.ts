@@ -1,5 +1,6 @@
 import type { Express } from "express";
-import { isAuthenticated, type AuthenticatedRequest } from "../replitAuth";
+import { isAuthenticated } from "../replitAuth";
+import type { AuthenticatedRequest } from "../roleMiddleware";
 import { storage } from "../storage";
 
 export function registerUserProfileRoutes(app: Express) {
@@ -127,8 +128,12 @@ export function registerUserProfileRoutes(app: Express) {
       const settingsData = req.body;
 
       const updatedSettings = await storage.upsertUserSettings({
+        id: `settings_${userId}`,
         userId,
-        settings: settingsData,
+        theme: settingsData.theme,
+        language: settingsData.language,
+        notifications: settingsData.notifications,
+        preferences: settingsData.preferences,
         updatedAt: new Date()
       });
 

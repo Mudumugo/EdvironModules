@@ -83,8 +83,8 @@ export default function UserProfile() {
     address: '',
     bio: '',
     dateOfBirth: '',
-    gradeLevel: user?.gradeLevel || '',
-    department: user?.department || '',
+    gradeLevel: user?.role || '',
+    department: user?.role || '',
     subjects: [],
     achievements: []
   });
@@ -189,7 +189,7 @@ export default function UserProfile() {
     return roleMap[role] || role;
   };
 
-  const getInitials = (firstName?: string, lastName?: string) => {
+  const getInitials = (firstName?: string | null, lastName?: string | null) => {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
 
@@ -230,12 +230,12 @@ export default function UserProfile() {
             </h1>
             <p className="text-gray-600 flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              {getRoleDisplayName(user.role)}
+              {getRoleDisplayName(user?.role || "")}
             </p>
-            {user.gradeLevel && (
+            {user.role === 'student_elementary' && (
               <p className="text-sm text-gray-500 flex items-center gap-2 mt-1">
                 <GraduationCap className="h-4 w-4" />
-                {user.gradeLevel}
+                Elementary Student
               </p>
             )}
           </div>

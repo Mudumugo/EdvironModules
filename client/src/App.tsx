@@ -32,6 +32,7 @@ import AppsHub from "@/pages/AppsHub";
 import HotCall from "@/pages/HotCall";
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
+import UserProfile from "@/pages/UserProfile";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
@@ -50,6 +51,7 @@ const componentMap: Record<string, any> = {
   'scheduling': Scheduling,
   'analytics': Analytics,
   'authoring-dashboard': AuthoringDashboard,
+  'user-profile': UserProfile,
   'licensing': Licensing,
   'settings': Settings,
   'users': UserManagement,

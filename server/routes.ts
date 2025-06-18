@@ -19,6 +19,7 @@ import { registerParentRoutes } from "./routes/parent";
 import { registerParentManagementRoutes } from "./routes/parentManagement";
 import { registerAppsHubRoutes } from "./routes/appsHub";
 import { registerTimetableRoutes } from "./routes/timetable";
+import { registerUserProfileRoutes } from "./routes/userProfile";
 import { registerNotebookModuleRoutes } from "./routes/notebook/index";
 import { registerAuthoringRoutes } from "./routes/authoring";
 
