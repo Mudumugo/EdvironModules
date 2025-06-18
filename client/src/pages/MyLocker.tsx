@@ -311,7 +311,7 @@ export default function MyLocker() {
             <DialogHeader>
               <DialogTitle>{selectedLockerItem.title}</DialogTitle>
               <DialogDescription>
-                {selectedLockerItem.description}
+                {(selectedLockerItem.metadata as any)?.notes || (selectedLockerItem.metadata as any)?.originalTitle || 'Saved resource'}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -321,16 +321,28 @@ export default function MyLocker() {
                   dangerouslySetInnerHTML={{ __html: selectedLockerItem.content || '' }}
                 />
               )}
-              {selectedLockerItem.annotations && (
+              {(selectedLockerItem.metadata as any)?.annotations && (
                 <div className="border-t pt-4">
                   <h4 className="font-medium mb-2">Your Annotations</h4>
                   <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
                     <pre className="whitespace-pre-wrap text-sm">
-                      {typeof selectedLockerItem.annotations === 'string' 
-                        ? selectedLockerItem.annotations 
-                        : JSON.stringify(selectedLockerItem.annotations, null, 2)}
+                      {typeof (selectedLockerItem.metadata as any).annotations === 'string' 
+                        ? (selectedLockerItem.metadata as any).annotations 
+                        : JSON.stringify((selectedLockerItem.metadata as any).annotations, null, 2)}
                     </pre>
                   </div>
+                </div>
+              )}
+              {(selectedLockerItem.metadata as any)?.subject && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Subject:</span>
+                  <Badge variant="outline">{(selectedLockerItem.metadata as any).subject}</Badge>
+                </div>
+              )}
+              {(selectedLockerItem.metadata as any)?.gradeLevel && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Grade Level:</span>
+                  <Badge variant="outline">{(selectedLockerItem.metadata as any).gradeLevel}</Badge>
                 </div>
               )}
             </div>

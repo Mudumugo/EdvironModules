@@ -39,10 +39,26 @@ export function registerLockerRoutes(app: Express) {
       const [newItem] = await db
         .insert(lockerItems)
         .values({
-          ...itemData,
           userId,
-          createdAt: new Date(),
-          updatedAt: new Date()
+          type: itemData.itemType || 'resource',
+          title: itemData.title,
+          content: itemData.content,
+          resourceId: itemData.originalResourceId,
+          metadata: {
+            annotations: itemData.annotations,
+            notes: itemData.notes,
+            originalTitle: itemData.originalTitle,
+            subject: itemData.subject,
+            gradeLevel: itemData.gradeLevel,
+            fileUrl: itemData.fileUrl,
+            thumbnailUrl: itemData.thumbnailUrl,
+            ...itemData.metadata
+          },
+          tags: itemData.tags,
+          category: itemData.category,
+          isPrivate: itemData.isPrivate ?? true,
+          isOfflineAvailable: itemData.isOfflineAvailable ?? false,
+          tenantId: "default"
         })
         .returning();
       
