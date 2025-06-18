@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookViewer } from './BookViewer';
+import { BookPreviewTabs } from './BookPreviewTabs';
+import { 
+  generateCoverPage,
+  generateTableOfContents,
+  generateChapterIntro,
+  generateQuizPage,
+  generateFinalAssessment,
+  generateGeneralPage
+} from './generators/BookPageGenerators';
 import { 
   BookOpen, 
   Eye, 
   Download, 
-  Star, 
-  Clock, 
-  User, 
-  FileText,
-  Bookmark,
   Share2,
-  ThumbsUp,
-  MessageCircle
+  Bookmark
 } from 'lucide-react';
 
 interface BookResource {
