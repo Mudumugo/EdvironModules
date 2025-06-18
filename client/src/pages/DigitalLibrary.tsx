@@ -1,37 +1,13 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
-  BookOpen, 
-  Search, 
-  Filter, 
-  Star, 
-  Download, 
-  Eye, 
-  Calendar,
-  User,
-  BookMarked,
-  Heart,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  RefreshCw,
-  Plus,
-  Grid,
-  List,
-  SortAsc,
-  SortDesc
-} from "lucide-react";
+import { BookOpen } from "lucide-react";
+import { LibrarySearch } from "../components/library/LibrarySearch";
+import { ResourceCard } from "../components/library/ResourceCard";
+import { LibraryTabs } from "../components/library/LibraryTabs";
 
 interface LibraryResource {
   id: number;
