@@ -27,7 +27,7 @@ const visitorRegistrationSchema = z.object({
 
 type VisitorRegistrationFormData = z.infer<typeof visitorRegistrationSchema>;
 
-export function VisitorRegistrationForm() {
+export default function VisitorRegistrationForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 

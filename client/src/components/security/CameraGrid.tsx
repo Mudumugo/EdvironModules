@@ -8,7 +8,7 @@ interface CameraGridProps {
   zoneId?: string;
 }
 
-export function CameraGrid({ zoneId }: CameraGridProps) {
+export default function CameraGrid({ zoneId }: CameraGridProps) {
   const { data: cameras, isLoading } = useQuery({
     queryKey: zoneId ? ["/api/security/cameras", { zoneId }] : ["/api/security/cameras"],
   });

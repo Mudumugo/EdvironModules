@@ -10,7 +10,7 @@ import { Phone, PhoneCall, PhoneOff, Clock, Users, AlertTriangle } from "lucide-
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
-export function SecurityCallsPanel() {
+export default function SecurityCallsPanel() {
   const [callType, setCallType] = useState<string>("emergency");
   const [callNumber, setCallNumber] = useState<string>("");
   const { toast } = useToast();

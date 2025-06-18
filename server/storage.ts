@@ -7,7 +7,7 @@ import {
   type InsertUserSettings,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, lte, isNotNull } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {

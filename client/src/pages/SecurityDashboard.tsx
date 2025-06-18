@@ -26,10 +26,10 @@ import {
   XCircle,
   AlertCircle
 } from "lucide-react";
-import { CameraGrid } from "@/components/security/CameraGrid";
-import { SecurityEventsList } from "@/components/security/SecurityEventsList";
-import { VisitorRegistrationForm } from "@/components/security/VisitorRegistrationForm";
-import { SecurityCallsPanel } from "@/components/security/SecurityCallsPanel";
+import CameraGrid from "@/components/security/CameraGrid";
+import SecurityEventsList from "@/components/security/SecurityEventsList";
+import VisitorRegistrationForm from "@/components/security/VisitorRegistrationForm";
+import SecurityCallsPanel from "@/components/security/SecurityCallsPanel";
 
 export default function SecurityDashboard() {
   const [selectedZone, setSelectedZone] = useState<string>("all");
