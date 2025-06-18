@@ -225,6 +225,12 @@ function Router() {
           </RoleProtectedRoute>
         </Route>
 
+        <Route path="/crm">
+          <RoleProtectedRoute moduleId="crm">
+            <CRM />
+          </RoleProtectedRoute>
+        </Route>
+
         <Route path="/family-controls">
           <RoleProtectedRoute moduleId="family-controls">
             <FamilyControls />

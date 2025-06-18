@@ -51,6 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerNotebookModuleRoutes(app);
   registerAuthoringRoutes(app);
   registerCalendarRoutes(app);
+  registerCRMRoutes(app);
 
   const { registerLockerRoutes } = await import("./routes/locker");
   registerLockerRoutes(app);
