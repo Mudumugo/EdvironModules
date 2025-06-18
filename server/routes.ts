@@ -22,6 +22,7 @@ import { registerTimetableRoutes } from "./routes/timetable";
 import { registerUserProfileRoutes } from "./routes/userProfile";
 import { registerNotebookModuleRoutes } from "./routes/notebook/index";
 import { registerAuthoringRoutes } from "./routes/authoring";
+import { registerLiveSessionRoutes } from "./routes/liveSessions";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
@@ -52,5 +53,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerLockerRoutes(app);
 
   const httpServer = createServer(app);
+  
+  // Register live session routes with WebSocket support
+  registerLiveSessionRoutes(app, httpServer);
+
   return httpServer;
 }
