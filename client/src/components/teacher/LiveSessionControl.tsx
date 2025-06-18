@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,9 +19,8 @@ import {
 } from "./live-session";
 
 export default function LiveSessionControl({ sessionId, onClose }: LiveSessionControlProps) {
-  const [selectedDevice, setSelectedDevice] = useState<string>("");
-  const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -43,65 +42,30 @@ export default function LiveSessionControl({ sessionId, onClose }: LiveSessionCo
     refetchInterval: 2000,
   });
 
-  // WebSocket connection for real-time updates
-  useEffect(() => {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws/live-sessions`;
-    
-    const websocket = new WebSocket(wsUrl);
-    wsRef.current = websocket;
-    
-    websocket.onopen = () => {
-      console.log('Connected to live session WebSocket');
-      setIsConnected(true);
-      setWs(websocket);
-      
-      // Register as teacher device
-      websocket.send(JSON.stringify({
-        type: 'register',
-        userId: 'current_user_id', // Replace with actual user ID
-        deviceId: `teacher_${Date.now()}`,
-        deviceInfo: {
-          type: 'desktop',
-          platform: navigator.platform,
-          browser: navigator.userAgent,
-          capabilities: {
-            camera: true,
-            microphone: true,
-            screenShare: true,
-            remoteControl: true
-          }
-        },
-        tenantId: 'current_tenant_id' // Replace with actual tenant ID
-      }));
-    };
-
-    websocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      handleWebSocketMessage(data);
-    };
-
-    websocket.onclose = () => {
-      console.log('Disconnected from live session WebSocket');
-      setIsConnected(false);
-      setWs(null);
-    };
-
-    websocket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+  const { isConnected } = useWebSocketConnection(sessionId, {
+    onMessage: (data: WebSocketMessage) => {
+      switch (data.type) {
+        case 'participant_joined':
+        case 'participant_left':
+          queryClient.invalidateQueries({ queryKey: ['/api/live-sessions', sessionId] });
+          break;
+        case 'screen_share_started':
+        case 'screen_share_stopped':
+          queryClient.invalidateQueries({ queryKey: ['/api/live-sessions', sessionId, 'screen-sharing'] });
+          break;
+        case 'session_status_changed':
+          setSessionStatus(data.status);
+          break;
+      }
+    },
+    onError: () => {
       toast({
         title: "Connection Error",
         description: "Failed to establish real-time connection",
         variant: "destructive",
       });
-    };
-
-    return () => {
-      if (websocket.readyState === WebSocket.OPEN) {
-        websocket.close();
-      }
-    };
-  }, [sessionId]);
+    }
+  });
 
   const sessionMutations = useMutation({
     mutationFn: async ({ action, data }: { action: string; data?: any }) => {
@@ -109,7 +73,9 @@ export default function LiveSessionControl({ sessionId, onClose }: LiveSessionCo
         case 'start':
         case 'end':
         case 'pause':
-          return await apiRequest("PATCH", `/api/live-sessions/${sessionId}/status`, { status: action === 'start' ? 'live' : action === 'end' ? 'ended' : 'paused' });
+          return await apiRequest("PATCH", `/api/live-sessions/${sessionId}/status`, { 
+            status: action === 'start' ? 'live' : action === 'end' ? 'ended' : 'paused' 
+          });
         case 'device-control':
           return await apiRequest("POST", `/api/live-sessions/${sessionId}/device-control`, data);
         case 'screen-share-start':
