@@ -73,9 +73,13 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
         let pages = [];
         
         // Check if this is the multimedia demo book
+        console.log('Resource data:', { title: resource.title, content: resource.content, tags: resource.tags });
+        
         const isMultimediaDemo = resource.title === 'Interactive Multimedia Learning Adventure' || 
                                 resource.content === 'multimedia_demo' ||
                                 (resource.tags && resource.tags.includes('multimedia'));
+        
+        console.log('Is multimedia demo?', isMultimediaDemo);
         
         if (isMultimediaDemo) {
           // Multimedia demo book with advanced interactive content
