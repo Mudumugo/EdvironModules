@@ -14,7 +14,7 @@ export function requirePermission(permission: Permission) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasPermission(user.role, user.permissions || [], permission)) {
+    if (!hasPermission(user.role as any, (user.permissions || []) as any[], permission)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permission,
@@ -35,7 +35,7 @@ export function requireAnyPermission(permissions: Permission[]) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasAnyPermission(user.role, user.permissions, permissions)) {
+    if (!hasAnyPermission(user.role as any, user.permissions || [], permissions)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permissions,

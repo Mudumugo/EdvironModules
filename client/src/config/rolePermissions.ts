@@ -219,7 +219,7 @@ export function getModulesByCategory(userRole: UserRole) {
       ['device-management'].includes(m.id)
     ),
     security: accessibleModules.filter(m => 
-      ['family-controls'].includes(m.id)
+      ['security-dashboard', 'family-controls'].includes(m.id)
     ),
   };
 }
