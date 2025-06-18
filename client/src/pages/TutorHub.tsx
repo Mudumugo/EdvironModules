@@ -12,11 +12,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { GraduationCap, Plus, Upload } from "lucide-react";
 
-import { TutorStatistics } from "@/components/tutor/TutorStatistics";
-import { ClassManagement } from "@/components/tutor/ClassManagement";
-import { StudentProgress } from "@/components/tutor/StudentProgress";
-import { ResourceLibrary } from "@/components/tutor/ResourceLibrary";
-import { TutorSearchAndFilter } from "@/components/tutor/TutorSearchAndFilter";
+import { TutorStatistics } from "../components/tutor/TutorStatistics";
+import { ClassManagement } from "../components/tutor/ClassManagement";
+import { StudentProgress } from "../components/tutor/StudentProgress";
+import { ResourceLibrary } from "../components/tutor/ResourceLibrary";
+import { TutorSearchAndFilter } from "../components/tutor/TutorSearchAndFilter";
 
 // Form schemas
 const classSchema = z.object({
