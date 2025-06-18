@@ -102,8 +102,8 @@ export function registerStickyNoteRoutes(app: Express) {
           pageId,
           userId,
           content,
-          xPosition,
-          yPosition,
+          positionX: xPosition,
+          positionY: yPosition,
           color,
         })
         .returning();
@@ -131,8 +131,8 @@ export function registerStickyNoteRoutes(app: Express) {
         .update(stickyNotes)
         .set({
           content,
-          xPosition,
-          yPosition,
+          positionX: xPosition,
+          positionY: yPosition,
           color,
           updatedAt: new Date(),
         })

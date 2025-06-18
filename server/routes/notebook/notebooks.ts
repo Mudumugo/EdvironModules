@@ -91,7 +91,7 @@ export function registerNotebookRoutes(app: Express) {
         .insert(notebooks)
         .values({
           userId,
-          name,
+          title: name,
           description,
           color,
           gradeLevel,
@@ -120,7 +120,7 @@ export function registerNotebookRoutes(app: Express) {
       const [updatedNotebook] = await db
         .update(notebooks)
         .set({
-          name,
+          title: name,
           description,
           color,
           gradeLevel,

@@ -18,7 +18,7 @@ import { registerParentManagementRoutes } from "./routes/parentManagement";
 import { registerAppsHubRoutes } from "./routes/appsHub";
 import { registerAdminRoutes } from "./routes/admin";
 import { registerTimetableRoutes } from "./routes/timetable";
-import { registerNotebookRoutes } from "./routes/notebook";
+import { registerNotebookModuleRoutes } from "./routes/notebook";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
@@ -40,7 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerAppsHubRoutes(app);
   registerAdminRoutes(app);
   registerTimetableRoutes(app);
-  registerNotebookRoutes(app);
+  registerNotebookModuleRoutes(app);
 
   const { registerLockerRoutes } = await import("./routes/locker");
   registerLockerRoutes(app);
