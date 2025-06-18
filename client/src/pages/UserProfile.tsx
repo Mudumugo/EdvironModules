@@ -209,10 +209,19 @@ export default function UserProfile() {
       'tutor': 'Tutor',
       'librarian': 'Librarian',
       'school_admin': 'School Administrator',
+      'school_it_staff': 'IT Staff',
       'district_admin': 'District Administrator',
       'super_admin': 'System Administrator'
     };
     return roleMap[role] || role;
+  };
+
+  const isStudent = (role: string) => {
+    return role?.includes('student');
+  };
+
+  const isStaff = (role: string) => {
+    return role && !role.includes('student') && !role.includes('parent');
   };
 
   const getInitials = (firstName?: string | null, lastName?: string | null) => {
@@ -287,9 +296,9 @@ export default function UserProfile() {
 
       {/* Profile Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className={`grid w-full ${isStudent(user.role) ? 'grid-cols-4' : 'grid-cols-3'}`}>
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="academic">Academic</TabsTrigger>
+          {isStudent(user.role) && <TabsTrigger value="academic">Academic</TabsTrigger>}
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
@@ -378,33 +387,47 @@ export default function UserProfile() {
                       disabled={!isEditing}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="gradeLevel">Grade Level</Label>
-                    <Select
-                      value={formData.gradeLevel || ''}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, gradeLevel: value }))}
-                      disabled={!isEditing}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select grade level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="kindergarten">Kindergarten</SelectItem>
-                        <SelectItem value="grade-1">Grade 1</SelectItem>
-                        <SelectItem value="grade-2">Grade 2</SelectItem>
-                        <SelectItem value="grade-3">Grade 3</SelectItem>
-                        <SelectItem value="grade-4">Grade 4</SelectItem>
-                        <SelectItem value="grade-5">Grade 5</SelectItem>
-                        <SelectItem value="grade-6">Grade 6</SelectItem>
-                        <SelectItem value="grade-7">Grade 7</SelectItem>
-                        <SelectItem value="grade-8">Grade 8</SelectItem>
-                        <SelectItem value="grade-9">Grade 9</SelectItem>
-                        <SelectItem value="grade-10">Grade 10</SelectItem>
-                        <SelectItem value="grade-11">Grade 11</SelectItem>
-                        <SelectItem value="grade-12">Grade 12</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {isStudent(user.role) && (
+                    <div className="space-y-2">
+                      <Label htmlFor="gradeLevel">Grade Level</Label>
+                      <Select
+                        value={formData.gradeLevel || ''}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, gradeLevel: value }))}
+                        disabled={!isEditing}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select grade level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="kindergarten">Kindergarten</SelectItem>
+                          <SelectItem value="grade-1">Grade 1</SelectItem>
+                          <SelectItem value="grade-2">Grade 2</SelectItem>
+                          <SelectItem value="grade-3">Grade 3</SelectItem>
+                          <SelectItem value="grade-4">Grade 4</SelectItem>
+                          <SelectItem value="grade-5">Grade 5</SelectItem>
+                          <SelectItem value="grade-6">Grade 6</SelectItem>
+                          <SelectItem value="grade-7">Grade 7</SelectItem>
+                          <SelectItem value="grade-8">Grade 8</SelectItem>
+                          <SelectItem value="grade-9">Grade 9</SelectItem>
+                          <SelectItem value="grade-10">Grade 10</SelectItem>
+                          <SelectItem value="grade-11">Grade 11</SelectItem>
+                          <SelectItem value="grade-12">Grade 12</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {isStaff(user.role) && (
+                    <div className="space-y-2">
+                      <Label htmlFor="department">Department</Label>
+                      <Input
+                        id="department"
+                        value={formData.department}
+                        onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                        disabled={!isEditing}
+                        placeholder="Enter department"
+                      />
+                    </div>
+                  )}
                 </div>
               </form>
             </CardContent>
