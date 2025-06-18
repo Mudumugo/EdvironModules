@@ -1,19 +1,11 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Response } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../db";
 import { timetableEntries, classes } from "@shared/schema";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
-
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
-  session?: any;
-}
+import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerTimetableRoutes(app: Express) {
   // Get all timetable entries with optional filters

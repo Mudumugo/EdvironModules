@@ -1,9 +1,10 @@
-import type { Express } from "express";
+import type { Express, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { db } from "../db";
 import { users } from "@shared/schema";
 import { parentChildRelationships } from "@shared/schemas/education.schema";
 import { eq, and } from "drizzle-orm";
+import type { AuthenticatedRequest } from "../types/auth";
 
 
 

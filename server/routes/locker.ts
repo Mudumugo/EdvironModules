@@ -1,15 +1,9 @@
-import type { Express } from "express";
+import type { Express, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { db } from "../db";
 import { lockerItems } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
-
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    claims?: any;
-  };
-}
+import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerLockerRoutes(app: Express) {
   // Get user's locker items

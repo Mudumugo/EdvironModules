@@ -1,18 +1,10 @@
-import type { Express } from "express";
+import type { Express, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { db } from "../db";
 import { activityLogs, users } from "@shared/schema";
 import { eq, desc, count, and, gte, sql } from "drizzle-orm";
-
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    claims?: any;
-  };
-  session?: any;
-}
+import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerSecurityRoutes(app: Express) {
   // Get security events from activity logs

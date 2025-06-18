@@ -1,17 +1,7 @@
-import type { Express, Request, Response, NextFunction } from "express";
+import type { Express, Response, NextFunction } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
-
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    firstName?: string;
-    lastName?: string;
-    claims?: any;
-  };
-  session?: any;
-}
+import type { AuthenticatedRequest } from "../types/auth";
 
 export function registerPBXRoutes(app: Express) {
   // User-specific extension data
