@@ -95,6 +95,11 @@ export const USER_ROLES = {
   SCHOOL_ADMIN: "school_admin",
   SCHOOL_SECURITY: "school_security",
   SCHOOL_IT_STAFF: "school_it_staff",
+  IT_STAFF: "it_staff",
+  SECURITY_STAFF: "security_staff",
+  
+  // Demo accounts
+  DEMO_STUDENT_ELEMENTARY: "demo_student_elementary",
   
   // Non-teaching staff
   OFFICE_STAFF: "office_staff",

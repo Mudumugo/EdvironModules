@@ -158,7 +158,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/security-dashboard",
     icon: "Shield",
     description: "Security monitoring, alerts and threat intelligence",
-    allowedRoles: ["school_security", "school_admin"],
+    allowedRoles: ["security_staff", "school_admin"],
   },
   {
     id: "family-controls",
@@ -166,7 +166,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/family-controls",
     icon: "Shield",
     description: "Security settings and access control management",
-    allowedRoles: ["school_security", "school_admin"],
+    allowedRoles: ["security_staff", "school_admin"],
   },
 
   // Communication modules
