@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
+import AdminDashboard from "@/pages/AdminDashboard";
 import SchoolManagement from "@/pages/SchoolManagement";
 import DigitalLibrary from "@/pages/DigitalLibrary";
 import DigitalLibraryNew from "@/pages/DigitalLibraryNew";
@@ -77,7 +78,7 @@ function Router() {
         {/* Core modules - available to all authenticated users */}
         <Route path="/">
           <RoleProtectedRoute moduleId="dashboard">
-            <Dashboard />
+            {user?.role === 'school_admin' ? <AdminDashboard /> : <Dashboard />}
           </RoleProtectedRoute>
         </Route>
         
