@@ -216,11 +216,11 @@ export default function UserProfile() {
     return roleMap[role] || role;
   };
 
-  const isStudent = (role: string) => {
-    return role?.includes('student');
+  const isStudent = (role: string | undefined) => {
+    return role?.includes('student') || false;
   };
 
-  const isStaff = (role: string) => {
+  const isStaff = (role: string | undefined) => {
     return role && !role.includes('student') && !role.includes('parent');
   };
 
@@ -296,9 +296,9 @@ export default function UserProfile() {
 
       {/* Profile Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className={`grid w-full ${isStudent(user.role) ? 'grid-cols-4' : 'grid-cols-3'}`}>
+        <TabsList className={`grid w-full ${isStudent(user?.role) ? 'grid-cols-4' : 'grid-cols-3'}`}>
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          {isStudent(user.role) && <TabsTrigger value="academic">Academic</TabsTrigger>}
+          {isStudent(user?.role) && <TabsTrigger value="academic">Academic</TabsTrigger>}
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
@@ -387,7 +387,7 @@ export default function UserProfile() {
                       disabled={!isEditing}
                     />
                   </div>
-                  {isStudent(user.role) && (
+                  {isStudent(user?.role) && (
                     <div className="space-y-2">
                       <Label htmlFor="gradeLevel">Grade Level</Label>
                       <Select
@@ -416,7 +416,7 @@ export default function UserProfile() {
                       </Select>
                     </div>
                   )}
-                  {isStaff(user.role) && (
+                  {isStaff(user?.role) && (
                     <div className="space-y-2">
                       <Label htmlFor="department">Department</Label>
                       <Input
@@ -434,85 +434,87 @@ export default function UserProfile() {
           </Card>
         </TabsContent>
 
-        {/* Academic Tab */}
-        <TabsContent value="academic" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5" />
-                  Subjects & Courses
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {['Mathematics', 'Science', 'English', 'History'].map(subject => (
-                    <div key={subject} className="flex items-center justify-between p-3 border rounded-lg">
-                      <span className="font-medium">{subject}</span>
-                      <Badge variant="secondary">Active</Badge>
+        {/* Academic Tab - Only show for students */}
+        {isStudent(user?.role) && (
+          <TabsContent value="academic" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Subjects & Courses
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {['Mathematics', 'Science', 'English', 'History'].map(subject => (
+                      <div key={subject} className="flex items-center justify-between p-3 border rounded-lg">
+                        <span className="font-medium">{subject}</span>
+                        <Badge variant="secondary">Active</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5" />
+                    Achievements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 border rounded-lg">
+                      <div className="h-10 w-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <Award className="h-5 w-5 text-yellow-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Honor Roll</div>
+                        <div className="text-sm text-gray-600">Q1 2024</div>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="flex items-center gap-3 p-3 border rounded-lg">
+                      <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Target className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Perfect Attendance</div>
+                        <div className="text-sm text-gray-600">September 2024</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5" />
-                  Achievements
+                  <Clock className="h-5 w-5" />
+                  Academic Progress
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 border rounded-lg">
-                    <div className="h-10 w-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                      <Award className="h-5 w-5 text-yellow-600" />
-                    </div>
-                    <div>
-                      <div className="font-medium">Honor Roll</div>
-                      <div className="text-sm text-gray-600">Q1 2024</div>
-                    </div>
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">92%</div>
+                    <div className="text-sm text-gray-600">Overall GPA</div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 border rounded-lg">
-                    <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Target className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <div className="font-medium">Perfect Attendance</div>
-                      <div className="text-sm text-gray-600">September 2024</div>
-                    </div>
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">18</div>
+                    <div className="text-sm text-gray-600">Assignments Completed</div>
+                  </div>
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">5</div>
+                    <div className="text-sm text-gray-600">Projects Submitted</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Academic Progress
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">92%</div>
-                  <div className="text-sm text-gray-600">Overall GPA</div>
-                </div>
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">18</div>
-                  <div className="text-sm text-gray-600">Assignments Completed</div>
-                </div>
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">5</div>
-                  <div className="text-sm text-gray-600">Projects Submitted</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+          </TabsContent>
+        )}
 
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-6">
