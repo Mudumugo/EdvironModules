@@ -420,6 +420,22 @@ export const insertTopicSchema = createInsertSchema(topics);
 export const insertPageSchema = createInsertSchema(pages);
 export const insertStickyNoteSchema = createInsertSchema(stickyNotes);
 
+// Activity logs for security monitoring
+export const activityLogs = pgTable("activity_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  action: varchar("action", { length: 255 }).notNull(),
+  entityType: varchar("entity_type", { length: 100 }), // user, class, resource, etc.
+  entityId: varchar("entity_id", { length: 255 }),
+  details: jsonb("details").default({}),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type InsertActivityLog = typeof activityLogs.$inferInsert;
+export type ActivityLog = typeof activityLogs.$inferSelect;
+
 export const insertLibraryResourceSchema = z.object({});
 export const insertScheduleSchema = z.object({});
 export const insertAttendanceSchema = z.object({});
