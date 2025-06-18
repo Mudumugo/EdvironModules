@@ -281,7 +281,8 @@ export type UserSettings = typeof userSettings.$inferSelect;
 // Insert schemas for validation
 export const insertUserSettingsSchema = createInsertSchema(userSettings);
 
-// Temporary simplified schemas to prevent compilation errors
+// Remove duplicate library definitions - they're imported from education.schema
+
 // Re-export xAPI schemas
 export * from "./schemas/xapi.schema";
 export * from "./schemas/education.schema";
@@ -679,7 +680,11 @@ export const insertStickyNoteSchema = createInsertSchema(stickyNotes);
 // Re-export activity logs from dedicated schema
 export { activityLogs, type InsertActivityLog, type ActivityLog } from "@shared/schemas/activity.schema";
 
-export const insertLibraryResourceSchema = z.object({});
+// Insert schemas for validation
+export const insertLibraryCategorySchema = createInsertSchema(libraryCategories);
+export const insertLibrarySubjectSchema = createInsertSchema(librarySubjects);
+export const insertLibraryResourceSchema = createInsertSchema(libraryResources);
+export const insertLibraryResourceAccessSchema = createInsertSchema(libraryResourceAccess);
 export const insertScheduleSchema = z.object({});
 export const insertAttendanceSchema = z.object({});
 export const insertNotificationSchema = z.object({});
