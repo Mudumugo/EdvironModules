@@ -11,6 +11,12 @@ import {
   generateFinalAssessment,
   generateGeneralPage
 } from './generators/BookPageGenerators';
+import {
+  generateMultimediaCoverPage,
+  generateVideoLearningPage,
+  generateInteractiveGamePage,
+  generateAnimatedStoryPage
+} from './generators/MultimediaPageGenerators';
 import { 
   BookOpen, 
   Eye, 
