@@ -592,7 +592,7 @@ export function Landing() {
             Join thousands of educators already using EdVirons to create better learning experiences.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/demo">
+            <Link href="/interactive-signup">
               <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
                 <Play className="mr-2 h-5 w-5" />
                 Start Free Trial

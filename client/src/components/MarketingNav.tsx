@@ -38,8 +38,8 @@ export function MarketingNav() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link href="/demo">
-              <Button variant="outline">Request Demo</Button>
+            <Link href="/interactive-signup">
+              <Button variant="outline">Get Started</Button>
             </Link>
             <Link href="/login">
               <Button>Login</Button>
@@ -75,8 +75,8 @@ export function MarketingNav() {
               <span className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600 cursor-pointer">About</span>
             </Link>
             <div className="border-t border-gray-200 pt-4 pb-3">
-              <Link href="/demo">
-                <Button variant="outline" className="w-full mb-2">Request Demo</Button>
+              <Link href="/interactive-signup">
+                <Button variant="outline" className="w-full mb-2">Get Started</Button>
               </Link>
               <Link href="/login">
                 <Button className="w-full">Login</Button>
