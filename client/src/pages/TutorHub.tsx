@@ -1,567 +1,281 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { GraduationCap, Plus, Upload } from "lucide-react";
+import { GraduationCap } from "lucide-react";
+import { TutorStats, TutorFilters, TutorGrid, type Tutor } from "@/components/tutor/modules";
 
-import { TutorStatistics } from "../components/tutor/TutorStatistics";
-import { ClassManagement } from "../components/tutor/ClassManagement";
-import { StudentProgress } from "../components/tutor/StudentProgress";
-import { ResourceLibrary } from "../components/tutor/ResourceLibrary";
-import { TutorSearchAndFilter } from "../components/tutor/TutorSearchAndFilter";
+const mockTutors: Tutor[] = [
+  {
+    id: "1",
+    name: "Dr. Sarah Johnson",
+    avatar: "/api/placeholder/100/100",
+    subjects: ["Mathematics", "Physics", "Calculus"],
+    rating: 4.9,
+    experience: "8 years",
+    hourlyRate: "$45",
+    languages: ["English", "Spanish"],
+    availability: "Available now",
+    verified: true,
+    featured: true,
+    responseTime: "< 1 hour",
+    lessonsCompleted: 234,
+    description: "Experienced mathematics tutor with PhD in Applied Mathematics. Specializes in helping students understand complex mathematical concepts through practical examples.",
+    specializations: ["Advanced Calculus", "Linear Algebra", "Statistics"],
+    education: "PhD in Applied Mathematics, MIT",
+    teachingStyle: ["Visual Learning", "Problem-Based", "Interactive"],
+    sessionTypes: ["One-on-One", "Group Sessions", "Homework Help"]
+  },
+  {
+    id: "2",
+    name: "Prof. Michael Chen",
+    avatar: "/api/placeholder/100/100",
+    subjects: ["Computer Science", "Programming", "Web Development"],
+    rating: 4.8,
+    experience: "12 years",
+    hourlyRate: "$60",
+    languages: ["English", "Mandarin"],
+    availability: "Available today",
+    verified: true,
+    featured: true,
+    responseTime: "< 30 min",
+    lessonsCompleted: 456,
+    description: "Senior software engineer and computer science professor. Expert in full-stack development, algorithms, and data structures.",
+    specializations: ["JavaScript", "Python", "React", "Node.js"],
+    education: "MS Computer Science, Stanford University",
+    teachingStyle: ["Hands-on Coding", "Project-Based", "Real-world Examples"],
+    sessionTypes: ["Code Review", "Project Mentoring", "Technical Interviews"]
+  },
+  {
+    id: "3",
+    name: "Emma Rodriguez",
+    avatar: "/api/placeholder/100/100",
+    subjects: ["Spanish", "Literature", "Writing"],
+    rating: 4.7,
+    experience: "6 years",
+    hourlyRate: "$35",
+    languages: ["English", "Spanish", "French"],
+    availability: "Available this week",
+    verified: true,
+    featured: false,
+    responseTime: "< 2 hours",
+    lessonsCompleted: 189,
+    description: "Native Spanish speaker with extensive experience teaching language and literature. Passionate about helping students develop fluency.",
+    specializations: ["Conversational Spanish", "Grammar", "Creative Writing"],
+    education: "BA Spanish Literature, Universidad de Barcelona",
+    teachingStyle: ["Conversational", "Cultural Immersion", "Grammar Focus"],
+    sessionTypes: ["Conversation Practice", "Exam Prep", "Cultural Studies"]
+  },
+  {
+    id: "4",
+    name: "Dr. James Wilson",
+    avatar: "/api/placeholder/100/100",
+    subjects: ["Chemistry", "Biology", "Environmental Science"],
+    rating: 4.6,
+    experience: "10 years",
+    hourlyRate: "$50",
+    languages: ["English"],
+    availability: "Available tomorrow",
+    verified: true,
+    featured: false,
+    responseTime: "< 3 hours",
+    lessonsCompleted: 312,
+    description: "Research scientist and educator with expertise in environmental chemistry and molecular biology.",
+    specializations: ["Organic Chemistry", "Biochemistry", "Environmental Analysis"],
+    education: "PhD Chemistry, Harvard University",
+    teachingStyle: ["Laboratory Examples", "Visual Models", "Research-Based"],
+    sessionTypes: ["Lab Assistance", "Research Guidance", "Exam Preparation"]
+  },
+  {
+    id: "5",
+    name: "Lisa Thompson",
+    avatar: "/api/placeholder/100/100",
+    subjects: ["English", "SAT Prep", "Essay Writing"],
+    rating: 4.8,
+    experience: "7 years",
+    hourlyRate: "$40",
+    languages: ["English"],
+    availability: "Available now",
+    verified: true,
+    featured: false,
+    responseTime: "< 1 hour",
+    lessonsCompleted: 267,
+    description: "English teacher and test prep specialist. Helped hundreds of students improve their SAT scores and writing skills.",
+    specializations: ["SAT Reading", "College Essays", "Grammar", "Literature Analysis"],
+    education: "MA English Education, Columbia University",
+    teachingStyle: ["Structured Learning", "Practice Tests", "Feedback-Rich"],
+    sessionTypes: ["Test Prep", "Essay Review", "Reading Comprehension"]
+  }
+];
 
-// Form schemas
-const classSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  subject: z.string().min(1, "Subject is required"),
-  description: z.string().optional(),
-  startTime: z.string().min(1, "Start time is required"),
-  endTime: z.string().min(1, "End time is required"),
-  location: z.string().optional(),
-  studentLimit: z.string().min(1, "Student limit is required"),
-});
-
-const resourceSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  type: z.string().min(1, "Type is required"),
-  subject: z.string().min(1, "Subject is required"),
-  description: z.string().optional(),
-  url: z.string().optional(),
-});
-
-function TutorHub() {
+export default function TutorHub() {
   const { toast } = useToast();
   
-  // Dialog states
-  const [isClassDialogOpen, setIsClassDialogOpen] = useState(false);
-  const [isResourceDialogOpen, setIsResourceDialogOpen] = useState(false);
-  
-  // Search and filter states
+  // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("all");
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [priceRange, setPriceRange] = useState("all");
+  const [availability, setAvailability] = useState("all");
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
-  // Sample data for demonstration
-  const [classes, setClasses] = useState([
-    {
-      id: 1,
-      title: "Advanced Calculus",
-      subject: "Mathematics",
-      description: "Differential and integral calculus concepts",
-      startTime: "2024-01-20T10:00",
-      endTime: "2024-01-20T11:30",
-      startDate: "2024-01-20",
-      endDate: "2024-01-20",
-      location: "Room 201",
-      studentLimit: 15,
-      enrolled: 12,
-      status: "scheduled"
-    },
-    {
-      id: 2,
-      title: "Physics Lab Session",
-      subject: "Physics", 
-      description: "Hands-on experiments with mechanics",
-      startTime: "2024-01-22T14:00",
-      endTime: "2024-01-22T16:00",
-      startDate: "2024-01-22",
-      endDate: "2024-01-22",
-      location: "Physics Lab",
-      studentLimit: 10,
-      enrolled: 8,
-      status: "scheduled"
-    },
-    {
-      id: 3,
-      title: "Chemistry Review",
-      subject: "Chemistry",
-      description: "Organic chemistry fundamentals",
-      startTime: "2024-01-18T09:00",
-      endTime: "2024-01-18T10:30",
-      startDate: "2024-01-18",
-      endDate: "2024-01-18",
-      location: "Online",
-      studentLimit: 20,
-      enrolled: 18,
-      status: "completed"
-    }
-  ]);
-
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      name: "Emma Wilson",
-      grade: "Grade 11",
-      subjects: ["Mathematics", "Physics"],
-      progress: 92,
-      attendance: 95,
-      lastActive: "2024-01-19",
-      performance: "excellent"
-    },
-    {
-      id: 2,
-      name: "James Chen",
-      grade: "Grade 10", 
-      subjects: ["Chemistry", "Mathematics"],
-      progress: 87,
-      attendance: 88,
-      lastActive: "2024-01-19",
-      performance: "good"
-    },
-    {
-      id: 3,
-      name: "Sofia Rodriguez",
-      grade: "Grade 12",
-      subjects: ["Physics", "Chemistry"],
-      progress: 94,
-      attendance: 97,
-      lastActive: "2024-01-18",
-      performance: "excellent"
-    },
-    {
-      id: 4,
-      name: "Marcus Johnson",
-      grade: "Grade 9",
-      subjects: ["Mathematics"],
-      progress: 78,
-      attendance: 82,
-      lastActive: "2024-01-17",
-      performance: "satisfactory"
-    }
-  ]);
-
-  const [resources, setResources] = useState([
-    {
-      id: 1,
-      title: "Calculus Study Guide",
-      type: "PDF",
-      subject: "Mathematics",
-      description: "Comprehensive guide covering derivatives and integrals",
-      downloads: 45,
-      created: "2024-01-15"
-    },
-    {
-      id: 2,
-      title: "Physics Experiment Videos",
-      type: "Video",
-      subject: "Physics",
-      description: "Step-by-step laboratory procedures",
-      downloads: 32,
-      created: "2024-01-12"
-    },
-    {
-      id: 3,
-      title: "Chemistry Practice Problems",
-      type: "Worksheet",
-      subject: "Chemistry",
-      description: "Practice exercises with solutions",
-      downloads: 28,
-      created: "2024-01-10"
-    }
-  ]);
-
-  // Form handlers
-  const classForm = useForm({
-    resolver: zodResolver(classSchema),
-    defaultValues: {
-      title: "",
-      subject: "",
-      description: "",
-      startTime: "",
-      endTime: "",
-      location: "",
-      studentLimit: "",
-    },
+  const { data: tutors, isLoading } = useQuery({
+    queryKey: ["/api/tutors"],
+    queryFn: () => Promise.resolve(mockTutors),
   });
 
-  const resourceForm = useForm({
-    resolver: zodResolver(resourceSchema),
-    defaultValues: {
-      title: "",
-      type: "",
-      subject: "",
-      description: "",
-      url: "",
-    },
+  const typedTutors = (tutors || []) as Tutor[];
+
+  // Extract unique values for filters
+  const subjects = Array.from(new Set(typedTutors.flatMap(tutor => tutor.subjects)));
+  const languages = Array.from(new Set(typedTutors.flatMap(tutor => tutor.languages)));
+
+  // Filter tutors based on current filter state
+  const filteredTutors = typedTutors.filter((tutor: Tutor) => {
+    const matchesSearch = searchTerm === "" || 
+      tutor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tutor.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tutor.subjects.some(subject => subject.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      tutor.specializations.some(spec => spec.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesSubject = selectedSubject === "all" || 
+      tutor.subjects.some(subject => subject === selectedSubject);
+
+    const matchesRating = selectedRating === 0 || tutor.rating >= selectedRating;
+
+    const matchesPrice = priceRange === "all" || (() => {
+      const price = parseInt(tutor.hourlyRate.replace('$', ''));
+      switch (priceRange) {
+        case "10-20": return price >= 10 && price <= 20;
+        case "20-50": return price >= 20 && price <= 50;
+        case "50-100": return price >= 50 && price <= 100;
+        case "100+": return price >= 100;
+        default: return true;
+      }
+    })();
+
+    const matchesAvailability = availability === "all" || (() => {
+      switch (availability) {
+        case "now": return tutor.availability.includes("now");
+        case "today": return tutor.availability.includes("today") || tutor.availability.includes("now");
+        case "week": return true; // Assume all tutors are available within a week
+        default: return true;
+      }
+    })();
+
+    const matchesLanguages = selectedLanguages.length === 0 ||
+      selectedLanguages.some(lang => tutor.languages.includes(lang));
+
+    return matchesSearch && matchesSubject && matchesRating && matchesPrice && matchesAvailability && matchesLanguages;
   });
 
-  const handleCreateClass = (data: z.infer<typeof classSchema>) => {
-    const newClass = {
-      ...data,
-      id: classes.length + 1,
-      studentLimit: parseInt(data.studentLimit),
-      enrolled: 0,
-      status: "scheduled",
-      description: data.description || "",
-      location: data.location || "",
-      startDate: data.startTime.split('T')[0],
-      endDate: data.endTime.split('T')[0],
-    };
-    setClasses([...classes, newClass]);
-    setIsClassDialogOpen(false);
-    classForm.reset();
+  // Calculate stats
+  const totalTutors = typedTutors.length;
+  const averageRating = typedTutors.length > 0 
+    ? (typedTutors.reduce((sum, tutor) => sum + tutor.rating, 0) / typedTutors.length).toFixed(1)
+    : "0";
+  const totalSessions = typedTutors.reduce((sum, tutor) => sum + tutor.lessonsCompleted, 0);
+  const activeNow = typedTutors.filter(tutor => tutor.availability.includes("now")).length;
+
+  const featuredTutors = typedTutors.filter(tutor => tutor.featured);
+
+  const handleBookSession = (tutorId: string) => {
     toast({
-      title: "Success",
-      description: "Class scheduled successfully",
+      title: "Session Booking",
+      description: "Session booking functionality will be implemented soon.",
     });
   };
 
-  const handleCreateResource = (data: z.infer<typeof resourceSchema>) => {
-    const newResource = {
-      ...data,
-      id: resources.length + 1,
-      downloads: 0,
-      created: new Date().toISOString().split('T')[0],
-      description: data.description || ""
-    };
-    setResources([...resources, newResource]);
-    setIsResourceDialogOpen(false);
-    resourceForm.reset();
+  const handleSendMessage = (tutorId: string) => {
     toast({
-      title: "Success",
-      description: "Resource created successfully",
+      title: "Message Sent",
+      description: "Message functionality will be implemented soon.",
     });
   };
 
-  // Calculate statistics
-  const totalStudents = students.length;
-  const upcomingClasses = classes.filter(c => new Date(c.startTime) > new Date());
-  const completedClasses = classes.filter(c => c.status === "completed");
-  const averageProgress = Math.round(students.reduce((acc, student) => acc + student.progress, 0) / students.length);
-
-  // Filter functions
-  const filteredClasses = classes.filter((classItem) => {
-    const matchesSearch = searchTerm === "" || 
-      classItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSubject = selectedSubject === "all" || classItem.subject === selectedSubject;
-    return matchesSearch && matchesSubject;
-  });
-
-  const filteredStudents = students.filter((student) => {
-    const matchesSearch = searchTerm === "" || 
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.grade.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
-
-  const filteredResources = resources.filter((resource) => {
-    const matchesSearch = searchTerm === "" || 
-      resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSubject = selectedSubject === "all" || resource.subject === selectedSubject;
-    return matchesSearch && matchesSubject;
-  });
-
-  return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <GraduationCap className="h-8 w-8" />
-            Tutor Hub
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Personalized workspace for tutors: schedule classes, track learner progress, and share resources
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Dialog open={isResourceDialogOpen} onOpenChange={setIsResourceDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Upload className="h-4 w-4 mr-2" />
-                Add Resource
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Learning Resource</DialogTitle>
-              </DialogHeader>
-              <Form {...resourceForm}>
-                <form onSubmit={resourceForm.handleSubmit(handleCreateResource)} className="space-y-4">
-                  <FormField
-                    control={resourceForm.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Resource Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter resource title" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={resourceForm.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="PDF">PDF Document</SelectItem>
-                              <SelectItem value="Video">Video</SelectItem>
-                              <SelectItem value="Worksheet">Worksheet</SelectItem>
-                              <SelectItem value="Presentation">Presentation</SelectItem>
-                              <SelectItem value="Quiz">Quiz</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={resourceForm.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Subject</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select subject" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Mathematics">Mathematics</SelectItem>
-                              <SelectItem value="Physics">Physics</SelectItem>
-                              <SelectItem value="Chemistry">Chemistry</SelectItem>
-                              <SelectItem value="Biology">Biology</SelectItem>
-                              <SelectItem value="English">English</SelectItem>
-                              <SelectItem value="History">History</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={resourceForm.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} placeholder="Describe the resource..." rows={3} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={resourceForm.control}
-                    name="url"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>URL (Optional)</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="https://..." />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">
-                    Create Resource
-                  </Button>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={isClassDialogOpen} onOpenChange={setIsClassDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Schedule Class
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Schedule New Class</DialogTitle>
-              </DialogHeader>
-              <Form {...classForm}>
-                <form onSubmit={classForm.handleSubmit(handleCreateClass)} className="space-y-4">
-                  <FormField
-                    control={classForm.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Class Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter class title" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={classForm.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Subject</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select subject" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Mathematics">Mathematics</SelectItem>
-                              <SelectItem value="Physics">Physics</SelectItem>
-                              <SelectItem value="Chemistry">Chemistry</SelectItem>
-                              <SelectItem value="Biology">Biology</SelectItem>
-                              <SelectItem value="English">English</SelectItem>
-                              <SelectItem value="History">History</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={classForm.control}
-                      name="studentLimit"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Student Limit</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" placeholder="25" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={classForm.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} placeholder="Describe the class..." rows={3} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={classForm.control}
-                      name="startTime"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Start Time</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="datetime-local" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={classForm.control}
-                      name="endTime"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>End Time</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="datetime-local" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={classForm.control}
-                    name="location"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Location</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Room 201 or Online" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">
-                    Schedule Class
-                  </Button>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="text-slate-600 dark:text-slate-400">Loading tutors...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Statistics */}
-      <TutorStatistics
-        totalStudents={totalStudents}
-        upcomingClasses={upcomingClasses}
-        completedClasses={completedClasses}
-        averageProgress={averageProgress}
-      />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="flex justify-center items-center mb-4">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-2xl">
+              <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+            Tutor Hub
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Connect with expert tutors for personalized learning experiences
+          </p>
+        </div>
 
-      {/* Search and Filter */}
-      <TutorSearchAndFilter
-        searchTerm={searchTerm}
-        selectedSubject={selectedSubject}
-        onSearchChange={setSearchTerm}
-        onSubjectChange={setSelectedSubject}
-      />
+        {/* Stats */}
+        <TutorStats
+          totalTutors={totalTutors}
+          averageRating={parseFloat(averageRating)}
+          totalSessions={totalSessions}
+          activeNow={activeNow}
+        />
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="classes" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="classes">My Classes</TabsTrigger>
-          <TabsTrigger value="students">Students</TabsTrigger>
-          <TabsTrigger value="resources">Resources</TabsTrigger>
-        </TabsList>
+        {/* Filters */}
+        <TutorFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedSubject={selectedSubject}
+          setSelectedSubject={setSelectedSubject}
+          selectedRating={selectedRating}
+          setSelectedRating={setSelectedRating}
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          availability={availability}
+          setAvailability={setAvailability}
+          languages={languages}
+          selectedLanguages={selectedLanguages}
+          setSelectedLanguages={setSelectedLanguages}
+          subjects={subjects}
+        />
 
-        <TabsContent value="classes">
-          <ClassManagement
-            classes={classes}
-            filteredClasses={filteredClasses}
+        {/* Featured Tutors */}
+        {featuredTutors.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200 mb-4">Featured Tutors</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <TutorGrid
+                tutors={featuredTutors}
+                isLoading={false}
+                onBookSession={handleBookSession}
+                onSendMessage={handleSendMessage}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* All Tutors */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
+            {selectedSubject === "all" ? "All Tutors" : `${selectedSubject} Tutors`} 
+            ({filteredTutors.length})
+          </h2>
+          <TutorGrid
+            tutors={filteredTutors}
+            isLoading={isLoading}
+            onBookSession={handleBookSession}
+            onSendMessage={handleSendMessage}
           />
-        </TabsContent>
-
-        <TabsContent value="students">
-          <StudentProgress
-            students={students}
-            filteredStudents={filteredStudents}
-          />
-        </TabsContent>
-
-        <TabsContent value="resources">
-          <ResourceLibrary
-            resources={resources}
-            filteredResources={filteredResources}
-          />
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default TutorHub;
