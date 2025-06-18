@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { DashboardHeader, ModuleGrid, SearchAndFilters } from "@/components/learning/modules";
 import { 
-  Search, 
-  Filter, 
-  Grid3X3, 
-  List, 
   BookOpen, 
   FolderOpen, 
   Calendar, 
@@ -16,12 +9,8 @@ import {
   Notebook, 
   Layers, 
   FlaskConical, 
-  GraduationCap,
-  Star,
-  ArrowUpRight,
-  Plus
+  GraduationCap
 } from "lucide-react";
-import { Link } from "wouter";
 
 const moduleCards = [
   {
@@ -229,114 +218,12 @@ export default function LearningDashboard() {
           </div>
         </div>
 
-        {/* Modules Grid */}
-        <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4" : "grid-cols-1"}`}>
-          {filteredModules.map((module) => {
-            const IconComponent = module.icon;
-            return (
-              <Link key={module.id} href={module.route}>
-                <Card className={`group cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1 border-l-4 ${module.color} bg-white dark:bg-slate-800`}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="p-2 bg-slate-50 dark:bg-slate-700 rounded-lg group-hover:bg-slate-100 dark:group-hover:bg-slate-600 transition-colors">
-                        <IconComponent className="h-6 w-6 text-slate-600 dark:text-slate-300" />
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {module.category}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {module.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
-                      {module.description}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {module.features.map((feature, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {feature}
-                        </Badge>
-                      ))}
-                      {module.moreCount > 0 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{module.moreCount} more
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 group-hover:border-blue-200 dark:group-hover:border-blue-800"
-                      >
-                        {module.category}
-                        <ArrowUpRight className="h-3 w-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Empty State */}
-        {filteredModules.length === 0 && (
-          <div className="text-center py-12">
-            <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <Search className="h-8 w-8 text-slate-400" />
-            </div>
-            <h3 className="text-lg font-medium text-slate-800 dark:text-slate-200 mb-2">No modules found</h3>
-            <p className="text-slate-600 dark:text-slate-400">Try adjusting your search or filter criteria</p>
-          </div>
-        )}
-
-        {/* Quick Actions */}
-        <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700">
-          <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button variant="outline" className="justify-start h-auto p-4" asChild>
-              <Link href="/my-locker">
-                <Plus className="h-5 w-5 mr-3" />
-                <div className="text-left">
-                  <div className="font-medium">Create Notebook</div>
-                  <div className="text-xs text-slate-500">Start writing</div>
-                </div>
-              </Link>
-            </Button>
-            <Button variant="outline" className="justify-start h-auto p-4" asChild>
-              <Link href="/digital-library">
-                <BookOpen className="h-5 w-5 mr-3" />
-                <div className="text-left">
-                  <div className="font-medium">Browse Library</div>
-                  <div className="text-xs text-slate-500">Find resources</div>
-                </div>
-              </Link>
-            </Button>
-            <Button variant="outline" className="justify-start h-auto p-4" asChild>
-              <Link href="/scheduling">
-                <Calendar className="h-5 w-5 mr-3" />
-                <div className="text-left">
-                  <div className="font-medium">View Schedule</div>
-                  <div className="text-xs text-slate-500">Check calendar</div>
-                </div>
-              </Link>
-            </Button>
-            <Button variant="outline" className="justify-start h-auto p-4" asChild>
-              <Link href="/apps-hub">
-                <Layers className="h-5 w-5 mr-3" />
-                <div className="text-left">
-                  <div className="font-medium">Explore Apps</div>
-                  <div className="text-xs text-slate-500">Discover tools</div>
-                </div>
-              </Link>
-            </Button>
-          </div>
-        </div>
+        <ModuleGrid
+          moduleCards={filteredModules}
+          viewMode={viewMode}
+          searchTerm={searchTerm}
+          selectedCategory={selectedCategory}
+        />
       </div>
     </div>
   );
