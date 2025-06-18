@@ -20,13 +20,13 @@ const DEMO_ACCOUNTS = [
     id: "teacher"
   },
   {
-    role: "Admin",
-    email: "admin@edvirons.com", 
+    role: "Admin", 
+    email: "admin@edvirons.com",
     id: "school_admin"
   },
   {
     role: "Student",
-    email: "student@edvirons.com",
+    email: "student@edvirons.com", 
     id: "demo_student_elementary"
   }
 ];
@@ -108,8 +108,8 @@ export default function Login() {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">EdVirons</h1>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
-          <p className="text-gray-600">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome Back!</h2>
+          <p className="text-gray-600 mb-8">
             Been a while! Ready to dive back in? Let's get you signed in and back to Learning!
           </p>
         </div>
@@ -126,7 +126,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
-              className="w-full h-12 px-4 text-base border-gray-300 rounded-md"
+              className="w-full h-12 px-4 text-base border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
               required
             />
           </div>
@@ -142,7 +142,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full h-12 px-4 pr-10 text-base border-gray-300 rounded-md"
+                className="w-full h-12 px-4 pr-10 text-base border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
                 required
               />
               <button
@@ -169,7 +169,7 @@ export default function Login() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 h-12 text-base font-medium rounded-md"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 h-12 text-base font-medium rounded-md transition-colors"
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </Button>
@@ -181,7 +181,7 @@ export default function Login() {
             <h3 className="font-medium text-gray-900 mb-3 text-sm">Demo Accounts</h3>
             <div className="space-y-2">
               {DEMO_ACCOUNTS.map((account) => (
-                <div key={account.id} className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200">
+                <div key={account.id} className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:bg-gray-50 transition-colors">
                   <div className="text-sm">
                     <span className="font-medium text-blue-600">{account.role}:</span>
                     <span className="text-gray-600 ml-1">{account.email}</span>
@@ -191,7 +191,7 @@ export default function Login() {
                     size="sm"
                     onClick={() => handleDemoLogin(account)}
                     disabled={isLoading}
-                    className="text-blue-600 border-blue-300 hover:bg-blue-50 px-4 py-1 h-8"
+                    className="text-blue-600 border-blue-300 hover:bg-blue-50 px-4 py-1 h-8 font-medium"
                   >
                     Use
                   </Button>
