@@ -427,7 +427,7 @@ function PrimaryLayout({ categories, resources, layout, onResourceAccess }: {
   );
 }
 
-// Secondary school layout with more sophisticated design
+// Secondary school layout with CBE subjects and resource counts
 function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, onResourceAccess }: {
   categories: any[];
   subjects: any[];
@@ -438,58 +438,81 @@ function SecondaryLayout({ categories, subjects, resources, layout, gradeLevel, 
 }) {
   return (
     <div className="space-y-8">
-      {/* Main Learning Areas */}
-      <div>
-        <h2 className="text-2xl font-bold mb-6">CBE Learning Areas - {gradeLevel === 'junior_secondary' ? 'Junior Secondary' : 'Senior Secondary'}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.slice(0, 8).map(category => (
-            <Card key={category.id} className={`${layout.cardStyle} bg-gradient-to-br ${category.color || 'from-blue-500 to-blue-600'} text-white`}>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                    <BookOpen className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{category.name}</h3>
-                    <p className="text-xs opacity-90">Core Competencies</p>
-                  </div>
-                </div>
+      {/* CBE Subjects Grid */}
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">CBE Subjects</h2>
+          <p className="text-gray-600 dark:text-gray-400">Competency-Based Education subjects for {gradeLevel.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {subjects.map((subject: any) => {
+            const resourceCounts = subject.resourceCounts || { books: 0, worksheets: 0, quizzes: 0 };
+            const totalResources = resourceCounts.books + resourceCounts.worksheets + resourceCounts.quizzes;
+            
+            // Get category color for gradient
+            const category = categories.find(cat => cat.id === subject.categoryId);
+            const gradientColor = category?.color || 'from-blue-500 to-blue-600';
+            
+            return (
+              <Card key={subject.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group bg-white dark:bg-gray-800">
+                <CardHeader className={`bg-gradient-to-br ${gradientColor} rounded-t-lg pb-3`}>
+                  <CardTitle className="flex items-center gap-3 text-lg text-white">
+                    <div className="p-2 bg-white/20 rounded-lg">
+                      <BookOpen className="h-5 w-5" />
+                    </div>
+                    {subject.name}
+                  </CardTitle>
+                  <CardDescription className="text-white/90 text-sm">
+                    {subject.competency || 'Learning Resources'}
+                  </CardDescription>
+                </CardHeader>
                 
-                <div className="mb-4">
-                  <div className="flex justify-between text-center text-xs">
-                    <div>
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <BookOpen className="w-3 h-3" />
-                      </div>
-                      <p>Books</p>
+                <CardContent className="p-6 bg-white dark:bg-gray-800">
+                  <div className="space-y-4">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Available Resources:
                     </div>
-                    <div>
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <FileText className="w-3 h-3" />
+                    
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <BookOpen className="h-6 w-6 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
+                        <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                          {resourceCounts.books}
+                        </div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Books</div>
                       </div>
-                      <p>Worksheets</p>
-                    </div>
-                    <div>
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <Video className="w-3 h-3" />
+                      
+                      <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <FileText className="h-6 w-6 mx-auto mb-2 text-green-600 dark:text-green-400" />
+                        <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                          {resourceCounts.worksheets}
+                        </div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Worksheets</div>
                       </div>
-                      <p>Videos</p>
-                    </div>
-                    <div>
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <Award className="w-3 h-3" />
+                      
+                      <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                        <Star className="h-6 w-6 mx-auto mb-2 text-purple-600 dark:text-purple-400" />
+                        <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                          {resourceCounts.quizzes}
+                        </div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Quizzes</div>
                       </div>
-                      <p>Assessments</p>
                     </div>
+                    
+                    <Button 
+                      className="w-full bg-gray-900 hover:bg-gray-800 text-white transition-colors duration-200"
+                      onClick={() => {
+                        console.log('View resources for', subject.id);
+                      }}
+                    >
+                      View All
+                    </Button>
                   </div>
-                </div>
-                
-                <Button variant="secondary" size="sm" className="w-full bg-white/20 hover:bg-white/30 text-white border-0">
-                  <span className="text-xs">Explore Learning Area</span>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
