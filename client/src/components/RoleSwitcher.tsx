@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, User, LogOut, RefreshCw } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface RoleOption {
@@ -54,7 +54,14 @@ export default function RoleSwitcher() {
           title: "Role Switched",
           description: `Now logged in as ${newRole.name}`,
         });
-        // Reload to trigger auth state update
+        
+        // Invalidate auth query to refresh user data
+        await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        
+        // Clear all cached data to prevent stale data from previous role
+        queryClient.clear();
+        
+        // Reload to ensure complete state reset
         window.location.reload();
       } else {
         throw new Error("Role switch failed");

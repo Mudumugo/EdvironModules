@@ -16,29 +16,50 @@ export function useXapiPageTracking(pageName: string, pageType: string) {
   }, [pageName, pageType]);
 }
 
-// Utility functions for common tracking scenarios
-export const trackUserLogin = (user: any) => {
-  xapiCore.setCurrentUser(user);
-  
-  const statement = {
-    actor: xapiCore.createActor(),
-    verb: XAPI_VERBS.LOGGED_IN,
-    object: xapiCore.createActivity(
-      "platform",
-      "Edvirons Learning Platform",
-      ACTIVITY_TYPES.COURSE,
-      "Educational technology platform for comprehensive learning management"
-    ),
-    context: {
-      platform: "Edvirons",
-      extensions: {
-        "http://edvirons.com/extensions/session_id": crypto.randomUUID(),
-        "http://edvirons.com/extensions/user_agent": navigator.userAgent
-      }
-    }
-  };
+// Debounced login tracking to prevent duplicate calls
+let loginTrackingTimeout: NodeJS.Timeout | null = null;
+const trackedLogins = new Set<string>();
 
-  xapiCore.sendStatement(statement);
+export const trackUserLogin = (user: any) => {
+  // Prevent duplicate tracking for the same user session
+  const sessionKey = `${user.id}_${Date.now().toString().slice(0, -3)}000`; // Round to nearest second
+  if (trackedLogins.has(sessionKey)) {
+    return;
+  }
+  
+  // Clear any pending login tracking
+  if (loginTrackingTimeout) {
+    clearTimeout(loginTrackingTimeout);
+  }
+  
+  // Debounce login tracking by 500ms
+  loginTrackingTimeout = setTimeout(() => {
+    xapiCore.setCurrentUser(user);
+    trackedLogins.add(sessionKey);
+    
+    const statement = {
+      actor: xapiCore.createActor(),
+      verb: XAPI_VERBS.LOGGED_IN,
+      object: xapiCore.createActivity(
+        "platform",
+        "Edvirons Learning Platform",
+        ACTIVITY_TYPES.COURSE,
+        "Educational technology platform for comprehensive learning management"
+      ),
+      context: {
+        platform: "Edvirons",
+        extensions: {
+          "http://edvirons.com/extensions/session_id": crypto.randomUUID(),
+          "http://edvirons.com/extensions/user_agent": navigator.userAgent
+        }
+      }
+    };
+
+    xapiCore.sendStatement(statement);
+    
+    // Clean up old tracking records after 5 minutes
+    setTimeout(() => trackedLogins.delete(sessionKey), 5 * 60 * 1000);
+  }, 500);
 };
 
 export const trackUserLogout = () => {

@@ -29,9 +29,12 @@ export function registerXapiRoutes(app: Express) {
         tenantId
       };
       
-      console.log(`xAPI Statement recorded: ${statement.verb.display['en-US']} - ${statement.object.definition.name['en-US']}`);
+      // Only log non-login statements to reduce noise
+      if (statement.verb.id !== 'https://brindlewaye.com/xAPITerms/verbs/loggedin/') {
+        console.log(`xAPI Statement recorded: ${statement.verb.display['en-US']} - ${statement.object.definition.name['en-US']}`);
+      }
       
-      // Update learning analytics aggregations
+      // Update learning analytics aggregations (batched for performance)
       await updateLearningAnalytics(statement, userId, tenantId);
       
       res.status(200).json({ 
@@ -125,23 +128,44 @@ export function registerXapiRoutes(app: Express) {
   });
 }
 
-// Helper function to update learning analytics
+// Helper function to update learning analytics (batched for performance)
+const analyticsQueue = new Map<string, any[]>();
+let analyticsTimeout: NodeJS.Timeout | null = null;
+
 async function updateLearningAnalytics(statement: any, userId: string, tenantId: string) {
   try {
-    // Extract key information from xAPI statement
-    const activityId = statement.object.id;
-    const verb = statement.verb.id;
-    const result = statement.result;
+    // Skip analytics updates for login statements to reduce noise
+    if (statement.verb.id === 'https://brindlewaye.com/xAPITerms/verbs/loggedin/') {
+      return;
+    }
     
-    // Update aggregated analytics based on statement type
-    console.log(`Updating analytics for user ${userId}: ${verb} on ${activityId}`);
+    const key = `${userId}_${tenantId}`;
+    if (!analyticsQueue.has(key)) {
+      analyticsQueue.set(key, []);
+    }
+    analyticsQueue.get(key)!.push(statement);
     
-    // This would typically update database records for:
-    // - Total interaction counts
-    // - Learning time tracking  
-    // - Score aggregations
-    // - Completion tracking
-    // - Competency progress
+    // Clear existing timeout
+    if (analyticsTimeout) {
+      clearTimeout(analyticsTimeout);
+    }
+    
+    // Batch process analytics updates every 2 seconds
+    analyticsTimeout = setTimeout(async () => {
+      for (const [queueKey, statements] of analyticsQueue.entries()) {
+        const [queueUserId, queueTenantId] = queueKey.split('_');
+        console.log(`Processing ${statements.length} analytics updates for user ${queueUserId}`);
+        
+        // Process batch of statements
+        // This would typically update database records for:
+        // - Total interaction counts
+        // - Learning time tracking  
+        // - Score aggregations
+        // - Completion tracking
+        // - Competency progress
+      }
+      analyticsQueue.clear();
+    }, 2000);
     
   } catch (error) {
     console.error("Error updating learning analytics:", error);

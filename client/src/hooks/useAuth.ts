@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { trackUserLogin, xapiTracker } from "@/lib/xapiTracker";
 
 interface User {
@@ -18,13 +18,21 @@ export function useAuth() {
     retry: false,
   });
 
-  // Track user login and set current user for xAPI tracking
+  const hasTrackedLogin = useRef(false);
+  const lastUserId = useRef<string | null>(null);
+
+  // Track user login only once per session or user change
   useEffect(() => {
     if (user && !isLoading) {
-      xapiTracker.setCurrentUser(user);
-      trackUserLogin(user);
+      // Only track if this is a new user or first time
+      if (!hasTrackedLogin.current || lastUserId.current !== user.id) {
+        xapiTracker.setCurrentUser(user);
+        trackUserLogin(user);
+        hasTrackedLogin.current = true;
+        lastUserId.current = user.id;
+      }
     }
-  }, [user, isLoading]);
+  }, [user?.id, isLoading]);
 
   return {
     user,
