@@ -31,6 +31,7 @@ import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
 import AppsHub from "@/pages/AppsHub";
 import HotCall from "@/pages/HotCall";
 import TimetableManagement from "@/pages/TimetableManagement";
+import AuthoringDashboard from "@/pages/AuthoringDashboard";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
@@ -48,6 +49,7 @@ const componentMap: Record<string, any> = {
   'family-controls': FamilyControls,
   'scheduling': Scheduling,
   'analytics': Analytics,
+  'authoring-dashboard': AuthoringDashboard,
   'licensing': Licensing,
   'settings': Settings,
   'users': UserManagement,
@@ -170,6 +172,13 @@ function Router() {
         <Route path="/device-management">
           <RoleProtectedRoute moduleId="device-management">
             <DeviceManagement />
+          </RoleProtectedRoute>
+        </Route>
+
+        {/* Authoring module - Content creators */}
+        <Route path="/authoring-dashboard">
+          <RoleProtectedRoute moduleId="authoring-dashboard">
+            <AuthoringDashboard />
           </RoleProtectedRoute>
         </Route>
 
