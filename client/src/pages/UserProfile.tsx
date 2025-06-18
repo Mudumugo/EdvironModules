@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,26 +68,51 @@ export default function UserProfile() {
   const [showPassword, setShowPassword] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  // Fetch user profile from API
+  const { data: profileData, isLoading: profileLoading } = useQuery({
+    queryKey: ["/api/user/profile"],
+    retry: false,
+  });
+
   // Fetch user settings
   const { data: userSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ["/api/user/settings"],
     retry: false,
   });
 
-  // Profile form state
-  const [profileData, setProfileData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
+  // Profile form state - use API data instead of auth user data
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
     phone: '',
     address: '',
     bio: '',
     dateOfBirth: '',
-    gradeLevel: user?.role || '',
-    department: user?.role || '',
+    gradeLevel: '',
+    department: '',
     subjects: [],
     achievements: []
   });
+
+  // Update form data when profile loads
+  useEffect(() => {
+    if (profileData) {
+      setFormData({
+        firstName: profileData.firstName || '',
+        lastName: profileData.lastName || '',
+        email: profileData.email || '',
+        phone: profileData.phone || '',
+        address: profileData.address || '',
+        bio: profileData.bio || '',
+        dateOfBirth: profileData.dateOfBirth || '',
+        gradeLevel: profileData.gradeLevel || '',
+        department: profileData.department || '',
+        subjects: profileData.subjects || [],
+        achievements: profileData.achievements || []
+      });
+    }
+  }, [profileData]);
 
   // Settings state
   const [settings, setSettings] = useState<UserSettings>({
@@ -157,7 +182,7 @@ export default function UserProfile() {
 
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfileMutation.mutate(profileData);
+    updateProfileMutation.mutate(formData);
   };
 
   const handleSettingsUpdate = (section: keyof UserSettings, key: string, value: any) => {
