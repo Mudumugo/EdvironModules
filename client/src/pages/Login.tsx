@@ -17,12 +17,28 @@ interface UserRole {
 
 const userRoles: UserRole[] = [
   {
-    id: "student_elementary",
-    name: "Student",
-    description: "Elementary school student with access to learning materials and assignments",
+    id: "demo_student_elementary",
+    name: "Primary Student",
+    description: "Elementary school student (Ages 5-10) - Child-friendly learning interface",
     icon: BookOpen,
     color: "bg-blue-500",
     permissions: ["view_library", "submit_assignments", "view_grades"]
+  },
+  {
+    id: "demo_student_middle",
+    name: "Junior Student", 
+    description: "Middle school student (Ages 11-13) - Subject-focused learning modules",
+    icon: BookOpen,
+    color: "bg-cyan-500",
+    permissions: ["view_library", "submit_assignments", "view_grades", "group_projects"]
+  },
+  {
+    id: "demo_student_high",
+    name: "Senior Student",
+    description: "High school student (Ages 14-18) - Advanced academic tools and research",
+    icon: BookOpen,
+    color: "bg-indigo-500", 
+    permissions: ["view_library", "submit_assignments", "view_grades", "research_tools", "college_prep"]
   },
   {
     id: "teacher",
