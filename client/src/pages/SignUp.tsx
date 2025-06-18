@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Users, School, Baby, User, Phone, Shield, CheckCircle, AlertCircle } from "lucide-react";
 import { Link } from "wouter";
+import { LocationSelector } from "@/components/forms/LocationSelector";
 
 // Age verification schema
 const ageVerificationSchema = z.object({
@@ -58,6 +59,9 @@ const parentChildSignupSchema = z.object({
   parentPhone: z.string().min(10, "Valid phone number required"),
   parentFirstName: z.string().min(2, "First name is required"),
   parentLastName: z.string().min(2, "Last name is required"),
+  county: z.string().min(1, "County is required"),
+  constituency: z.string().min(1, "Constituency is required"),
+  ward: z.string().min(1, "Ward is required"),
   childFirstName: z.string().min(2, "Child's first name is required"),
   childLastName: z.string().min(2, "Child's last name is required"),
   childBirthDate: z.string().min(1, "Child's birth date is required"),
@@ -73,7 +77,9 @@ const schoolDemoSchema = z.object({
   phone: z.string().min(10, "Valid phone number required"),
   role: z.string().min(1, "Please select your role"),
   schoolType: z.string().min(1, "Please select school type"),
-  location: z.string().min(2, "Location is required"),
+  county: z.string().min(1, "County is required"),
+  constituency: z.string().min(1, "Constituency is required"),
+  ward: z.string().min(1, "Ward is required"),
   studentPopulation: z.string().min(1, "Student population is required"),
   gradeRange: z.string().min(1, "Grade range is required"),
   hasComputerLab: z.string().min(1, "Please specify if you have a computer lab"),
@@ -458,16 +464,19 @@ export default function SignUp() {
                             </p>
                           )}
                         </div>
-                        <div>
-                          <Label htmlFor="location">Location (City, State) *</Label>
-                          <Input
-                            id="location"
-                            {...schoolForm.register("location")}
-                            placeholder="City, State"
+                        <div className="col-span-2">
+                          <h4 className="text-sm font-medium mb-2">School Location *</h4>
+                          <LocationSelector
+                            onLocationChange={(location) => {
+                              schoolForm.setValue("county", location.county);
+                              schoolForm.setValue("constituency", location.constituency);
+                              schoolForm.setValue("ward", location.ward);
+                            }}
+                            required={true}
                           />
-                          {schoolForm.formState.errors.location && (
+                          {(schoolForm.formState.errors.county || schoolForm.formState.errors.constituency || schoolForm.formState.errors.ward) && (
                             <p className="text-sm text-red-600 mt-1">
-                              {schoolForm.formState.errors.location.message}
+                              Please complete all location fields
                             </p>
                           )}
                         </div>
@@ -753,6 +762,23 @@ export default function SignUp() {
                         </p>
                       )}
                     </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Your Location *</h4>
+                    <LocationSelector
+                      onLocationChange={(location) => {
+                        parentChildForm.setValue("county", location.county);
+                        parentChildForm.setValue("constituency", location.constituency);
+                        parentChildForm.setValue("ward", location.ward);
+                      }}
+                      required={true}
+                    />
+                    {(parentChildForm.formState.errors.county || parentChildForm.formState.errors.constituency || parentChildForm.formState.errors.ward) && (
+                      <p className="text-sm text-red-600 mt-1">
+                        Please complete all location fields
+                      </p>
+                    )}
                   </div>
                   
                   <div>
