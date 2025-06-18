@@ -131,16 +131,11 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const sessionUser = (req.session as any)?.user;
   const replitUser = req.user as any;
 
-  // Check for demo session first
-  if (sessionUser && sessionUser.expires_at) {
-    const now = Math.floor(Date.now() / 1000);
-    if (now <= sessionUser.expires_at) {
-      req.user = sessionUser;
-      return next();
-    } else {
-      // Demo session expired
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+  // Check for demo session first (allow demo sessions without strict expiration)
+  if (sessionUser) {
+    req.user = sessionUser;
+    req.tenant = { id: sessionUser.tenantId || 'default' };
+    return next();
   }
 
   // Fall back to Replit auth

@@ -34,8 +34,8 @@ export async function registerAuthRoutes(app: Express) {
         department: role === 'teacher' ? 'General Education' : role === 'school_admin' ? 'Administration' : role === 'school_it_staff' ? 'Information Technology' : role === 'school_security' ? 'Security' : null
       });
 
-      // Create a demo session
-      (req.session as any).user = {
+      // Create a demo session and save it
+      const sessionData = {
         id: user.id,
         claims: {
           sub: user.id,
@@ -47,8 +47,18 @@ export async function registerAuthRoutes(app: Express) {
         role: user.role,
         tenantId: user.tenantId,
         access_token: 'demo_token',
-        expires_at: Math.floor(Date.now() / 1000) + 3600 // 1 hour
+        expires_at: Math.floor(Date.now() / 1000) + 86400 // 24 hours
       };
+      
+      (req.session as any).user = sessionData;
+      
+      // Force session save
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
 
       res.json({ 
         success: true, 
