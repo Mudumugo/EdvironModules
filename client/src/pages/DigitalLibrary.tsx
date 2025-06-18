@@ -117,19 +117,19 @@ export default function DigitalLibrary() {
   const layout = getLayoutConfig(gradeLevel);
 
   // Fetch categories for current grade level
-  const { data: categories = [] } = useQuery({
+  const { data: categoriesResponse = [] } = useQuery({
     queryKey: ['/api/library/categories', gradeLevel],
     queryFn: () => apiRequest('GET', `/api/library/categories?gradeLevel=${gradeLevel}`),
-  }) as { data: any[] };
+  });
 
   // Fetch subjects for current grade level
-  const { data: subjects = [] } = useQuery({
+  const { data: subjectsResponse = [] } = useQuery({
     queryKey: ['/api/library/subjects', gradeLevel, selectedCategory],
     queryFn: () => apiRequest('GET', `/api/library/subjects?gradeLevel=${gradeLevel}&categoryId=${selectedCategory !== 'all' ? selectedCategory : ''}`),
-  }) as { data: any[] };
+  });
 
   // Fetch resources
-  const { data: resources = [] } = useQuery({
+  const { data: resourcesResponse = [] } = useQuery({
     queryKey: ['/api/library/resources', gradeLevel, selectedCategory, selectedResourceType, searchTerm],
     queryFn: () => apiRequest('GET', '/api/library/resources', {
       gradeLevel,
@@ -138,6 +138,11 @@ export default function DigitalLibrary() {
       search: searchTerm || undefined
     }),
   });
+
+  // Ensure we have arrays for rendering
+  const categories = Array.isArray(categoriesResponse) ? categoriesResponse : [];
+  const subjects = Array.isArray(subjectsResponse) ? subjectsResponse : [];
+  const resources = Array.isArray(resourcesResponse) ? resourcesResponse : [];
 
   // Get featured resources
   const featuredResources = resources.filter(r => r.isFeatured);
