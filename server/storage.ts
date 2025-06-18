@@ -35,14 +35,9 @@ import {
   eventTemplates,
   type EventTemplate,
   type InsertEventTemplate,
-  libraryCategories,
-  librarySubjects,
-  libraryResources,
-  libraryResourceAccess,
   type LibraryCategory,
-  type LibrarySubject,
-  type LibraryResource,
-  type LibraryResourceAccess
+  type LibrarySubject, 
+  type LibraryResource
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, lte, gte, isNotNull, desc, asc, or, ilike, sql } from "drizzle-orm";

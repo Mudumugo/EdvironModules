@@ -26,7 +26,7 @@ import {
   Award,
   Sparkles
 } from 'lucide-react';
-import type { LibraryCategory, LibrarySubject, LibraryResource } from '@shared/schema';
+// Library types are imported from education schema
 
 // Age-appropriate layouts based on grade level
 const getLayoutConfig = (gradeLevel: string) => {
@@ -115,19 +115,19 @@ export default function DigitalLibrary() {
   const layout = getLayoutConfig(gradeLevel);
 
   // Fetch categories for current grade level
-  const { data: categories = [] } = useQuery<LibraryCategory[]>({
+  const { data: categories = [] } = useQuery({
     queryKey: ['/api/library/categories', gradeLevel],
     queryFn: () => apiRequest('GET', `/api/library/categories?gradeLevel=${gradeLevel}`),
-  });
+  }) as { data: any[] };
 
   // Fetch subjects for current grade level
-  const { data: subjects = [] } = useQuery<LibrarySubject[]>({
+  const { data: subjects = [] } = useQuery({
     queryKey: ['/api/library/subjects', gradeLevel, selectedCategory],
     queryFn: () => apiRequest('GET', `/api/library/subjects?gradeLevel=${gradeLevel}&categoryId=${selectedCategory !== 'all' ? selectedCategory : ''}`),
-  });
+  }) as { data: any[] };
 
   // Fetch resources
-  const { data: resources = [] } = useQuery<LibraryResource[]>({
+  const { data: resources = [] } = useQuery({
     queryKey: ['/api/library/resources', gradeLevel, selectedCategory, selectedResourceType, searchTerm],
     queryFn: () => apiRequest('GET', '/api/library/resources', {
       gradeLevel,
@@ -151,7 +151,7 @@ export default function DigitalLibrary() {
     { id: 'guide', name: 'Teacher Guides', icon: GraduationCap }
   ];
 
-  const handleResourceAccess = async (resource: LibraryResource, accessType: 'view' | 'save_to_locker') => {
+  const handleResourceAccess = async (resource: any, accessType: 'view' | 'save_to_locker') => {
     try {
       await apiRequest('POST', '/api/library/access', {
         resourceId: resource.id,

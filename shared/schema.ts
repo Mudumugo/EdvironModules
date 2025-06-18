@@ -198,83 +198,7 @@ export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS];
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
-// Library resource categories and subjects
-export const libraryCategories = pgTable("library_categories", {
-  id: varchar("id").primaryKey().notNull(),
-  name: varchar("name").notNull(),
-  description: text("description"),
-  gradeLevel: varchar("grade_level").notNull(), // primary, junior_secondary, senior_secondary
-  icon: varchar("icon"),
-  color: varchar("color"),
-  sortOrder: integer("sort_order").default(0),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const librarySubjects = pgTable("library_subjects", {
-  id: varchar("id").primaryKey().notNull(),
-  categoryId: varchar("category_id").references(() => libraryCategories.id),
-  name: varchar("name").notNull(),
-  description: text("description"),
-  gradeLevel: varchar("grade_level").notNull(),
-  icon: varchar("icon"),
-  color: varchar("color"),
-  sortOrder: integer("sort_order").default(0),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const libraryResources = pgTable("library_resources", {
-  id: varchar("id").primaryKey().notNull(),
-  title: varchar("title").notNull(),
-  description: text("description"),
-  subjectId: varchar("subject_id").references(() => librarySubjects.id),
-  categoryId: varchar("category_id").references(() => libraryCategories.id),
-  resourceType: varchar("resource_type").notNull(), // book, worksheet, video, audio, game, guide
-  gradeLevel: varchar("grade_level").notNull(),
-  difficulty: varchar("difficulty"), // beginner, intermediate, advanced
-  fileUrl: varchar("file_url"),
-  thumbnailUrl: varchar("thumbnail_url"),
-  duration: integer("duration"), // for videos/audio in minutes
-  fileSize: integer("file_size"), // in bytes
-  fileFormat: varchar("file_format"),
-  tags: text("tags").array(),
-  keywords: text("keywords").array(),
-  isPublic: boolean("is_public").default(true),
-  isFeatured: boolean("is_featured").default(false),
-  downloadCount: integer("download_count").default(0),
-  viewCount: integer("view_count").default(0),
-  rating: decimal("rating", { precision: 3, scale: 2 }),
-  ratingCount: integer("rating_count").default(0),
-  authorId: varchar("author_id"),
-  publisherId: varchar("publisher_id"),
-  isbn: varchar("isbn"),
-  publishedDate: timestamp("published_date"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const libraryResourceAccess = pgTable("library_resource_access", {
-  id: varchar("id").primaryKey().notNull(),
-  resourceId: varchar("resource_id").references(() => libraryResources.id),
-  userId: varchar("user_id").references(() => users.id),
-  accessType: varchar("access_type").notNull(), // view, download, save_to_locker
-  accessedAt: timestamp("accessed_at").defaultNow(),
-  sessionDuration: integer("session_duration"), // in seconds
-  completionStatus: varchar("completion_status"), // started, in_progress, completed
-  lastPosition: jsonb("last_position"), // for tracking reading/viewing position
-});
-
-export type LibraryCategory = typeof libraryCategories.$inferSelect;
-export type InsertLibraryCategory = typeof libraryCategories.$inferInsert;
-export type LibrarySubject = typeof librarySubjects.$inferSelect;
-export type InsertLibrarySubject = typeof librarySubjects.$inferInsert;
-export type LibraryResource = typeof libraryResources.$inferSelect;
-export type InsertLibraryResource = typeof libraryResources.$inferInsert;
-export type LibraryResourceAccess = typeof libraryResourceAccess.$inferSelect;
-export type InsertLibraryResourceAccess = typeof libraryResourceAccess.$inferInsert;
+// Library schemas removed from here - using education.schema instead
 export type InsertUserSettings = typeof userSettings.$inferInsert;
 export type UserSettings = typeof userSettings.$inferSelect;
 
@@ -680,11 +604,7 @@ export const insertStickyNoteSchema = createInsertSchema(stickyNotes);
 // Re-export activity logs from dedicated schema
 export { activityLogs, type InsertActivityLog, type ActivityLog } from "@shared/schemas/activity.schema";
 
-// Insert schemas for validation
-export const insertLibraryCategorySchema = createInsertSchema(libraryCategories);
-export const insertLibrarySubjectSchema = createInsertSchema(librarySubjects);
-export const insertLibraryResourceSchema = createInsertSchema(libraryResources);
-export const insertLibraryResourceAccessSchema = createInsertSchema(libraryResourceAccess);
+// Library insert schemas will be imported from education.schema
 export const insertScheduleSchema = z.object({});
 export const insertAttendanceSchema = z.object({});
 export const insertNotificationSchema = z.object({});
