@@ -1,43 +1,11 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProfileTab } from "./UserProfile/ProfileTab";
+import { AcademicTab } from "./UserProfile/AcademicTab";
+import { SettingsTab } from "./UserProfile/SettingsTab";
+import { SecurityTab } from "./UserProfile/SecurityTab";
+import { useUserProfile } from "./UserProfile/useUserProfile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { apiRequest } from "@/lib/queryClient";
-import { 
-  User as UserIcon, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Shield, 
-  Bell, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  Save, 
-  Upload,
-  Settings,
-  GraduationCap,
-  BookOpen,
-  Clock,
-  Award,
-  Target,
-  Palette,
-  Globe,
-  Camera
-} from "lucide-react";
-// Remove User import temporarily to fix type issues
+import { isStudent } from "@/lib/roleUtils";
 
 interface UserSettings {
   notifications: {

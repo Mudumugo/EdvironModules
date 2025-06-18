@@ -12,11 +12,11 @@ import {
   generateGeneralPage
 } from './generators/BookPageGenerators';
 import {
-  generateMultimediaCoverPage,
-  generateVideoLearningPage,
-  generateInteractiveGamePage,
-  generateAnimatedStoryPage
-} from './generators/MultimediaPageGenerators';
+  generateCoverPage as generateMultimediaCoverPage,
+  generateInteractivePage as generateVideoLearningPage,
+  generateInteractivePage as generateInteractiveGamePage,
+  generateInteractivePage as generateAnimatedStoryPage
+} from './generators';
 import { 
   BookOpen, 
   Eye, 
