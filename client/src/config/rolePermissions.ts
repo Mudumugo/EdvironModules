@@ -19,7 +19,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/",
     icon: "BarChart3",
     description: "Main overview and statistics",
-    allowedRoles: ["student_elementary", "teacher", "school_admin", "school_it_staff", "school_security"],
+    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "school_it_staff", "school_security"],
     isCore: true
   },
   {
@@ -28,7 +28,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/digital-library",
     icon: "BookOpen",
     description: "Access digital books and educational resources",
-    allowedRoles: ["student_elementary", "teacher", "school_admin"],
+    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin"],
     isCore: true
   },
   {
@@ -37,7 +37,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/my-locker",
     icon: "CloudDownload",
     description: "Personal storage and saved content",
-    allowedRoles: ["student_elementary", "teacher"],
+    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher"],
     isCore: true
   },
   {
@@ -217,7 +217,19 @@ export function getAccessibleModules(userRole: UserRole): ModulePermission[] {
 
 export function hasModuleAccess(userRole: UserRole, moduleId: string): boolean {
   const module = MODULE_PERMISSIONS.find(m => m.id === moduleId);
-  return module ? module.allowedRoles.includes(userRole) : false;
+  if (!module) return false;
+  
+  // Map demo roles to their corresponding real roles for permission checking
+  const roleMapping: Record<string, UserRole> = {
+    'demo_student_elementary': 'student_elementary',
+    'demo_student_middle': 'student_middle', 
+    'demo_student_high': 'student_high',
+    'demo_student_college': 'student_college',
+    'demo_teacher': 'teacher'
+  };
+  
+  const mappedRole = roleMapping[userRole as string] || userRole;
+  return module.allowedRoles.includes(mappedRole);
 }
 
 export function getCoreModules(userRole: UserRole): ModulePermission[] {
