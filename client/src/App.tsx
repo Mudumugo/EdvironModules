@@ -13,6 +13,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import SchoolManagement from "@/pages/SchoolManagement";
 import DigitalLibrary from "@/pages/DigitalLibrary";
 import DigitalLibraryNew from "@/pages/DigitalLibraryNew";
+import SecurityDashboard from "@/pages/SecurityDashboard";
 import TutorHub from "@/pages/TutorHub";
 import FamilyControls from "@/pages/FamilyControls";
 import Scheduling from "@/pages/Scheduling";

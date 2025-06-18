@@ -13,6 +13,7 @@ import { registerUserRoutes } from "./routes/users-simple";
 import { registerLibraryRoutes } from "./routes/library";
 import { registerITRoutes } from "./routes/it";
 import { registerSecurityRoutes } from "./routes/security";
+import { registerAdminRoutes } from "./routes/admin";
 import { registerPBXRoutes } from "./routes/pbx";
 import { registerParentRoutes } from "./routes/parent";
 import { registerParentManagementRoutes } from "./routes/parentManagement";

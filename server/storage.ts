@@ -15,6 +15,8 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserRole(userId: string, role: string, gradeLevel?: string, department?: string): Promise<User>;
+  setGradeRollover(userId: string, rolloverDate: Date, nextGradeLevel: string): Promise<User>;
+  processGradeRollovers(): Promise<User[]>;
   getUsersByRole(role: string, tenantId?: string): Promise<User[]>;
   getUsersByTenant(tenantId: string): Promise<User[]>;
   

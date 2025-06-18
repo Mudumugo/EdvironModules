@@ -1,123 +1,86 @@
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Camera, Video, VolumeX, Volume2, Wifi, WifiOff, Settings } from "lucide-react";
-
-interface Camera {
-  id: string;
-  name: string;
-  zoneId: string;
-  zoneName: string;
-  ipAddress: string;
-  streamUrl: string;
-  isOnline: boolean;
-  isRecording: boolean;
-  resolution: string;
-  orientation: string;
-  hasAudio: boolean;
-  lastPing: string;
-}
+import { Camera, Eye, Settings, AlertTriangle } from "lucide-react";
 
 interface CameraGridProps {
-  cameras: Camera[];
-  onCameraSelect?: (camera: Camera) => void;
-  onToggleRecording?: (cameraId: string) => void;
+  zoneId?: string;
 }
 
-export default function CameraGrid({ cameras, onCameraSelect, onToggleRecording }: CameraGridProps) {
+export function CameraGrid({ zoneId }: CameraGridProps) {
+  const { data: cameras, isLoading } = useQuery({
+    queryKey: zoneId ? ["/api/security/cameras", { zoneId }] : ["/api/security/cameras"],
+  });
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[...Array(6)].map((_, i) => (
+          <Card key={i} className="animate-pulse">
+            <CardContent className="p-4">
+              <div className="aspect-video bg-muted rounded-lg mb-3" />
+              <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+              <div className="h-3 bg-muted rounded w-1/2" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-      {cameras.map((camera) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {cameras?.map((camera: any) => (
         <Card key={camera.id} className="overflow-hidden">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium">{camera.name}</CardTitle>
-              <div className="flex items-center space-x-1">
-                {camera.isOnline ? (
-                  <Wifi className="h-4 w-4 text-green-500" />
-                ) : (
-                  <WifiOff className="h-4 w-4 text-red-500" />
-                )}
-                {camera.hasAudio ? (
-                  <Volume2 className="h-4 w-4 text-blue-500" />
-                ) : (
-                  <VolumeX className="h-4 w-4 text-gray-400" />
-                )}
+              <div className="flex items-center space-x-2">
+                <Badge 
+                  variant={camera.status === "online" ? "default" : "destructive"}
+                  className="text-xs"
+                >
+                  {camera.status}
+                </Badge>
+                <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
+                  <Settings className="h-3 w-3" />
+                </Button>
               </div>
-            </div>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{camera.zoneName}</span>
-              <Badge variant={camera.isOnline ? "default" : "destructive"} className="text-xs">
-                {camera.isOnline ? "Online" : "Offline"}
-              </Badge>
             </div>
           </CardHeader>
-          
-          <CardContent className="space-y-3">
-            {/* Camera Preview/Stream */}
-            <div 
-              className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden cursor-pointer"
-              onClick={() => onCameraSelect?.(camera)}
-            >
-              {camera.isOnline ? (
-                <div className="flex items-center justify-center h-full">
-                  <Camera className="h-12 w-12 text-gray-400" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-2 left-2 text-white text-xs font-medium">
-                    Live Feed
+          <CardContent className="p-4 pt-0">
+            <div className="aspect-video bg-black rounded-lg mb-3 relative overflow-hidden">
+              {camera.status === "online" ? (
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <Camera className="h-8 w-8 mx-auto mb-2 opacity-60" />
+                    <p className="text-xs opacity-80">Live Feed</p>
                   </div>
-                  {camera.isRecording && (
-                    <div className="absolute top-2 right-2">
-                      <div className="flex items-center space-x-1 bg-red-600 text-white px-2 py-1 rounded text-xs">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                        <span>REC</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full bg-gray-800">
-                  <div className="text-center">
-                    <Camera className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-                    <p className="text-xs text-gray-400">Camera Offline</p>
+                <div className="absolute inset-0 bg-red-900/20 flex items-center justify-center">
+                  <div className="text-center text-red-300">
+                    <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
+                    <p className="text-xs">Offline</p>
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Camera Info */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Resolution:</span>
-                <Badge variant="outline" className="text-xs">{camera.resolution}</Badge>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Location: {camera.location}</span>
+                <span>Zone: {camera.zoneName}</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">IP Address:</span>
-                <span className="font-mono">{camera.ipAddress}</span>
+              <div className="flex space-x-2">
+                <Button size="sm" variant="outline" className="flex-1">
+                  <Eye className="h-3 w-3 mr-1" />
+                  View
+                </Button>
+                <Button size="sm" variant="outline" className="flex-1">
+                  Record
+                </Button>
               </div>
-              {camera.isOnline && (
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Last Ping:</span>
-                  <span>{new Date(camera.lastPing).toLocaleTimeString()}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Camera Controls */}
-            <div className="flex space-x-2">
-              <Button
-                size="sm"
-                variant={camera.isRecording ? "destructive" : "default"}
-                className="flex-1"
-                disabled={!camera.isOnline}
-                onClick={() => onToggleRecording?.(camera.id)}
-              >
-                <Video className="h-3 w-3 mr-1" />
-                {camera.isRecording ? "Stop" : "Record"}
-              </Button>
-              <Button size="sm" variant="outline">
-                <Settings className="h-3 w-3" />
-              </Button>
             </div>
           </CardContent>
         </Card>
