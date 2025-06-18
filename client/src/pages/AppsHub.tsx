@@ -200,12 +200,16 @@ export default function AppsHub() {
   const [selectedCategory, setSelectedCategory] = useState("All Apps");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const apps = mockApps;
-  const totalApps = apps.length;
-  const featuredApps = apps.filter(app => app.featured);
+  const { data: apps = [], isLoading } = useQuery({
+    queryKey: ["/api/apps-hub"],
+  });
+
+  const typedApps = apps as App[];
+  const totalApps = typedApps.length;
+  const featuredApps = typedApps.filter(app => app.featured);
   const categoriesCount = categories.length - 1; // Exclude "All Apps"
 
-  const filteredApps = apps.filter((app: App) => {
+  const filteredApps = typedApps.filter((app: App) => {
     const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -243,6 +247,14 @@ export default function AppsHub() {
       />
     ));
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">

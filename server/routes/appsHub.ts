@@ -20,38 +20,192 @@ export function registerAppsHubRoutes(app: Express) {
         {
           id: "1",
           name: "Khan Academy",
-          description: "Free online courses, lessons and practice for students of all ages",
-          category: "general",
+          description: "Free online courses, lessons and practice for students",
+          category: "Education",
           icon: "🎓",
           url: "https://khanacademy.org",
           rating: 4.8,
-          users: "120M+",
-          lastUpdated: "2024-01-15",
-          features: ["Video Lessons", "Practice Exercises", "Progress Tracking", "Personalized Learning"],
-          platforms: ["Web", "iOS", "Android"],
-          pricing: "free",
-          ageGroup: "K-12, College",
-          subjects: ["Math", "Science", "Programming", "History"]
+          downloads: "50M+",
+          price: "Free",
+          featured: true,
+          trending: false,
+          recommended: true,
+          popular: false,
+          essential: false,
+          premium: false,
+          tags: ["Mathematics", "Science"]
         },
         {
           id: "2",
-          name: "Duolingo",
-          description: "Learn languages through gamified lessons and daily practice",
-          category: "language",
-          icon: "🦜",
-          url: "https://duolingo.com",
+          name: "Scratch",
+          description: "Visual programming language for kids and beginners",
+          category: "Programming",
+          icon: "🎨",
+          url: "https://scratch.mit.edu",
           rating: 4.7,
-          users: "500M+",
-          lastUpdated: "2024-01-20",
-          features: ["Gamification", "Speaking Practice", "Streak System", "Community"],
-          platforms: ["Web", "iOS", "Android"],
-          pricing: "freemium",
-          ageGroup: "All Ages",
-          subjects: ["Languages"]
+          downloads: "30M+",
+          price: "Free",
+          featured: true,
+          trending: false,
+          recommended: false,
+          popular: true,
+          essential: false,
+          premium: false,
+          tags: ["Programming", "Creativity"]
         },
         {
           id: "3",
-          name: "Scratch",
+          name: "GeoGebra",
+          description: "Interactive mathematics software for all levels",
+          category: "Mathematics",
+          icon: "📐",
+          url: "https://geogebra.org",
+          rating: 4.6,
+          downloads: "20M+",
+          price: "Free",
+          featured: true,
+          trending: true,
+          recommended: false,
+          popular: false,
+          essential: false,
+          premium: false,
+          tags: ["Mathematics", "Geometry"]
+        },
+        {
+          id: "4",
+          name: "Canva for Education",
+          description: "Design presentations, posters, and educational content",
+          category: "Design",
+          icon: "🎨",
+          url: "https://canva.com/education",
+          rating: 4.5,
+          downloads: "100M+",
+          price: "Premium",
+          featured: false,
+          trending: false,
+          recommended: false,
+          popular: true,
+          essential: false,
+          premium: false,
+          tags: ["Design", "Presentations", "Graphics"]
+        },
+        {
+          id: "5",
+          name: "Zoom",
+          description: "Video conferencing for virtual classrooms",
+          category: "Communication",
+          icon: "📹",
+          url: "https://zoom.us",
+          rating: 4.3,
+          downloads: "500M+",
+          price: "Freemium",
+          featured: false,
+          trending: false,
+          recommended: false,
+          popular: false,
+          essential: true,
+          premium: false,
+          tags: ["Video Calls", "Remote Learning", "Collaboration"]
+        },
+        {
+          id: "6",
+          name: "Google Classroom",
+          description: "Classroom management and assignment distribution",
+          category: "Education",
+          icon: "📚",
+          url: "https://classroom.google.com",
+          rating: 4.4,
+          downloads: "100M+",
+          price: "Free",
+          featured: false,
+          trending: false,
+          recommended: true,
+          popular: false,
+          essential: false,
+          premium: false,
+          tags: ["Classroom Management", "Assignments", "Google Workspace"]
+        },
+        {
+          id: "7",
+          name: "Duolingo",
+          description: "Language learning made fun and effective",
+          category: "Languages",
+          icon: "🦜",
+          url: "https://duolingo.com",
+          rating: 4.7,
+          downloads: "500M+",
+          price: "Freemium",
+          featured: false,
+          trending: false,
+          recommended: false,
+          popular: true,
+          essential: false,
+          premium: false,
+          tags: ["Languages", "Interactive", "Gamified"]
+        },
+        {
+          id: "8",
+          name: "Minecraft Education",
+          description: "Game-based learning platform for creativity and collaboration",
+          category: "Gaming",
+          icon: "🎮",
+          url: "https://education.minecraft.net",
+          rating: 4.6,
+          downloads: "10M+",
+          price: "Paid",
+          featured: false,
+          trending: false,
+          recommended: false,
+          popular: false,
+          essential: false,
+          premium: true,
+          tags: ["Gaming", "STEM", "Collaboration"]
+        }
+      ];
+
+      res.json(apps);
+    } catch (error) {
+      console.error("Error fetching apps:", error);
+      res.status(500).json({ message: "Failed to fetch apps" });
+    }
+  });
+
+  // Get app categories
+  app.get('/api/apps-hub/categories', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+    try {
+      const categories = [
+        { id: "all", name: "All Apps", count: 8 },
+        { id: "education", name: "Education", count: 2 },
+        { id: "programming", name: "Programming", count: 1 },
+        { id: "mathematics", name: "Mathematics", count: 1 },
+        { id: "design", name: "Design", count: 1 },
+        { id: "communication", name: "Communication", count: 1 },
+        { id: "languages", name: "Languages", count: 1 },
+        { id: "gaming", name: "Gaming", count: 1 }
+      ];
+
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  // Track app usage
+  app.post('/api/apps-hub/track-usage', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { appId, action } = req.body;
+      
+      // In production, this would track usage analytics
+      console.log(`User ${req.user?.id} performed ${action} on app ${appId}`);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error tracking usage:", error);
+      res.status(500).json({ message: "Failed to track usage" });
+    }
+  });
+}
           description: "Visual programming language for creating interactive stories and games",
           category: "programming",
           icon: "🐱",
