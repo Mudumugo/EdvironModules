@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Phone, 
   PhoneCall, 
@@ -29,6 +30,8 @@ import {
   Headphones
 } from "lucide-react";
 
+import PersonalExtensionInterface from "./PersonalExtensionInterface";
+
 export default function PBXInterface() {
   const [selectedExtensions, setSelectedExtensions] = useState<string[]>([]);
   const [broadcastMessage, setBroadcastMessage] = useState("");
@@ -36,6 +39,15 @@ export default function PBXInterface() {
   const [callTarget, setCallTarget] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Check if user is IT staff with full admin access
+  const isITStaff = user?.role === 'school_it_staff' || user?.role === 'school_admin';
+
+  // Show personal extension interface for non-IT staff
+  if (!isITStaff) {
+    return <PersonalExtensionInterface />;
+  }
 
   const { data: pbxData, isLoading } = useQuery({
     queryKey: ["/api/pbx/dashboard"],

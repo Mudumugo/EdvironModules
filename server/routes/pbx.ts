@@ -1,8 +1,120 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    role: string;
+    firstName?: string;
+    lastName?: string;
+    claims?: any;
+  };
+  session?: any;
+}
+
 export function registerPBXRoutes(app: Express) {
+  // User-specific extension data
+  app.get('/api/pbx/user-extension/:extension', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { extension } = req.params;
+      const userId = req.user?.id;
+
+      // Verify user owns this extension or is IT staff
+      const userExtension = `10${userId?.slice(-2) || '01'}`;
+      const isITStaff = req.user?.role === 'school_it_staff' || req.user?.role === 'school_admin';
+      
+      if (extension !== userExtension && !isITStaff) {
+        return res.status(403).json({ message: 'Access denied to this extension' });
+      }
+
+      // Mock extension data - in real implementation, this would come from Asterisk
+      const extensionData = {
+        extension: {
+          id: extension,
+          name: `${req.user?.firstName || 'User'} ${req.user?.lastName || 'Extension'}`,
+          status: Math.random() > 0.3 ? 'available' : 'busy',
+          currentCall: Math.random() > 0.8 ? {
+            id: `call_${Date.now()}`,
+            direction: Math.random() > 0.5 ? 'inbound' : 'outbound',
+            number: Math.random() > 0.5 ? '1023' : '+15551234567',
+            duration: `${Math.floor(Math.random() * 5)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`
+          } : null,
+          forwardingEnabled: false,
+          forwardingNumber: null
+        }
+      };
+
+      res.json(extensionData);
+    } catch (error) {
+      console.error('Error fetching user extension:', error);
+      res.status(500).json({ message: 'Failed to fetch extension data' });
+    }
+  });
+
+  // User-specific call logs
+  app.get('/api/pbx/user-call-logs/:extension', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { extension } = req.params;
+      const userId = req.user?.id;
+
+      // Verify user owns this extension or is IT staff
+      const userExtension = `10${userId?.slice(-2) || '01'}`;
+      const isITStaff = req.user?.role === 'school_it_staff' || req.user?.role === 'school_admin';
+      
+      if (extension !== userExtension && !isITStaff) {
+        return res.status(403).json({ message: 'Access denied to call logs' });
+      }
+
+      // Mock call logs specific to user's extension
+      const callLogs = Array.from({ length: 8 }, (_, i) => ({
+        id: i + 1,
+        callId: `call_user_${extension}_${i + 1}`,
+        fromNumber: Math.random() > 0.5 ? extension : `102${Math.floor(Math.random() * 10)}`,
+        toNumber: Math.random() > 0.5 ? extension : `102${Math.floor(Math.random() * 10)}`,
+        direction: Math.random() > 0.6 ? 'inbound' : Math.random() > 0.3 ? 'outbound' : 'missed',
+        status: Math.random() > 0.2 ? 'completed' : 'missed',
+        startTime: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(),
+        endTime: new Date(Date.now() - Math.random() * 23 * 60 * 60 * 1000).toISOString(),
+        duration: `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`
+      })).sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+
+      res.json({ callLogs });
+    } catch (error) {
+      console.error('Error fetching user call logs:', error);
+      res.status(500).json({ message: 'Failed to fetch call logs' });
+    }
+  });
+
+  // Call forwarding control
+  app.post('/api/pbx/call-forward', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { extension, forwardTo, enabled } = req.body;
+      const userId = req.user?.id;
+
+      // Verify user owns this extension or is IT staff
+      const userExtension = `10${userId?.slice(-2) || '01'}`;
+      const isITStaff = req.user?.role === 'school_it_staff' || req.user?.role === 'school_admin';
+      
+      if (extension !== userExtension && !isITStaff) {
+        return res.status(403).json({ message: 'Access denied to modify call forwarding' });
+      }
+
+      // In real implementation, this would configure Asterisk call forwarding
+      console.log(`Call forwarding ${enabled ? 'enabled' : 'disabled'} for extension ${extension}${enabled ? ` to ${forwardTo}` : ''}`);
+
+      res.json({
+        success: true,
+        message: `Call forwarding ${enabled ? 'enabled' : 'disabled'} for extension ${extension}`,
+        extension,
+        forwardingEnabled: enabled,
+        forwardingNumber: enabled ? forwardTo : null
+      });
+    } catch (error) {
+      console.error('Error configuring call forwarding:', error);
+      res.status(500).json({ message: 'Failed to configure call forwarding' });
+    }
+  });
   // Get PBX dashboard overview
   app.get('/api/pbx/dashboard', 
     isAuthenticated, 
