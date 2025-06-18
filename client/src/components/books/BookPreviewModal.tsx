@@ -72,23 +72,39 @@ export const BookPreviewModal: React.FC<BookPreviewModalProps> = ({
         
         let pages = [];
         
-        // Cover Page
-        pages.push(`data:image/svg+xml,${encodeURIComponent(generateCoverPage(resource.title, author, subject, grade))}`);
+        // Check if this is the multimedia demo book
+        const isMultimediaDemo = resource.title === 'Interactive Multimedia Learning Adventure' || 
+                                resource.content === 'multimedia_demo' ||
+                                (resource.tags && resource.tags.includes('multimedia'));
         
-        // Table of Contents
-        pages.push(`data:image/svg+xml,${encodeURIComponent(generateTableOfContents(subject, grade))}`);
-        
-        // Chapter pages
-        for (let i = 1; i <= 3; i++) {
-          pages.push(`data:image/svg+xml,${encodeURIComponent(generateChapterIntro(`Chapter ${i}`, `Learning Module ${i}`, grade))}`);
-          // Interactive content pages as HTML
-          pages.push(`data:text/html,${encodeURIComponent(generateGeneralPage(i + 2, resource.title, grade))}`);
-          // Interactive quiz pages as HTML
-          pages.push(`data:text/html,${encodeURIComponent(generateQuizPage(i, subject, grade))}`);
+        if (isMultimediaDemo) {
+          // Multimedia demo book with advanced interactive content
+          pages.push(`data:text/html,${encodeURIComponent(generateMultimediaCoverPage(resource.title, author, subject, grade))}`);
+          pages.push(`data:text/html,${encodeURIComponent(generateVideoLearningPage(2, resource.title, grade))}`);
+          pages.push(`data:text/html,${encodeURIComponent(generateInteractiveGamePage(3, resource.title, grade))}`);
+          pages.push(`data:text/html,${encodeURIComponent(generateAnimatedStoryPage(4, resource.title, grade))}`);
+          pages.push(`data:text/html,${encodeURIComponent(generateQuizPage(5, subject, grade))}`);
+          pages.push(`data:text/html,${encodeURIComponent(generateGeneralPage(6, resource.title, grade))}`);
+        } else {
+          // Standard interactive book content
+          // Cover Page
+          pages.push(`data:image/svg+xml,${encodeURIComponent(generateCoverPage(resource.title, author, subject, grade))}`);
+          
+          // Table of Contents
+          pages.push(`data:image/svg+xml,${encodeURIComponent(generateTableOfContents(subject, grade))}`);
+          
+          // Chapter pages
+          for (let i = 1; i <= 3; i++) {
+            pages.push(`data:image/svg+xml,${encodeURIComponent(generateChapterIntro(`Chapter ${i}`, `Learning Module ${i}`, grade))}`);
+            // Interactive content pages as HTML
+            pages.push(`data:text/html,${encodeURIComponent(generateGeneralPage(i + 2, resource.title, grade))}`);
+            // Interactive quiz pages as HTML
+            pages.push(`data:text/html,${encodeURIComponent(generateQuizPage(i, subject, grade))}`);
+          }
+          
+          // Final Assessment
+          pages.push(`data:image/svg+xml,${encodeURIComponent(generateFinalAssessment(subject, grade))}`);
         }
-        
-        // Final Assessment
-        pages.push(`data:image/svg+xml,${encodeURIComponent(generateFinalAssessment(subject, grade))}`);
         
         return {
           id: resource.id,
