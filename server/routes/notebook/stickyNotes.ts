@@ -37,7 +37,7 @@ export function registerStickyNoteRoutes(app: Express) {
         }
       });
 
-      if (!page || page.topic.chapter.subject.notebook.userId !== userId) {
+      if (!page || page.topic.chapter.((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Page not found" });
       }
 
@@ -84,7 +84,7 @@ export function registerStickyNoteRoutes(app: Express) {
         }
       });
 
-      if (!page || page.topic.chapter.subject.notebook.userId !== userId) {
+      if (!page || page.topic.chapter.((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Page not found" });
       }
 

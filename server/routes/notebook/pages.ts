@@ -33,7 +33,7 @@ export function registerPageRoutes(app: Express) {
         }
       });
 
-      if (!topic || topic.chapter.subject.notebook.userId !== userId) {
+      if (!topic || topic.chapter.((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Topic not found" });
       }
 
@@ -76,7 +76,7 @@ export function registerPageRoutes(app: Express) {
         }
       });
 
-      if (!topic || topic.chapter.subject.notebook.userId !== userId) {
+      if (!topic || topic.chapter.((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Topic not found" });
       }
 

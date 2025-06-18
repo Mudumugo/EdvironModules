@@ -25,7 +25,7 @@ export function registerChapterRoutes(app: Express) {
         }
       });
 
-      if (!subject || subject.notebook.userId !== userId) {
+      if (!subject || ((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Subject not found" });
       }
 
@@ -60,7 +60,7 @@ export function registerChapterRoutes(app: Express) {
         }
       });
 
-      if (!subject || subject.notebook.userId !== userId) {
+      if (!subject || ((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Subject not found" });
       }
 

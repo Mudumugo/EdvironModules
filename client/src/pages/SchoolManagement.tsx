@@ -61,13 +61,9 @@ const classSchema = z.object({
 });
 
 export default function SchoolManagement() {
-  const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("");
-  const [isStudentDialogOpen, setIsStudentDialogOpen] = useState(false);
-  const [isTeacherDialogOpen, setIsTeacherDialogOpen] = useState(false);
-  const [isClassDialogOpen, setIsClassDialogOpen] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [classesLoading, setClassesLoading] = useState(false);
 
@@ -86,146 +82,8 @@ export default function SchoolManagement() {
   const studentsLoading = usersLoading;
   const teachersLoading = usersLoading;
 
-  // Add mutation for creating students
-  const createStudentMutation = useMutation({
-    mutationFn: async (studentData: z.infer<typeof studentSchema>) => {
-      return apiRequest("POST", "/api/users", {
-        ...studentData,
-        role: "student_" + studentData.grade.toLowerCase()
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      setIsStudentDialogOpen(false);
-      studentForm.reset();
-      toast({
-        title: "Success",
-        description: "Student created successfully",
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to create student",
-        variant: "destructive",
-      });
-    }
-  });
-
-  // Add mutation for creating teachers
-  const createTeacherMutation = useMutation({
-    mutationFn: async (teacherData: z.infer<typeof teacherSchema>) => {
-      return apiRequest("POST", "/api/users", {
-        ...teacherData,
-        role: "teacher"
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      setIsTeacherDialogOpen(false);
-      teacherForm.reset();
-      toast({
-        title: "Success",
-        description: "Teacher created successfully",
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to create teacher",
-        variant: "destructive",
-      });
-    }
-  });
-  const studentsError = null;
-  const teachersError = null;
-  const classesError = null;
-
-  // Forms
-  const studentForm = useForm({
-    resolver: zodResolver(studentSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      grade: "",
-      dateOfBirth: "",
-      parentEmail: "",
-      parentPhone: "",
-    },
-  });
-
-  const teacherForm = useForm({
-    resolver: zodResolver(teacherSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      subject: "",
-      phone: "",
-      department: "",
-    },
-  });
-
-  const classForm = useForm({
-    resolver: zodResolver(classSchema),
-    defaultValues: {
-      name: "",
-      subject: "",
-      teacherId: "",
-      grade: "",
-      capacity: "",
-      room: "",
-    },
-  });
-
-  // Local state mutations for demonstration
-  const handleCreateStudent = (data: z.infer<typeof studentSchema>) => {
-    createStudentMutation.mutate(data);
-  };
-
-  const handleCreateTeacher = (data: z.infer<typeof teacherSchema>) => {
-    createTeacherMutation.mutate(data);
-  };
-
-  const handleCreateClass = (data: z.infer<typeof classSchema>) => {
-    const teacher = teachers.find((t: any) => t.id === parseInt(data.teacherId));
-    const newClass = {
-      ...data,
-      id: classes.length + 1,
-      capacity: parseInt(data.capacity),
-      teacherId: parseInt(data.teacherId),
-      teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'TBD',
-    };
-    setClasses([...classes, newClass]);
-    setIsClassDialogOpen(false);
-    classForm.reset();
-    toast({
-      title: "Success",
-      description: "Class created successfully",
-    });
+  const handleRefresh = () => {
+    // This will be called when students/teachers are created
   };
 
   // Filter functions
@@ -255,135 +113,53 @@ export default function SchoolManagement() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Total Students
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {studentsLoading ? "..." : Array.isArray(students) ? students.length : 0}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <UserCheck className="h-4 w-4" />
-              Total Teachers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {teachersLoading ? "..." : Array.isArray(teachers) ? teachers.length : 0}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Total Classes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {classesLoading ? "..." : Array.isArray(classes) ? classes.length : 0}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Active Grades
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {studentsLoading ? "..." : Array.isArray(students) ? 
-                new Set(students.map((s: any) => s.grade)).size : 0}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <SchoolStatistics
+        students={students}
+        teachers={teachers}
+        classes={classes}
+        studentsLoading={studentsLoading}
+        teachersLoading={teachersLoading}
+        classesLoading={classesLoading}
+      />
 
       {/* Search and Filter */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Search and Filter</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Label htmlFor="search">Search</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="search"
-                  placeholder="Search students, teachers..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="w-48">
-              <Label htmlFor="grade">Filter by Grade</Label>
-              <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All Grades" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Grades</SelectItem>
-                  <SelectItem value="1">Grade 1</SelectItem>
-                  <SelectItem value="2">Grade 2</SelectItem>
-                  <SelectItem value="3">Grade 3</SelectItem>
-                  <SelectItem value="4">Grade 4</SelectItem>
-                  <SelectItem value="5">Grade 5</SelectItem>
-                  <SelectItem value="6">Grade 6</SelectItem>
-                  <SelectItem value="7">Grade 7</SelectItem>
-                  <SelectItem value="8">Grade 8</SelectItem>
-                  <SelectItem value="9">Grade 9</SelectItem>
-                  <SelectItem value="10">Grade 10</SelectItem>
-                  <SelectItem value="11">Grade 11</SelectItem>
-                  <SelectItem value="12">Grade 12</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <SearchAndFilter
+        searchTerm={searchTerm}
+        selectedGrade={selectedGrade}
+        onSearchChange={setSearchTerm}
+        onGradeChange={setSelectedGrade}
+      />
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="students" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="students" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
             Students
           </TabsTrigger>
           <TabsTrigger value="teachers" className="flex items-center gap-2">
-            <UserCheck className="h-4 w-4" />
             Teachers
-          </TabsTrigger>
-          <TabsTrigger value="classes" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
-            Classes
           </TabsTrigger>
         </TabsList>
 
         {/* Students Tab */}
         <TabsContent value="students" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Students</h2>
-            <Dialog open={isStudentDialogOpen} onOpenChange={setIsStudentDialogOpen}>
-              <DialogTrigger asChild>
+          <StudentManagement
+            students={students}
+            filteredStudents={filteredStudents}
+            studentsLoading={studentsLoading}
+            onStudentCreated={handleRefresh}
+          />
+        </TabsContent>
+
+        {/* Teachers Tab */}
+        <TabsContent value="teachers" className="space-y-4">
+          <TeacherManagement
+            teachers={teachers}
+            teachersLoading={teachersLoading}
+            onTeacherCreated={handleRefresh}
+          />
+        </TabsContent>
+      </Tabs>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Student

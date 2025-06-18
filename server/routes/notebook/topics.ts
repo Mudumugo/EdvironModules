@@ -29,7 +29,7 @@ export function registerTopicRoutes(app: Express) {
         }
       });
 
-      if (!chapter || chapter.subject.notebook.userId !== userId) {
+      if (!chapter || chapter.((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Chapter not found" });
       }
 
@@ -68,7 +68,7 @@ export function registerTopicRoutes(app: Express) {
         }
       });
 
-      if (!chapter || chapter.subject.notebook.userId !== userId) {
+      if (!chapter || chapter.((subject as any)?.notebook?.userId || null) !== userId) {
         return res.status(404).json({ message: "Chapter not found" });
       }
 
