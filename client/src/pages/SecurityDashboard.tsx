@@ -154,9 +154,9 @@ export default function SecurityDashboard() {
             <Camera className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics?.activeCameras || 0}</div>
+            <div className="text-2xl font-bold">{(metrics as any)?.activeCameras || 0}</div>
             <p className="text-xs text-muted-foreground">
-              {metrics?.totalCameras || 0} total cameras
+              {(metrics as any)?.totalCameras || 0} total cameras
             </p>
           </CardContent>
         </Card>
@@ -167,9 +167,9 @@ export default function SecurityDashboard() {
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics?.openEvents || 0}</div>
+            <div className="text-2xl font-bold">{(metrics as any)?.openEvents || 0}</div>
             <p className="text-xs text-muted-foreground">
-              {metrics?.todayEvents || 0} today
+              {(metrics as any)?.todayEvents || 0} today
             </p>
           </CardContent>
         </Card>

@@ -121,7 +121,7 @@ const DigitalLibraryNew = () => {
   ];
 
   // Transform API response and add multimedia sample data
-  const rawResources = apiResponse?.resources || [];
+  const rawResources = (apiResponse as any)?.resources || [];
   const resources = rawResources.length > 0 ? rawResources.map((resource: any) => ({
     id: resource.id,
     title: resource.title || 'Untitled',

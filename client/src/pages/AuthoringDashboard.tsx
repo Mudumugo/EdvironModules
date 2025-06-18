@@ -341,7 +341,7 @@ export default function AuthoringDashboard() {
                           <SelectValue placeholder="Select subject" />
                         </SelectTrigger>
                         <SelectContent>
-                          {taxonomy?.subjects?.map((subject: string) => (
+                          {(taxonomy?.subjects || []).map((subject: string) => (
                             <SelectItem key={subject} value={subject.toLowerCase()}>
                               {subject}
                             </SelectItem>
@@ -357,7 +357,7 @@ export default function AuthoringDashboard() {
                           <SelectValue placeholder="Select grade" />
                         </SelectTrigger>
                         <SelectContent>
-                          {taxonomy?.gradelevels?.map((grade: string) => (
+                          {(taxonomy?.gradelevels || []).map((grade: string) => (
                             <SelectItem key={grade} value={grade.toLowerCase()}>
                               {grade}
                             </SelectItem>

@@ -17,7 +17,8 @@ import { xapiTracker } from '@/lib/xapi/xapiTracker';
 import InteractiveContentViewer from '@/components/multimedia/InteractiveContentViewer';
 
 interface BookViewerProps {
-  bookData: {
+  resource?: any;
+  bookData?: {
     id: number;
     title: string;
     author?: string;
