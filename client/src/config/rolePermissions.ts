@@ -41,6 +41,15 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     isCore: true
   },
   {
+    id: "apps-hub",
+    name: "Apps Hub",
+    path: "/apps-hub",
+    icon: "FlaskRound",
+    description: "External learning applications and educational tools",
+    allowedRoles: ["student_elementary", "teacher", "school_admin"],
+    isCore: true
+  },
+  {
     id: "settings",
     name: "Settings",
     path: "/settings",

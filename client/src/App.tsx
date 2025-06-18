@@ -24,6 +24,7 @@ import UserManagement from "@/pages/UserManagement-simple";
 import PBXDashboard from "@/pages/PBXDashboard";
 import ParentPortal from "@/pages/ParentPortal";
 import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
+import AppsHub from "@/pages/AppsHub";
 import HotCall from "@/pages/HotCall";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
@@ -48,6 +49,7 @@ const componentMap: Record<string, any> = {
   'pbx': PBXDashboard,
   'parent-portal': ParentPortal,
   'parent-portal-admin': ParentPortalAdmin,
+  'apps-hub': AppsHub,
   'hot-call': HotCall,
 };
 
