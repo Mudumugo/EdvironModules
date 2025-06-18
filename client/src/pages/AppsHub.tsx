@@ -378,7 +378,7 @@ export default function AppsHub() {
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200 mb-4">Featured Apps</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {featuredApps.map((app) => {
+              {featuredApps.map((app: App) => {
                 const IconComponent = getAppIcon(app.icon, app.category);
                 const badge = getBadgeVariant(app);
                 
@@ -414,7 +414,7 @@ export default function AppsHub() {
                       </div>
 
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {app.tags.slice(0, 2).map((tag, index) => (
+                        {app.tags.slice(0, 2).map((tag: string, index: number) => (
                           <Badge key={index} variant="outline" className="text-xs border-slate-200 dark:border-slate-600">
                             {tag}
                           </Badge>
@@ -479,7 +479,7 @@ export default function AppsHub() {
                       </div>
 
                       <div className="flex flex-wrap gap-1 mb-3">
-                        {app.tags.slice(0, 3).map((tag, index) => (
+                        {app.tags.slice(0, 3).map((tag: string, index: number) => (
                           <Badge key={index} variant="outline" className="text-xs border-slate-200 dark:border-slate-600">
                             {tag}
                           </Badge>
@@ -501,7 +501,7 @@ export default function AppsHub() {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredApps.map((app) => {
+              {filteredApps.map((app: App) => {
                 const IconComponent = getAppIcon(app.icon, app.category);
                 const badge = getBadgeVariant(app);
                 
@@ -544,7 +544,7 @@ export default function AppsHub() {
                                 </span>
                               </div>
                               <div className="flex flex-wrap gap-1">
-                                {app.tags.slice(0, 4).map((tag, index) => (
+                                {app.tags.slice(0, 4).map((tag: string, index: number) => (
                                   <Badge key={index} variant="outline" className="text-xs border-slate-200 dark:border-slate-600">
                                     {tag}
                                   </Badge>
