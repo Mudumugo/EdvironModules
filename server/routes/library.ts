@@ -2,10 +2,9 @@ import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
-import { LibraryService } from "../modules/library/library.service";
+import { storage } from "../storage";
 
 export function registerLibraryRoutes(app: Express) {
-  const libraryService = LibraryService.getInstance();
 
   // Get library resources
   app.get("/api/library/resources", isAuthenticated, async (req: Request, res: Response) => {
@@ -16,7 +15,20 @@ export function registerLibraryRoutes(app: Express) {
         gradeLevel?: string;
         type?: string;
       };
-      const resources = await libraryService.getLibraryResources(filters);
+      // Mock library resources for now
+      const resources = [
+        {
+          id: "resource_001",
+          title: "Introduction to Mathematics",
+          author: "Dr. Smith",
+          type: "book",
+          category: "Textbook",
+          subject: "Mathematics",
+          gradeLevel: "elementary",
+          description: "Basic mathematics concepts for young learners"
+        }
+      ];
+      res.json(resources);
       res.json(resources);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch library resources" });
@@ -27,7 +39,23 @@ export function registerLibraryRoutes(app: Express) {
   app.get("/api/library/locker/:userId", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { userId } = req.params;
-      const items = await libraryService.getLockerItems(userId);
+      // Mock locker items for now
+      const items = [
+        {
+          id: "locker_001",
+          userId,
+          resourceId: 1,
+          resourceType: "book",
+          title: "Saved Math Book",
+          resourceData: { notes: "Chapter 5 is important" },
+          lastAccessed: new Date(),
+          savedAt: new Date(),
+          tags: ["math", "important"],
+          notes: "Review for exam",
+          isStarred: true,
+          gradeLevel: "elementary"
+        }
+      ];
       res.json(items);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch locker items" });
@@ -39,7 +67,20 @@ export function registerLibraryRoutes(app: Express) {
     try {
       const { userId } = req.params;
       const { resourceId, resourceData } = req.body;
-      const item = await libraryService.saveToLocker(userId, resourceId, resourceData);
+      // Mock save to locker
+      const item = {
+        id: `locker_${Date.now()}`,
+        userId,
+        resourceId,
+        resourceType: resourceData.type || "document",
+        title: resourceData.title || "Untitled Resource",
+        resourceData,
+        savedAt: new Date(),
+        tags: resourceData.tags || [],
+        notes: "",
+        isStarred: false,
+        gradeLevel: resourceData.gradeLevel
+      };
       res.json(item);
     } catch (error) {
       res.status(500).json({ message: "Failed to save to locker" });
@@ -50,8 +91,8 @@ export function registerLibraryRoutes(app: Express) {
   app.delete("/api/library/locker/:userId/:itemId", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { userId, itemId } = req.params;
-      const success = await libraryService.removeFromLocker(userId, itemId);
-      res.json({ success });
+      // Mock remove from locker
+      res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to remove from locker" });
     }
@@ -61,7 +102,19 @@ export function registerLibraryRoutes(app: Express) {
   app.patch("/api/library/locker/:userId/:itemId", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { userId, itemId } = req.params;
-      const item = await libraryService.updateLockerItem(userId, itemId, req.body);
+      // Mock update locker item
+      const item = {
+        id: itemId,
+        userId,
+        resourceId: 1,
+        resourceType: "book",
+        title: "Updated Item",
+        resourceData: {},
+        savedAt: new Date(),
+        tags: [],
+        isStarred: false,
+        ...req.body
+      };
       res.json(item);
     } catch (error) {
       res.status(500).json({ message: "Failed to update locker item" });

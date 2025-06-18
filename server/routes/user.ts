@@ -2,16 +2,15 @@ import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
-import { UserService } from "../modules/user/user.service";
+import { storage } from "../storage";
 
 export function registerUserRoutes(app: Express) {
-  const userService = UserService.getInstance();
 
   // Get user profile
   app.get("/api/users/:id", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const user = await userService.getUser(id);
+      const user = await storage.getUser(id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -25,7 +24,7 @@ export function registerUserRoutes(app: Express) {
   app.get("/api/users", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
     try {
       const { role, tenantId } = req.query;
-      const users = await userService.getUsersByRole(role as string, tenantId as string);
+      const users = await storage.getUsersByRole(role as string, tenantId as string);
       res.json(users);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch users" });
@@ -37,7 +36,7 @@ export function registerUserRoutes(app: Express) {
     try {
       const { id } = req.params;
       const { role, gradeLevel, department } = req.body;
-      const user = await userService.updateUserRole(id, role, gradeLevel, department);
+      const user = await storage.updateUserRole(id, role, gradeLevel, department);
       res.json(user);
     } catch (error) {
       res.status(500).json({ message: "Failed to update user role" });
@@ -48,7 +47,7 @@ export function registerUserRoutes(app: Express) {
   app.get("/api/users/:id/settings", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const settings = await userService.getUserSettings(id);
+      const settings = await storage.getUserSettings(id);
       res.json(settings);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch user settings" });
@@ -59,7 +58,7 @@ export function registerUserRoutes(app: Express) {
   app.patch("/api/users/:id/settings", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const settings = await userService.updateUserSettings(id, req.body);
+      const settings = await storage.upsertUserSettings({ userId: id, ...req.body });
       res.json(settings);
     } catch (error) {
       res.status(500).json({ message: "Failed to update user settings" });
@@ -71,7 +70,7 @@ export function registerUserRoutes(app: Express) {
     try {
       const { id } = req.params;
       const { rolloverDate, nextGradeLevel } = req.body;
-      const user = await userService.setGradeRollover(id, new Date(rolloverDate), nextGradeLevel);
+      const user = await storage.setGradeRollover(id, new Date(rolloverDate), nextGradeLevel);
       res.json(user);
     } catch (error) {
       res.status(500).json({ message: "Failed to set grade rollover" });
@@ -81,7 +80,7 @@ export function registerUserRoutes(app: Express) {
   // Process grade rollovers
   app.post("/api/admin/process-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
     try {
-      const rollovers = await userService.processGradeRollovers();
+      const rollovers = await storage.processGradeRollovers();
       res.json(rollovers);
     } catch (error) {
       res.status(500).json({ message: "Failed to process grade rollovers" });
