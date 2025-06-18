@@ -1,295 +1,385 @@
+import { useState } from "react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import TenantInfo from "@/components/TenantInfo";
-import { GraduationCap, Users, BookOpen, Calendar, BarChart3, Shield, Crown, Building2, Star } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { 
+  BookOpen, 
+  Users, 
+  Shield, 
+  BarChart3, 
+  Zap, 
+  Globe,
+  ChevronRight,
+  Play,
+  Star,
+  CheckCircle,
+  ArrowRight,
+  Menu,
+  X
+} from "lucide-react";
 
-export default function Landing() {
-  const handleLogin = () => {
-    window.location.href = "/api/login";
-  };
+export function Landing() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Direct API call to get tenant data
-  const { data: tenantData, isLoading: tenantLoading } = useQuery<{
-    id: string;
-    subdomain: string;
-    name: string;
-    features: string[];
-    subscription: string;
-  }>({
-    queryKey: ["/api/tenant"],
-    retry: false,
-  });
+  const features = [
+    {
+      icon: BookOpen,
+      title: "Comprehensive Learning Management",
+      description: "Full-featured LMS with digital libraries, assignments, and progress tracking for all grade levels."
+    },
+    {
+      icon: Users,
+      title: "Multi-Role Support",
+      description: "Seamlessly manage students, teachers, administrators, and IT staff with role-based access controls."
+    },
+    {
+      icon: Shield,
+      title: "Advanced Security",
+      description: "Enterprise-grade security with visitor management, device tracking, and comprehensive monitoring."
+    },
+    {
+      icon: BarChart3,
+      title: "Analytics & Insights",
+      description: "Powerful analytics dashboard with real-time insights into learning progress and institutional metrics."
+    },
+    {
+      icon: Zap,
+      title: "AI-Powered Technology",
+      description: "Integrated Tech Tutor with AI-powered personalized learning for technology skills development."
+    },
+    {
+      icon: Globe,
+      title: "Cloud-Native Platform",
+      description: "Scalable cloud infrastructure with seamless deployment and automatic updates."
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: "Dr. Sarah Johnson",
+      role: "Principal, Riverside Elementary",
+      content: "Edvirons has transformed how we manage our school. The comprehensive dashboard gives us insights we never had before.",
+      rating: 5
+    },
+    {
+      name: "Michael Chen",
+      role: "IT Director, Metro School District",
+      content: "The security features and device management capabilities are exactly what we needed. Setup was incredibly smooth.",
+      rating: 5
+    },
+    {
+      name: "Emily Rodriguez",
+      role: "6th Grade Teacher",
+      content: "My students love the interactive modules, and I can track their progress in real-time. It's made teaching more effective.",
+      rating: 5
+    }
+  ];
+
+  const stats = [
+    { number: "50K+", label: "Students Served" },
+    { number: "1,200+", label: "Schools Using Edvirons" },
+    { number: "99.9%", label: "Uptime Reliability" },
+    { number: "24/7", label: "Support Available" }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <GraduationCap className="text-white h-5 w-5" />
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <h1 className="text-2xl font-bold text-blue-600">Edvirons</h1>
               </div>
-              <h1 className="text-xl font-bold text-gray-900">Edvirons</h1>
-              <span className="text-sm text-gray-500 border-l border-gray-200 pl-4">Learning Portal</span>
             </div>
-            <div className="flex space-x-3">
-              <Button 
-                onClick={() => window.location.href = "/school"} 
-                variant="outline"
-                className="border-primary-600 text-primary-600 hover:bg-primary-50"
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-8">
+                <a href="#features" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Features</a>
+                <a href="#solutions" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Solutions</a>
+                <a href="#testimonials" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Testimonials</a>
+                <a href="#pricing" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Pricing</a>
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center space-x-4">
+              <Link href="/login">
+                <a><Button variant="ghost">Sign In</Button></a>
+              </Link>
+              <Link href="/demo">
+                <a><Button>Try Demo</Button></a>
+              </Link>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-gray-600 hover:text-blue-600"
               >
-                School Management
-              </Button>
-              <Button 
-                onClick={() => window.location.href = "/tutor-hub"} 
-                variant="outline"
-                className="border-accent-600 text-accent-600 hover:bg-accent-50"
-              >
-                Tutor Hub
-              </Button>
-              <Button 
-                onClick={() => window.location.href = "/my-locker"} 
-                variant="outline"
-                className="border-secondary-600 text-secondary-600 hover:bg-secondary-50"
-              >
-                My Locker
-              </Button>
-              <Button 
-                onClick={() => window.location.href = "/scheduling"} 
-                variant="outline"
-                className="border-purple-600 text-purple-600 hover:bg-purple-50"
-              >
-                Scheduling
-              </Button>
-              <Button 
-                onClick={() => window.location.href = "/family-controls"} 
-                variant="outline"
-                className="border-green-600 text-green-600 hover:bg-green-50"
-              >
-                Family Controls
-              </Button>
-              <Button onClick={handleLogin} className="bg-primary-600 hover:bg-primary-700">
-                Sign In
-              </Button>
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </div>
           </div>
         </div>
-      </header>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-200">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <a href="#features" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">Features</a>
+              <a href="#solutions" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">Solutions</a>
+              <a href="#testimonials" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">Testimonials</a>
+              <a href="#pricing" className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-blue-600">Pricing</a>
+              <div className="border-t border-gray-200 pt-4 pb-3">
+                <Link href="/login">
+                  <a><Button variant="ghost" className="w-full mb-2">Sign In</Button></a>
+                </Link>
+                <Link href="/demo">
+                  <a><Button className="w-full">Try Demo</Button></a>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
 
       {/* Hero Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-            Educational Technology Platform
-          </h1>
-          <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-            A comprehensive learning portal with interconnected modules for school management, 
-            digital learning, tutoring, and family engagement.
-          </p>
-          <div className="mt-10">
-            <Button 
-              onClick={handleLogin}
-              size="lg"
-              className="bg-primary-600 hover:bg-primary-700 text-lg px-8 py-3"
-            >
-              Get Started
-            </Button>
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <Badge className="mb-4 bg-blue-100 text-blue-800 border-blue-200">
+              Next-Generation Education Platform
+            </Badge>
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Transform Your School with{" "}
+              <span className="text-blue-600">Edvirons</span>
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              The comprehensive education management platform that brings together learning, 
+              administration, security, and analytics in one powerful solution.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/demo">
+                <a><Button size="lg" className="text-lg px-8 py-4">
+                  <Play className="mr-2 h-5 w-5" />
+                  Try Interactive Demo
+                </Button></a>
+              </Link>
+              <Button size="lg" variant="outline" className="text-lg px-8 py-4">
+                Schedule Demo Call
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+            <p className="text-sm text-gray-500 mt-4">
+              No credit card required • 30-day free trial • Setup in minutes
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
+      {/* Stats Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {stats.map((stat, index) => (
+              <div key={index}>
+                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">{stat.number}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">Platform Modules</h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Integrated solutions for modern educational institutions
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Everything Your School Needs
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              From elementary to high school, Edvirons adapts to your institution's unique needs
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                    <feature.icon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions Section */}
+      <section id="solutions" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Tailored for Every Role
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Specialized dashboards and features designed for each member of your educational community
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-primary-50 p-3 rounded-lg">
-                    <Users className="h-6 w-6 text-primary-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">School Management</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Student records, attendance, exams, and staff management
-                    </p>
-                  </div>
+          <div className="grid lg:grid-cols-3 gap-8">
+            <Card className="border-2 border-green-200 bg-green-50">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                  <Users className="h-8 w-8 text-green-600" />
                 </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">For Students</h3>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                    Interactive learning modules
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                    Digital library access
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                    Progress tracking
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                    AI-powered Tech Tutor
+                  </li>
+                </ul>
+                <Button className="w-full bg-green-600 hover:bg-green-700">
+                  Explore Student Features
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-secondary-50 p-3 rounded-lg">
-                    <BookOpen className="h-6 w-6 text-secondary-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Digital Library</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Curriculum-aligned interactive content and resources
-                    </p>
-                  </div>
+            <Card className="border-2 border-blue-200 bg-blue-50">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                  <BookOpen className="h-8 w-8 text-blue-600" />
                 </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">For Educators</h3>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
+                    Class management tools
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
+                    Assignment creation
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
+                    Student analytics
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
+                    Resource sharing
+                  </li>
+                </ul>
+                <Button className="w-full">
+                  Explore Teacher Features
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-accent-50 p-3 rounded-lg">
-                    <GraduationCap className="h-6 w-6 text-accent-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Tutor Hub</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Personalized workspace for tutors and educators
-                    </p>
-                  </div>
+            <Card className="border-2 border-purple-200 bg-purple-50">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                  <Shield className="h-8 w-8 text-purple-600" />
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-yellow-50 p-3 rounded-lg">
-                    <Calendar className="h-6 w-6 text-yellow-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Scheduling & Events</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Unified calendar for classes, exams, and notifications
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <BarChart3 className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Analytics & Reporting</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Performance dashboards and detailed insights
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-purple-50 p-3 rounded-lg">
-                    <Shield className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Family Controls</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Parent dashboard for monitoring and engagement
-                    </p>
-                  </div>
-                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">For Administrators</h3>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
+                    School-wide analytics
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
+                    Security management
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
+                    Device monitoring
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
+                    Staff management
+                  </li>
+                </ul>
+                <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                  Explore Admin Features
+                </Button>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Tenant Information Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-2">
-              <Crown className="h-8 w-8 text-yellow-600" />
-              Demo University Access
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Trusted by Educators Worldwide
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              You are accessing the Demo University tenant with basic subscription features
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              See what educators are saying about their experience with Edvirons
             </p>
           </div>
-          {/* Static Demo University Information */}
-          <Card className="w-full">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Building2 className="h-5 w-5 text-gray-600" />
-                Demo University
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Subscription:</span>
-                <Badge className="flex items-center gap-1 bg-blue-100 text-blue-800 border-blue-200">
-                  <Shield className="h-3 w-3" />
-                  Basic
-                </Badge>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Tenant ID:</span>
-                <code className="text-xs bg-gray-100 px-2 py-1 rounded">demo</code>
-              </div>
 
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-700">Available Features:</h4>
-                <div className="flex flex-wrap gap-1">
-                  <Badge variant="outline" className="text-xs">School Management</Badge>
-                  <Badge variant="outline" className="text-xs">Digital Library</Badge>
-                  <Badge variant="outline" className="text-xs">Analytics</Badge>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Status:</h4>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-green-700">Active and accessible</span>
-                </div>
-              </div>
-
-              {tenantData && (
-                <div className="pt-2 border-t">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Live API Data:</h4>
-                  <div className="bg-gray-100 p-3 rounded text-xs font-mono">
-                    <pre>{JSON.stringify(tenantData, null, 2)}</pre>
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="bg-white">
+                <CardContent className="p-6">
+                  <div className="flex mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    ))}
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  <p className="text-gray-700 mb-4 italic">"{testimonial.content}"</p>
+                  <div>
+                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                    <div className="text-sm text-gray-600">{testimonial.role}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary-600">
+      <section className="py-20 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white">Ready to Transform Education?</h2>
-          <p className="mt-4 text-lg text-primary-100">
-            Join thousands of educators and institutions using Edvirons
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to Transform Your School?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Join thousands of schools already using Edvirons to enhance education and streamline operations.
           </p>
-          <div className="mt-8">
-            <Button 
-              onClick={handleLogin}
-              size="lg"
-              variant="secondary"
-              className="text-lg px-8 py-3"
-            >
-              Start Your Journey
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/demo">
+              <a><Button size="lg" variant="secondary" className="text-lg px-8 py-4">
+                Start Free Trial
+              </Button></a>
+            </Link>
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-blue-600">
+              Contact Sales
+              <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -298,15 +388,44 @@ export default function Landing() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <GraduationCap className="text-white h-5 w-5" />
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-2xl font-bold text-blue-400 mb-4">Edvirons</h3>
+              <p className="text-gray-400 mb-4">
+                Empowering education through innovative technology solutions.
+              </p>
             </div>
-            <span className="text-xl font-bold">Edvirons Learning Portal</span>
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#features" className="hover:text-white">Features</a></li>
+                <li><a href="#solutions" className="hover:text-white">Solutions</a></li>
+                <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
+                <li><Link href="/demo"><a className="hover:text-white">Demo</a></Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#about" className="hover:text-white">About</a></li>
+                <li><a href="#careers" className="hover:text-white">Careers</a></li>
+                <li><a href="#contact" className="hover:text-white">Contact</a></li>
+                <li><a href="#blog" className="hover:text-white">Blog</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#help" className="hover:text-white">Help Center</a></li>
+                <li><a href="#docs" className="hover:text-white">Documentation</a></li>
+                <li><a href="#community" className="hover:text-white">Community</a></li>
+                <li><a href="#status" className="hover:text-white">Status</a></li>
+              </ul>
+            </div>
           </div>
-          <p className="mt-4 text-center text-gray-400">
-            © 2025 Edvirons. All rights reserved.
-          </p>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 Edvirons. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

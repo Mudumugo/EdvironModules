@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
-import Landing from "@/pages/Landing";
+import { Landing } from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import LearningDashboard from "@/pages/LearningDashboard";
@@ -77,9 +77,15 @@ function Router() {
     );
   }
 
-  // Show login page if not authenticated
+  // Show landing page if not authenticated
   if (!isAuthenticated) {
-    return <Login />;
+    return (
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/demo" component={Login} />
+        <Route component={Landing} />
+      </Switch>
+    );
   }
 
   // Show main application with role-based routing
