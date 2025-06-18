@@ -11,6 +11,7 @@ import { registerTenantRoutes } from "./routes/tenant";
 import { registerUserRoutes } from "./routes/users-simple";
 import { registerLibraryRoutes } from "./routes/library";
 import { registerITRoutes } from "./routes/it";
+import { registerSecurityRoutes } from "./routes/security";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
@@ -25,6 +26,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerUserRoutes(app);
   registerLibraryRoutes(app);
   registerITRoutes(app);
+  registerSecurityRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;

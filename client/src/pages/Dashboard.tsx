@@ -22,6 +22,7 @@ import {
 import { Link } from "wouter";
 import { UserRole } from "@shared/schema";
 import ITDashboard from "./ITDashboard";
+import SecurityDashboard from "./SecurityDashboard";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -522,9 +523,13 @@ export default function Dashboard() {
     </div>
   );
 
-  // Render specialized IT Dashboard for IT staff
+  // Render specialized dashboards for specific roles
   if (user?.role === "school_it_staff") {
     return <ITDashboard />;
+  }
+  
+  if (user?.role === "school_security") {
+    return <SecurityDashboard />;
   }
 
   // Return appropriate dashboard based on academic level
