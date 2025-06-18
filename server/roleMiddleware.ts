@@ -35,7 +35,7 @@ export function requireAnyPermission(permissions: Permission[]) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasAnyPermission(user.role as any, user.permissions || [], permissions)) {
+    if (!hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], permissions)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permissions,
@@ -58,7 +58,7 @@ export function requireRole(roles: UserRole | UserRole[]) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!allowedRoles.includes(user.role)) {
+    if (!allowedRoles.includes(user.role as UserRole)) {
       return res.status(403).json({ 
         message: 'Insufficient role privileges',
         required: allowedRoles,
@@ -101,7 +101,7 @@ export function requireStudentAccess() {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    const canAccessStudents = hasAnyPermission(user.role, user.permissions, [
+    const canAccessStudents = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
       'view_student_records',
       'manage_classes',
       'view_all_analytics'
@@ -132,9 +132,9 @@ export function requireResourceOwnership(getResourceOwnerId: (req: Authenticated
       
       // Allow access if user owns the resource or has admin permissions
       const isOwner = user.id === resourceOwnerId;
-      const hasAdminAccess = hasAnyPermission(user.role, user.permissions, [
-        'manage_users',
-        'view_all_analytics'
+      const hasAdminAccess = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
+        PERMISSIONS.MANAGE_USERS,
+        PERMISSIONS.VIEW_ALL_ANALYTICS
       ]);
 
       if (!isOwner && !hasAdminAccess) {
