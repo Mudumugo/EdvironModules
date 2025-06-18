@@ -67,7 +67,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     allowedRoles: [
       "student_elementary", "student_middle", "student_high", "student_college",
       "teacher", "tutor", "principal", "vice_principal", "counselor", "librarian",
-      "school_admin", "district_admin", "super_admin", "school_security", 
+      "school_admin", "school_security", 
       "school_it_staff", "parent"
     ],
     isCore: true

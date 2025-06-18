@@ -8,11 +8,16 @@ export function registerUserProfileRoutes(app: Express) {
   app.get("/api/user/profile", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.user?.claims?.sub;
+      console.log("Profile request - User ID from claims:", userId);
+      console.log("Profile request - Full user object:", JSON.stringify(req.user, null, 2));
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
 
       const user = await storage.getUser(userId);
+      console.log("Profile request - User from database:", JSON.stringify(user, null, 2));
+      
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
