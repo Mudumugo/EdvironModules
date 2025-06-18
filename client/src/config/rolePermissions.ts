@@ -144,6 +144,17 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     ],
     isCore: true
   },
+
+  // Parent modules
+  {
+    id: "parent-portal",
+    name: "Parent Portal",
+    path: "/parent-portal",
+    icon: "Users",
+    description: "View children's information, teacher messages, and school announcements",
+    allowedRoles: ["parent"],
+    isCore: true
+  },
 ];
 
 export function getAccessibleModules(userRole: UserRole): ModulePermission[] {
