@@ -23,7 +23,7 @@ export function registerAdminRoutes(app: Express) {
   });
 
   // Process all pending grade rollovers
-  app.post("/api/admin/process-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
+  app.post("/api/admin/process-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
     try {
       const rolledOverUsers = await storage.processGradeRollovers();
       res.json({ 
@@ -37,7 +37,7 @@ export function registerAdminRoutes(app: Express) {
   });
 
   // Get users pending rollover
-  app.get("/api/admin/pending-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
+  app.get("/api/admin/pending-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
     try {
       const pendingUsers = await storage.getUsersByRole("student");
       // const usersWithRollovers = pendingUsers.filter(user => user.gradeRolloverDate && user.nextGradeLevel);

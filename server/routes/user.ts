@@ -32,7 +32,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Update user role
-  app.patch("/api/users/:id/role", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
+  app.patch("/api/users/:id/role", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { role, gradeLevel, department } = req.body;
@@ -66,7 +66,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Set grade rollover
-  app.post("/api/users/:id/grade-rollover", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
+  app.post("/api/users/:id/grade-rollover", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { rolloverDate, nextGradeLevel } = req.body;
@@ -78,7 +78,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Process grade rollovers
-  app.post("/api/admin/process-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: Request, res: Response) => {
+  app.post("/api/admin/process-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
     try {
       const rollovers = await storage.processGradeRollovers();
       res.json(rollovers);
