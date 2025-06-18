@@ -58,7 +58,7 @@ interface ContentItem {
 export default function AuthoringDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("book-authoring");
 
   // Fetch dashboard data
   const { data: dashboardData, isLoading } = useQuery({
@@ -199,8 +199,9 @@ export default function AuthoringDashboard() {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="book-authoring">Book Authoring</TabsTrigger>
           <TabsTrigger value="content">My Content</TabsTrigger>
           <TabsTrigger value="create">Create New</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -309,6 +310,11 @@ export default function AuthoringDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Book Authoring Tab */}
+        <TabsContent value="book-authoring">
+          <BookAuthoringWorkflow />
         </TabsContent>
 
         {/* Create New Content Tab */}
