@@ -13,13 +13,36 @@ import {
   GroupStats,
   DeviceGroup,
   Device,
+  GroupFormData,
   GroupFormType
 } from './modules';
+
+// Additional types
+interface AssignDeviceData {
+  deviceIds: string[];
+  groupId: string;
+}
+
+const GROUP_COLORS = [
+  { value: 'blue', label: 'Blue', class: 'bg-blue-100 text-blue-800' },
+  { value: 'green', label: 'Green', class: 'bg-green-100 text-green-800' },
+  { value: 'red', label: 'Red', class: 'bg-red-100 text-red-800' },
+  { value: 'yellow', label: 'Yellow', class: 'bg-yellow-100 text-yellow-800' },
+  { value: 'purple', label: 'Purple', class: 'bg-purple-100 text-purple-800' },
+];
 
 export default function DeviceGroupManager() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<DeviceGroup | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
+  const [targetGroupId, setTargetGroupId] = useState<string>('');
+  const [formData, setFormData] = useState<GroupFormData>({
+    name: '',
+    description: '',
+    color: 'blue'
+  });
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -152,6 +175,47 @@ export default function DeviceGroupManager() {
     });
   };
 
+  const handleDialogClose = (open: boolean) => {
+    setIsCreateDialogOpen(open);
+    if (!open) {
+      setEditingGroup(null);
+      resetForm();
+    }
+  };
+
+  const handleFormSubmit = (data: GroupFormData) => {
+    if (editingGroup) {
+      updateGroupMutation.mutate({ id: editingGroup.id, data });
+    } else {
+      createGroupMutation.mutate(data);
+    }
+  };
+
+  const handleEditGroup = (group: DeviceGroup) => {
+    setEditingGroup(group);
+    setFormData({
+      name: group.name,
+      description: group.description,
+      color: group.color
+    });
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleDeleteGroup = (id: string) => {
+    deleteGroupMutation.mutate(id);
+  };
+
+  const handleViewDevices = (groupId: string) => {
+    setSelectedGroupId(groupId);
+  };
+
+  const handleMoveDevice = (deviceId: string, newGroupId: string) => {
+    assignDevicesMutation.mutate({
+      deviceIds: [deviceId],
+      groupId: newGroupId
+    });
+  };
+
   const getColorClass = (color: string) => {
     return GROUP_COLORS.find(c => c.value === color)?.class || GROUP_COLORS[0].class;
   };
@@ -183,7 +247,7 @@ export default function DeviceGroupManager() {
             </DialogHeader>
             <GroupForm
               onSubmit={handleFormSubmit}
-              onCancel={handleDialogClose}
+              onCancel={() => handleDialogClose(false)}
               editingGroup={editingGroup}
               isLoading={createGroupMutation.isPending || updateGroupMutation.isPending}
             />
