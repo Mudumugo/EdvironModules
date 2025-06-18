@@ -19,7 +19,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/",
     icon: "BarChart3",
     description: "Main overview and statistics",
-    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "school_it_staff", "school_security"],
+    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "demo_student_elementary"],
     isCore: true
   },
   {
@@ -28,7 +28,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/digital-library",
     icon: "BookOpen",
     description: "Access digital books and educational resources",
-    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin"],
+    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "demo_student_elementary"],
     isCore: true
   },
   {
@@ -37,7 +37,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/my-locker",
     icon: "CloudDownload",
     description: "Personal storage and saved content",
-    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher"],
+    allowedRoles: ["student_elementary", "student_middle", "student_high", "student_college", "teacher", "demo_student_elementary"],
     isCore: true
   },
   {
@@ -55,7 +55,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/settings",
     icon: "Settings",
     description: "Personal account settings",
-    allowedRoles: ["student_elementary", "teacher", "school_admin", "school_it_staff", "school_security"],
+    allowedRoles: ["student_elementary", "teacher", "school_admin", "it_staff", "security_staff", "demo_student_elementary"],
     isCore: true
   },
   {
@@ -67,8 +67,8 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     allowedRoles: [
       "student_elementary", "student_middle", "student_high", "student_college",
       "teacher", "tutor", "principal", "vice_principal", "counselor", "librarian",
-      "school_admin", "school_security", 
-      "school_it_staff", "parent"
+      "school_admin", "security_staff", 
+      "it_staff", "parent", "demo_student_elementary"
     ],
     isCore: true
   },
@@ -148,7 +148,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/device-management",
     icon: "Monitor",
     description: "Manage school devices and technical infrastructure",
-    allowedRoles: ["school_it_staff", "school_admin"],
+    allowedRoles: ["it_staff", "school_admin"],
   },
 
   // Security modules

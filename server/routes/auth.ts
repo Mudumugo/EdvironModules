@@ -18,7 +18,7 @@ export async function registerAuthRoutes(app: Express) {
       }
 
       // Use consistent demo user ID based on role
-      const demoUserId = `demo_${role}`;
+      const demoUserId = role;
       
       // Create or update demo user in database
       const user = await storage.upsertUser({
