@@ -92,9 +92,9 @@ function Router() {
             {user?.role === 'school_admin' ? <AdminDashboard /> : 
              user?.role === 'school_security' ? <SecurityDashboard /> : 
              user?.role === 'school_it_staff' ? <DeviceManagement /> : 
-             user?.role === 'teacher' ? <TeacherDashboard /> :
-             user?.role?.includes('student') ? <LearningDashboard /> :
-             <LearningDashboard />}
+             user?.role === 'teacher' || user?.role === 'demo_teacher' ? <TeacherDashboard /> :
+             user?.role?.includes('student') ? <Dashboard /> :
+             <Dashboard />}
           </RoleProtectedRoute>
         </Route>
         
