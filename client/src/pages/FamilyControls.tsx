@@ -22,7 +22,6 @@ import {
 } from "@/components/family/modules";
 
 export default function FamilyControls() {
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedMember, setSelectedMember] = useState<string>("all");
 
   // Mock data - replace with actual API calls
@@ -138,14 +137,16 @@ export default function FamilyControls() {
   const allDevices: Device[] = familyMembers.flatMap(member => member.devices);
 
   // Statistics
-  const totalDevices = allDevices.length;
-  const onlineDevices = allDevices.filter(d => d.isOnline).length;
-  const activeRestrictions = timeRestrictions.filter(r => r.isActive).length + 
-                           appRestrictions.filter(r => r.isBlocked).length + 
-                           contentFilters.filter(f => f.isBlocked).length;
-  const protectedDevices = allDevices.filter(d => 
-    familyMembers.find(m => m.devices.includes(d))?.role === 'child'
-  ).length;
+  const stats: FamilyStats = {
+    totalDevices: allDevices.length,
+    onlineDevices: allDevices.filter(d => d.isOnline).length,
+    activeRestrictions: timeRestrictions.filter(r => r.isActive).length + 
+                       appRestrictions.filter(r => r.isBlocked).length + 
+                       contentFilters.filter(f => f.isBlocked).length,
+    protectedDevices: allDevices.filter(d => 
+      familyMembers.find(m => m.devices.includes(d))?.role === 'child'
+    ).length,
+  };
 
   // Handler functions
   const handleAddTimeRestriction = (restriction: TimeRestrictionFormType) => {
@@ -197,7 +198,6 @@ export default function FamilyControls() {
   };
 
   const handleDeviceSettings = (deviceId: string) => {
-    // Navigate to device-specific settings
     console.log("Open device settings for:", deviceId);
   };
 
@@ -214,284 +214,10 @@ export default function FamilyControls() {
             Monitor and manage your children's educational activities with comprehensive parental controls
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-          <Dialog open={restrictionDialog.isOpen} onOpenChange={(open) => open ? restrictionDialog.openDialog() : restrictionDialog.closeDialog()}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <Lock className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Add Restriction</span>
-                <span className="sm:hidden">Restriction</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Restriction</DialogTitle>
-              </DialogHeader>
-              <Form {...restrictionDialog.form}>
-                <form onSubmit={restrictionDialog.handleSubmit} className="space-y-4">
-                  <FormField
-                    control={restrictionDialog.form.control}
-                    name="childId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Child</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select child" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {children.map((child) => (
-                              <SelectItem key={child.id} value={child.id}>
-                                {child.firstName} {child.lastName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={restrictionDialog.form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Restriction Type</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="screen-time">Screen Time Limit</SelectItem>
-                              <SelectItem value="content-filter">Content Filter</SelectItem>
-                              <SelectItem value="bedtime">Bedtime Schedule</SelectItem>
-                              <SelectItem value="app-restriction">App Restriction</SelectItem>
-                              <SelectItem value="website-block">Website Block</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={restrictionDialog.form.control}
-                      name="value"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Value</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="e.g., 3 (hours), 20:00 (time)" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={restrictionDialog.form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} placeholder="Describe the restriction..." rows={3} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={restrictionDialog.form.control}
-                    name="isActive"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center space-x-2">
-                        <FormControl>
-                          <Switch checked={field.value} onCheckedChange={field.onChange} />
-                        </FormControl>
-                        <FormLabel>Active restriction</FormLabel>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">
-                    Apply Restriction
-                  </Button>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={childDialog.isOpen} onOpenChange={(open) => open ? childDialog.openDialog() : childDialog.closeDialog()}>
-            <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Plus className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Add Child</span>
-                <span className="sm:hidden">Child</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Child Profile</DialogTitle>
-              </DialogHeader>
-              <Form {...childDialog.form}>
-                <form onSubmit={childDialog.handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={childDialog.form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>First Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Enter first name" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={childDialog.form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Last Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Enter last name" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={childDialog.form.control}
-                      name="grade"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Grade</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select grade" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="K">Kindergarten</SelectItem>
-                              <SelectItem value="1st Grade">1st Grade</SelectItem>
-                              <SelectItem value="2nd Grade">2nd Grade</SelectItem>
-                              <SelectItem value="3rd Grade">3rd Grade</SelectItem>
-                              <SelectItem value="4th Grade">4th Grade</SelectItem>
-                              <SelectItem value="5th Grade">5th Grade</SelectItem>
-                              <SelectItem value="6th Grade">6th Grade</SelectItem>
-                              <SelectItem value="7th Grade">7th Grade</SelectItem>
-                              <SelectItem value="8th Grade">8th Grade</SelectItem>
-                              <SelectItem value="9th Grade">9th Grade</SelectItem>
-                              <SelectItem value="10th Grade">10th Grade</SelectItem>
-                              <SelectItem value="11th Grade">11th Grade</SelectItem>
-                              <SelectItem value="12th Grade">12th Grade</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={childDialog.form.control}
-                      name="age"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Age</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Enter age" type="number" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={childDialog.form.control}
-                    name="school"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>School (Optional)</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter school name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">
-                    Add Child Profile
-                  </Button>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-        </div>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Children
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalChildren}</div>
-            <p className="text-xs text-muted-foreground">Managed profiles</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Lock className="h-4 w-4" />
-              Active Restrictions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeRestrictions}</div>
-            <p className="text-xs text-muted-foreground">Current controls</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Today's Activities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{todayActivities}</div>
-            <p className="text-xs text-muted-foreground">Learning sessions</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Avg Screen Time
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{averageScreenTime.toFixed(1)}h</div>
-            <p className="text-xs text-muted-foreground">Daily average</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Statistics Overview */}
+      <FamilyStatsOverview stats={stats} />
 
       {/* Filter Controls */}
       <Card>
@@ -501,31 +227,18 @@ export default function FamilyControls() {
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 min-w-0">
-              <Label htmlFor="child-filter">Filter by Child</Label>
-              <Select value={selectedChild} onValueChange={setSelectedChild}>
+              <label className="text-sm font-medium">Filter by Family Member</label>
+              <Select value={selectedMember} onValueChange={setSelectedMember}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Children" />
+                  <SelectValue placeholder="All family members" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Children</SelectItem>
-                  {children.map((child) => (
-                    <SelectItem key={child.id} value={child.id}>
-                      {child.firstName} {child.lastName}
+                  <SelectItem value="all">All Family Members</SelectItem>
+                  {familyMembers.map((member) => (
+                    <SelectItem key={member.id} value={member.id}>
+                      {member.name}
                     </SelectItem>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-1 min-w-0 sm:max-w-48">
-              <Label htmlFor="timeframe">Timeframe</Label>
-              <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select timeframe" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Today</SelectItem>
-                  <SelectItem value="week">This Week</SelectItem>
-                  <SelectItem value="month">This Month</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -533,61 +246,50 @@ export default function FamilyControls() {
         </CardContent>
       </Card>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto">
-          <TabsTrigger value="overview" className="text-xs sm:text-sm">
-            Device Overview
-          </TabsTrigger>
-          <TabsTrigger value="time" className="text-xs sm:text-sm">
-            Time Restrictions
-          </TabsTrigger>
-          <TabsTrigger value="apps" className="text-xs sm:text-sm">
-            App Controls
-          </TabsTrigger>
-          <TabsTrigger value="content" className="text-xs sm:text-sm">
-            Content Filters
-          </TabsTrigger>
+      {/* Main Content */}
+      <Tabs defaultValue="devices" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="devices">Devices</TabsTrigger>
+          <TabsTrigger value="time">Time Limits</TabsTrigger>
+          <TabsTrigger value="apps">App Controls</TabsTrigger>
+          <TabsTrigger value="content">Content Filters</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+        <TabsContent value="devices" className="space-y-4">
           <DeviceOverview
             familyMembers={familyMembers}
+            selectedMember={selectedMember}
             onDeviceSettings={handleDeviceSettings}
-            isLoading={isLoading}
           />
         </TabsContent>
 
-        <TabsContent value="time" className="space-y-4 sm:space-y-6">
+        <TabsContent value="time" className="space-y-4">
           <TimeRestrictions
             restrictions={timeRestrictions}
             devices={allDevices}
             onAdd={handleAddTimeRestriction}
             onUpdate={handleUpdateTimeRestriction}
             onDelete={handleDeleteTimeRestriction}
-            isLoading={isLoading}
           />
         </TabsContent>
 
-        <TabsContent value="apps" className="space-y-4 sm:space-y-6">
+        <TabsContent value="apps" className="space-y-4">
           <AppRestrictions
             restrictions={appRestrictions}
             devices={allDevices}
             onAdd={handleAddAppRestriction}
             onUpdate={handleUpdateAppRestriction}
             onDelete={handleDeleteAppRestriction}
-            isLoading={isLoading}
           />
         </TabsContent>
 
-        <TabsContent value="content" className="space-y-4 sm:space-y-6">
+        <TabsContent value="content" className="space-y-4">
           <ContentFilters
             filters={contentFilters}
             devices={allDevices}
             onAdd={handleAddContentFilter}
             onUpdate={handleUpdateContentFilter}
             onDelete={handleDeleteContentFilter}
-            isLoading={isLoading}
           />
         </TabsContent>
       </Tabs>
