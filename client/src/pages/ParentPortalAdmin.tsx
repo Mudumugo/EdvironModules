@@ -1,61 +1,15 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
-import { isUnauthorizedError } from "@/lib/authUtils";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { 
-  Users, 
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  UserCheck,
-  Shield,
-  Link2,
-  Settings
-} from "lucide-react";
-
-// Form schemas
-const relationshipSchema = z.object({
-  parentUserId: z.string().min(1, "Parent is required"),
-  childUserId: z.string().min(1, "Child is required"),
-  relationship: z.enum(["parent", "guardian", "emergency_contact"]).default("parent"),
-  isPrimary: z.boolean().default(false),
-  canViewGrades: z.boolean().default(true),
-  canViewAttendance: z.boolean().default(true),
-  canReceiveNotifications: z.boolean().default(true)
-});
-
-interface ParentChildRelationship {
-  id: number;
-  parentUserId: string;
-  childUserId: string;
-  relationship: string;
-  isPrimary: boolean;
-  canViewGrades: boolean;
-  canViewAttendance: boolean;
-  canReceiveNotifications: boolean;
-  parent: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-}
+import {
+  RelationshipHeader,
+  RelationshipSearch,
+  RelationshipTable,
+  RelationshipCreateDialog,
+  useRelationshipMutations,
+  relationshipSchema,
+  type ParentChildRelationship
+} from "@/components/parent/modules";
 
 interface User {
   id: string;
