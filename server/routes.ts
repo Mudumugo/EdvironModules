@@ -14,6 +14,7 @@ import { registerITRoutes } from "./routes/it";
 import { registerSecurityRoutes } from "./routes/security";
 import { registerPBXRoutes } from "./routes/pbx";
 import { registerParentRoutes } from "./routes/parent";
+import { registerParentManagementRoutes } from "./routes/parentManagement";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register all modularized routes
@@ -31,6 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerSecurityRoutes(app);
   registerPBXRoutes(app);
   registerParentRoutes(app);
+  registerParentManagementRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;

@@ -23,6 +23,7 @@ import TeacherDashboard from "@/pages/TeacherDashboard";
 import UserManagement from "@/pages/UserManagement-simple";
 import PBXDashboard from "@/pages/PBXDashboard";
 import ParentPortal from "@/pages/ParentPortal";
+import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
 import HotCall from "@/pages/HotCall";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
@@ -46,6 +47,7 @@ const componentMap: Record<string, any> = {
   'users': UserManagement,
   'pbx': PBXDashboard,
   'parent-portal': ParentPortal,
+  'parent-portal-admin': ParentPortalAdmin,
   'hot-call': HotCall,
 };
 
