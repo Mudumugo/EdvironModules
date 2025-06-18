@@ -118,25 +118,24 @@ export default function DigitalLibrary() {
 
   // Fetch categories for current grade level
   const { data: categoriesResponse = [] } = useQuery({
-    queryKey: ['/api/library/categories', gradeLevel],
-    queryFn: () => apiRequest('GET', `/api/library/categories?gradeLevel=${gradeLevel}`),
+    queryKey: [`/api/library/categories?gradeLevel=${gradeLevel}`],
   });
 
   // Fetch subjects for current grade level
   const { data: subjectsResponse = [] } = useQuery({
-    queryKey: ['/api/library/subjects', gradeLevel, selectedCategory],
-    queryFn: () => apiRequest('GET', `/api/library/subjects?gradeLevel=${gradeLevel}&categoryId=${selectedCategory !== 'all' ? selectedCategory : ''}`),
+    queryKey: [`/api/library/subjects?gradeLevel=${gradeLevel}${selectedCategory !== 'all' ? `&categoryId=${selectedCategory}` : ''}`],
   });
 
   // Fetch resources
+  const queryParams = new URLSearchParams({
+    gradeLevel,
+    ...(selectedCategory !== 'all' && { categoryId: selectedCategory }),
+    ...(selectedResourceType !== 'all' && { resourceType: selectedResourceType }),
+    ...(searchTerm && { search: searchTerm }),
+  });
+  
   const { data: resourcesResponse = [] } = useQuery({
-    queryKey: ['/api/library/resources', gradeLevel, selectedCategory, selectedResourceType, searchTerm],
-    queryFn: () => apiRequest('GET', '/api/library/resources', {
-      gradeLevel,
-      categoryId: selectedCategory !== 'all' ? selectedCategory : undefined,
-      resourceType: selectedResourceType !== 'all' ? selectedResourceType : undefined,
-      search: searchTerm || undefined
-    }),
+    queryKey: [`/api/library/resources?${queryParams.toString()}`],
   });
 
   // Ensure we have arrays for rendering
