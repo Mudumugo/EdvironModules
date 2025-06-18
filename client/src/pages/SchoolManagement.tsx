@@ -68,6 +68,8 @@ export default function SchoolManagement() {
   const [isStudentDialogOpen, setIsStudentDialogOpen] = useState(false);
   const [isTeacherDialogOpen, setIsTeacherDialogOpen] = useState(false);
   const [isClassDialogOpen, setIsClassDialogOpen] = useState(false);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [classesLoading, setClassesLoading] = useState(false);
 
   // Fetch students from database
   const { data: students, isLoading: studentsLoading } = useQuery({
