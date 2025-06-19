@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import RoleSwitcher from "@/components/RoleSwitcher";
+
 import { Logo } from "@/components/Logo";
 import { 
   Search,
@@ -127,8 +127,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               )}
             </Button>
 
-            {/* Role Switcher */}
-            <RoleSwitcher />
+
 
             {/* User Menu */}
             <DropdownMenu>

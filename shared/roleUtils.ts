@@ -344,14 +344,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     PERMISSIONS.MANAGE_SECURITY,
   ],
   
-  // Demo Student permissions (same as regular student)
-  [USER_ROLES.DEMO_STUDENT_ELEMENTARY]: [
-    PERMISSIONS.VIEW_OWN_GRADES,
-    PERMISSIONS.SUBMIT_ASSIGNMENTS,
-    PERMISSIONS.JOIN_VIRTUAL_CLASSES,
-    PERMISSIONS.ACCESS_LIBRARY,
-    PERMISSIONS.VIEW_SCHEDULE,
-  ],
+
 };
 
 // Utility functions for role management
