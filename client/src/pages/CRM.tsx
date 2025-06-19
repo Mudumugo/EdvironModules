@@ -373,7 +373,15 @@ export default function CRM() {
                               {lead.location && (
                                 <div className="flex items-center gap-1 text-sm text-gray-500">
                                   <MapPin className="w-4 h-4" />
-                                  {JSON.parse(lead.location as string).county}, Kenya
+                                  {(() => {
+                                    try {
+                                      const locationData = JSON.parse(lead.location as string);
+                                      return `${locationData.county}, Kenya`;
+                                    } catch (e) {
+                                      // If it's not JSON, treat it as a plain string
+                                      return lead.location;
+                                    }
+                                  })()}
                                 </div>
                               )}
                             </div>
