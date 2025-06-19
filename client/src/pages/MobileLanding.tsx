@@ -14,7 +14,12 @@ import {
   Menu,
   X,
   ChevronRight,
-  Star
+  Star,
+  Library,
+  Briefcase,
+  Download,
+  GraduationCap,
+  FileText
 } from 'lucide-react';
 
 export default function MobileLanding() {
@@ -22,24 +27,34 @@ export default function MobileLanding() {
 
   const features = [
     {
-      icon: BookOpen,
-      title: "Interactive Learning",
-      description: "Access courses and materials optimized for mobile learning"
+      icon: GraduationCap,
+      title: "CBE Curriculum",
+      description: "Competency-based education designed for modern learners"
+    },
+    {
+      icon: Library,
+      title: "Digital Library",
+      description: "Access thousands of books, resources, and learning materials"
+    },
+    {
+      icon: Briefcase,
+      title: "Personal Locker",
+      description: "Store and organize your assignments, notes, and achievements"
+    },
+    {
+      icon: Download,
+      title: "Offline Learning",
+      description: "Download content and continue learning without internet"
     },
     {
       icon: Users,
-      title: "Connect Anywhere",
-      description: "Join classes and collaborate with peers on the go"
-    },
-    {
-      icon: Calendar,
-      title: "Smart Scheduling",
-      description: "Manage your learning schedule with mobile-friendly tools"
+      title: "Free Signups",
+      description: "Join thousands of students with completely free registration"
     },
     {
       icon: Award,
       title: "Track Progress",
-      description: "Monitor achievements and milestones from your phone"
+      description: "Monitor competency achievements and learning milestones"
     }
   ];
 
@@ -91,13 +106,9 @@ export default function MobileLanding() {
           </Badge>
           
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-            Learn Anywhere, 
-            <span className="text-blue-600 dark:text-blue-400"> Anytime</span>
+            Edvirons Learning Portal:
+            <span className="text-blue-600 dark:text-blue-400"> Connecting every CBE student with a modern learning ecosystem</span>
           </h1>
-          
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
-            Your complete learning platform designed for mobile-first education
-          </p>
 
           <div className="space-y-3 pt-4">
             <Link href="/signup">
@@ -126,6 +137,35 @@ export default function MobileLanding() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CBE Curriculum Highlight */}
+      <section className="px-4 py-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10">
+        <div className="max-w-md mx-auto text-center space-y-6">
+          <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+            <GraduationCap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+          </div>
+          
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Built for CBE Excellence
+          </h2>
+          
+          <p className="text-gray-600 dark:text-gray-300">
+            Our Competency-Based Education approach ensures every student masters skills at their own pace, 
+            with personalized pathways and measurable outcomes.
+          </p>
+          
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="text-center p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+              <div className="font-semibold text-blue-600 dark:text-blue-400">Skill Mastery</div>
+              <div className="text-gray-600 dark:text-gray-400">Focus on competencies</div>
+            </div>
+            <div className="text-center p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+              <div className="font-semibold text-blue-600 dark:text-blue-400">Self-Paced</div>
+              <div className="text-gray-600 dark:text-gray-400">Learn at your speed</div>
+            </div>
           </div>
         </div>
       </section>
@@ -193,11 +233,11 @@ export default function MobileLanding() {
           </div>
           
           <blockquote className="text-gray-700 dark:text-gray-300 italic">
-            "The mobile experience is incredible. I can learn during my commute and never miss a class."
+            "With CBE on Edvirons, I master skills at my own pace. The personal locker keeps my progress organized, and offline learning means I never fall behind."
           </blockquote>
           
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            — Sarah K., Student
+            — Maya R., CBE Student
           </div>
 
           <div className="grid grid-cols-2 gap-4 pt-4">
@@ -216,26 +256,41 @@ export default function MobileLanding() {
       </section>
 
       {/* CTA Section */}
-      <section className="px-4 py-12">
+      <section className="px-4 py-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
         <div className="max-w-md mx-auto text-center space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Ready to Start?
+          <h2 className="text-2xl font-bold">
+            Start Your CBE Journey Today
           </h2>
           
-          <p className="text-gray-600 dark:text-gray-300">
-            Join thousands of learners already using our platform
+          <p className="text-blue-100">
+            Join thousands of students mastering competencies at their own pace with our free CBE platform
           </p>
 
           <div className="space-y-3">
             <Link href="/signup">
-              <Button size="lg" className="w-full">
-                Create Free Account
+              <Button size="lg" className="w-full bg-white text-blue-600 hover:bg-blue-50">
+                Get Started Free
               </Button>
             </Link>
             
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              No credit card required • Free trial included
+            <p className="text-xs text-blue-100">
+              100% Free Signup • No Credit Card Required • Start Learning Instantly
             </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-6 pt-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4" />
+              <span>Digital Library</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4" />
+              <span>Personal Locker</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4" />
+              <span>Offline Learning</span>
+            </div>
           </div>
         </div>
       </section>
