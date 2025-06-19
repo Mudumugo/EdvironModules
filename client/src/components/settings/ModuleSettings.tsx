@@ -74,10 +74,10 @@ export default function ModuleSettings({ modules, premiumModules, hasPremium }: 
           Enable or disable platform modules to customize your experience
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         {Object.entries(groupedModules).map(([category, categoryModules]) => (
           <div key={category} className="space-y-3">
-            <h3 className="text-lg font-semibold capitalize">{category}</h3>
+            <h3 className="text-base sm:text-lg font-semibold capitalize">{category}</h3>
             <div className="space-y-3">
               {categoryModules.map((module) => {
                 const isPremium = premiumModules.includes(module.id);
@@ -86,30 +86,30 @@ export default function ModuleSettings({ modules, premiumModules, hasPremium }: 
                 return (
                   <div 
                     key={module.id} 
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0"
                   >
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium">{module.name}</h4>
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h4 className="font-medium text-sm sm:text-base">{module.name}</h4>
                         {isPremium && (
-                          <Badge variant={hasPremium ? "default" : "secondary"}>
+                          <Badge variant={hasPremium ? "default" : "secondary"} className="text-xs">
                             <Crown className="h-3 w-3 mr-1" />
                             Premium
                           </Badge>
                         )}
                         {module.enabled ? (
-                          <Badge variant="outline" className="text-green-600">
+                          <Badge variant="outline" className="text-green-600 text-xs">
                             <Check className="h-3 w-3 mr-1" />
                             Enabled
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-gray-500">
+                          <Badge variant="outline" className="text-gray-500 text-xs">
                             <X className="h-3 w-3 mr-1" />
                             Disabled
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">{module.description}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{module.description}</p>
                       {module.dependencies && module.dependencies.length > 0 && (
                         <p className="text-xs text-muted-foreground mt-1">
                           Requires: {module.dependencies.join(", ")}
@@ -120,6 +120,7 @@ export default function ModuleSettings({ modules, premiumModules, hasPremium }: 
                       checked={module.enabled}
                       onCheckedChange={(enabled) => handleToggleModule(module.id, enabled)}
                       disabled={!canToggle || toggleModule.isPending}
+                      className="ml-auto sm:ml-0"
                     />
                   </div>
                 );
@@ -129,15 +130,15 @@ export default function ModuleSettings({ modules, premiumModules, hasPremium }: 
         ))}
 
         {!hasPremium && premiumModules.length > 0 && (
-          <div className="p-4 border rounded-lg bg-muted/50">
+          <div className="p-3 sm:p-4 border rounded-lg bg-muted/50">
             <div className="flex items-center gap-2 mb-2">
               <Crown className="h-4 w-4 text-yellow-600" />
-              <h4 className="font-medium">Unlock Premium Modules</h4>
+              <h4 className="font-medium text-sm sm:text-base">Unlock Premium Modules</h4>
             </div>
-            <p className="text-sm text-muted-foreground mb-3">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3">
               Get access to advanced features and premium modules with our subscription.
             </p>
-            <Button size="sm">
+            <Button size="sm" className="text-xs sm:text-sm">
               Upgrade to Premium
             </Button>
           </div>

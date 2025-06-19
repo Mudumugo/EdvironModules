@@ -94,16 +94,16 @@ export default function ProfileSettings({ currentSettings, profileImageUrl }: Pr
           Update your personal information and profile picture
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         {/* Avatar Section */}
-        <div className="flex items-center gap-4">
-          <Avatar className="h-20 w-20">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
             <AvatarImage src={profileImageUrl} />
             <AvatarFallback>
-              <User className="h-8 w-8" />
+              <User className="h-6 w-6 sm:h-8 sm:w-8" />
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="text-center sm:text-left">
             <Label htmlFor="avatar-upload" className="cursor-pointer">
               <Button variant="outline" size="sm" asChild>
                 <span>
@@ -127,13 +127,14 @@ export default function ProfileSettings({ currentSettings, profileImageUrl }: Pr
 
         {/* Profile Form */}
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
               <Input
                 id="firstName"
                 placeholder="Enter your first name"
                 {...form.register("firstName")}
+                className="h-10"
               />
               {form.formState.errors.firstName && (
                 <p className="text-sm text-red-600">
@@ -148,6 +149,7 @@ export default function ProfileSettings({ currentSettings, profileImageUrl }: Pr
                 id="lastName"
                 placeholder="Enter your last name"
                 {...form.register("lastName")}
+                className="h-10"
               />
               {form.formState.errors.lastName && (
                 <p className="text-sm text-red-600">
@@ -164,6 +166,7 @@ export default function ProfileSettings({ currentSettings, profileImageUrl }: Pr
               type="email"
               placeholder="Enter your email address"
               {...form.register("email")}
+              className="h-10"
             />
             {form.formState.errors.email && (
               <p className="text-sm text-red-600">
@@ -175,7 +178,7 @@ export default function ProfileSettings({ currentSettings, profileImageUrl }: Pr
           <Button 
             type="submit" 
             disabled={saveProfile.isPending}
-            className="w-full"
+            className="w-full h-10 mt-6"
           >
             {saveProfile.isPending ? "Saving..." : "Save Profile"}
           </Button>

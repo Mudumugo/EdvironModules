@@ -51,21 +51,21 @@ export default function Settings() {
   const hasPremium = premiumStatus?.isPremium || false;
 
   return (
-    <div className="container mx-auto max-w-4xl py-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
+    <div className="container mx-auto max-w-4xl p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-2xl sm:text-3xl font-bold">Settings</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Manage your account settings and preferences
         </p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="modules">Modules</TabsTrigger>
-          <TabsTrigger value="payment">Payment</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto p-1">
+          <TabsTrigger value="profile" className="text-xs sm:text-sm py-2">Profile</TabsTrigger>
+          <TabsTrigger value="notifications" className="text-xs sm:text-sm py-2">Notifications</TabsTrigger>
+          <TabsTrigger value="security" className="text-xs sm:text-sm py-2">Security</TabsTrigger>
+          <TabsTrigger value="modules" className="text-xs sm:text-sm py-2">Modules</TabsTrigger>
+          <TabsTrigger value="payment" className="text-xs sm:text-sm py-2 col-span-2 sm:col-span-1">Payment</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">

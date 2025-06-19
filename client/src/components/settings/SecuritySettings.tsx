@@ -98,21 +98,21 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
           Manage your account security and privacy preferences
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         <Alert>
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
+          <AlertDescription className="text-sm">
             These settings help protect your account. We recommend enabling two-factor authentication for maximum security.
           </AlertDescription>
         </Alert>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
           {/* Two-Factor Authentication */}
           <div>
-            <div className="flex items-center justify-between space-y-0 pb-2">
-              <div className="flex items-center space-x-3">
-                <Smartphone className="h-4 w-4 text-muted-foreground" />
-                <div className="space-y-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pb-2">
+              <div className="flex items-start sm:items-center space-x-3">
+                <Smartphone className="h-4 w-4 text-muted-foreground mt-1 sm:mt-0" />
+                <div className="space-y-1 flex-1">
                   <Label htmlFor="twoFactorEnabled" className="text-sm font-medium">
                     Two-Factor Authentication
                   </Label>
@@ -121,7 +121,7 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 ml-auto sm:ml-0">
                 <Switch
                   id="twoFactorEnabled"
                   checked={form.watch("twoFactorEnabled")}
@@ -139,6 +139,7 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
                     size="sm"
                     onClick={handleEnable2FA}
                     disabled={enable2FA.isPending}
+                    className="text-xs sm:text-sm"
                   >
                     Setup 2FA
                   </Button>
@@ -150,10 +151,10 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
 
           {/* Login Alerts */}
           <div>
-            <div className="flex items-center justify-between space-y-0 pb-2">
-              <div className="flex items-center space-x-3">
-                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                <div className="space-y-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pb-2">
+              <div className="flex items-start sm:items-center space-x-3">
+                <AlertTriangle className="h-4 w-4 text-muted-foreground mt-1 sm:mt-0" />
+                <div className="space-y-1 flex-1">
                   <Label htmlFor="loginAlerts" className="text-sm font-medium">
                     Login Alerts
                   </Label>
@@ -168,6 +169,7 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
                 onCheckedChange={(checked) => {
                   form.setValue("loginAlerts", checked);
                 }}
+                className="ml-auto sm:ml-0"
               />
             </div>
             <Separator />
@@ -175,10 +177,10 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
 
           {/* Session Timeout */}
           <div>
-            <div className="flex items-center justify-between space-y-0 pb-2">
-              <div className="flex items-center space-x-3">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <div className="space-y-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pb-2">
+              <div className="flex items-start sm:items-center space-x-3">
+                <Clock className="h-4 w-4 text-muted-foreground mt-1 sm:mt-0" />
+                <div className="space-y-1 flex-1">
                   <Label htmlFor="sessionTimeout" className="text-sm font-medium">
                     Session Timeout
                   </Label>
@@ -193,7 +195,7 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
                   form.setValue("sessionTimeout", parseInt(value));
                 }}
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -211,16 +213,16 @@ export default function SecuritySettings({ currentSettings }: SecuritySettingsPr
             <Button 
               type="submit" 
               disabled={saveSettings.isPending}
-              className="w-full"
+              className="w-full h-10"
             >
               {saveSettings.isPending ? "Saving..." : "Save Security Settings"}
             </Button>
           </div>
         </form>
 
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-muted/50 rounded-lg">
           <h4 className="text-sm font-medium mb-2">Security Best Practices</h4>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
             <p>• Use a strong, unique password for your account</p>
             <p>• Enable two-factor authentication for added security</p>
             <p>• Regularly review your login activity</p>

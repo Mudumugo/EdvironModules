@@ -85,16 +85,16 @@ export default function NotificationSettings({ currentSettings }: NotificationSe
           Configure how you want to receive notifications
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
           {notificationTypes.map((type, index) => {
             const IconComponent = type.icon;
             return (
               <div key={type.id}>
-                <div className="flex items-center justify-between space-y-0 pb-2">
-                  <div className="flex items-center space-x-3">
-                    <IconComponent className="h-4 w-4 text-muted-foreground" />
-                    <div className="space-y-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pb-2">
+                  <div className="flex items-start sm:items-center space-x-3">
+                    <IconComponent className="h-4 w-4 text-muted-foreground mt-1 sm:mt-0" />
+                    <div className="space-y-1 flex-1">
                       <Label htmlFor={type.id} className="text-sm font-medium">
                         {type.label}
                       </Label>
@@ -110,6 +110,7 @@ export default function NotificationSettings({ currentSettings }: NotificationSe
                     onCheckedChange={(checked) => {
                       form.setValue(type.id as keyof NotificationSettingsType, checked);
                     }}
+                    className="ml-auto sm:ml-0"
                   />
                 </div>
                 {index < notificationTypes.length - 1 && <Separator />}
@@ -121,16 +122,16 @@ export default function NotificationSettings({ currentSettings }: NotificationSe
             <Button 
               type="submit" 
               disabled={saveSettings.isPending}
-              className="w-full"
+              className="w-full h-10"
             >
               {saveSettings.isPending ? "Saving..." : "Save Notification Settings"}
             </Button>
           </div>
         </form>
 
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-muted/50 rounded-lg">
           <h4 className="text-sm font-medium mb-2">Notification Categories</h4>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
             <p>• Assignment reminders and due dates</p>
             <p>• Grade updates and feedback</p>
             <p>• Class announcements and schedule changes</p>

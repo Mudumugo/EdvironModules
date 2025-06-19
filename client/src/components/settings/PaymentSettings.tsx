@@ -61,21 +61,22 @@ export default function PaymentSettings({ currentSettings }: PaymentSettingsProp
           Configure your Stripe payment processing settings
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-4 sm:p-6">
         <Alert>
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
+          <AlertDescription className="text-sm">
             These keys will be stored securely and used for payment processing. Never share your secret key.
           </AlertDescription>
         </Alert>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="stripePublishableKey">Stripe Publishable Key</Label>
+            <Label htmlFor="stripePublishableKey" className="text-sm">Stripe Publishable Key</Label>
             <Input
               id="stripePublishableKey"
               placeholder="pk_test_..."
               {...form.register("stripePublishableKey")}
+              className="h-10"
             />
             {form.formState.errors.stripePublishableKey && (
               <p className="text-sm text-red-600">
@@ -85,12 +86,13 @@ export default function PaymentSettings({ currentSettings }: PaymentSettingsProp
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="stripeSecretKey">Stripe Secret Key</Label>
+            <Label htmlFor="stripeSecretKey" className="text-sm">Stripe Secret Key</Label>
             <Input
               id="stripeSecretKey"
               type="password"
               placeholder="sk_test_..."
               {...form.register("stripeSecretKey")}
+              className="h-10"
             />
             {form.formState.errors.stripeSecretKey && (
               <p className="text-sm text-red-600">
@@ -102,7 +104,7 @@ export default function PaymentSettings({ currentSettings }: PaymentSettingsProp
           <Button 
             type="submit" 
             disabled={saveSettings.isPending}
-            className="w-full"
+            className="w-full h-10 mt-6"
           >
             {saveSettings.isPending ? "Saving..." : "Save Payment Settings"}
           </Button>
