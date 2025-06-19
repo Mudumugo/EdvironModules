@@ -4,6 +4,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { LockerHeader, NotebooksTab, ResourcesTab, ResourceViewerDialog, CreateNotebookDialog } from "@/components/locker/modules";
+import Calculator from "@/components/locker/tools/Calculator";
+import Dictionary from "@/components/locker/tools/Dictionary";
 import type { LockerItem } from "@shared/schema";
 
 interface NotebookData {
