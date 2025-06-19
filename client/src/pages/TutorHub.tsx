@@ -204,20 +204,20 @@ export default function TutorHub() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:to-slate-800">
+      <div className="container mx-auto px-4 py-6 lg:py-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 lg:mb-12">
           <div className="flex justify-center items-center mb-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-2xl">
-              <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg">
+              <GraduationCap className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
             Tutor Hub
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Connect with expert tutors for personalized learning experiences
+          <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+            Connect with expert tutors for personalized learning experiences. Get help with homework, test prep, and skill development.
           </p>
         </div>
 
