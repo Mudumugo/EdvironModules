@@ -48,13 +48,25 @@ export default function Dashboard() {
 
   const academicLevel = getAcademicLevel();
 
-  // Render specialized dashboards for specific roles
+  // Render specialized dashboards for specific roles with responsive containers
   if (user?.role === "school_it_staff") {
-    return <ITDashboard />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <ITDashboard />
+        </div>
+      </div>
+    );
   }
   
   if (user?.role === "school_security") {
-    return <SecurityDashboard />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <SecurityDashboard />
+        </div>
+      </div>
+    );
   }
 
   // Return appropriate dashboard based on academic level
