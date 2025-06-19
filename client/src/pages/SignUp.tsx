@@ -155,14 +155,11 @@ export default function SignUp() {
 
   const studentSignupMutation = useMutation({
     mutationFn: async (data: StudentSignupForm) => {
-      return await apiRequest("/api/signup/student", {
-        method: "POST",
-        body: JSON.stringify({
-          ...data,
-          firstName: ageForm.getValues("firstName"),
-          lastName: ageForm.getValues("lastName"),
-          birthDate: ageForm.getValues("birthDate"),
-        }),
+      return await apiRequest("POST", "/api/signup/student", {
+        ...data,
+        firstName: ageForm.getValues("firstName"),
+        lastName: ageForm.getValues("lastName"),
+        birthDate: ageForm.getValues("birthDate"),
       });
     },
     onSuccess: () => {
@@ -180,14 +177,11 @@ export default function SignUp() {
 
   const adultSignupMutation = useMutation({
     mutationFn: async (data: AdultSignupForm) => {
-      return await apiRequest("/api/signup/adult", {
-        method: "POST",
-        body: JSON.stringify({
-          ...data,
-          firstName: ageForm.getValues("firstName"),
-          lastName: ageForm.getValues("lastName"),
-          birthDate: ageForm.getValues("birthDate"),
-        }),
+      return await apiRequest("/api/signup/adult", "POST", {
+        ...data,
+        firstName: ageForm.getValues("firstName"),
+        lastName: ageForm.getValues("lastName"),
+        birthDate: ageForm.getValues("birthDate"),
       });
     },
     onSuccess: () => {
@@ -205,10 +199,7 @@ export default function SignUp() {
 
   const parentChildSignupMutation = useMutation({
     mutationFn: async (data: ParentChildSignupForm) => {
-      return await apiRequest("/api/signup/family", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest("/api/signup/family", "POST", data);
     },
     onSuccess: () => {
       setVerificationSent(true);
@@ -225,10 +216,7 @@ export default function SignUp() {
 
   const schoolDemoMutation = useMutation({
     mutationFn: async (data: SchoolDemoForm) => {
-      return await apiRequest("/api/signup/school-demo", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest("/api/signup/school-demo", "POST", data);
     },
     onSuccess: () => {
       setCurrentStep("complete");

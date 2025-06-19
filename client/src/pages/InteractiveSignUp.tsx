@@ -213,10 +213,7 @@ export default function InteractiveSignUp() {
   const signupMutation = useMutation({
     mutationFn: async (data: QuizData) => {
       const endpoint = data.userType === "school" ? "/api/school-demo" : "/api/signup";
-      await apiRequest(endpoint, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      await apiRequest("POST", endpoint, data);
     },
     onSuccess: () => {
       setCurrentStep("complete");

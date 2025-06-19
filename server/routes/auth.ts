@@ -49,7 +49,7 @@ export async function registerAuthRoutes(app: Express) {
       res.json({ success: true, user: req.session.user });
     } else {
       // Default to teacher for any other login
-      req.session.user = { id: "demo", email: "demo@example.com", role: "student" };
+      req.session.user = { id: "demo", email: "demo@example.com", role: "teacher", tenantId: "demo-tenant" };
       res.json({ success: true, user: req.session.user });
     }
   });
