@@ -115,10 +115,10 @@ function Router() {
               <Route path="/">
                 <RoleProtectedRoute moduleId="dashboard">
                   {user?.role === 'school_admin' ? <AdminDashboard /> : 
-                   user?.role === 'security_staff' ? <SecurityDashboard /> : 
-                   user?.role === 'it_staff' ? <ITDashboard /> : 
+                   user?.role === 'security_staff' || user?.role === 'school_security' ? <SecurityDashboard /> : 
+                   user?.role === 'it_staff' || user?.role === 'school_it_staff' ? <ITDashboard /> : 
                    user?.role === 'teacher' ? <TeacherDashboard /> :
-                   user?.role?.includes('student') || user?.role === 'demo_student_elementary' ? <Dashboard /> :
+                   user?.role?.includes('student') || user?.role === 'student' || user?.role === 'demo_student_elementary' ? <Dashboard /> :
                    <Dashboard />}
                 </RoleProtectedRoute>
               </Route>
