@@ -100,7 +100,7 @@ export function registerAuthRoutes(app: Express) {
     }
   );
 
-  // Logout endpoint with security logging
+  // Logout endpoint with security logging (POST)
   app.post('/api/auth/logout', (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id || req.session?.user?.id;
     const userEmail = req.user?.email || req.session?.user?.email;
@@ -124,6 +124,27 @@ export function registerAuthRoutes(app: Express) {
         success: true,
         message: 'Logged out successfully'
       });
+    });
+  });
+
+  // Logout endpoint (GET for legacy support)
+  app.get('/api/logout', (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user?.id || req.session?.user?.id;
+    const userEmail = req.user?.email || req.session?.user?.email;
+    
+    req.session.destroy((err) => {
+      if (err) {
+        console.error(`[SECURITY] Logout error for user ${userId}:`, err);
+        return res.redirect('/?error=logout_failed');
+      }
+      
+      // Log successful logout
+      if (userId) {
+        console.log(`[SECURITY] User logged out: ${userEmail} (${userId}) from IP: ${req.ip}`);
+      }
+      
+      res.clearCookie('connect.sid');
+      res.redirect('/');
     });
   });
 }

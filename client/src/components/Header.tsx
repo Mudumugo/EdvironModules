@@ -42,8 +42,24 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        // Clear any client-side cache
+        window.location.href = "/";
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback - redirect to home anyway
+      window.location.href = "/";
+    }
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
