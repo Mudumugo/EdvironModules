@@ -29,12 +29,12 @@ export default function UserProfile() {
         </p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
-          <TabsTrigger value="profile" className="text-xs sm:text-sm">Profile</TabsTrigger>
-          {user.role && isStudent(user.role as UserRole) && <TabsTrigger value="academic" className="text-xs sm:text-sm">Academic</TabsTrigger>}
-          <TabsTrigger value="settings" className="text-xs sm:text-sm">Settings</TabsTrigger>
-          <TabsTrigger value="security" className="text-xs sm:text-sm">Security</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <TabsList className={`grid w-full ${user.role && isStudent(user.role as UserRole) ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'} gap-1 sm:gap-0`}>
+          <TabsTrigger value="profile" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">Profile</TabsTrigger>
+          {user.role && isStudent(user.role as UserRole) && <TabsTrigger value="academic" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">Academic</TabsTrigger>}
+          <TabsTrigger value="settings" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">Settings</TabsTrigger>
+          <TabsTrigger value="security" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">Security</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">

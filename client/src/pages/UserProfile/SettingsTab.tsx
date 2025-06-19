@@ -59,23 +59,23 @@ export function SettingsTab() {
   const settings = (userSettings as UserSettingsType) || defaultSettings;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Notifications */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             Notifications
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Choose what notifications you want to receive
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Email Notifications</Label>
-              <p className="text-sm text-muted-foreground">
+        <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-0.5 flex-1 min-w-0">
+              <Label className="text-sm font-medium">Email Notifications</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Receive notifications via email
               </p>
             </div>
@@ -87,10 +87,10 @@ export function SettingsTab() {
             />
           </div>
           <Separator />
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Push Notifications</Label>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-0.5 flex-1 min-w-0">
+              <Label className="text-sm font-medium">Push Notifications</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Receive push notifications in browser
               </p>
             </div>
@@ -102,10 +102,10 @@ export function SettingsTab() {
             />
           </div>
           <Separator />
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Assignment Notifications</Label>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-0.5 flex-1 min-w-0">
+              <Label className="text-sm font-medium">Assignment Notifications</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Get notified about new assignments
               </p>
             </div>
@@ -121,20 +121,20 @@ export function SettingsTab() {
 
       {/* Privacy */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lock className="h-5 w-5" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
             Privacy
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Control your privacy and visibility settings
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
           <div className="space-y-2">
-            <Label>Profile Visibility</Label>
-            <Select defaultValue={settings.privacy.profileVisibility}>
-              <SelectTrigger>
+            <Label className="text-sm font-medium">Profile Visibility</Label>
+            <Select defaultValue="public">
+              <SelectTrigger className="h-10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -144,15 +144,15 @@ export function SettingsTab() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Show Email Address</Label>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-0.5 flex-1 min-w-0">
+              <Label className="text-sm font-medium">Show Email Address</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Make your email visible to others
               </p>
             </div>
             <Switch 
-              checked={settings.privacy.showEmail}
+              checked={settings.privacy.contactVisible}
               onCheckedChange={(checked) => {
                 // Handle privacy change
               }}
@@ -163,21 +163,21 @@ export function SettingsTab() {
 
       {/* Preferences */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Palette className="h-5 w-5" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
             Preferences
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Customize your experience
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Theme</Label>
+              <Label className="text-sm font-medium">Theme</Label>
               <Select defaultValue={settings.preferences.theme}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,9 +188,9 @@ export function SettingsTab() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Language</Label>
+              <Label className="text-sm font-medium">Language</Label>
               <Select defaultValue={settings.preferences.language}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -201,7 +201,7 @@ export function SettingsTab() {
               </Select>
             </div>
           </div>
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2 w-full sm:w-auto">
             <Save className="h-4 w-4" />
             Save Preferences
           </Button>
