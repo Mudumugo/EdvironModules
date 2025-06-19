@@ -3,10 +3,11 @@ import { Strategy, type VerifyFunction } from "openid-client/passport";
 
 import passport from "passport";
 import session from "express-session";
-import type { Express, RequestHandler } from "express";
+import type { Express, RequestHandler, Request } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { User } from "@shared/schema";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -59,6 +60,7 @@ async function upsertUser(
 ) {
   await storage.upsertUser({
     id: claims["sub"],
+    tenantId: 'default-tenant',
     email: claims["email"],
     firstName: claims["first_name"],
     lastName: claims["last_name"],
