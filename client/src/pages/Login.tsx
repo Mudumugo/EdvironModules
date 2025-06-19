@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { 
   Eye, 
   EyeOff, 
@@ -52,6 +52,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +69,7 @@ export default function Login() {
           title: "Login Successful",
           description: "Welcome back to EdVirons!",
         });
-        window.location.reload();
+        setLocation("/");
       } else {
         throw new Error("Login failed");
       }
@@ -97,7 +98,7 @@ export default function Login() {
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        window.location.reload();
+        setLocation("/");
       } else {
         throw new Error("Demo login failed");
       }
