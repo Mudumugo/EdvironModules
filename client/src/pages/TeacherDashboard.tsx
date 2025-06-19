@@ -234,58 +234,57 @@ export default function TeacherDashboard() {
           {filteredModules.map((module) => {
             const Icon = module.icon;
             return (
-              <Link key={module.id} href={`/${module.id}`}>
-                <Card 
-                  className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${
-                    viewMode === "list" ? "flex items-center" : ""
-                  }`}
-                >
-                  <CardContent className={viewMode === "grid" ? "p-3 sm:p-4 lg:p-6" : "flex items-center gap-3 sm:gap-4 p-3 sm:p-4 flex-1"}>
-                    <div className={`${viewMode === "grid" ? "mb-3 sm:mb-4" : ""} flex-shrink-0`}>
-                      <Icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${
-                        module.color.includes('blue') ? 'text-blue-600' :
-                        module.color.includes('green') ? 'text-green-600' :
-                        module.color.includes('purple') ? 'text-purple-600' :
-                        module.color.includes('indigo') ? 'text-indigo-600' :
-                        module.color.includes('cyan') ? 'text-cyan-600' :
-                        module.color.includes('orange') ? 'text-orange-600' :
-                        'text-gray-600'
-                      }`} />
-                    </div>
+              <Card 
+                key={module.id}
+                className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${
+                  viewMode === "list" ? "flex items-center" : ""
+                }`}
+              >
+                <CardContent className={viewMode === "grid" ? "p-3 sm:p-4 lg:p-6" : "flex items-center gap-3 sm:gap-4 p-3 sm:p-4 flex-1"}>
+                  <div className={`${viewMode === "grid" ? "mb-3 sm:mb-4" : ""} flex-shrink-0`}>
+                    <Icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${
+                      module.color.includes('blue') ? 'text-blue-600' :
+                      module.color.includes('green') ? 'text-green-600' :
+                      module.color.includes('purple') ? 'text-purple-600' :
+                      module.color.includes('indigo') ? 'text-indigo-600' :
+                      module.color.includes('cyan') ? 'text-cyan-600' :
+                      module.color.includes('orange') ? 'text-orange-600' :
+                      'text-gray-600'
+                    }`} />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm sm:text-base lg:text-lg mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      {module.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 lg:mb-4 line-clamp-2">
+                      {module.description}
+                    </p>
                     
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm sm:text-base lg:text-lg mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
-                        {module.title}
-                      </h3>
-                      <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 lg:mb-4 line-clamp-2">
-                        {module.description}
-                      </p>
-                      
-                      {viewMode === "grid" && (
-                        <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3 lg:mb-4">
-                          {module.features.slice(0, 2).map((feature, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {feature}
-                            </Badge>
-                          ))}
-                          {module.moreCount > 0 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{module.moreCount} more
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="text-xs hidden sm:inline-flex">
-                          {module.tag}
-                        </Badge>
-                        <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 group-hover:text-blue-600 transition-colors ml-auto" />
+                    {viewMode === "grid" && (
+                      <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3 lg:mb-4">
+                        {module.features.slice(0, 2).map((feature, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {feature}
+                          </Badge>
+                        ))}
+                        {module.moreCount > 0 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{module.moreCount} more
+                          </Badge>
+                        )}
                       </div>
+                    )}
+                    
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-xs hidden sm:inline-flex">
+                        {module.tag}
+                      </Badge>
+                      <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 group-hover:text-blue-600 transition-colors ml-auto" />
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </div>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
