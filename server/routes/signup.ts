@@ -96,7 +96,7 @@ router.post("/student", async (req, res) => {
     });
 
     // Send verification SMS to parent
-    const message = `Your child ${validatedData.firstName} ${validatedData.lastName} is trying to create an Edvirons account. Use this code to verify:`;
+    const message = `Your child ${validatedData.firstName} ${validatedData.lastName} is trying to create an account. Use this code to verify:`;
     await sendVerificationSMS(validatedData.parentPhone, verificationCode, message);
 
     res.json({
