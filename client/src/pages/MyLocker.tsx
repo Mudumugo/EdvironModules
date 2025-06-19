@@ -58,9 +58,11 @@ export default function MyLocker() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="notebooks">Digital Notebooks</TabsTrigger>
           <TabsTrigger value="resources">Saved Resources</TabsTrigger>
+          <TabsTrigger value="calculator">Calculator</TabsTrigger>
+          <TabsTrigger value="dictionary">Dictionary</TabsTrigger>
         </TabsList>
 
         <TabsContent value="notebooks" className="space-y-4">
@@ -77,6 +79,18 @@ export default function MyLocker() {
             isLoading={isLoadingItems}
             onViewItem={handleViewItem}
           />
+        </TabsContent>
+
+        <TabsContent value="calculator" className="space-y-4">
+          <Calculator />
+        </TabsContent>
+
+        <TabsContent value="dictionary" className="space-y-4">
+          <Dictionary />
+        </TabsContent>
+
+        <TabsContent value="dictionary" className="space-y-4">
+          <Dictionary />
         </TabsContent>
       </Tabs>
 
