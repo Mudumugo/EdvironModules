@@ -419,7 +419,7 @@ export default function CRM() {
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
-                            Created {format(new Date(lead.createdAt), "MMM d, yyyy")}
+                            Created {lead.createdAt ? format(new Date(lead.createdAt), "MMM d, yyyy") : "Unknown"}
                           </div>
                         </div>
                       </div>
@@ -486,7 +486,7 @@ export default function CRM() {
                               <span>Preferred: {format(new Date(demo.preferredDate), "MMM d, yyyy")}</span>
                             )}
                           </div>
-                          <span>Requested {format(new Date(demo.createdAt), "MMM d, yyyy")}</span>
+                          <span>Requested {demo.createdAt ? format(new Date(demo.createdAt), "MMM d, yyyy") : "Unknown"}</span>
                         </div>
                         {demo.message && (
                           <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
@@ -609,7 +609,7 @@ export default function CRM() {
                           <Badge variant="outline">{activity.type}</Badge>
                         </div>
                         <div className="mt-2 text-gray-500">
-                          {format(new Date(activity.createdAt), "MMM d, yyyy HH:mm")}
+                          {activity.createdAt ? format(new Date(activity.createdAt), "MMM d, yyyy HH:mm") : "No date"}
                         </div>
                       </div>
                     ))
