@@ -1,4 +1,4 @@
-import logoPath from "@assets/lg (2)_1750302459566.png";
+import logoPath from "@assets/edv-main-logo_1750303465819.png";
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
