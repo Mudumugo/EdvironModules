@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
 import MobileLanding from "@/pages/MobileLanding";
@@ -75,11 +76,14 @@ const componentMap: Record<string, any> = {
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // Show mobile landing page immediately for /mobile route
   return (
     <Switch>
-      <Route path="/mobile" component={MobileLanding} />
+      {/* Handle /mobile route with responsive logic */}
+      <Route path="/mobile">
+        {isMobile ? <MobileLanding /> : <Landing />}
+      </Route>
       
       {/* Show loading state while checking authentication for other routes */}
       <Route>
