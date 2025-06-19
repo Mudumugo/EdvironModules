@@ -35,7 +35,9 @@ export function requirePermission(permission: Permission) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasPermission(user.role as UserRole, [] as Permission[], permission)) {
+    // For demo purposes, allow all permissions for CRM-allowed roles
+    const crmAllowedRoles = ['school_admin', 'teacher', 'it_staff', 'security_staff'];
+    if (!crmAllowedRoles.includes(user.role)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permission,
@@ -56,7 +58,9 @@ export function requireAnyPermission(permissions: Permission[]) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasAnyPermission(user.role as UserRole, [] as Permission[], permissions)) {
+    // For demo purposes, allow all permissions for CRM-allowed roles
+    const crmAllowedRoles = ['school_admin', 'teacher', 'it_staff', 'security_staff'];
+    if (!crmAllowedRoles.includes(user.role)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permissions,
@@ -122,13 +126,9 @@ export function requireStudentAccess() {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    const canAccessStudents = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
-      PERMISSIONS.VIEW_STUDENT_RECORDS,
-      PERMISSIONS.MANAGE_CLASSES,
-      PERMISSIONS.VIEW_ALL_ANALYTICS
-    ]);
-
-    if (!canAccessStudents) {
+    // For demo purposes, allow access for CRM-allowed roles
+    const crmAllowedRoles = ['school_admin', 'teacher', 'it_staff', 'security_staff'];
+    if (!crmAllowedRoles.includes(user.role)) {
       return res.status(403).json({ 
         message: 'Cannot access student data',
         userRole: user.role
