@@ -55,8 +55,16 @@ export async function registerAuthRoutes(app: Express) {
 
   // Demo login for quick role switching
   app.post("/api/auth/demo-login", (req: Request, res: Response) => {
-    const { role } = req.body;
+    const { email, role } = req.body;
     
+    // Check if email is provided first
+    if (email && demoUsers[email as keyof typeof demoUsers]) {
+      req.session.user = demoUsers[email as keyof typeof demoUsers];
+      res.json({ success: true, user: req.session.user });
+      return;
+    }
+    
+    // Fallback to role-based mapping
     const roleMapping = {
       student: demoUsers["student@demo.com"],
       teacher: demoUsers["teacher@demo.com"],
@@ -65,7 +73,7 @@ export async function registerAuthRoutes(app: Express) {
       security_staff: demoUsers["security@demo.com"]
     };
     
-    req.session.user = roleMapping[role as keyof typeof roleMapping] || demoUsers["student@demo.com"];
+    req.session.user = roleMapping[role as keyof typeof roleMapping] || demoUsers["teacher@demo.com"];
     res.json({ success: true, user: req.session.user });
   });
 
