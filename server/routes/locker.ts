@@ -8,7 +8,7 @@ export function registerLockerRoutes(app: Express) {
   // Get user's locker items
   app.get('/api/locker/items', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       const items = await db
         .select()
@@ -26,7 +26,7 @@ export function registerLockerRoutes(app: Express) {
   // Save item to locker
   app.post('/api/locker/items', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const itemData = req.body;
       
       const [newItem] = await db
@@ -65,7 +65,7 @@ export function registerLockerRoutes(app: Express) {
   // Delete locker item
   app.delete('/api/locker/items/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const itemId = parseInt(req.params.id);
       
       await db
@@ -85,7 +85,7 @@ export function registerLockerRoutes(app: Express) {
   // Update locker item
   app.put('/api/locker/items/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const itemId = parseInt(req.params.id);
       const updateData = req.body;
       
