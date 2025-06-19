@@ -20,7 +20,7 @@ export function securityLogger(req: Request, res: Response, next: NextFunction) 
       userAgent,
       method,
       url,
-      body: JSON.stringify(body).substring(0, 200),
+      body: body ? JSON.stringify(body).substring(0, 200) : 'no body',
       reason: isSuspicious
     });
   }
@@ -42,12 +42,13 @@ export function securityLogger(req: Request, res: Response, next: NextFunction) 
 
 // Check for suspicious activity patterns
 function checkSuspiciousActivity(req: Request): string | null {
-  const combinedInput = JSON.stringify({
-    url: req.url,
-    query: req.query,
-    body: req.body,
-    headers: req.headers
-  });
+  try {
+    const combinedInput = JSON.stringify({
+      url: req.url,
+      query: req.query,
+      body: req.body || {},
+      headers: req.headers || {}
+    });
 
   for (const pattern of suspiciousPatterns) {
     if (pattern.test(combinedInput)) {
@@ -66,7 +67,11 @@ function checkSuspiciousActivity(req: Request): string | null {
     return 'Suspicious user agent';
   }
 
-  return null;
+    return null;
+  } catch (error) {
+    console.error('Error in checkSuspiciousActivity:', error);
+    return null;
+  }
 }
 
 // Input sanitization middleware
