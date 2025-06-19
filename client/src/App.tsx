@@ -42,6 +42,7 @@ import AppsHub from "@/pages/AppsHub";
 import HotCall from "@/pages/HotCall";
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
+import ClassManagement from "@/pages/ClassManagement";
 import UserProfile from "@/pages/UserProfile";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
@@ -216,6 +217,13 @@ function Router() {
               <Route path="/authoring-dashboard">
                 <RoleProtectedRoute moduleId="authoring-dashboard">
                   <AuthoringDashboard />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Class Management - Teachers */}
+              <Route path="/class-management">
+                <RoleProtectedRoute moduleId="class-management">
+                  <ClassManagement />
                 </RoleProtectedRoute>
               </Route>
 

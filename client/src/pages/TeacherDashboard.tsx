@@ -59,6 +59,17 @@ const teacherModules = [
     tag: "Management"
   },
   {
+    id: "class-management",
+    title: "Class Management",
+    description: "Manage your classes, view student enrollment, and track performance",
+    icon: Users,
+    color: "border-l-green-600",
+    category: "Teaching",
+    features: ["Student Enrollment", "Performance Analytics"],
+    moreCount: 1,
+    tag: "Teaching"
+  },
+  {
     id: "lesson-planning",
     title: "Lesson Planning",
     description: "AI-powered lesson planning and curriculum management tools",
@@ -234,12 +245,12 @@ export default function TeacherDashboard() {
           {filteredModules.map((module) => {
             const Icon = module.icon;
             return (
-              <Card 
-                key={module.id}
-                className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${
-                  viewMode === "list" ? "flex items-center" : ""
-                }`}
-              >
+              <Link href={module.id === "class-management" ? "/class-management" : "#"} key={module.id}>
+                <Card 
+                  className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${
+                    viewMode === "list" ? "flex items-center" : ""
+                  }`}
+                >
                 <CardContent className={viewMode === "grid" ? "p-3 sm:p-4 lg:p-6" : "flex items-center gap-3 sm:gap-4 p-3 sm:p-4 flex-1"}>
                   <div className={`${viewMode === "grid" ? "mb-3 sm:mb-4" : ""} flex-shrink-0`}>
                     <Icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${
@@ -285,6 +296,7 @@ export default function TeacherDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              </Link>
             );
           })}
         </div>
