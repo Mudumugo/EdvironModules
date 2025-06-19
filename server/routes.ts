@@ -6,6 +6,7 @@ import { registerXapiRoutes } from "./routes/xapi";
 import { registerDevicePolicyRoutes } from "./routes/devicePolicies";
 import { registerAnalyticsRoutes } from "./routes/analytics";
 import { registerTeacherRoutes } from "./routes/teacher";
+import { registerNotificationRoutes } from "./routes/notifications";
 import { registerDeviceRoutes } from "./routes/devices";
 import { registerMediaRoutes } from "./routes/media";
 import { registerLicensingRoutes } from "./routes/licensing";

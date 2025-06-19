@@ -45,6 +45,7 @@ import AuthoringDashboard from "@/pages/AuthoringDashboard";
 import ClassManagement from "@/pages/ClassManagement";
 import LessonPlanning from "@/pages/LessonPlanning";
 import DigitalNotebooks from "@/pages/DigitalNotebooks";
+import NotificationsCenter from "@/pages/NotificationsCenter";
 import UserProfile from "@/pages/UserProfile";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
@@ -239,6 +240,13 @@ function Router() {
               <Route path="/digital-notebooks">
                 <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college"]}>
                   <DigitalNotebooks />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Notifications Center */}
+              <Route path="/notifications">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college", "security_staff", "it_staff"]}>
+                  <NotificationsCenter />
                 </RoleProtectedRoute>
               </Route>
 
