@@ -80,11 +80,6 @@ function Router() {
 
   return (
     <Switch>
-      {/* Handle /mobile route with responsive logic */}
-      <Route path="/mobile">
-        {isMobile ? <MobileLanding /> : <Landing />}
-      </Route>
-      
       {/* Show loading state while checking authentication for other routes */}
       <Route>
         {isLoading ? (
@@ -102,7 +97,11 @@ function Router() {
             <Route path="/solutions" component={Solutions} />
             <Route path="/cbe-overview" component={CBEOverview} />
             <Route path="/about" component={About} />
-            <Route component={Landing} />
+            <Route path="/mobile" component={MobileLanding} />
+            <Route>
+              {/* Show mobile landing on phone screens, full landing on desktop */}
+              {isMobile ? <MobileLanding /> : <Landing />}
+            </Route>
           </Switch>
         ) : (
           <Layout>
