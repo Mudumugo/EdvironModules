@@ -21,20 +21,20 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">User Profile</h1>
-        <p className="text-muted-foreground">
+    <div className="container max-w-4xl mx-auto p-3 sm:p-6">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">User Profile</h1>
+        <p className="text-muted-foreground text-sm sm:text-base">
           Manage your profile information, settings, and preferences
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          {user.role && isStudent(user.role as UserRole) && <TabsTrigger value="academic">Academic</TabsTrigger>}
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+          <TabsTrigger value="profile" className="text-xs sm:text-sm">Profile</TabsTrigger>
+          {user.role && isStudent(user.role as UserRole) && <TabsTrigger value="academic" className="text-xs sm:text-sm">Academic</TabsTrigger>}
+          <TabsTrigger value="settings" className="text-xs sm:text-sm">Settings</TabsTrigger>
+          <TabsTrigger value="security" className="text-xs sm:text-sm">Security</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">
