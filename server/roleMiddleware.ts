@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
-import { PERMISSIONS, type Permission, type UserRole, type User } from '@shared/schema';
+import { PERMISSIONS, type Permission, type UserRole } from '@shared/schema';
 
 // Session user type (simplified for session storage)
 export interface SessionUser {
@@ -16,6 +16,9 @@ export interface SessionUser {
 // Extended request type for authenticated requests
 export interface AuthenticatedRequest extends Request {
   user?: SessionUser;
+  session: Request['session'] & {
+    user?: SessionUser;
+  };
 }
 
 // Authentication middleware that checks session

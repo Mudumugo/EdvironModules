@@ -129,40 +129,5 @@ export async function setupAuth(app: Express) {
   });
 }
 
-export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  const sessionUser = (req.session as any)?.user;
-  const replitUser = req.user as any;
-
-  // Check for demo session first (allow demo sessions without strict expiration)
-  if (sessionUser) {
-    (req as any).user = sessionUser;
-    (req as any).tenant = { id: sessionUser.tenantId || 'default' };
-    return next();
-  }
-
-  // Fall back to Replit auth
-  if (!req.isAuthenticated() || !replitUser?.expires_at) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-  if (now <= replitUser.expires_at) {
-    return next();
-  }
-
-  const refreshToken = replitUser.refresh_token;
-  if (!refreshToken) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-
-  try {
-    const config = await getOidcConfig();
-    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
-    updateUserSession(replitUser, tokenResponse);
-    return next();
-  } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-};
+// Note: isAuthenticated middleware moved to roleMiddleware.ts to avoid conflicts
+// This file only handles Replit OIDC setup, not authentication middleware;

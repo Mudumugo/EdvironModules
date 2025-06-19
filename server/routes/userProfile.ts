@@ -1,13 +1,13 @@
-import type { Express } from "express";
-import { isAuthenticated } from "../replitAuth";
-import type { AuthenticatedRequest } from "../roleMiddleware";
+import type { Express, Request, Response } from "express";
+import { isAuthenticated, type AuthenticatedRequest } from "../roleMiddleware";
 import { storage } from "../storage";
 
 export function registerUserProfileRoutes(app: Express) {
   // Get user profile data
-  app.get("/api/user/profile", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/user/profile", isAuthenticated, async (req: Request, res: Response) => {
+    const authReq = req as AuthenticatedRequest;
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = authReq.user?.id;
       console.log("Profile request - User ID from claims:", userId);
       console.log("Profile request - Full user object:", JSON.stringify(req.user, null, 2));
       

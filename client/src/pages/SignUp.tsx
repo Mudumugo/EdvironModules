@@ -177,7 +177,7 @@ export default function SignUp() {
 
   const adultSignupMutation = useMutation({
     mutationFn: async (data: AdultSignupForm) => {
-      return await apiRequest("/api/signup/adult", "POST", {
+      return await apiRequest("POST", "/api/signup/adult", {
         ...data,
         firstName: ageForm.getValues("firstName"),
         lastName: ageForm.getValues("lastName"),
@@ -199,7 +199,7 @@ export default function SignUp() {
 
   const parentChildSignupMutation = useMutation({
     mutationFn: async (data: ParentChildSignupForm) => {
-      return await apiRequest("/api/signup/family", "POST", data);
+      return await apiRequest("POST", "/api/signup/family", data);
     },
     onSuccess: () => {
       setVerificationSent(true);
@@ -216,7 +216,7 @@ export default function SignUp() {
 
   const schoolDemoMutation = useMutation({
     mutationFn: async (data: SchoolDemoForm) => {
-      return await apiRequest("/api/signup/school-demo", "POST", data);
+      return await apiRequest("POST", "/api/signup/school-demo", data);
     },
     onSuccess: () => {
       setCurrentStep("complete");
