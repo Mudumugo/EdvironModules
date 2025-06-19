@@ -65,49 +65,67 @@ export const SecondaryLayout = ({
       <div>
         <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-center px-2">CBE Subjects</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-          {categories.map(category => (
-            <Card key={category.id} className={`${layout.cardStyle} bg-gradient-to-br ${category.color || 'from-blue-500 to-blue-600'} text-white`}>
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg leading-tight">{category.name}</h3>
-                    <p className="text-xs sm:text-sm opacity-90">Learning Resources</p>
-                  </div>
-                </div>
-                
-                <div className="mb-4">
-                  <p className="text-xs sm:text-sm opacity-90 mb-3">Available Resources:</p>
-                  <div className="flex justify-between text-center">
-                    <div className="flex-1">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </div>
-                      <p className="text-xs">Books</p>
+          {categories.map((category, index) => {
+            // Define colors for each category to ensure proper gradients
+            const colorPalette = [
+              'from-green-500 to-green-600',      // Mathematics - Green
+              'from-blue-500 to-blue-600',        // English - Blue
+              'from-purple-500 to-purple-600',    // Kiswahili - Purple
+              'from-teal-500 to-teal-600',        // Science - Teal
+              'from-red-500 to-red-600',          // Computer Science - Red
+              'from-orange-500 to-orange-600',    // Creative Arts - Orange
+              'from-indigo-500 to-indigo-600',    // Social Studies - Indigo
+              'from-pink-500 to-pink-600',        // Additional subjects - Pink
+              'from-yellow-500 to-yellow-600',    // Additional subjects - Yellow
+              'from-cyan-500 to-cyan-600'         // Additional subjects - Cyan
+            ];
+            
+            const gradientColor = category.color || colorPalette[index % colorPalette.length];
+            
+            return (
+              <Card key={category.id} className={`${layout.cardStyle} bg-gradient-to-br ${gradientColor} text-white overflow-hidden h-full`}>
+                <CardContent className="p-4 sm:p-6 h-full flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
-                    <div className="flex-1">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </div>
-                      <p className="text-xs">Worksheets</p>
-                    </div>
-                    <div className="flex-1">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <Video className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </div>
-                      <p className="text-xs">Videos</p>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-bold text-base sm:text-lg leading-tight">{category.name}</h3>
+                      <p className="text-xs sm:text-sm opacity-90">Learning Resources</p>
                     </div>
                   </div>
-                </div>
-                
-                <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-0 text-sm">
-                  View All
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  
+                  <div className="mb-4 flex-1">
+                    <p className="text-xs sm:text-sm opacity-90 mb-3">Available Resources:</p>
+                    <div className="flex justify-between text-center">
+                      <div className="flex-1">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                          <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </div>
+                        <p className="text-xs">Books</p>
+                      </div>
+                      <div className="flex-1">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                          <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </div>
+                        <p className="text-xs">Worksheets</p>
+                      </div>
+                      <div className="flex-1">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                          <Video className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </div>
+                        <p className="text-xs">Videos</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-0 text-sm mt-auto">
+                    View All
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
@@ -174,39 +192,43 @@ export const SecondaryLayout = ({
               'bg-gradient-to-br from-blue-50 to-blue-100', 
               'bg-gradient-to-br from-green-50 to-green-100',
               'bg-gradient-to-br from-purple-50 to-purple-100',
-              'bg-gradient-to-br from-orange-50 to-orange-100'
+              'bg-gradient-to-br from-orange-50 to-orange-100',
+              'bg-gradient-to-br from-teal-50 to-teal-100',
+              'bg-gradient-to-br from-red-50 to-red-100',
+              'bg-gradient-to-br from-indigo-50 to-indigo-100',
+              'bg-gradient-to-br from-pink-50 to-pink-100'
             ];
             
             return (
-              <Card key={subject.id} className={`${layout.cardStyle} ${bgColors[index % 4]} border-0`}>
-                <CardContent className="p-4 sm:p-6">
+              <Card key={subject.id} className={`${layout.cardStyle} ${bgColors[index % bgColors.length]} border-0 h-full`}>
+                <CardContent className="p-4 sm:p-6 h-full flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
                       <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <h3 className="font-bold text-base sm:text-lg text-gray-800 leading-tight">{subject.name}</h3>
                       <p className="text-xs sm:text-sm text-gray-600">CBE Aligned</p>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 flex-1">
                     <div className="text-center">
                       <div className="text-lg sm:text-xl font-bold text-gray-800">{subject.resourceCount || 24}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Resources</div>
+                      <div className="text-xs text-gray-600">Resources</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg sm:text-xl font-bold text-gray-800">{subject.lessonsCount || 12}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Lessons</div>
+                      <div className="text-xs text-gray-600">Lessons</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg sm:text-xl font-bold text-gray-800">{subject.quizzesCount || 8}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Quizzes</div>
+                      <div className="text-xs text-gray-600">Quizzes</div>
                     </div>
                   </div>
                   
                   <Button 
-                    className="w-full bg-gray-900 hover:bg-gray-800 text-white transition-colors duration-200 text-sm"
+                    className="w-full bg-gray-900 hover:bg-gray-800 text-white transition-colors duration-200 text-sm mt-auto"
                     onClick={() => {
                       console.log('View resources for', subject.id);
                     }}
@@ -230,12 +252,12 @@ export const SecondaryLayout = ({
             { title: 'Advanced Workshops', desc: 'Skills development', color: 'from-purple-500 to-purple-600', icon: GraduationCap },
             { title: 'Career Pathways', desc: 'Future planning', color: 'from-green-500 to-green-600', icon: BookOpen }
           ].map((item, index) => (
-            <Card key={index} className={`${layout.cardStyle} bg-gradient-to-br ${item.color} text-white`}>
-              <CardContent className="p-4 sm:p-6">
+            <Card key={index} className={`${layout.cardStyle} bg-gradient-to-br ${item.color} text-white h-full`}>
+              <CardContent className="p-4 sm:p-6 h-full flex flex-col">
                 <item.icon className="w-6 h-6 sm:w-8 sm:h-8 mb-3" />
                 <h3 className="font-bold text-sm sm:text-base mb-2 leading-tight">{item.title}</h3>
-                <p className="text-xs sm:text-sm opacity-90 mb-3 sm:mb-4">{item.desc}</p>
-                <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 text-xs sm:text-sm">
+                <p className="text-xs sm:text-sm opacity-90 mb-3 sm:mb-4 flex-1">{item.desc}</p>
+                <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 text-xs sm:text-sm mt-auto">
                   Explore
                 </Button>
               </CardContent>
@@ -269,10 +291,10 @@ export const SecondaryLayout = ({
                 subjects: ['Economics', 'Business Studies', 'Accounting', 'Marketing']
               }
             ].map((pathway, index) => (
-              <Card key={index} className={`${layout.cardStyle} bg-gradient-to-br ${pathway.color} text-white`}>
-                <CardContent className="p-4 sm:p-6">
+              <Card key={index} className={`${layout.cardStyle} bg-gradient-to-br ${pathway.color} text-white h-full`}>
+                <CardContent className="p-4 sm:p-6 h-full flex flex-col">
                   <h3 className="font-bold text-base sm:text-lg mb-2 leading-tight">{pathway.title}</h3>
-                  <p className="text-xs sm:text-sm opacity-90 mb-3 sm:mb-4 leading-tight">{pathway.desc}</p>
+                  <p className="text-xs sm:text-sm opacity-90 mb-3 sm:mb-4 leading-tight flex-1">{pathway.desc}</p>
                   <div className="mb-3 sm:mb-4">
                     <p className="text-xs font-medium mb-2">Key Subjects:</p>
                     <div className="flex flex-wrap gap-1">
