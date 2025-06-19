@@ -29,11 +29,13 @@ export function Logo({
 }: LogoProps) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <img 
-        src={logoPath} 
-        alt="Logo" 
-        className={`${sizeClasses[size]} object-contain`}
-      />
+      <div className={`${sizeClasses[size]} bg-slate-900 dark:bg-slate-800 rounded-lg p-2 flex items-center justify-center`}>
+        <img 
+          src={logoPath} 
+          alt="Logo" 
+          className={`${sizeClasses[size]} object-contain`}
+        />
+      </div>
       {showText && (
         <span className={`font-bold text-blue-600 ${textSizeClasses[size]} ${textClassName}`}>
           Learning Portal
