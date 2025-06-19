@@ -19,9 +19,6 @@ export interface SessionUser {
 // Extended request type for authenticated requests
 export interface AuthenticatedRequest extends Request {
   user?: SessionUser;
-  session: Request['session'] & {
-    user?: SessionUser;
-  };
 }
 
 // Authentication middleware that checks session
@@ -38,7 +35,8 @@ export const isAuthenticated = (req: AuthenticatedRequest, res: Response, next: 
 
 // Middleware to check if user has specific permission
 export function requirePermission(permission: Permission) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthenticatedRequest;
     const user = req.user;
     
     if (!user) {
@@ -61,8 +59,9 @@ export function requirePermission(permission: Permission) {
 
 // Middleware to check if user has any of the specified permissions
 export function requireAnyPermission(permissions: Permission[]) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const user = req.user;
+  return (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthenticatedRequest;
+    const user = authReq.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });
@@ -86,8 +85,9 @@ export function requireAnyPermission(permissions: Permission[]) {
 export function requireRole(roles: UserRole | UserRole[]) {
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
   
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const user = req.user;
+  return (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthenticatedRequest;
+    const user = authReq.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });
@@ -107,8 +107,9 @@ export function requireRole(roles: UserRole | UserRole[]) {
 
 // Middleware to check if user belongs to same tenant
 export function requireSameTenant() {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const user = req.user;
+  return (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthenticatedRequest;
+    const user = authReq.user;
     const targetTenantId = req.params.tenantId || req.body.tenantId || req.query.tenantId;
     
     if (!user) {
@@ -129,8 +130,9 @@ export function requireSameTenant() {
 
 // Middleware to check if user can access student data (teachers can access their students, admins can access all)
 export function requireStudentAccess() {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const user = req.user;
+  return (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthenticatedRequest;
+    const user = authReq.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });
@@ -151,15 +153,16 @@ export function requireStudentAccess() {
 
 // Helper to check resource ownership
 export function requireResourceOwnership(getResourceOwnerId: (req: AuthenticatedRequest) => string | Promise<string>) {
-  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const user = req.user;
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthenticatedRequest;
+    const user = authReq.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
     try {
-      const resourceOwnerId = await getResourceOwnerId(req);
+      const resourceOwnerId = await getResourceOwnerId(authReq);
       
       // Allow access if user owns the resource or has admin permissions
       const isOwner = user.id === resourceOwnerId;
