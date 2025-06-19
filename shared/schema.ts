@@ -536,11 +536,65 @@ export const lockerItems = pgTable("locker_items", {
   tenantId: varchar("tenant_id", { length: 255 }).default("default"),
 });
 
-// Relations
-export const notebooksRelations = relations(notebooks, ({ many }) => ({
-  subjects: many(subjects),
+// OneNote-inspired notebook relations
+export const notebooksRelations = relations(notebooks, ({ one, many }) => ({
+  user: one(users, {
+    fields: [notebooks.userId],
+    references: [users.id],
+  }),
+  sections: many(notebookSections),
+  activity: many(notebookActivity),
+  subjects: many(subjects), // Legacy
 }));
 
+export const notebookSectionsRelations = relations(notebookSections, ({ one, many }) => ({
+  notebook: one(notebooks, {
+    fields: [notebookSections.notebookId],
+    references: [notebooks.id],
+  }),
+  pages: many(notebookPages),
+}));
+
+export const notebookPagesRelations = relations(notebookPages, ({ one, many }) => ({
+  section: one(notebookSections, {
+    fields: [notebookPages.sectionId],
+    references: [notebookSections.id],
+  }),
+  lastEditedByUser: one(users, {
+    fields: [notebookPages.lastEditedBy],
+    references: [users.id],
+  }),
+  comments: many(pageComments),
+}));
+
+export const pageCommentsRelations = relations(pageComments, ({ one, many }) => ({
+  page: one(notebookPages, {
+    fields: [pageComments.pageId],
+    references: [notebookPages.id],
+  }),
+  user: one(users, {
+    fields: [pageComments.userId],
+    references: [users.id],
+  }),
+  parentComment: one(pageComments, {
+    fields: [pageComments.parentCommentId],
+    references: [pageComments.id],
+  }),
+  replies: many(pageComments),
+}));
+
+export const notebookActivityRelations = relations(notebookActivity, ({ one }) => ({
+  notebook: one(notebooks, {
+    fields: [notebookActivity.notebookId],
+    references: [notebooks.id],
+  }),
+  user: one(users, {
+    fields: [notebookActivity.userId],
+    references: [users.id],
+  }),
+}));
+
+// Legacy relations
 export const subjectsRelations = relations(subjects, ({ one, many }) => ({
   notebook: one(notebooks, {
     fields: [subjects.notebookId],
@@ -597,12 +651,38 @@ export type InsertLockerItem = typeof lockerItems.$inferInsert;
 export type LockerItem = typeof lockerItems.$inferSelect;
 
 // Schemas
-export const insertNotebookSchema = createInsertSchema(notebooks);
-export const insertSubjectSchema = createInsertSchema(subjects);
-export const insertChapterSchema = createInsertSchema(chapters);
-export const insertTopicSchema = createInsertSchema(topics);
-export const insertPageSchema = createInsertSchema(pages);
-export const insertStickyNoteSchema = createInsertSchema(stickyNotes);
+// OneNote-inspired insert schemas
+export const insertNotebookSchema = createInsertSchema(notebooks).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true,
+  lastAccessedAt: true 
+});
+export const insertNotebookSectionSchema = createInsertSchema(notebookSections).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+export const insertNotebookPageSchema = createInsertSchema(notebookPages).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+export const insertPageCommentSchema = createInsertSchema(pageComments).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+
+// Type exports
+export type Notebook = typeof notebooks.$inferSelect;
+export type InsertNotebook = z.infer<typeof insertNotebookSchema>;
+export type NotebookSection = typeof notebookSections.$inferSelect;
+export type InsertNotebookSection = z.infer<typeof insertNotebookSectionSchema>;
+export type NotebookPage = typeof notebookPages.$inferSelect;
+export type InsertNotebookPage = z.infer<typeof insertNotebookPageSchema>;
+export type PageComment = typeof pageComments.$inferSelect;
+export type InsertPageComment = z.infer<typeof insertPageCommentSchema>;
 
 // Re-export activity logs from dedicated schema
 export { activityLogs, type InsertActivityLog, type ActivityLog } from "@shared/schemas/activity.schema";
