@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import RoleSwitcher from "@/components/RoleSwitcher";
+import { Logo } from "@/components/Logo";
 import { 
   Search,
   Bell,
@@ -88,11 +89,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <GraduationCap className="text-white h-5 w-5" />
-              </div>
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900">Edvirons</h1>
+            <div className="flex items-center">
+              <Logo size="sm" showText={true} textClassName="text-lg sm:text-xl" />
             </div>
             <span className="hidden md:block text-sm text-gray-500 border-l border-gray-200 pl-4">
               Learning Portal

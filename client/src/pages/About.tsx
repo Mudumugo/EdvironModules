@@ -88,7 +88,7 @@ const impactStats = [
   }
 ];
 
-const whyEdVironsWins = [
+const whyPlatformWins = [
   {
     icon: WifiOff,
     title: "Works Offline",
@@ -113,7 +113,7 @@ const whyEdVironsWins = [
   {
     icon: DollarSign,
     title: "Africa-Ready Pricing",
-    description: "Flexible pan-African licensing model fit for Pan and SATC.",
+    description: "Flexible pricing model designed for educational institutions.",
     color: "text-orange-600",
     bgColor: "bg-orange-50"
   }
@@ -127,12 +127,12 @@ export function About() {
       {/* Hero Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-8">
-            <span className="text-white font-bold text-2xl">E</span>
+          <div className="mb-8">
+            <Logo size="xl" className="mx-auto" />
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            About <span className="text-blue-600">EdVirons</span>
+            About Our Platform
           </h1>
           
           <p className="text-xl text-gray-600 mb-4">
@@ -140,7 +140,7 @@ export function About() {
           </p>
           
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            EdVirons is Africa's premier offline-first edtech ecosystem, equipping schools with smart, scalable tools to 
+            An innovative offline-first educational ecosystem, equipping schools with smart, scalable tools to 
             teach, learn, and thrive—with or without internet access.
           </p>
         </div>
@@ -153,8 +153,8 @@ export function About() {
             Our Purpose
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Driven by a clear vision and unwavering mission to transform education across 
-            Africa.
+            Driven by a clear vision and unwavering mission to transform education through 
+            innovative technology solutions.
           </p>
         </div>
       </section>
@@ -200,16 +200,16 @@ export function About() {
         </div>
       </section>
 
-      {/* EdVirons Advantage */}
+      {/* Platform Advantage */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              The EdVirons Advantage
+              Our Platform Advantage
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A comprehensive ecosystem of interconnected tools designed for the modern African 
-              classroom.
+              A comprehensive ecosystem of interconnected tools designed for the modern 
+              classroom environment.
             </p>
           </div>
 
@@ -274,21 +274,21 @@ export function About() {
         </div>
       </section>
 
-      {/* Why EdVirons Wins */}
+      {/* Why We Win */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why EdVirons Wins
+              Why Our Platform Wins
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Uniquely positioned to address Africa's educational challenges with innovative, practical 
+              Uniquely positioned to address educational challenges with innovative, practical 
               solutions.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {whyEdVironsWins.map((feature, index) => {
+            {whyPlatformWins.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
                 <Card key={index} className={`${feature.bgColor} border-2 hover:shadow-lg transition-shadow`}>
