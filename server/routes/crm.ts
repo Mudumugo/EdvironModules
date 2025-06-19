@@ -1,13 +1,13 @@
 import type { Express } from "express";
 import { storage } from "../storage";
 import { isAuthenticated } from "../replitAuth";
-import { type AuthenticatedRequest } from "../types/auth";
+import { type AuthenticatedRequest } from "../roleMiddleware";
 import { requireRole, requirePermission } from "../roleMiddleware";
 import { insertLeadSchema, insertLeadActivitySchema, insertDemoRequestSchema } from "@shared/schema";
 
 export function registerCRMRoutes(app: Express) {
-  // Leads endpoints
-  app.get('/api/crm/leads', isAuthenticated, async (req: any, res) => {
+  // Leads endpoints - require admin, teacher, IT or security roles
+  app.get('/api/crm/leads', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const leads = await storage.getLeads();
       res.json(leads);
@@ -17,7 +17,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.get('/api/crm/leads/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/crm/leads/:id', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const lead = await storage.getLead(id);
@@ -31,7 +31,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.post('/api/crm/leads', isAuthenticated, async (req: any, res) => {
+  app.post('/api/crm/leads', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const validatedData = insertLeadSchema.parse(req.body);
       const lead = await storage.createLead(validatedData);
@@ -42,7 +42,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.patch('/api/crm/leads/:id', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/crm/leads/:id', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const lead = await storage.updateLead(id, req.body);
@@ -53,7 +53,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.delete('/api/crm/leads/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/crm/leads/:id', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteLead(id);
@@ -65,7 +65,7 @@ export function registerCRMRoutes(app: Express) {
   });
 
   // Lead Activities endpoints
-  app.get('/api/crm/activities', isAuthenticated, async (req: any, res) => {
+  app.get('/api/crm/activities', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const leadId = req.query.leadId ? parseInt(req.query.leadId as string) : undefined;
       const activities = await storage.getLeadActivities(leadId);
@@ -76,7 +76,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.post('/api/crm/activities', isAuthenticated, async (req: any, res) => {
+  app.post('/api/crm/activities', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const validatedData = insertLeadActivitySchema.parse(req.body);
       const activity = await storage.createLeadActivity(validatedData);
@@ -88,7 +88,7 @@ export function registerCRMRoutes(app: Express) {
   });
 
   // Demo Requests endpoints
-  app.get('/api/crm/demo-requests', isAuthenticated, async (req: any, res) => {
+  app.get('/api/crm/demo-requests', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const demos = await storage.getDemoRequests();
       res.json(demos);
