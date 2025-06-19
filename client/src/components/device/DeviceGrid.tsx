@@ -109,42 +109,42 @@ export default function DeviceGrid({ devices, onDeviceAction }: DeviceGridProps)
               }`}
               onClick={() => toggleDeviceSelection(device.id)}
             >
-              <CardContent className="p-4">
+              <CardContent className="p-3 sm:p-4">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <DeviceIcon className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <h3 className="font-medium text-sm">{device.name}</h3>
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <DeviceIcon className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-medium text-xs sm:text-sm truncate">{device.name}</h3>
                       <p className="text-xs text-muted-foreground">{device.type}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 flex-shrink-0">
                     {device.isOnline ? (
-                      <Wifi className="h-4 w-4 text-green-500" />
+                      <Wifi className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
                     ) : (
-                      <WifiOff className="h-4 w-4 text-red-500" />
+                      <WifiOff className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
                     )}
-                    <Badge className={`${getStatusColor(device.status)} text-xs`}>
+                    <Badge className={`${getStatusColor(device.status)} text-xs px-1 py-0`}>
                       {device.status}
                     </Badge>
                   </div>
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Location:</span>
-                    <span>{device.location}</span>
+                    <span className="truncate ml-2">{device.location}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Last Seen:</span>
-                    <span>{device.lastSeen}</span>
+                    <span className="truncate ml-2">{device.lastSeen}</span>
                   </div>
                   
                   {device.batteryLevel !== undefined && (
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
-                          <Battery className="h-3 w-3" />
+                          <Battery className="h-3 w-3 flex-shrink-0" />
                           <span className="text-muted-foreground">Battery:</span>
                         </div>
                         <span>{device.batteryLevel}%</span>
@@ -155,15 +155,15 @@ export default function DeviceGrid({ devices, onDeviceAction }: DeviceGridProps)
 
                   {device.restrictions.length > 0 && (
                     <div>
-                      <span className="text-muted-foreground">Restrictions:</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <span className="text-muted-foreground block mb-1">Restrictions:</span>
+                      <div className="flex flex-wrap gap-1">
                         {device.restrictions.slice(0, 2).map((restriction, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge key={index} variant="secondary" className="text-xs px-1 py-0">
                             {restriction}
                           </Badge>
                         ))}
                         {device.restrictions.length > 2 && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs px-1 py-0">
                             +{device.restrictions.length - 2}
                           </Badge>
                         )}
@@ -176,17 +176,18 @@ export default function DeviceGrid({ devices, onDeviceAction }: DeviceGridProps)
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 text-xs"
+                    className="flex-1 text-xs px-2 py-1 h-7"
                     onClick={() => handleDeviceAction(device.id, 'view-details')}
                   >
                     <Settings className="h-3 w-3 mr-1" />
-                    Manage
+                    <span className="hidden sm:inline">Manage</span>
+                    <span className="sm:hidden">Edit</span>
                   </Button>
                   {device.status === 'active' ? (
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-xs"
+                      className="text-xs px-2 py-1 h-7"
                       onClick={() => handleDeviceAction(device.id, 'lock')}
                     >
                       <Lock className="h-3 w-3" />
@@ -195,7 +196,7 @@ export default function DeviceGrid({ devices, onDeviceAction }: DeviceGridProps)
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-xs"
+                      className="text-xs px-2 py-1 h-7"
                       onClick={() => handleDeviceAction(device.id, 'unlock')}
                     >
                       <Unlock className="h-3 w-3" />

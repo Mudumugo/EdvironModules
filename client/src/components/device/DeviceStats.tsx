@@ -54,11 +54,11 @@ export default function DeviceStats({ stats }: DeviceStatsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Active</CardTitle>
-          <TrendingUp className="h-4 w-4 text-blue-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Active</CardTitle>
+          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 flex-shrink-0" />
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
+        <CardContent className="pt-2">
+          <div className="text-xl sm:text-2xl font-bold text-blue-600">{stats.active}</div>
           <div className="flex items-center gap-2">
             <Progress value={activePercentage} className="h-1 flex-1" />
             <span className="text-xs text-muted-foreground">
@@ -70,11 +70,11 @@ export default function DeviceStats({ stats }: DeviceStatsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Restricted</CardTitle>
-          <Shield className="h-4 w-4 text-red-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Restricted</CardTitle>
+          <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 flex-shrink-0" />
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-600">{stats.restricted}</div>
+        <CardContent className="pt-2">
+          <div className="text-xl sm:text-2xl font-bold text-red-600">{stats.restricted}</div>
           <div className="flex items-center gap-2">
             <Progress value={restrictedPercentage} className="h-1 flex-1" />
             <span className="text-xs text-muted-foreground">
@@ -86,11 +86,11 @@ export default function DeviceStats({ stats }: DeviceStatsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Maintenance</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-yellow-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Maintenance</CardTitle>
+          <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-yellow-600">{stats.maintenance}</div>
+        <CardContent className="pt-2">
+          <div className="text-xl sm:text-2xl font-bold text-yellow-600">{stats.maintenance}</div>
           <p className="text-xs text-muted-foreground">
             Need attention
           </p>
@@ -99,11 +99,11 @@ export default function DeviceStats({ stats }: DeviceStatsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Low Battery</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-orange-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Low Battery</CardTitle>
+          <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500 flex-shrink-0" />
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-orange-600">{stats.batteryLow}</div>
+        <CardContent className="pt-2">
+          <div className="text-xl sm:text-2xl font-bold text-orange-600">{stats.batteryLow}</div>
           <p className="text-xs text-muted-foreground">
             Need charging
           </p>
