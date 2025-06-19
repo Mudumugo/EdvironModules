@@ -22,7 +22,7 @@ export function registerUserRoutes(app: Express) {
   app.get("/api/users", isAuthenticated, async (req: any, res: Response) => {
     try {
       const { role, tenantId } = req.query;
-      const users = await storage.getUsersByRole(role as string, tenantId as string);
+      const users = await storage.getUsersByRole(role as string);
       res.json(users);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch users" });

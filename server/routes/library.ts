@@ -1,11 +1,10 @@
-import type { Express } from "express";
+import type { Express, Response } from "express";
 import { storage } from "../storage";
 import { isAuthenticated } from "../replitAuth";
-import type { AuthenticatedRequest } from "../types";
 
 export function registerLibraryRoutes(app: Express) {
   // Get library categories
-  app.get('/api/library/categories', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/library/categories', isAuthenticated, async (req: any, res: Response) => {
     try {
       const { gradeLevel } = req.query;
       const categories = await storage.getLibraryCategories(gradeLevel as string);
@@ -17,7 +16,7 @@ export function registerLibraryRoutes(app: Express) {
   });
 
   // Get library subjects with resource counts
-  app.get('/api/library/subjects', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/library/subjects', isAuthenticated, async (req: any, res: Response) => {
     try {
       const { gradeLevel, categoryId } = req.query;
       const subjects = await storage.getLibrarySubjects(
@@ -42,7 +41,7 @@ export function registerLibraryRoutes(app: Express) {
   });
 
   // Get library resources
-  app.get('/api/library/resources', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/library/resources', isAuthenticated, async (req: any, res: Response) => {
     try {
       const filters = {
         gradeLevel: req.query.gradeLevel as string,
