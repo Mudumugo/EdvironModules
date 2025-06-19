@@ -160,7 +160,7 @@ export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
   }, [searchTerm, selectedCategory, modules]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
         <DashboardHeader
           title="Senior Student Dashboard"
@@ -178,11 +178,7 @@ export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
           onViewModeChange={setViewMode}
         />
 
-        <div className={
-          viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-            : "space-y-4"
-        }>
+        <div className="mb-4 sm:mb-6">
           <TechTutorCard 
             variant="senior"
             viewMode={viewMode}
@@ -202,12 +198,12 @@ export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
         />
 
         {filteredModules.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-8 sm:py-12">
             <div className="text-gray-400 mb-4">
-              <BookOpen className="h-12 w-12 mx-auto" />
+              <BookOpen className="h-8 w-8 sm:h-12 sm:w-12 mx-auto" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No modules found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No modules found</h3>
+            <p className="text-sm sm:text-base text-gray-600">Try adjusting your search or filter criteria</p>
           </div>
         )}
       </div>
