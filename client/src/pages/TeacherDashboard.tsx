@@ -217,8 +217,8 @@ export default function TeacherDashboard() {
         {/* Modules Grid */}
         <div className={
           viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-            : "space-y-4"
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
+            : "space-y-3 sm:space-y-4"
         }>
           {filteredModules.map((module) => {
             const Icon = module.icon;
@@ -226,12 +226,12 @@ export default function TeacherDashboard() {
               <Card 
                 key={module.id} 
                 className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${
-                  viewMode === "list" ? "flex items-center p-4" : ""
+                  viewMode === "list" ? "flex items-center p-3 sm:p-4" : ""
                 }`}
               >
-                <CardContent className={viewMode === "grid" ? "p-6" : "flex items-center gap-4 p-0 flex-1"}>
-                  <div className={`${viewMode === "grid" ? "mb-4" : ""}`}>
-                    <Icon className={`h-8 w-8 ${
+                <CardContent className={viewMode === "grid" ? "p-4 sm:p-6" : "flex items-center gap-3 sm:gap-4 p-0 flex-1"}>
+                  <div className={`${viewMode === "grid" ? "mb-3 sm:mb-4" : ""} flex-shrink-0`}>
+                    <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${
                       module.color.includes('blue') ? 'text-blue-600' :
                       module.color.includes('green') ? 'text-green-600' :
                       module.color.includes('purple') ? 'text-purple-600' :
@@ -242,32 +242,34 @@ export default function TeacherDashboard() {
                     }`} />
                   </div>
                   
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-2 group-hover:text-blue-600 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors truncate">
                       {module.title}
                     </h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
                       {module.description}
                     </p>
                     
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {module.features.map((feature, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {feature}
-                        </Badge>
-                      ))}
-                      {module.moreCount > 0 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{module.moreCount} more
-                        </Badge>
-                      )}
-                    </div>
+                    {viewMode === "grid" && (
+                      <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
+                        {module.features.slice(0, 2).map((feature, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {feature}
+                          </Badge>
+                        ))}
+                        {module.moreCount > 0 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{module.moreCount} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs hidden sm:inline-flex">
                         {module.tag}
                       </Badge>
-                      <ArrowUpRight className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                      <ArrowUpRight className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors ml-auto" />
                     </div>
                   </div>
                 </CardContent>
