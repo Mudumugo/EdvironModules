@@ -37,7 +37,7 @@ export const isAuthenticated = (req: AuthenticatedRequest, res: Response, next: 
 export function requirePermission(permission: Permission) {
   return (req: Request, res: Response, next: NextFunction) => {
     const authReq = req as AuthenticatedRequest;
-    const user = req.user;
+    const user = authReq.user;
     
     if (!user) {
       return res.status(401).json({ message: 'Authentication required' });

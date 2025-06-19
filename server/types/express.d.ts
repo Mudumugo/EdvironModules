@@ -13,6 +13,18 @@ declare global {
       profileImageUrl?: string;
       claims?: any;
     }
+    
+    interface Request {
+      session: any & {
+        user?: SessionUser;
+      };
+    }
+  }
+}
+
+declare module "express-session" {
+  interface SessionData {
+    user: SessionUser;
   }
 }
 

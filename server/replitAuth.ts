@@ -76,17 +76,21 @@ export async function setupAuth(app: Express) {
     verified: passport.AuthenticateCallback
   ) => {
     const claims = tokens.claims();
+    if (!claims) {
+      return verified(new Error("Invalid claims"), false);
+    }
+    
     await upsertUser(claims);
     
     // Create SessionUser compatible object
     const sessionUser: SessionUser = {
-      id: claims["sub"],
-      email: claims["email"],
+      id: String(claims["sub"] || ""),
+      email: String(claims["email"] || ""),
       role: 'student', // Default role, will be updated by database lookup
       tenantId: 'default-tenant',
-      firstName: claims["first_name"],
-      lastName: claims["last_name"],
-      profileImageUrl: claims["profile_image_url"],
+      firstName: String(claims["first_name"] || ""),
+      lastName: String(claims["last_name"] || ""),
+      profileImageUrl: String(claims["profile_image_url"] || ""),
       claims: claims
     };
     
