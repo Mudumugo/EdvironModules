@@ -119,7 +119,7 @@ export default function MobileLanding() {
               </Button>
             </Link>
             
-            <Link href="/signin">
+            <Link href="/login">
               <Button variant="outline" size="lg" className="w-full">
                 Sign In to Continue
               </Button>
