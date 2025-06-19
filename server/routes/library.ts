@@ -75,7 +75,7 @@ export function registerLibraryRoutes(app: Express) {
   });
 
   // Record resource access
-  app.post('/api/library/access', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post('/api/library/access', isAuthenticated, async (req: any, res: Response) => {
     try {
       const userId = req.user?.claims?.sub;
       if (!userId) {
