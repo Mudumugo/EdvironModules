@@ -5,8 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import BookAuthoringWorkflow from "@/components/authoring/BookAuthoringWorkflow";
-import { Plus, BookOpen, FileText, BarChart3, TrendingUp } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, BookOpen, FileText, BarChart3, TrendingUp, Eye, Star, DollarSign, Edit, Send } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AuthoringStatsOverview,
   RecentContent,
@@ -16,6 +19,31 @@ import {
   type ContentFormData,
   type Taxonomy
 } from "@/components/authoring/modules";
+
+// Helper functions
+const getContentTypeIcon = (type: string) => {
+  switch (type) {
+    case 'book':
+      return <BookOpen className="h-5 w-5 text-blue-600" />;
+    case 'worksheet':
+      return <FileText className="h-5 w-5 text-green-600" />;
+    default:
+      return <FileText className="h-5 w-5 text-gray-600" />;
+  }
+};
+
+const getStatusBadge = (status: string) => {
+  const statusColors = {
+    published: 'bg-green-100 text-green-800',
+    draft: 'bg-yellow-100 text-yellow-800',
+    review: 'bg-blue-100 text-blue-800',
+  };
+  return (
+    <span className={`px-2 py-1 text-xs rounded-full ${statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}`}>
+      {status}
+    </span>
+  );
+};
 
 export default function AuthoringDashboard() {
   const { toast } = useToast();
