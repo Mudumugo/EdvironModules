@@ -1,6 +1,13 @@
-// This file is deprecated - use the types from replitAuth.ts instead
 import { Request } from 'express';
-import { User } from '@shared/schema';
+
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+  tenantId?: string;
+}
 
 export interface AuthenticatedRequest extends Request {
   user?: User;
