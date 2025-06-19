@@ -112,10 +112,14 @@ export const suspiciousPatterns = [
   /\/etc\/passwd/i,
   /\/windows\/system32/i,
   
-  // Command injection
+  // Command injection (excluding Vite development patterns)
   /[;&|`$()]/,
   /\b(cat|ls|pwd|id|whoami|uname)\b/,
-];
+].filter(pattern => {
+  // Filter out patterns that match common development URLs
+  const testUrls = ['/@vite/client', '/@react-refresh', '/src/main.tsx'];
+  return !testUrls.some(url => pattern.test(url));
+});
 
 // Educational platform specific security rules
 export const educationalSecurityRules = {

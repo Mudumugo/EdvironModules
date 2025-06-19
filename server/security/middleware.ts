@@ -43,6 +43,21 @@ export function securityLogger(req: Request, res: Response, next: NextFunction) 
 // Check for suspicious activity patterns
 function checkSuspiciousActivity(req: Request): string | null {
   try {
+    // Skip development-related URLs to reduce noise
+    const developmentPatterns = [
+      /@vite/,
+      /@react-refresh/,
+      /\.tsx\?v=/,
+      /\.ts\?v=/,
+      /\.js\?v=/,
+      /\.css\?v=/,
+      /@fs\/home\/runner\/workspace/
+    ];
+    
+    if (developmentPatterns.some(pattern => pattern.test(req.url))) {
+      return null;
+    }
+
     const combinedInput = JSON.stringify({
       url: req.url,
       query: req.query,
@@ -50,22 +65,24 @@ function checkSuspiciousActivity(req: Request): string | null {
       headers: req.headers || {}
     });
 
-  for (const pattern of suspiciousPatterns) {
-    if (pattern.test(combinedInput)) {
-      return `Matched suspicious pattern: ${pattern.source}`;
+    for (const pattern of suspiciousPatterns) {
+      if (pattern.test(combinedInput)) {
+        return `Matched suspicious pattern: ${pattern.source}`;
+      }
     }
-  }
 
-  // Check for rapid requests from same IP
-  if (req.rateLimit && req.rateLimit.remaining < 10) {
-    return 'High request frequency detected';
-  }
+    // Check for rapid requests from same IP
+    if (req.rateLimit && req.rateLimit.remaining < 10) {
+      return 'High request frequency detected';
+    }
 
-  // Check for unusual user agent patterns
-  const userAgent = req.get('User-Agent') || '';
-  if (userAgent.length === 0 || userAgent.includes('bot') || userAgent.includes('crawler')) {
-    return 'Suspicious user agent';
-  }
+    // Check for unusual user agent patterns (excluding development tools)
+    const userAgent = req.get('User-Agent') || '';
+    const isDevelopmentAgent = userAgent.includes('Replit-Bonsai') || userAgent.includes('curl') || userAgent.includes('Postman');
+    
+    if (!isDevelopmentAgent && (userAgent.length === 0 || userAgent.includes('bot') || userAgent.includes('crawler'))) {
+      return 'Suspicious user agent';
+    }
 
     return null;
   } catch (error) {
