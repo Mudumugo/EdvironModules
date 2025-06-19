@@ -238,6 +238,13 @@ function Router() {
                 </RoleProtectedRoute>
               </Route>
 
+              {/* Apps Hub - Multiple roles */}
+              <Route path="/apps-hub">
+                <RoleProtectedRoute moduleId="apps-hub">
+                  <AppsHub />
+                </RoleProtectedRoute>
+              </Route>
+
               {/* Communication modules - Multiple roles */}
               <Route path="/pbx">
                 <RoleProtectedRoute moduleId="pbx">
