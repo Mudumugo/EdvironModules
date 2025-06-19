@@ -1,12 +1,13 @@
 import type { Express } from "express";
 import { storage } from "../storage";
-import { isAuthenticated, type AuthenticatedRequest } from "../replitAuth";
+import { isAuthenticated } from "../replitAuth";
+import { type AuthenticatedRequest } from "../types/auth";
 import { requireRole, requirePermission } from "../roleMiddleware";
 import { insertLeadSchema, insertLeadActivitySchema, insertDemoRequestSchema } from "@shared/schema";
 
 export function registerCRMRoutes(app: Express) {
   // Leads endpoints
-  app.get('/api/crm/leads', isAuthenticated, requireRole(['admin', 'sales', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.get('/api/crm/leads', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const leads = await storage.getLeads();
       res.json(leads);
@@ -16,7 +17,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.get('/api/crm/leads/:id', isAuthenticated, requireRole(['admin', 'sales', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.get('/api/crm/leads/:id', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const lead = await storage.getLead(id);
@@ -30,7 +31,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.post('/api/crm/leads', isAuthenticated, requireRole(['admin', 'sales', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.post('/api/crm/leads', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const validatedData = insertLeadSchema.parse(req.body);
       const lead = await storage.createLead(validatedData);
@@ -52,7 +53,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.delete('/api/crm/leads/:id', isAuthenticated, requireRole(['admin', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.delete('/api/crm/leads/:id', isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteLead(id);
