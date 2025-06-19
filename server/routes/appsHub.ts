@@ -1,5 +1,5 @@
 import type { Express, Response } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 
 export function registerAppsHubRoutes(app: Express) {
   // Get all apps
@@ -149,6 +149,80 @@ export function registerAppsHubRoutes(app: Express) {
           premium: false,
           tags: ["Education", "Classroom", "Assignments"],
           url: "https://classroom.google.com"
+        },
+        {
+          id: "9",
+          name: "EdVirons Digital Library",
+          description: "Access thousands of educational resources and books",
+          category: "education",
+          rating: 4.9,
+          downloads: "1M+",
+          price: "Included",
+          icon: "📚",
+          featured: true,
+          trending: false,
+          recommended: true,
+          popular: true,
+          essential: true,
+          premium: false,
+          tags: ["Books", "Resources", "Reading"],
+          url: "/digital-library",
+          internal: true
+        },
+        {
+          id: "10",
+          name: "EdVirons Locker",
+          description: "Personal cloud storage for assignments and projects",
+          category: "productivity",
+          rating: 4.8,
+          downloads: "1M+",
+          price: "Included",
+          icon: "🗂️",
+          featured: true,
+          trending: false,
+          recommended: true,
+          popular: true,
+          essential: true,
+          premium: false,
+          tags: ["Storage", "Files", "Organization"],
+          url: "/my-locker",
+          internal: true
+        },
+        {
+          id: "11",
+          name: "Notion",
+          description: "All-in-one workspace for notes, projects, and collaboration",
+          category: "productivity",
+          rating: 4.6,
+          downloads: "50M+",
+          price: "Freemium",
+          icon: "📝",
+          featured: true,
+          trending: true,
+          recommended: true,
+          popular: true,
+          essential: false,
+          premium: false,
+          tags: ["Notes", "Collaboration", "Planning"],
+          url: "https://notion.so"
+        },
+        {
+          id: "12",
+          name: "Figma",
+          description: "Collaborative design and prototyping tool",
+          category: "design",
+          rating: 4.7,
+          downloads: "20M+",
+          price: "Freemium",
+          icon: "🎯",
+          featured: false,
+          trending: true,
+          recommended: false,
+          popular: true,
+          essential: false,
+          premium: false,
+          tags: ["Design", "Prototyping", "Collaboration"],
+          url: "https://figma.com"
         }
       ];
 
@@ -163,11 +237,12 @@ export function registerAppsHubRoutes(app: Express) {
   app.get('/api/apps-hub/categories', isAuthenticated, async (req: any, res) => {
     try {
       const categories = [
-        { id: "all", name: "All Apps", count: 8 },
-        { id: "education", name: "Education", count: 2 },
+        { id: "all", name: "All Apps", count: 12 },
+        { id: "education", name: "Education", count: 3 },
+        { id: "productivity", name: "Productivity", count: 2 },
         { id: "programming", name: "Programming", count: 1 },
         { id: "mathematics", name: "Mathematics", count: 1 },
-        { id: "design", name: "Design", count: 1 },
+        { id: "design", name: "Design", count: 2 },
         { id: "communication", name: "Communication", count: 1 },
         { id: "languages", name: "Languages", count: 1 },
         { id: "gaming", name: "Gaming", count: 1 }
