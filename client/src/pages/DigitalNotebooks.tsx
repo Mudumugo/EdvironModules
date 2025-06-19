@@ -148,10 +148,36 @@ export default function DigitalNotebooks() {
     notebook.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const createNotebook = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/notebooks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to create notebook');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/notebooks'] });
+      toast({
+        title: "Notebook Created",
+        description: "Your new notebook has been created successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create notebook. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleCreateNotebook = () => {
-    toast({
-      title: "Create Notebook",
-      description: "New notebook creation will be implemented.",
+    createNotebook.mutate({
+      title: "New Notebook",
+      color: "#8B5CF6"
     });
   };
 
@@ -229,8 +255,17 @@ export default function DigitalNotebooks() {
           </div>
           
           <div className="flex-1 overflow-y-auto px-4 pb-4">
-            <div className="space-y-2">
-              {filteredNotebooks.map((notebook) => (
+            {isLoading ? (
+              <div className="space-y-2">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {filteredNotebooks.map((notebook: any) => (
                 <Card 
                   key={notebook.id} 
                   className={`cursor-pointer transition-all hover:shadow-md ${
@@ -284,14 +319,15 @@ export default function DigitalNotebooks() {
                           )}
                         </div>
                         <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">
-                          {notebook.sections.reduce((total, section) => total + section.pages.length, 0)} pages
+                          {notebook.pageCount || 0} pages
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

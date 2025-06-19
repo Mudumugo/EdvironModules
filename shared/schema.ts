@@ -439,18 +439,71 @@ export const insertEventRoleTargetSchema = createInsertSchema(eventRoleTargets);
 export const insertEventReminderSchema = createInsertSchema(eventReminders);
 export const insertEventTemplateSchema = createInsertSchema(eventTemplates);
 
-// Digital Notebook Schema
+// OneNote-inspired Digital Notebook Schema
 export const notebooks = pgTable("notebooks", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  userId: varchar("user_id", { length: 255 }).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull().references(() => users.id),
+  tenantId: varchar("tenant_id", { length: 255 }).default("default"),
+  color: varchar("color", { length: 20 }).default("#8B5CF6"), // Purple theme like OneNote
   isShared: boolean("is_shared").default(false),
-  sharedWith: text("shared_with").array(), // Array of user IDs who can access
-  color: varchar("color", { length: 20 }).default("#3b82f6"),
+  isFavorite: boolean("is_favorite").default(false),
+  collaborators: text("collaborators").array().default([]), // Array of user IDs
+  tags: text("tags").array().default([]),
+  lastAccessedAt: timestamp("last_accessed_at").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-  tenantId: varchar("tenant_id", { length: 255 }).default("default"),
+});
+
+export const notebookSections = pgTable("notebook_sections", {
+  id: serial("id").primaryKey(),
+  notebookId: integer("notebook_id").references(() => notebooks.id, { onDelete: "cascade" }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  color: varchar("color", { length: 20 }).default("#10B981"),
+  position: integer("position").default(0),
+  isExpanded: boolean("is_expanded").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const notebookPages = pgTable("notebook_pages", {
+  id: serial("id").primaryKey(),
+  sectionId: integer("section_id").references(() => notebookSections.id, { onDelete: "cascade" }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").default(""),
+  contentType: varchar("content_type", { length: 50 }).default("rich_text"), // rich_text, markdown, html
+  preview: text("preview").default(""), // Auto-generated preview text
+  position: integer("position").default(0),
+  isBookmarked: boolean("is_bookmarked").default(false),
+  tags: text("tags").array().default([]),
+  lastEditedBy: varchar("last_edited_by", { length: 255 }).references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const pageComments = pgTable("page_comments", {
+  id: serial("id").primaryKey(),
+  pageId: integer("page_id").references(() => notebookPages.id, { onDelete: "cascade" }).notNull(),
+  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  x: integer("x").default(0), // Position for inline comments
+  y: integer("y").default(0),
+  isResolved: boolean("is_resolved").default(false),
+  parentCommentId: integer("parent_comment_id").references(() => pageComments.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const notebookActivity = pgTable("notebook_activity", {
+  id: serial("id").primaryKey(),
+  notebookId: integer("notebook_id").references(() => notebooks.id, { onDelete: "cascade" }).notNull(),
+  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  actionType: varchar("action_type", { length: 50 }).notNull(), // created, edited, shared, commented, etc.
+  targetType: varchar("target_type", { length: 50 }).notNull(), // notebook, section, page, comment
+  targetId: integer("target_id").notNull(),
+  details: jsonb("details").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const subjects = pgTable("subjects", {
