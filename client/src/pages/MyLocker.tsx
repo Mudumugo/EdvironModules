@@ -44,10 +44,35 @@ export default function MyLocker() {
     setIsViewerOpen(true);
   };
 
+  const createNotebook = useMutation({
+    mutationFn: async (data: { title: string; description: string }) => {
+      const response = await apiRequest('/api/notebooks', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/notebooks'] });
+      toast({
+        title: "Notebook Created",
+        description: "Your new notebook has been created successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: "Failed to create notebook. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleCreateNotebook = (data: { title: string; description: string }) => {
-    // Handle notebook creation
-    console.log('Creating notebook:', data);
-    queryClient.invalidateQueries({ queryKey: ['/api/notebooks'] });
+    createNotebook.mutate(data);
   };
 
   return (

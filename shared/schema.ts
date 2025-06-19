@@ -495,25 +495,7 @@ export const pageComments = pgTable("page_comments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Insert schemas for notebooks
-export const insertNotebookSchema = createInsertSchema(notebooks).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  lastAccessedAt: true,
-});
 
-export const insertNotebookSectionSchema = createInsertSchema(notebookSections).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertNotebookPageSchema = createInsertSchema(notebookPages).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
 
 export const notebookActivity = pgTable("notebook_activity", {
   id: serial("id").primaryKey(),
@@ -723,7 +705,6 @@ export type StickyNote = typeof stickyNotes.$inferSelect;
 export type InsertLockerItem = typeof lockerItems.$inferInsert;
 export type LockerItem = typeof lockerItems.$inferSelect;
 
-// Schemas
 // OneNote-inspired insert schemas
 export const insertNotebookSchema = createInsertSchema(notebooks).omit({ 
   id: true, 

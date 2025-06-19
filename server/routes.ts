@@ -52,6 +52,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerNotebookModuleRoutes(app);
   registerAuthoringRoutes(app);
   registerCalendarRoutes(app);
+  
+  // Import OneNote-inspired notebook routes
+  const { registerNotebookRoutes } = await import('./routes/notebook/notebooks');
+  registerNotebookRoutes(app);
 
   // CRM routes
   const { registerCRMRoutes } = await import("./routes/crm");

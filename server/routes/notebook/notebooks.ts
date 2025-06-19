@@ -17,7 +17,7 @@ export function registerNotebookRoutes(app: Express) {
   // Get all notebooks for user with section and page counts
   app.get('/api/notebooks', isAuthenticated, async (req: any, res: Response) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
@@ -201,7 +201,7 @@ export function registerNotebookRoutes(app: Express) {
   // Delete notebook
   app.delete('/api/notebooks/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       const notebookId = parseInt(req.params.id);
 
       if (!userId) {
