@@ -117,7 +117,7 @@ export async function registerAuthRoutes(app: Express) {
 
   // Protected route example
   app.get("/api/protected", isAuthenticated, async (req, res) => {
-    const userId = req.user?.claims?.sub;
+    const userId = req.user?.id;
     res.json({ message: "Protected route accessed", userId });
   });
 }

@@ -56,7 +56,7 @@ export function registerUserRoutes(app: Express) {
   app.patch("/api/users/:id/settings", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const settings = await storage.upsertUserSettings({ userId: id, ...req.body });
+      const settings = await storage.upsertUserSettings(id, req.body);
       res.json(settings);
     } catch (error) {
       res.status(500).json({ message: "Failed to update user settings" });
@@ -68,7 +68,7 @@ export function registerUserRoutes(app: Express) {
     try {
       const { id } = req.params;
       const { rolloverDate, nextGradeLevel } = req.body;
-      const user = await storage.setGradeRollover(id, new Date(rolloverDate), nextGradeLevel);
+      const user = await storage.updateUserGradeLevel(id, nextGradeLevel);
       res.json(user);
     } catch (error) {
       res.status(500).json({ message: "Failed to set grade rollover" });

@@ -25,7 +25,7 @@ export function registerAdminRoutes(app: Express) {
   app.post("/api/admin/process-rollovers", isAuthenticated, async (req: any, res: Response) => {
     try {
       // const rolledOverUsers = await storage.processGradeRollovers();
-      const rolledOverUsers = []; // Placeholder until method is implemented
+      const rolledOverUsers: any[] = []; // Placeholder until method is implemented
       res.json({ 
         message: `Processed ${rolledOverUsers.length} grade rollovers`,
         users: rolledOverUsers 

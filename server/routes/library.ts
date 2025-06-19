@@ -77,7 +77,7 @@ export function registerLibraryRoutes(app: Express) {
   // Record resource access
   app.post('/api/library/access', isAuthenticated, async (req: any, res: Response) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({ message: 'User not authenticated' });
       }

@@ -623,7 +623,7 @@ export class DatabaseStorage implements IStorage {
 
   async getLibraryResource(id: string): Promise<LibraryResource | undefined> {
     const allResources = await this.getLibraryResources();
-    return allResources.find(r => r.id === id);
+    return allResources.find(r => String(r.id) === String(id));
   }
 
   async createLibraryResource(resource: any): Promise<LibraryResource> {
