@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { storage } from "../storage";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 import { insertCalendarEventSchema, insertEventParticipantSchema, insertEventTemplateSchema, USER_ROLES } from "@shared/schema";
 import type { AuthenticatedRequest } from "../types";
 

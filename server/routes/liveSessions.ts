@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { WebSocketServer, WebSocket } from "ws";
 import type { Server } from "http";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 import { storage } from "../storage";
 import type { AuthenticatedRequest } from "../roleMiddleware";
 import { requirePermission, requireRole } from "../roleMiddleware";

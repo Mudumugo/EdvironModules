@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 import { storage } from "../storage";
 
 export function registerAdminRoutes(app: Express) {

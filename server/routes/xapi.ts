@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 
 export function registerXapiRoutes(app: Express) {
   // xAPI Statement endpoints

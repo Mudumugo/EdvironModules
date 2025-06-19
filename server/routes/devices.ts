@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 
 export function registerDeviceRoutes(app: Express) {
   app.get('/api/devices', isAuthenticated, async (req: any, res) => {

@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { storage } from "../storage";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 import { type AuthenticatedRequest } from "../roleMiddleware";
 import { requireRole, requirePermission } from "../roleMiddleware";
 import { insertLeadSchema, insertLeadActivitySchema, insertDemoRequestSchema } from "@shared/schema";

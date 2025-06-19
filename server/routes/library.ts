@@ -1,6 +1,6 @@
 import type { Express, Response } from "express";
 import { storage } from "../storage";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 
 export function registerLibraryRoutes(app: Express) {
   // Get library categories

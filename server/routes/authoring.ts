@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { isAuthenticated } from "../roleMiddleware";
 import { requirePermission } from "../roleMiddleware";
 // Using existing permissions for now - will extend schema later
 import { storage } from "../storage";
