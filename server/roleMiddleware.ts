@@ -2,16 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
 import { PERMISSIONS, type Permission, type UserRole, type User } from '@shared/schema';
 
-// Simple user type for demo authentication
-interface DemoUser {
+// Session user type (simplified for session storage)
+export interface SessionUser {
   id: string;
-  email: string;
+  email: string | null;
   role: string;
+  tenantId: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  permissions?: string[];
 }
 
 // Extended request type for authenticated requests
 export interface AuthenticatedRequest extends Request {
-  user?: DemoUser;
+  user?: SessionUser;
 }
 
 // Authentication middleware that checks session
@@ -105,10 +109,10 @@ export function requireSameTenant() {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (targetTenantId && (user as any).tenantId !== targetTenantId) {
+    if (targetTenantId && user.tenantId !== targetTenantId) {
       return res.status(403).json({ 
         message: 'Access denied: Different tenant',
-        userTenant: (user as any).tenantId,
+        userTenant: user.tenantId,
         requestedTenant: targetTenantId
       });
     }
@@ -152,8 +156,8 @@ export function requireResourceOwnership(getResourceOwnerId: (req: Authenticated
       const resourceOwnerId = await getResourceOwnerId(req);
       
       // Allow access if user owns the resource or has admin permissions
-      const isOwner = (user as any).id === resourceOwnerId;
-      const hasAdminAccess = hasAnyPermission((user as any).role as UserRole, ((user as any).permissions || []) as Permission[], [
+      const isOwner = user.id === resourceOwnerId;
+      const hasAdminAccess = hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], [
         PERMISSIONS.MANAGE_USERS,
         PERMISSIONS.VIEW_ALL_ANALYTICS
       ]);
@@ -161,7 +165,7 @@ export function requireResourceOwnership(getResourceOwnerId: (req: Authenticated
       if (!isOwner && !hasAdminAccess) {
         return res.status(403).json({ 
           message: 'Access denied: Resource ownership required',
-          userRole: (user as any).role
+          userRole: user.role
         });
       }
 

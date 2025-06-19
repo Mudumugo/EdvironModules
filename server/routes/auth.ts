@@ -2,11 +2,11 @@ import type { Express, Request, Response } from "express";
 
 // Simple demo users for testing different roles
 const demoUsers = {
-  "student@demo.com": { id: "demo-student", email: "student@demo.com", role: "student" },
-  "teacher@demo.com": { id: "demo-teacher", email: "teacher@demo.com", role: "teacher" },
-  "admin@demo.com": { id: "demo-admin", email: "admin@demo.com", role: "school_admin" },
-  "it@demo.com": { id: "demo-it", email: "it@demo.com", role: "it_staff" },
-  "security@demo.com": { id: "demo-security", email: "security@demo.com", role: "security_staff" }
+  "student@demo.com": { id: "demo-student", email: "student@demo.com", role: "student", tenantId: "demo-tenant" },
+  "teacher@demo.com": { id: "demo-teacher", email: "teacher@demo.com", role: "teacher", tenantId: "demo-tenant" },
+  "admin@demo.com": { id: "demo-admin", email: "admin@demo.com", role: "school_admin", tenantId: "demo-tenant" },
+  "it@demo.com": { id: "demo-it", email: "it@demo.com", role: "it_staff", tenantId: "demo-tenant" },
+  "security@demo.com": { id: "demo-security", email: "security@demo.com", role: "security_staff", tenantId: "demo-tenant" }
 };
 
 // Session-based authentication using Express session
@@ -16,6 +16,7 @@ declare module 'express-session' {
       id: string;
       email: string;
       role: string;
+      tenantId: string;
     };
   }
 }
@@ -47,7 +48,7 @@ export async function registerAuthRoutes(app: Express) {
       req.session.user = demoUsers[email as keyof typeof demoUsers];
       res.json({ success: true, user: req.session.user });
     } else {
-      // Default to student for any other login
+      // Default to teacher for any other login
       req.session.user = { id: "demo", email: "demo@example.com", role: "student" };
       res.json({ success: true, user: req.session.user });
     }
