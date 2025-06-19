@@ -1,7 +1,5 @@
 import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "../replitAuth";
-import { requirePermission, AuthenticatedRequest } from "../roleMiddleware";
-import { PERMISSIONS } from "@shared/schema";
 import { storage } from "../storage";
 
 export function registerUserRoutes(app: Express) {
@@ -21,7 +19,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Get users by role
-  app.get("/api/users", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
+  app.get("/api/users", isAuthenticated, async (req: any, res: Response) => {
     try {
       const { role, tenantId } = req.query;
       const users = await storage.getUsersByRole(role as string, tenantId as string);
@@ -32,7 +30,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Update user role
-  app.patch("/api/users/:id/role", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
+  app.patch("/api/users/:id/role", isAuthenticated, async (req: any, res: Response) => {
     try {
       const { id } = req.params;
       const { role, gradeLevel, department } = req.body;
@@ -66,7 +64,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Set grade rollover
-  app.post("/api/users/:id/grade-rollover", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/users/:id/grade-rollover", isAuthenticated, async (req: any, res: Response) => {
     try {
       const { id } = req.params;
       const { rolloverDate, nextGradeLevel } = req.body;
@@ -78,7 +76,7 @@ export function registerUserRoutes(app: Express) {
   });
 
   // Process grade rollovers
-  app.post("/api/admin/process-rollovers", isAuthenticated, requirePermission(PERMISSIONS.MANAGE_USERS), async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/admin/process-rollovers", isAuthenticated, async (req: any, res: Response) => {
     try {
       const rollovers = await storage.processGradeRollovers();
       res.json(rollovers);
