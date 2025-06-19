@@ -39,7 +39,7 @@ import PBXDashboard from "@/pages/PBXDashboard";
 import ParentPortal from "@/pages/ParentPortal";
 import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
 import AppsHub from "@/pages/AppsHub";
-import HotCall from "@/pages/HotCall";
+
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
 import ClassManagement from "@/pages/ClassManagement";
@@ -72,7 +72,7 @@ const componentMap: Record<string, any> = {
   'parent-portal': ParentPortal,
   'parent-portal-admin': ParentPortalAdmin,
   'apps-hub': AppsHub,
-  'hot-call': HotCall,
+
   'timetable': TimetableManagement,
   'security-dashboard': SecurityDashboard,
 };
