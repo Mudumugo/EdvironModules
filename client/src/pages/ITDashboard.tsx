@@ -98,51 +98,52 @@ export default function ITDashboard() {
   const [selectedTimeframe, setSelectedTimeframe] = useState("24h");
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">IT Dashboard</h1>
-            <p className="text-gray-600 mt-1">Monitor and manage school technology infrastructure</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">IT Dashboard</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">Monitor and manage school technology infrastructure</p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <select 
               value={selectedTimeframe}
               onChange={(e) => setSelectedTimeframe(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md text-sm"
             >
               <option value="1h">Last Hour</option>
               <option value="24h">Last 24 Hours</option>
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
             </select>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Settings className="h-4 w-4 mr-2" />
-              System Settings
+              <span className="hidden sm:inline">System Settings</span>
+              <span className="sm:hidden">Settings</span>
             </Button>
           </div>
         </div>
 
         {/* System Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {systemStats.map((stat) => (
             <Card key={stat.title}>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
                     <Badge 
                       variant={stat.status === 'excellent' || stat.status === 'optimal' ? 'default' : 
                               stat.status === 'warning' ? 'secondary' : 'destructive'}
-                      className="mt-2"
+                      className="mt-2 text-xs"
                     >
                       {stat.status}
                     </Badge>
                   </div>
-                  <div className={`p-3 rounded-full ${stat.color}`}>
-                    <stat.icon className="h-6 w-6 text-white" />
+                  <div className={`p-2 sm:p-3 rounded-full ${stat.color} flex-shrink-0`}>
+                    <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
@@ -150,25 +151,25 @@ export default function ITDashboard() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
           {/* Network Performance */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Network className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-base sm:text-lg">
+                <Network className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Network Performance
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {networkPerformance.map((metric) => (
-                  <div key={metric.metric} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">{metric.metric}</p>
+                  <div key={metric.metric} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border border-gray-200 rounded-lg space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{metric.metric}</p>
                       <p className="text-sm text-gray-600">{metric.value}</p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline" className="text-green-600 border-green-300">
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                      <Badge variant="outline" className="text-green-600 border-green-300 text-xs">
                         {metric.status}
                       </Badge>
                       <span className="text-sm text-green-600 flex items-center">
@@ -185,8 +186,8 @@ export default function ITDashboard() {
           {/* System Services */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Server className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-base sm:text-lg">
+                <Server className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 System Services
               </CardTitle>
             </CardHeader>
@@ -194,16 +195,16 @@ export default function ITDashboard() {
               <div className="space-y-3">
                 {systemServices.map((service) => (
                   <div key={service.name} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
                         service.status === 'running' ? 'bg-green-500' : 'bg-red-500'
                       }`}></div>
-                      <div>
-                        <p className="font-medium text-gray-900 text-sm">{service.name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-gray-900 text-sm truncate">{service.name}</p>
                         <p className="text-xs text-gray-600">Uptime: {service.uptime}</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex-shrink-0">
                       <Badge variant="outline" className="text-xs">
                         {service.status}
                       </Badge>
@@ -219,35 +220,39 @@ export default function ITDashboard() {
         {/* Device Management */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Monitor className="h-5 w-5 mr-2" />
+            <CardTitle className="flex items-center text-base sm:text-lg">
+              <Monitor className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
               Device Management
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {deviceCategories.map((category) => (
-                <div key={category.name} className="p-4 border border-gray-200 rounded-lg">
+                <div key={category.name} className="p-3 sm:p-4 border border-gray-200 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
-                    <div className={`p-2 rounded-full ${category.color}`}>
-                      <category.icon className="h-5 w-5 text-white" />
+                    <div className={`p-2 rounded-full ${category.color} flex-shrink-0`}>
+                      <category.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                     </div>
-                    <Badge variant="outline">{category.total} total</Badge>
+                    <Badge variant="outline" className="text-xs">{category.total} total</Badge>
                   </div>
-                  <h3 className="font-medium text-gray-900 mb-2">{category.name}</h3>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center text-green-600">
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      {category.online} online
-                    </span>
-                    <span className="flex items-center text-red-600">
-                      <AlertTriangle className="h-4 w-4 mr-1" />
-                      {category.offline} offline
-                    </span>
+                  <h3 className="font-medium text-gray-900 mb-2 text-sm sm:text-base truncate">{category.name}</h3>
+                  <div className="grid grid-cols-1 gap-2 text-xs sm:text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center text-green-600">
+                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                        <span className="truncate">{category.online} online</span>
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center text-red-600">
+                        <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                        <span className="truncate">{category.offline} offline</span>
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-2 bg-gray-200 rounded-full h-2">
+                  <div className="mt-3 bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-green-500 h-2 rounded-full"
+                      className="bg-green-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${(category.online / category.total) * 100}%` }}
                     ></div>
                   </div>
@@ -260,42 +265,45 @@ export default function ITDashboard() {
         {/* Recent IT Tickets */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Activity className="h-5 w-5 mr-2" />
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+              <div className="flex items-center text-base sm:text-lg">
+                <Activity className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Recent IT Tickets
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 View All Tickets
               </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {recentTickets.map((ticket) => (
-                <div key={ticket.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <Badge variant="outline">{ticket.id}</Badge>
-                      <Badge 
-                        variant={ticket.priority === 'high' ? 'destructive' : 
-                                ticket.priority === 'medium' ? 'secondary' : 'outline'}
-                      >
-                        {ticket.priority}
-                      </Badge>
-                      <Badge 
-                        variant={ticket.status === 'completed' ? 'default' : 'outline'}
-                        className={ticket.status === 'in-progress' ? 'bg-blue-500' : ''}
-                      >
-                        {ticket.status}
-                      </Badge>
+                <div key={ticket.id} className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <Badge variant="outline" className="text-xs">{ticket.id}</Badge>
+                        <Badge 
+                          variant={ticket.priority === 'high' ? 'destructive' : 
+                                  ticket.priority === 'medium' ? 'secondary' : 'outline'}
+                          className="text-xs"
+                        >
+                          {ticket.priority}
+                        </Badge>
+                        <Badge 
+                          variant={ticket.status === 'completed' ? 'default' : 'outline'}
+                          className={`text-xs ${ticket.status === 'in-progress' ? 'bg-blue-500 text-white' : ''}`}
+                        >
+                          {ticket.status}
+                        </Badge>
+                      </div>
+                      <h3 className="font-medium text-gray-900 text-sm sm:text-base mb-1 line-clamp-2">{ticket.title}</h3>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">Submitted by: {ticket.submitter}</p>
                     </div>
-                    <h3 className="font-medium text-gray-900">{ticket.title}</h3>
-                    <p className="text-sm text-gray-600">Submitted by: {ticket.submitter}</p>
-                  </div>
-                  <div className="flex items-center text-gray-500 text-sm">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {ticket.created}
+                    <div className="flex items-center text-gray-500 text-xs sm:text-sm flex-shrink-0 lg:ml-4">
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      {ticket.created}
+                    </div>
                   </div>
                 </div>
               ))}
