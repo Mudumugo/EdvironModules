@@ -17,31 +17,31 @@ const DEMO_ACCOUNTS = [
   {
     role: "Student",
     email: "student@edvirons.com",
-    id: "demo_student_elementary",
+    id: "demo_demo_student_elementary",
     color: "bg-blue-500"
   },
   {
     role: "Teacher",
-    email: "teacher@edvirons.com",
-    id: "teacher",
+    email: "demo.teacher@edvirons.com",
+    id: "demo_teacher",
     color: "bg-green-500"
   },
   {
     role: "School Administrator",
-    email: "admin@edvirons.com",
-    id: "school_admin",
+    email: "demo.school_admin@edvirons.com",
+    id: "demo_school_admin",
     color: "bg-purple-500"
   },
   {
     role: "IT Staff",
-    email: "it@edvirons.com",
-    id: "it_staff",
+    email: "demo.school_it_staff@edvirons.com",
+    id: "demo_school_it_staff",
     color: "bg-orange-500"
   },
   {
     role: "Security Staff",
-    email: "security@edvirons.com",
-    id: "security_staff",
+    email: "demo.school_security@edvirons.com",
+    id: "demo_school_security",
     color: "bg-red-500"
   }
 ];
