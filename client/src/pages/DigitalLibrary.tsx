@@ -78,7 +78,7 @@ export default function DigitalLibrary() {
         onGradeLevelChange={setDemoGradeLevel}
       />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <LibrarySearchFilters
           searchTerm={searchTerm}
           selectedCategory={selectedCategory}

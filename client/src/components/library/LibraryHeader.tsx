@@ -17,18 +17,18 @@ export const LibraryHeader = ({
 }: LibraryHeaderProps) => {
   return (
     <div className={`bg-gradient-to-r ${layout.headerColor} text-white`}>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <div className="text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">{layout.title}</h1>
-          <p className="text-lg opacity-90 mb-6">{layout.subtitle}</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">{layout.title}</h1>
+          <p className="text-sm sm:text-lg opacity-90 mb-4 sm:mb-6 px-2">{layout.subtitle}</p>
           
           {/* Demo Grade Level Switcher */}
-          <div className="mb-6">
-            <p className="text-sm opacity-75 mb-2">Demo: Switch Grade Levels</p>
-            <div className="flex justify-center gap-2">
+          <div className="mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm opacity-75 mb-2">Demo: Switch Grade Levels</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-2 px-4">
               <button
                 onClick={() => onGradeLevelChange('primary')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   demoGradeLevel === 'primary' 
                     ? 'bg-white text-blue-600' 
                     : 'bg-white/20 text-white hover:bg-white/30'
@@ -38,7 +38,7 @@ export const LibraryHeader = ({
               </button>
               <button
                 onClick={() => onGradeLevelChange('junior_secondary')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   demoGradeLevel === 'junior_secondary' 
                     ? 'bg-white text-teal-600' 
                     : 'bg-white/20 text-white hover:bg-white/30'
@@ -48,7 +48,7 @@ export const LibraryHeader = ({
               </button>
               <button
                 onClick={() => onGradeLevelChange('senior_secondary')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   demoGradeLevel === 'senior_secondary' 
                     ? 'bg-white text-purple-600' 
                     : 'bg-white/20 text-white hover:bg-white/30'
@@ -60,12 +60,12 @@ export const LibraryHeader = ({
           </div>
           
           {gradeLevel === 'primary' && (
-            <div className="flex justify-center gap-4 mb-6">
-              <Button variant="secondary" className={layout.buttonStyle}>
+            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-4 sm:mb-6 px-4">
+              <Button variant="secondary" className={`${layout.buttonStyle} w-full sm:w-auto`}>
                 <Sparkles className="w-4 h-4 mr-2" />
                 Continue Learning
               </Button>
-              <Button variant="outline" className={`${layout.buttonStyle} bg-white/10 border-white/20 text-white hover:bg-white/20`}>
+              <Button variant="outline" className={`${layout.buttonStyle} bg-white/10 border-white/20 text-white hover:bg-white/20 w-full sm:w-auto`}>
                 Learning Goals
               </Button>
             </div>
