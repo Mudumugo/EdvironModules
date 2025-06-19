@@ -11,6 +11,9 @@ export interface SessionUser {
   firstName?: string | null;
   lastName?: string | null;
   permissions?: string[];
+  // Additional fields for compatibility with Replit User type
+  profileImageUrl?: string;
+  claims?: any;
 }
 
 // Extended request type for authenticated requests

@@ -7,7 +7,7 @@ import type { Express, RequestHandler, Request, Response, NextFunction } from "e
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
-import type { AuthenticatedRequest } from "./types/auth";
+import type { SessionUser } from "./roleMiddleware";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -45,15 +45,7 @@ export function getSession() {
   });
 }
 
-function updateUserSession(
-  user: any,
-  tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers
-) {
-  user.claims = tokens.claims();
-  user.access_token = tokens.access_token;
-  user.refresh_token = tokens.refresh_token;
-  user.expires_at = user.claims?.exp;
-}
+// Remove this function as we're handling user creation in verify function
 
 async function upsertUser(
   claims: any,
@@ -68,8 +60,8 @@ async function upsertUser(
   });
 }
 
-// Export the isAuthenticated middleware for backward compatibility
-export { isAuthenticated };
+// Re-export the isAuthenticated middleware for backward compatibility
+export { isAuthenticated } from './roleMiddleware';
 
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
@@ -83,10 +75,22 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
+    const claims = tokens.claims();
+    await upsertUser(claims);
+    
+    // Create SessionUser compatible object
+    const sessionUser: SessionUser = {
+      id: claims["sub"],
+      email: claims["email"],
+      role: 'student', // Default role, will be updated by database lookup
+      tenantId: 'default-tenant',
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      profileImageUrl: claims["profile_image_url"],
+      claims: claims
+    };
+    
+    verified(null, sessionUser);
   };
 
   for (const domain of process.env
@@ -103,8 +107,29 @@ export async function setupAuth(app: Express) {
     passport.use(strategy);
   }
 
-  passport.serializeUser((user: Express.User, cb) => cb(null, user));
-  passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+  passport.serializeUser((user: SessionUser, cb) => cb(null, user));
+  passport.deserializeUser((user: SessionUser, cb) => {
+    // Update user session with latest database info
+    if (user.id) {
+      storage.getUser(user.id).then(dbUser => {
+        if (dbUser) {
+          const updatedUser: SessionUser = {
+            ...user,
+            role: dbUser.role || user.role,
+            tenantId: dbUser.tenantId || user.tenantId,
+            firstName: dbUser.firstName || user.firstName,
+            lastName: dbUser.lastName || user.lastName,
+            permissions: dbUser.permissions || []
+          };
+          cb(null, updatedUser);
+        } else {
+          cb(null, user);
+        }
+      }).catch(() => cb(null, user));
+    } else {
+      cb(null, user);
+    }
+  });
 
   app.get("/api/login", (req, res, next) => {
     passport.authenticate(`replitauth:${req.hostname}`, {
