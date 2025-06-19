@@ -261,17 +261,35 @@ export default function InteractiveSignUp() {
                   Let's create your personalized learning experience through a quick interactive setup.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div 
+                    className="text-center p-4 bg-green-50 rounded-lg cursor-pointer hover:bg-green-100 transition-colors duration-200 border-2 border-transparent hover:border-green-200"
+                    onClick={() => {
+                      updateQuizData({ userType: "student" });
+                      setCurrentStep("user-type");
+                    }}
+                  >
                     <User className="h-8 w-8 text-green-600 mx-auto mb-2" />
                     <h3 className="font-semibold text-green-800">Students</h3>
                     <p className="text-sm text-green-600">Interactive learning content</p>
                   </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div 
+                    className="text-center p-4 bg-purple-50 rounded-lg cursor-pointer hover:bg-purple-100 transition-colors duration-200 border-2 border-transparent hover:border-purple-200"
+                    onClick={() => {
+                      updateQuizData({ userType: "parent" });
+                      setCurrentStep("user-type");
+                    }}
+                  >
                     <Heart className="h-8 w-8 text-purple-600 mx-auto mb-2" />
                     <h3 className="font-semibold text-purple-800">Parents</h3>
                     <p className="text-sm text-purple-600">Family learning packages</p>
                   </div>
-                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                  <div 
+                    className="text-center p-4 bg-orange-50 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors duration-200 border-2 border-transparent hover:border-orange-200"
+                    onClick={() => {
+                      updateQuizData({ userType: "school" });
+                      setCurrentStep("user-type");
+                    }}
+                  >
                     <School className="h-8 w-8 text-orange-600 mx-auto mb-2" />
                     <h3 className="font-semibold text-orange-800">Schools</h3>
                     <p className="text-sm text-orange-600">Institutional solutions</p>
