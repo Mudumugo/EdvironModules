@@ -78,17 +78,7 @@ const teacherModules = [
     moreCount: 1,
     tag: "Management"
   },
-  {
-    id: "class-management",
-    title: "Class Management",
-    description: "Manage your classes, view student enrollment, and track performance",
-    icon: Users,
-    color: "border-l-green-600",
-    category: "Teaching",
-    features: ["Student Enrollment", "Performance Analytics"],
-    moreCount: 1,
-    tag: "Teaching"
-  },
+
   {
     id: "lesson-planning",
     title: "Lesson Planning",

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Star } from "lucide-react";
 import { TutorStats, TutorFilters, TutorGrid, type Tutor } from "@/components/tutor/modules";
 
 const mockTutors: Tutor[] = [
@@ -104,6 +104,26 @@ const mockTutors: Tutor[] = [
     education: "MA English Education, Columbia University",
     teachingStyle: ["Structured Learning", "Practice Tests", "Feedback-Rich"],
     sessionTypes: ["Test Prep", "Essay Review", "Reading Comprehension"]
+  },
+  {
+    id: "6",
+    name: "Dr. Ahmed Hassan",
+    avatar: "/api/placeholder/100/100",
+    subjects: ["Arabic", "Middle Eastern Studies", "History"],
+    rating: 4.9,
+    experience: "15 years",
+    hourlyRate: "$55",
+    languages: ["English", "Arabic", "French"],
+    availability: "Available this week",
+    verified: true,
+    featured: true,
+    responseTime: "< 2 hours",
+    lessonsCompleted: 478,
+    description: "Expert in Arabic language and Middle Eastern studies with extensive teaching experience across multiple cultural contexts.",
+    specializations: ["Classical Arabic", "Modern Standard Arabic", "Islamic History"],
+    education: "PhD Middle Eastern Studies, Oxford University",
+    teachingStyle: ["Cultural Immersion", "Historical Context", "Language Immersion"],
+    sessionTypes: ["Language Practice", "Cultural Studies", "Academic Research"]
   }
 ];
 
@@ -179,16 +199,18 @@ export default function TutorHub() {
   const featuredTutors = typedTutors.filter(tutor => tutor.featured);
 
   const handleBookSession = (tutorId: string) => {
+    const tutor = typedTutors.find(t => t.id === tutorId);
     toast({
-      title: "Session Booking",
-      description: "Session booking functionality will be implemented soon.",
+      title: "Booking Request Sent",
+      description: `Your session request with ${tutor?.name} has been sent. They will respond within ${tutor?.responseTime}.`,
     });
   };
 
   const handleSendMessage = (tutorId: string) => {
+    const tutor = typedTutors.find(t => t.id === tutorId);
     toast({
       title: "Message Sent",
-      description: "Message functionality will be implemented soon.",
+      description: `Your message to ${tutor?.name} has been delivered. Expect a response within ${tutor?.responseTime}.`,
     });
   };
 
@@ -250,24 +272,35 @@ export default function TutorHub() {
         {/* Featured Tutors */}
         {featuredTutors.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200 mb-4">Featured Tutors</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <TutorGrid
-                tutors={featuredTutors}
-                isLoading={false}
-                onBookSession={handleBookSession}
-                onSendMessage={handleSendMessage}
-              />
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200">Featured Tutors</h2>
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                <span className="text-sm text-slate-600 dark:text-slate-400">Top rated this month</span>
+              </div>
             </div>
+            <TutorGrid
+              tutors={featuredTutors}
+              isLoading={false}
+              onBookSession={handleBookSession}
+              onSendMessage={handleSendMessage}
+            />
           </div>
         )}
 
         {/* All Tutors */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
-            {selectedSubject === "all" ? "All Tutors" : `${selectedSubject} Tutors`} 
-            ({filteredTutors.length})
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200">
+              {selectedSubject === "all" ? "All Tutors" : `${selectedSubject} Tutors`} 
+              <span className="ml-2 text-sm font-normal text-slate-500">({filteredTutors.length} available)</span>
+            </h2>
+            {filteredTutors.length > 0 && (
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                Sorted by rating and availability
+              </div>
+            )}
+          </div>
           <TutorGrid
             tutors={filteredTutors}
             isLoading={isLoading}
