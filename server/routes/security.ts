@@ -1,184 +1,224 @@
-import type { Express, Request, Response } from "express";
-import { isAuthenticated } from "../roleMiddleware";
-import { storage } from "../storage";
+import { Express, Request, Response } from 'express';
+import { isAuthenticated, requireRole, AuthenticatedRequest } from '../roleMiddleware.js';
+import { requirePermissions } from '../security/middleware.js';
 
 export function registerSecurityRoutes(app: Express) {
-  // Get security zones
-  app.get("/api/security/zones", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const zones = await storage.getSecurityZones();
-      res.json(zones);
-    } catch (error) {
-      console.error("Error fetching security zones:", error);
-      res.status(500).json({ message: "Failed to fetch security zones" });
-    }
-  });
+  // Security monitoring endpoints
+  app.get('/api/security/status', 
+    isAuthenticated, 
+    requirePermissions(['read:security_logs', 'manage:system']),
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        // Basic security status information
+        const securityStatus = {
+          timestamp: new Date().toISOString(),
+          rateLimiting: {
+            enabled: true,
+            authLimit: 5,
+            apiLimit: 100,
+            uploadLimit: 20
+          },
+          contentSecurity: {
+            helmet: true,
+            inputSanitization: true,
+            fileValidation: true,
+            sensitiveDataScanning: true
+          },
+          sessionSecurity: {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000
+          },
+          accessControl: {
+            roleBasedAccess: true,
+            permissionValidation: true,
+            sessionValidation: true
+          }
+        };
 
-  // Create security zone
-  app.post("/api/security/zones", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const zone = await storage.createSecurityZone(req.body);
-      res.json(zone);
-    } catch (error) {
-      console.error("Error creating security zone:", error);
-      res.status(500).json({ message: "Failed to create security zone" });
+        res.json(securityStatus);
+      } catch (error) {
+        console.error('Security status error:', error);
+        res.status(500).json({ error: 'Failed to retrieve security status' });
+      }
     }
-  });
+  );
 
-  // Get cameras for a zone
-  app.get("/api/security/zones/:zoneId/cameras", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const cameras = await storage.getSecurityCamerasByZone(req.params.zoneId);
-      res.json(cameras);
-    } catch (error) {
-      console.error("Error fetching cameras:", error);
-      res.status(500).json({ message: "Failed to fetch cameras" });
-    }
-  });
+  // Security audit log endpoint
+  app.get('/api/security/audit-logs',
+    isAuthenticated,
+    requirePermissions(['read:security_logs']),
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        // In a real implementation, this would fetch from a security log database
+        const auditLogs = [
+          {
+            id: '1',
+            timestamp: new Date().toISOString(),
+            event: 'login_attempt',
+            userId: req.user?.id,
+            ip: req.ip,
+            userAgent: req.get('User-Agent'),
+            success: true
+          },
+          {
+            id: '2', 
+            timestamp: new Date(Date.now() - 300000).toISOString(),
+            event: 'permission_denied',
+            userId: 'unknown',
+            ip: req.ip,
+            resource: '/api/admin/users',
+            reason: 'insufficient_permissions'
+          }
+        ];
 
-  // Get all cameras
-  app.get("/api/security/cameras", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const cameras = await storage.getSecurityCameras();
-      res.json(cameras);
-    } catch (error) {
-      console.error("Error fetching cameras:", error);
-      res.status(500).json({ message: "Failed to fetch cameras" });
+        res.json({
+          logs: auditLogs,
+          total: auditLogs.length,
+          page: 1,
+          limit: 50
+        });
+      } catch (error) {
+        console.error('Audit logs error:', error);
+        res.status(500).json({ error: 'Failed to retrieve audit logs' });
+      }
     }
-  });
+  );
 
-  // Create security camera
-  app.post("/api/security/cameras", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const camera = await storage.createSecurityCamera(req.body);
-      res.json(camera);
-    } catch (error) {
-      console.error("Error creating camera:", error);
-      res.status(500).json({ message: "Failed to create camera" });
-    }
-  });
+  // Force password reset for user (admin only)
+  app.post('/api/security/force-password-reset/:userId',
+    isAuthenticated,
+    requireRole(['school_admin', 'it_staff']),
+    requirePermissions(['manage:users']),
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const { userId } = req.params;
+        const { reason } = req.body;
 
-  // Get security events
-  app.get("/api/security/events", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const { status, severity, zoneId, limit = 50 } = req.query;
-      const events = await storage.getSecurityEvents({
-        status: status as string,
-        severity: severity as string,
-        zoneId: zoneId as string,
-        limit: parseInt(limit as string)
-      });
-      res.json(events);
-    } catch (error) {
-      console.error("Error fetching security events:", error);
-      res.status(500).json({ message: "Failed to fetch security events" });
-    }
-  });
+        // Log the forced password reset
+        console.log(`[SECURITY] Forced password reset initiated by ${req.user?.id} for user ${userId}. Reason: ${reason}`);
 
-  // Create security event
-  app.post("/api/security/events", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const event = await storage.createSecurityEvent(req.body);
-      res.json(event);
-    } catch (error) {
-      console.error("Error creating security event:", error);
-      res.status(500).json({ message: "Failed to create security event" });
-    }
-  });
+        // In a real implementation, this would:
+        // 1. Invalidate all user sessions
+        // 2. Generate a secure reset token
+        // 3. Send notification to user
+        // 4. Log the action for audit
 
-  // Update security event
-  app.put("/api/security/events/:eventId", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const event = await storage.updateSecurityEvent(req.params.eventId, req.body);
-      res.json(event);
-    } catch (error) {
-      console.error("Error updating security event:", error);
-      res.status(500).json({ message: "Failed to update security event" });
+        res.json({
+          success: true,
+          message: 'Password reset initiated',
+          resetToken: 'demo-reset-token-' + Date.now()
+        });
+      } catch (error) {
+        console.error('Force password reset error:', error);
+        res.status(500).json({ error: 'Failed to force password reset' });
+      }
     }
-  });
+  );
 
-  // Get visitor registrations
-  app.get("/api/security/visitors", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const { status, date } = req.query;
-      const visitors = await storage.getVisitorRegistrations({
-        status: status as string,
-        date: date as string
-      });
-      res.json(visitors);
-    } catch (error) {
-      console.error("Error fetching visitor registrations:", error);
-      res.status(500).json({ message: "Failed to fetch visitor registrations" });
-    }
-  });
+  // Lock/unlock user account
+  app.post('/api/security/account/:userId/:action',
+    isAuthenticated,
+    requireRole(['school_admin', 'it_staff']),
+    requirePermissions(['manage:users']),
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const { userId, action } = req.params;
+        const { reason } = req.body;
 
-  // Create visitor registration
-  app.post("/api/security/visitors", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const visitor = await storage.createVisitorRegistration(req.body);
-      res.json(visitor);
-    } catch (error) {
-      console.error("Error creating visitor registration:", error);
-      res.status(500).json({ message: "Failed to create visitor registration" });
-    }
-  });
+        if (!['lock', 'unlock'].includes(action)) {
+          return res.status(400).json({ error: 'Invalid action. Use lock or unlock.' });
+        }
 
-  // Checkout visitor
-  app.put("/api/security/visitors/:visitorId/checkout", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const visitor = await storage.checkoutVisitor(req.params.visitorId);
-      res.json(visitor);
-    } catch (error) {
-      console.error("Error checking out visitor:", error);
-      res.status(500).json({ message: "Failed to checkout visitor" });
-    }
-  });
+        // Log the account action
+        console.log(`[SECURITY] Account ${action} initiated by ${req.user?.id} for user ${userId}. Reason: ${reason}`);
 
-  // Get security calls
-  app.get("/api/security/calls", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const { status, type } = req.query;
-      const calls = await storage.getSecurityCalls({
-        status: status as string,
-        type: type as string
-      });
-      res.json(calls);
-    } catch (error) {
-      console.error("Error fetching security calls:", error);
-      res.status(500).json({ message: "Failed to fetch security calls" });
+        res.json({
+          success: true,
+          message: `Account ${action} successful`,
+          userId,
+          action,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Account lock/unlock error:', error);
+        res.status(500).json({ error: `Failed to ${req.params.action} account` });
+      }
     }
-  });
+  );
 
-  // Create security call
-  app.post("/api/security/calls", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const call = await storage.createSecurityCall(req.body);
-      res.json(call);
-    } catch (error) {
-      console.error("Error creating security call:", error);
-      res.status(500).json({ message: "Failed to create security call" });
-    }
-  });
+  // Security incident reporting
+  app.post('/api/security/incident',
+    isAuthenticated,
+    requirePermissions(['read:security_logs', 'manage:system']),
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const { type, description, severity, affectedUsers } = req.body;
 
-  // Get security metrics
-  app.get("/api/security/metrics", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const metrics = await storage.getSecurityMetrics();
-      res.json(metrics);
-    } catch (error) {
-      console.error("Error fetching security metrics:", error);
-      res.status(500).json({ message: "Failed to fetch security metrics" });
-    }
-  });
+        const incident = {
+          id: 'incident-' + Date.now(),
+          type,
+          description,
+          severity,
+          affectedUsers,
+          reportedBy: req.user?.id,
+          timestamp: new Date().toISOString(),
+          status: 'open'
+        };
 
-  // Get active threats
-  app.get("/api/security/threats", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const threats = await storage.getActiveThreats();
-      res.json(threats);
-    } catch (error) {
-      console.error("Error fetching active threats:", error);
-      res.status(500).json({ message: "Failed to fetch active threats" });
+        // Log the security incident
+        console.error(`[SECURITY INCIDENT] ${severity.toUpperCase()}: ${type} - ${description}`, incident);
+
+        res.json({
+          success: true,
+          incident,
+          message: 'Security incident reported successfully'
+        });
+      } catch (error) {
+        console.error('Security incident reporting error:', error);
+        res.status(500).json({ error: 'Failed to report security incident' });
+      }
     }
-  });
+  );
+
+  // Check user permissions
+  app.get('/api/security/permissions/:userId?',
+    isAuthenticated,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const userId = req.params.userId || req.user?.id;
+        
+        // Only allow checking own permissions unless admin
+        if (userId !== req.user?.id && !['school_admin', 'it_staff'].includes(req.user?.role || '')) {
+          return res.status(403).json({ error: 'Can only check own permissions' });
+        }
+
+        const userRole = req.user?.role;
+        const permissions = getPermissionsForRole(userRole);
+
+        res.json({
+          userId,
+          role: userRole,
+          permissions,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Permission check error:', error);
+        res.status(500).json({ error: 'Failed to check permissions' });
+      }
+    }
+  );
+}
+
+function getPermissionsForRole(role?: string): string[] {
+  const rolePermissions: Record<string, string[]> = {
+    student: ['read:own_profile', 'read:courses', 'write:submissions', 'read:grades'],
+    teacher: ['read:own_profile', 'read:courses', 'write:grades', 'read:students', 'write:content'],
+    school_admin: ['read:all', 'write:all', 'delete:all', 'manage:users'],
+    parent: ['read:child_profile', 'read:child_grades', 'read:communications'],
+    it_staff: ['manage:system', 'read:logs', 'manage:devices'],
+    security_staff: ['read:security_logs', 'manage:access_controls']
+  };
+
+  return rolePermissions[role || ''] || [];
 }

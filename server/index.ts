@@ -3,8 +3,13 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { registerCalendarRoutes } from "./routes/calendar";
 import { setupVite, serveStatic, log } from "./vite";
+import { setupSecurity } from "./security/index.js";
 
 const app = express();
+
+// Setup security middleware first
+setupSecurity(app);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
