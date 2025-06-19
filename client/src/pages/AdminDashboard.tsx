@@ -1,207 +1,221 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
-  GraduationCap, 
+  Settings, 
+  BarChart3, 
+  Shield, 
+  Database, 
+  Bell,
+  UserCheck,
+  GraduationCap,
+  BookOpen,
   Calendar,
-  UserPlus,
-  BarChart3,
-  Settings,
-  Shield
+  MessageSquare,
+  FileText,
+  Activity,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  DollarSign
 } from "lucide-react";
-import {
-  AlertsSection,
-  KeyMetrics,
-  PerformanceMetrics,
-  QuickActions,
-  RecentActivityCard,
-  SystemStatus
-} from "@/components/admin/modules";
-import { DashboardStats, RecentActivity, QuickAction, SystemAlert } from "@/components/admin/types";
+import { useAuth } from "@/hooks/useAuth";
+import { Link } from "wouter";
 
+const quickStats = [
+  { title: "Total Users", value: "2,847", change: "+12%", icon: Users, color: "bg-blue-500" },
+  { title: "Active Sessions", value: "1,203", change: "+8%", icon: Activity, color: "bg-green-500" },
+  { title: "System Health", value: "98.5%", change: "+0.2%", icon: Shield, color: "bg-emerald-500" },
+  { title: "Storage Used", value: "67%", change: "+3%", icon: Database, color: "bg-orange-500" }
+];
 
+const adminActions = [
+  { title: "User Management", description: "Manage users, roles, and permissions", icon: Users, href: "/admin/users", color: "bg-blue-500" },
+  { title: "System Settings", description: "Configure system-wide settings", icon: Settings, href: "/admin/settings", color: "bg-gray-500" },
+  { title: "Analytics", description: "View platform analytics and reports", icon: BarChart3, href: "/admin/analytics", color: "bg-purple-500" },
+  { title: "Security Center", description: "Monitor security and access logs", icon: Shield, href: "/admin/security", color: "bg-red-500" },
+  { title: "CRM Management", description: "Manage leads and customer relationships", icon: UserCheck, href: "/crm", color: "bg-indigo-500" },
+  { title: "Course Management", description: "Oversee curriculum and courses", icon: GraduationCap, href: "/admin/courses", color: "bg-green-500" },
+  { title: "Digital Library", description: "Manage educational resources", icon: BookOpen, href: "/digital-library", color: "bg-teal-500" },
+  { title: "Events & Calendar", description: "Manage school events and schedules", icon: Calendar, href: "/calendar", color: "bg-yellow-500" },
+  { title: "Communications", description: "Manage announcements and messages", icon: MessageSquare, href: "/admin/communications", color: "bg-pink-500" }
+];
+
+const recentActivities = [
+  { action: "New teacher registered", user: "Sarah Johnson", time: "2 minutes ago", type: "success" },
+  { action: "System backup completed", user: "System", time: "15 minutes ago", type: "info" },
+  { action: "Security alert resolved", user: "Security Team", time: "1 hour ago", type: "warning" },
+  { action: "Course material updated", user: "Dr. Smith", time: "2 hours ago", type: "info" },
+  { action: "New student enrollment", user: "Emma Wilson", time: "3 hours ago", type: "success" }
+];
+
+const systemAlerts = [
+  { title: "Server Maintenance Scheduled", description: "Maintenance window tonight 2-4 AM", priority: "medium", time: "Today" },
+  { title: "Storage Usage Warning", description: "Storage is 85% full", priority: "high", time: "2 hours ago" },
+  { title: "New Feature Update", description: "Enhanced analytics now available", priority: "low", time: "Yesterday" }
+];
 
 export default function AdminDashboard() {
-  const [selectedTimeframe, setSelectedTimeframe] = useState("thisMonth");
-
-  const { data: dashboardStats, isLoading: statsLoading } = useQuery({
-    queryKey: ["/api/admin/dashboard/stats", selectedTimeframe],
-  });
-
-  const { data: recentActivity = [], isLoading: activityLoading } = useQuery({
-    queryKey: ["/api/admin/dashboard/activity"],
-  });
-
-  const { data: alerts = [], isLoading: alertsLoading } = useQuery({
-    queryKey: ["/api/admin/dashboard/alerts"],
-  });
-
-  // Mock data for demonstration
-  const mockStats: DashboardStats = {
-    totalStudents: 1247,
-    totalTeachers: 89,
-    totalStaff: 156,
-    activeClasses: 52,
-    pendingApplications: 23,
-    monthlyRevenue: 245000,
-    attendanceRate: 94.2,
-    graduationRate: 97.8
-  };
-
-  const mockActivity: RecentActivity[] = [
-    {
-      id: "1",
-      type: "enrollment",
-      title: "New Student Enrollment",
-      description: "Sarah Johnson enrolled in Grade 10",
-      timestamp: "2 hours ago",
-      priority: "low"
-    },
-    {
-      id: "2",
-      type: "incident",
-      title: "Security Alert",
-      description: "Unauthorized access attempt detected in IT lab",
-      timestamp: "4 hours ago",
-      priority: "high"
-    },
-    {
-      id: "3",
-      type: "achievement",
-      title: "Academic Excellence",
-      description: "Grade 12 class achieved 98% pass rate",
-      timestamp: "1 day ago",
-      priority: "medium"
-    }
-  ];
-
-  const mockAlerts: SystemAlert[] = [
-    {
-      id: "1",
-      type: "warning",
-      title: "Low Attendance Alert",
-      description: "Grade 8B has attendance below 85% this week",
-      urgent: true
-    },
-    {
-      id: "2",
-      type: "info",
-      title: "Parent-Teacher Meetings",
-      description: "Scheduled for next week - 15 meetings pending confirmation",
-      urgent: false
-    }
-  ];
-
-  const stats = dashboardStats || mockStats;
-  const activities = recentActivity.length > 0 ? recentActivity : mockActivity;
-  const systemAlerts = alerts.length > 0 ? alerts : mockAlerts;
-
-  const quickActions: QuickAction[] = [
-    {
-      id: "user-management",
-      title: "User Management",
-      description: "Manage students, teachers, and staff",
-      icon: Users,
-      path: "/users",
-      color: "bg-blue-500"
-    },
-    {
-      id: "school-management",
-      title: "School Management",
-      description: "Institutional settings and administration",
-      icon: Settings,
-      path: "/school-management",
-      color: "bg-green-500"
-    },
-    {
-      id: "parent-portal-admin",
-      title: "Parent Portal Admin",
-      description: "Manage parent-child relationships",
-      icon: UserPlus,
-      path: "/parent-portal-admin",
-      color: "bg-purple-500"
-    },
-    {
-      id: "analytics",
-      title: "Analytics & Reports",
-      description: "School performance analytics",
-      icon: BarChart3,
-      path: "/analytics",
-      color: "bg-orange-500"
-    },
-    {
-      id: "scheduling",
-      title: "Scheduling",
-      description: "Class schedules and timetables",
-      icon: Calendar,
-      path: "/scheduling",
-      color: "bg-cyan-500"
-    },
-    {
-      id: "security",
-      title: "Security Dashboard",
-      description: "Security monitoring and alerts",
-      icon: Shield,
-      path: "/security-dashboard",
-      color: "bg-red-500"
-    }
-  ];
-
-
-
-  if (statsLoading || activityLoading || alertsLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
+  const { user } = useAuth();
+  const [selectedPeriod, setSelectedPeriod] = useState("7d");
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">School Administration Dashboard</h1>
-          <p className="text-muted-foreground">
-            Comprehensive overview of school operations and management
-          </p>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-600 mt-1">Welcome back, {user?.firstName}! Here's your system overview.</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <select 
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            >
+              <option value="24h">Last 24 hours</option>
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+            </select>
+            <Button>
+              <FileText className="h-4 w-4 mr-2" />
+              Export Report
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <select
-            value={selectedTimeframe}
-            onChange={(e) => setSelectedTimeframe(e.target.value)}
-            className="px-3 py-2 border rounded-md bg-background"
-          >
-            <option value="thisWeek">This Week</option>
-            <option value="thisMonth">This Month</option>
-            <option value="thisQuarter">This Quarter</option>
-            <option value="thisYear">This Year</option>
-          </select>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {quickStats.map((stat) => (
+            <Card key={stat.title}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-sm text-green-600 flex items-center mt-1">
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                      {stat.change}
+                    </p>
+                  </div>
+                  <div className={`p-3 rounded-full ${stat.color}`}>
+                    <stat.icon className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Admin Actions */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Settings className="h-5 w-5 mr-2" />
+                  Administrative Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {adminActions.map((action) => (
+                    <Link key={action.title} href={action.href}>
+                      <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                        <CardContent className="p-4 text-center">
+                          <div className={`w-12 h-12 rounded-full ${action.color} flex items-center justify-center mx-auto mb-3`}>
+                            <action.icon className="h-6 w-6 text-white" />
+                          </div>
+                          <h3 className="font-medium text-gray-900 mb-1">{action.title}</h3>
+                          <p className="text-sm text-gray-600">{action.description}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* System Alerts */}
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Bell className="h-5 w-5 mr-2" />
+                  System Alerts
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {systemAlerts.map((alert, index) => (
+                    <div key={index} className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50">
+                      <div className={`p-1 rounded-full ${
+                        alert.priority === 'high' ? 'bg-red-100' :
+                        alert.priority === 'medium' ? 'bg-yellow-100' : 'bg-blue-100'
+                      }`}>
+                        {alert.priority === 'high' ? (
+                          <AlertTriangle className={`h-4 w-4 ${
+                            alert.priority === 'high' ? 'text-red-600' :
+                            alert.priority === 'medium' ? 'text-yellow-600' : 'text-blue-600'
+                          }`} />
+                        ) : (
+                          <Bell className={`h-4 w-4 ${
+                            alert.priority === 'high' ? 'text-red-600' :
+                            alert.priority === 'medium' ? 'text-yellow-600' : 'text-blue-600'
+                          }`} />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 text-sm">{alert.title}</p>
+                        <p className="text-gray-600 text-xs">{alert.description}</p>
+                        <p className="text-gray-500 text-xs mt-1">{alert.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Recent Activities */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Activity className="h-5 w-5 mr-2" />
+              Recent Activities
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      activity.type === 'success' ? 'bg-green-500' :
+                      activity.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                    }`}></div>
+                    <div>
+                      <p className="font-medium text-gray-900">{activity.action}</p>
+                      <p className="text-sm text-gray-600">by {activity.user}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-500 text-sm">
+                    <Clock className="h-4 w-4 mr-1" />
+                    {activity.time}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Alerts Section */}
-      <AlertsSection alerts={systemAlerts} />
-
-      {/* Key Metrics */}
-      <KeyMetrics stats={stats} />
-
-      {/* Performance Metrics */}
-      <PerformanceMetrics stats={stats} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions */}
-        <div className="lg:col-span-2">
-          <QuickActions actions={quickActions} />
-        </div>
-
-        {/* Recent Activity */}
-        <RecentActivityCard activities={activities} />
-      </div>
-
-      {/* System Status */}
-      <SystemStatus />
     </div>
   );
 }

@@ -1,566 +1,284 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { 
   Shield, 
+  Camera, 
   AlertTriangle, 
   Users, 
-  Activity, 
-  Lock, 
-  Unlock,
+  Clock, 
+  MapPin,
   Eye,
-  Clock,
+  Phone,
+  UserCheck,
+  Activity,
+  Lock,
+  Unlock,
   CheckCircle,
   XCircle,
-  RefreshCw
+  Bell
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
-interface SecurityStatus {
-  timestamp: string;
-  rateLimiting: {
-    enabled: boolean;
-    authLimit: number;
-    apiLimit: number;
-    uploadLimit: number;
-  };
-  contentSecurity: {
-    helmet: boolean;
-    inputSanitization: boolean;
-    fileValidation: boolean;
-    sensitiveDataScanning: boolean;
-  };
-  sessionSecurity: {
-    httpOnly: boolean;
-    secure: boolean;
-    maxAge: number;
-  };
-  accessControl: {
-    roleBasedAccess: boolean;
-    permissionValidation: boolean;
-    sessionValidation: boolean;
-  };
-}
+const securityStats = [
+  { title: "Active Cameras", value: "24/24", status: "operational", icon: Camera, color: "bg-green-500" },
+  { title: "Active Threats", value: "0", status: "safe", icon: AlertTriangle, color: "bg-blue-500" },
+  { title: "Visitors Today", value: "47", status: "normal", icon: Users, color: "bg-purple-500" },
+  { title: "Security Events", value: "3", status: "minor", icon: Shield, color: "bg-yellow-500" }
+];
 
-interface AuditLog {
-  id: string;
-  timestamp: string;
-  event: string;
-  userId?: string;
-  ip: string;
-  userAgent?: string;
-  success?: boolean;
-  resource?: string;
-  reason?: string;
-}
+const securityZones = [
+  { name: "Main Entrance", status: "secure", cameras: 4, alerts: 0, color: "bg-green-500" },
+  { name: "Parking Lot", status: "secure", cameras: 6, alerts: 0, color: "bg-green-500" },
+  { name: "Playground", status: "secure", cameras: 3, alerts: 0, color: "bg-green-500" },
+  { name: "Emergency Exits", status: "secure", cameras: 8, alerts: 0, color: "bg-green-500" },
+  { name: "Cafeteria", status: "secure", cameras: 2, alerts: 0, color: "bg-green-500" },
+  { name: "Library", status: "secure", cameras: 1, alerts: 0, color: "bg-green-500" }
+];
+
+const recentEvents = [
+  { 
+    time: "09:15 AM", 
+    event: "Visitor checked in", 
+    details: "John Smith - Parent meeting", 
+    zone: "Main Entrance",
+    severity: "info"
+  },
+  { 
+    time: "08:45 AM", 
+    event: "Door propped open", 
+    details: "Emergency exit door held open >3 minutes", 
+    zone: "Building B",
+    severity: "warning"
+  },
+  { 
+    time: "08:30 AM", 
+    event: "Security patrol completed", 
+    details: "Morning perimeter check completed", 
+    zone: "All Zones",
+    severity: "success"
+  },
+  { 
+    time: "07:55 AM", 
+    event: "Access card used", 
+    details: "Staff member Sarah Johnson", 
+    zone: "Faculty Lounge",
+    severity: "info"
+  }
+];
+
+const activeVisitors = [
+  { name: "John Smith", purpose: "Parent Meeting", checkIn: "09:15 AM", escort: "Mrs. Johnson", badge: "V001" },
+  { name: "Tech Support", purpose: "Equipment Repair", checkIn: "08:30 AM", escort: "IT Staff", badge: "C002" },
+  { name: "Maria Garcia", purpose: "Volunteer Activity", checkIn: "08:00 AM", escort: "Ms. Davis", badge: "V003" }
+];
+
+const emergencyContacts = [
+  { name: "Local Police", number: "911", type: "emergency" },
+  { name: "Fire Department", number: "911", type: "emergency" },
+  { name: "School Security", number: "(555) 123-4567", type: "internal" },
+  { name: "Principal", number: "(555) 123-4568", type: "internal" }
+];
 
 export default function SecurityDashboard() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [incidentForm, setIncidentForm] = useState({
-    type: "",
-    description: "",
-    severity: "medium",
-    affectedUsers: ""
-  });
-
-  // Fetch security status
-  const { data: securityStatus, isLoading: statusLoading } = useQuery<SecurityStatus>({
-    queryKey: ["/api/security/status"],
-    refetchInterval: 30000, // Refresh every 30 seconds
-  });
-
-  // Fetch audit logs
-  const { data: auditData, isLoading: logsLoading } = useQuery<{logs: AuditLog[], total: number}>({
-    queryKey: ["/api/security/audit-logs"],
-    refetchInterval: 10000, // Refresh every 10 seconds
-  });
-
-  // Account lock/unlock mutation
-  const accountActionMutation = useMutation({
-    mutationFn: async ({ userId, action, reason }: { userId: string; action: string; reason: string }) => {
-      return apiRequest(`/api/security/account/${userId}/${action}`, {
-        method: "POST",
-        body: { reason }
-      });
-    },
-    onSuccess: (data, variables) => {
-      toast({
-        title: "Success",
-        description: `Account ${variables.action} successful`
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/security/audit-logs"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || `Failed to perform account action`,
-        variant: "destructive"
-      });
-    }
-  });
-
-  // Force password reset mutation
-  const passwordResetMutation = useMutation({
-    mutationFn: async ({ userId, reason }: { userId: string; reason: string }) => {
-      return apiRequest(`/api/security/force-password-reset/${userId}`, {
-        method: "POST",
-        body: { reason }
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Password reset initiated successfully"
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/security/audit-logs"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to initiate password reset",
-        variant: "destructive"
-      });
-    }
-  });
-
-  // Security incident reporting mutation
-  const incidentMutation = useMutation({
-    mutationFn: async (incident: typeof incidentForm) => {
-      return apiRequest("/api/security/incident", {
-        method: "POST",
-        body: incident
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Security incident reported successfully"
-      });
-      setIncidentForm({
-        type: "",
-        description: "",
-        severity: "medium",
-        affectedUsers: ""
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to report incident",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const handleAccountAction = (action: string, reason: string) => {
-    if (!selectedUserId) {
-      toast({
-        title: "Error",
-        description: "Please enter a user ID",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    accountActionMutation.mutate({ userId: selectedUserId, action, reason });
-  };
-
-  const handlePasswordReset = (reason: string) => {
-    if (!selectedUserId) {
-      toast({
-        title: "Error",
-        description: "Please enter a user ID",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    passwordResetMutation.mutate({ userId: selectedUserId, reason });
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "high": return "destructive";
-      case "medium": return "default";
-      case "low": return "secondary";
-      default: return "default";
-    }
-  };
-
-  const getEventBadgeColor = (event: string, success?: boolean) => {
-    if (success === false) return "destructive";
-    switch (event) {
-      case "login_attempt": return "default";
-      case "permission_denied": return "destructive";
-      case "account_locked": return "destructive";
-      case "password_reset": return "default";
-      default: return "secondary";
-    }
-  };
+  const { user } = useAuth();
+  const [selectedZone, setSelectedZone] = useState("all");
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      <div className="flex items-center gap-3 mb-6">
-        <Shield className="h-8 w-8 text-blue-600" />
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Security Dashboard</h1>
-          <p className="text-gray-600">Monitor and manage security across the platform</p>
-        </div>
-      </div>
-
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="logs">Audit Logs</TabsTrigger>
-          <TabsTrigger value="actions">Admin Actions</TabsTrigger>
-          <TabsTrigger value="incidents">Incidents</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
-          {/* Security Status Overview */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Rate Limiting</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {securityStatus?.rateLimiting.enabled ? (
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                  ) : (
-                    <XCircle className="h-6 w-6 text-red-600" />
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Auth: {securityStatus?.rateLimiting.authLimit}/15min
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Content Security</CardTitle>
-                <Shield className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {securityStatus?.contentSecurity.helmet ? (
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                  ) : (
-                    <XCircle className="h-6 w-6 text-red-600" />
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Helmet + Validation Active
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Session Security</CardTitle>
-                <Lock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {securityStatus?.sessionSecurity.httpOnly ? (
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                  ) : (
-                    <XCircle className="h-6 w-6 text-red-600" />
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  HttpOnly + Secure Cookies
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Access Control</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {securityStatus?.accessControl.roleBasedAccess ? (
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                  ) : (
-                    <XCircle className="h-6 w-6 text-red-600" />
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  RBAC + Permissions
-                </p>
-              </CardContent>
-            </Card>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Security Dashboard</h1>
+            <p className="text-gray-600 mt-1">Monitor campus security and safety systems</p>
           </div>
+          <div className="flex items-center space-x-4">
+            <Button variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
+              <Phone className="h-4 w-4 mr-2" />
+              Emergency Call
+            </Button>
+            <Button>
+              <Bell className="h-4 w-4 mr-2" />
+              Alert Center
+            </Button>
+          </div>
+        </div>
 
-          {/* Detailed Security Status */}
-          {securityStatus && (
+        {/* Security Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {securityStats.map((stat) => (
+            <Card key={stat.title}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <Badge 
+                      variant={stat.status === 'operational' || stat.status === 'safe' ? 'default' : 'secondary'}
+                      className="mt-2"
+                    >
+                      {stat.status}
+                    </Badge>
+                  </div>
+                  <div className={`p-3 rounded-full ${stat.color}`}>
+                    <stat.icon className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Security Zones */}
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Security Configuration Details</CardTitle>
-                <CardDescription>
-                  Last updated: {new Date(securityStatus.timestamp).toLocaleString()}
-                </CardDescription>
+                <CardTitle className="flex items-center">
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Security Zones
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-3">
-                    <h4 className="font-semibold">Rate Limiting</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Authentication:</span>
-                        <span>{securityStatus.rateLimiting.authLimit} attempts/15min</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>API Requests:</span>
-                        <span>{securityStatus.rateLimiting.apiLimit} requests/15min</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>File Uploads:</span>
-                        <span>{securityStatus.rateLimiting.uploadLimit} uploads/hour</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h4 className="font-semibold">Security Features</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Input Sanitization:</span>
-                        <Badge variant={securityStatus.contentSecurity.inputSanitization ? "default" : "destructive"}>
-                          {securityStatus.contentSecurity.inputSanitization ? "Active" : "Inactive"}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>File Validation:</span>
-                        <Badge variant={securityStatus.contentSecurity.fileValidation ? "default" : "destructive"}>
-                          {securityStatus.contentSecurity.fileValidation ? "Active" : "Inactive"}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Data Scanning:</span>
-                        <Badge variant={securityStatus.contentSecurity.sensitiveDataScanning ? "default" : "destructive"}>
-                          {securityStatus.contentSecurity.sensitiveDataScanning ? "Active" : "Inactive"}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="logs" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Security Audit Logs</CardTitle>
-                <CardDescription>Real-time security events and authentication attempts</CardDescription>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/security/audit-logs"] })}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {logsLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <RefreshCw className="h-6 w-6 animate-spin" />
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {auditData?.logs.map((log) => (
-                    <div key={log.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Badge variant={getEventBadgeColor(log.event, log.success)}>
-                          {log.event.replace('_', ' ').toUpperCase()}
-                        </Badge>
-                        <div>
-                          <p className="text-sm font-medium">
-                            {log.event === 'login_attempt' && `Login attempt ${log.success ? 'successful' : 'failed'}`}
-                            {log.event === 'permission_denied' && `Access denied to ${log.resource}`}
-                            {log.event === 'account_locked' && 'Account locked'}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            IP: {log.ip} • {log.userId ? `User: ${log.userId}` : 'Unknown user'}
-                          </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {securityZones.map((zone) => (
+                    <div key={zone.name} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-medium text-gray-900">{zone.name}</h3>
+                        <div className="flex items-center">
+                          <div className={`w-3 h-3 rounded-full ${zone.color} mr-2`}></div>
+                          <Badge variant="outline" className="text-xs">
+                            {zone.status}
+                          </Badge>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3 inline mr-1" />
-                          {new Date(log.timestamp).toLocaleString()}
-                        </p>
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <span className="flex items-center">
+                          <Camera className="h-4 w-4 mr-1" />
+                          {zone.cameras} cameras
+                        </span>
+                        <span className="flex items-center">
+                          <AlertTriangle className="h-4 w-4 mr-1" />
+                          {zone.alerts} alerts
+                        </span>
                       </div>
                     </div>
                   ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="actions" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Management</CardTitle>
-                <CardDescription>Lock, unlock, or reset user accounts</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="userId">User ID</Label>
-                  <Input
-                    id="userId"
-                    placeholder="Enter user ID"
-                    value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(e.target.value)}
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Button
-                    onClick={() => handleAccountAction("lock", "Administrative action")}
-                    variant="destructive"
-                    className="w-full"
-                    disabled={accountActionMutation.isPending}
-                  >
-                    <Lock className="h-4 w-4 mr-2" />
-                    Lock Account
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleAccountAction("unlock", "Administrative action")}
-                    variant="outline"
-                    className="w-full"
-                    disabled={accountActionMutation.isPending}
-                  >
-                    <Unlock className="h-4 w-4 mr-2" />
-                    Unlock Account
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handlePasswordReset("Administrative password reset")}
-                    variant="outline"
-                    className="w-full"
-                    disabled={passwordResetMutation.isPending}
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Force Password Reset
-                  </Button>
-                </div>
               </CardContent>
             </Card>
+          </div>
 
+          {/* Emergency Contacts */}
+          <div>
             <Card>
               <CardHeader>
-                <CardTitle>User Permissions</CardTitle>
-                <CardDescription>Check user permissions and access levels</CardDescription>
+                <CardTitle className="flex items-center">
+                  <Phone className="h-5 w-5 mr-2" />
+                  Emergency Contacts
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="permissionUserId">User ID</Label>
-                    <Input
-                      id="permissionUserId"
-                      placeholder="Enter user ID to check permissions"
-                    />
-                  </div>
-                  <Button className="w-full" variant="outline">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Check Permissions
-                  </Button>
+                <div className="space-y-3">
+                  {emergencyContacts.map((contact) => (
+                    <div key={contact.name} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                      <div>
+                        <p className="font-medium text-gray-900">{contact.name}</p>
+                        <p className="text-sm text-gray-600">{contact.number}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant={contact.type === 'emergency' ? 'destructive' : 'outline'}
+                        onClick={() => window.open(`tel:${contact.number}`)}
+                      >
+                        <Phone className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="incidents" className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Security Events */}
           <Card>
             <CardHeader>
-              <CardTitle>Report Security Incident</CardTitle>
-              <CardDescription>Document and track security incidents</CardDescription>
+              <CardTitle className="flex items-center">
+                <Activity className="h-5 w-5 mr-2" />
+                Recent Security Events
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div>
-                  <Label htmlFor="incidentType">Incident Type</Label>
-                  <Input
-                    id="incidentType"
-                    placeholder="e.g., Unauthorized access, Data breach, Suspicious activity"
-                    value={incidentForm.type}
-                    onChange={(e) => setIncidentForm({...incidentForm, type: e.target.value})}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="severity">Severity Level</Label>
-                  <Select value={incidentForm.severity} onValueChange={(value) => setIncidentForm({...incidentForm, severity: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="critical">Critical</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Detailed description of the security incident..."
-                    value={incidentForm.description}
-                    onChange={(e) => setIncidentForm({...incidentForm, description: e.target.value})}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="affectedUsers">Affected Users (comma-separated IDs)</Label>
-                  <Input
-                    id="affectedUsers"
-                    placeholder="user1, user2, user3"
-                    value={incidentForm.affectedUsers}
-                    onChange={(e) => setIncidentForm({...incidentForm, affectedUsers: e.target.value})}
-                  />
-                </div>
-
-                <Button 
-                  onClick={() => incidentMutation.mutate(incidentForm)}
-                  className="w-full"
-                  disabled={incidentMutation.isPending}
-                >
-                  <AlertTriangle className="h-4 w-4 mr-2" />
-                  Report Incident
-                </Button>
+                {recentEvents.map((event, index) => (
+                  <div key={index} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg">
+                    <div className={`p-1 rounded-full ${
+                      event.severity === 'warning' ? 'bg-yellow-100' :
+                      event.severity === 'success' ? 'bg-green-100' : 'bg-blue-100'
+                    }`}>
+                      {event.severity === 'warning' ? (
+                        <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                      ) : event.severity === 'success' ? (
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <Shield className="h-4 w-4 text-blue-600" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-gray-900">{event.event}</p>
+                        <span className="text-sm text-gray-500">{event.time}</span>
+                      </div>
+                      <p className="text-sm text-gray-600">{event.details}</p>
+                      <p className="text-xs text-gray-500 mt-1">Zone: {event.zone}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+
+          {/* Active Visitors */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <UserCheck className="h-5 w-5 mr-2" />
+                Active Visitors
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {activeVisitors.map((visitor, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-gray-900">{visitor.name}</p>
+                        <Badge variant="outline">{visitor.badge}</Badge>
+                      </div>
+                      <p className="text-sm text-gray-600">{visitor.purpose}</p>
+                      <div className="flex items-center text-xs text-gray-500 mt-1">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {visitor.checkIn} • Escort: {visitor.escort}
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="ml-3 text-red-600 border-red-300 hover:bg-red-50"
+                    >
+                      Check Out
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
