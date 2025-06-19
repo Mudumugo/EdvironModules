@@ -19,7 +19,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/",
     icon: "BarChart3",
     description: "Main overview and statistics",
-    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security", "demo_student_elementary"],
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security"],
     isCore: true
   },
   {
@@ -37,7 +37,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/digital-library",
     icon: "BookOpen",
     description: "Access digital books and educational resources",
-    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "demo_student_elementary"],
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin"],
     isCore: true
   },
   {
@@ -46,7 +46,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/my-locker",
     icon: "CloudDownload",
     description: "Personal storage and saved content",
-    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "demo_student_elementary"],
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher"],
     isCore: true
   },
   {
@@ -73,7 +73,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/settings",
     icon: "Settings",
     description: "Personal account settings",
-    allowedRoles: ["student", "student_elementary", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security", "demo_student_elementary"],
+    allowedRoles: ["student", "student_elementary", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security"],
     isCore: true
   },
   {
@@ -86,7 +86,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
       "student", "student_elementary", "student_middle", "student_high", "student_college",
       "teacher", "tutor", "principal", "vice_principal", "counselor", "librarian",
       "school_admin", "security_staff", "school_security",
-      "it_staff", "school_it_staff", "parent", "demo_student_elementary"
+      "it_staff", "school_it_staff", "parent"
     ],
     isCore: true
   },

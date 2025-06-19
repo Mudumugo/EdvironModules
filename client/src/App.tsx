@@ -119,7 +119,7 @@ function Router() {
                    user?.role === 'security_staff' || user?.role === 'school_security' ? <SecurityDashboard /> : 
                    user?.role === 'it_staff' || user?.role === 'school_it_staff' ? <ITDashboard /> : 
                    user?.role === 'teacher' ? <TeacherDashboard /> :
-                   user?.role?.includes('student') || user?.role === 'student' || user?.role === 'demo_student_elementary' ? <StudentDashboard /> :
+                   user?.role?.includes('student') || user?.role === 'student' ? <StudentDashboard /> :
                    <Dashboard />}
                 </RoleProtectedRoute>
               </Route>

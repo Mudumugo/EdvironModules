@@ -98,9 +98,6 @@ export const USER_ROLES = {
   IT_STAFF: "it_staff",
   SECURITY_STAFF: "security_staff",
   
-  // Demo accounts
-  DEMO_STUDENT_ELEMENTARY: "demo_student_elementary",
-  
   // Non-teaching staff
   OFFICE_STAFF: "office_staff",
   RECEPTIONIST: "receptionist",
