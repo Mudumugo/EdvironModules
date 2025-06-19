@@ -98,7 +98,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.get('/api/crm/demo-requests/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/crm/demo-requests/:id', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const demo = await storage.getDemoRequest(id);
@@ -123,7 +123,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.patch('/api/crm/demo-requests/:id', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/crm/demo-requests/:id', isAuthenticated, requireRole(['school_admin', 'teacher', 'it_staff', 'security_staff']), async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const demo = await storage.updateDemoRequest(id, req.body);

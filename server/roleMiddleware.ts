@@ -2,18 +2,27 @@ import { Request, Response, NextFunction } from 'express';
 import { hasPermission, hasAnyPermission } from '@shared/roleUtils';
 import { PERMISSIONS, type Permission, type UserRole, type User } from '@shared/schema';
 
+// Simple user type for demo authentication
+interface DemoUser {
+  id: string;
+  email: string;
+  role: string;
+}
+
 // Extended request type for authenticated requests
 export interface AuthenticatedRequest extends Request {
-  user?: User & {
-    claims?: {
-      sub: string;
-      email?: string;
-      first_name?: string;
-      last_name?: string;
-      profile_image_url?: string;
-    };
-  };
+  user?: DemoUser;
 }
+
+// Authentication middleware that checks session
+export const isAuthenticated = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (req.session?.user) {
+    req.user = req.session.user;
+    next();
+  } else {
+    res.status(401).json({ message: 'Authentication required' });
+  }
+};
 
 
 
@@ -26,7 +35,7 @@ export function requirePermission(permission: Permission) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasPermission(user.role as UserRole, (user.permissions || []) as Permission[], permission)) {
+    if (!hasPermission(user.role as UserRole, [] as Permission[], permission)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permission,
@@ -47,7 +56,7 @@ export function requireAnyPermission(permissions: Permission[]) {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (!hasAnyPermission(user.role as UserRole, (user.permissions || []) as Permission[], permissions)) {
+    if (!hasAnyPermission(user.role as UserRole, [] as Permission[], permissions)) {
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: permissions,

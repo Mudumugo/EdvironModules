@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 
 // Simple demo users for testing different roles
 const demoUsers = {
@@ -9,43 +9,52 @@ const demoUsers = {
   "security@demo.com": { id: "demo-security", email: "security@demo.com", role: "security_staff" }
 };
 
-let currentUser: any = null;
+// Session-based authentication using Express session
+declare module 'express-session' {
+  interface SessionData {
+    user?: {
+      id: string;
+      email: string;
+      role: string;
+    };
+  }
+}
 
 export async function registerAuthRoutes(app: Express) {
   // Auth endpoint that returns current user or 401
-  app.get("/api/auth/user", (req, res) => {
-    if (currentUser) {
-      res.json(currentUser);
+  app.get("/api/auth/user", (req: Request, res: Response) => {
+    if (req.session.user) {
+      res.json(req.session.user);
     } else {
       res.status(401).json({ error: "Not authenticated" });
     }
   });
 
   // Session endpoint
-  app.get("/api/auth/session", (req, res) => {
-    if (currentUser) {
-      res.json({ user: currentUser });
+  app.get("/api/auth/session", (req: Request, res: Response) => {
+    if (req.session.user) {
+      res.json({ user: req.session.user });
     } else {
       res.status(401).json({ error: "Not authenticated" });
     }
   });
 
   // Login endpoint with demo user support
-  app.post("/api/auth/login", (req, res) => {
+  app.post("/api/auth/login", (req: Request, res: Response) => {
     const { email } = req.body;
     
     if (email && demoUsers[email as keyof typeof demoUsers]) {
-      currentUser = demoUsers[email as keyof typeof demoUsers];
-      res.json({ success: true, user: currentUser });
+      req.session.user = demoUsers[email as keyof typeof demoUsers];
+      res.json({ success: true, user: req.session.user });
     } else {
       // Default to student for any other login
-      currentUser = { id: "demo", email: "demo@example.com", role: "student" };
-      res.json({ success: true, user: currentUser });
+      req.session.user = { id: "demo", email: "demo@example.com", role: "student" };
+      res.json({ success: true, user: req.session.user });
     }
   });
 
   // Demo login for quick role switching
-  app.post("/api/auth/demo-login", (req, res) => {
+  app.post("/api/auth/demo-login", (req: Request, res: Response) => {
     const { role } = req.body;
     
     const roleMapping = {
@@ -56,13 +65,18 @@ export async function registerAuthRoutes(app: Express) {
       security_staff: demoUsers["security@demo.com"]
     };
     
-    currentUser = roleMapping[role as keyof typeof roleMapping] || demoUsers["student@demo.com"];
-    res.json({ success: true, user: currentUser });
+    req.session.user = roleMapping[role as keyof typeof roleMapping] || demoUsers["student@demo.com"];
+    res.json({ success: true, user: req.session.user });
   });
 
   // Logout endpoint
-  app.post("/api/auth/logout", (req, res) => {
-    currentUser = null;
-    res.json({ success: true });
+  app.post("/api/auth/logout", (req: Request, res: Response) => {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(500).json({ error: "Failed to logout" });
+      } else {
+        res.json({ success: true });
+      }
+    });
   });
 }
