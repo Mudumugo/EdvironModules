@@ -28,7 +28,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/crm",
     icon: "Users",
     description: "Customer Relationship Management and lead tracking",
-    allowedRoles: ["school_admin"],
+    allowedRoles: ["school_admin", "teacher", "it_staff", "security_staff"],
     isCore: false
   },
   {
