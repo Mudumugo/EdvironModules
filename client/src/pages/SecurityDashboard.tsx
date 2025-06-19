@@ -86,20 +86,21 @@ export default function SecurityDashboard() {
   const [selectedZone, setSelectedZone] = useState("all");
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Security Dashboard</h1>
-            <p className="text-gray-600 mt-1">Monitor campus security and safety systems</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Security Dashboard</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">Monitor campus security and safety systems</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+            <Button variant="outline" className="text-red-600 border-red-300 hover:bg-red-50 w-full sm:w-auto">
               <Phone className="h-4 w-4 mr-2" />
-              Emergency Call
+              <span className="hidden sm:inline">Emergency Call</span>
+              <span className="sm:hidden">Emergency</span>
             </Button>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Bell className="h-4 w-4 mr-2" />
               Alert Center
             </Button>
@@ -107,23 +108,23 @@ export default function SecurityDashboard() {
         </div>
 
         {/* Security Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {securityStats.map((stat) => (
             <Card key={stat.title}>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
                     <Badge 
                       variant={stat.status === 'operational' || stat.status === 'safe' ? 'default' : 'secondary'}
-                      className="mt-2"
+                      className="mt-2 text-xs"
                     >
                       {stat.status}
                     </Badge>
                   </div>
-                  <div className={`p-3 rounded-full ${stat.color}`}>
-                    <stat.icon className="h-6 w-6 text-white" />
+                  <div className={`p-2 sm:p-3 rounded-full ${stat.color} flex-shrink-0`}>
+                    <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
@@ -131,36 +132,36 @@ export default function SecurityDashboard() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Security Zones */}
-          <div className="lg:col-span-2">
+          <div className="xl:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MapPin className="h-5 w-5 mr-2" />
+                <CardTitle className="flex items-center text-base sm:text-lg">
+                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Security Zones
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {securityZones.map((zone) => (
-                    <div key={zone.name} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div key={zone.name} className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium text-gray-900">{zone.name}</h3>
-                        <div className="flex items-center">
+                        <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate flex-1">{zone.name}</h3>
+                        <div className="flex items-center ml-2 flex-shrink-0">
                           <div className={`w-3 h-3 rounded-full ${zone.color} mr-2`}></div>
                           <Badge variant="outline" className="text-xs">
                             {zone.status}
                           </Badge>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-sm text-gray-600">
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600">
                         <span className="flex items-center">
-                          <Camera className="h-4 w-4 mr-1" />
+                          <Camera className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           {zone.cameras} cameras
                         </span>
                         <span className="flex items-center">
-                          <AlertTriangle className="h-4 w-4 mr-1" />
+                          <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           {zone.alerts} alerts
                         </span>
                       </div>
@@ -175,8 +176,8 @@ export default function SecurityDashboard() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Phone className="h-5 w-5 mr-2" />
+                <CardTitle className="flex items-center text-base sm:text-lg">
+                  <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Emergency Contacts
                 </CardTitle>
               </CardHeader>
@@ -184,16 +185,17 @@ export default function SecurityDashboard() {
                 <div className="space-y-3">
                   {emergencyContacts.map((contact) => (
                     <div key={contact.name} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                      <div>
-                        <p className="font-medium text-gray-900">{contact.name}</p>
-                        <p className="text-sm text-gray-600">{contact.number}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{contact.name}</p>
+                        <p className="text-xs sm:text-sm text-gray-600">{contact.number}</p>
                       </div>
                       <Button
                         size="sm"
                         variant={contact.type === 'emergency' ? 'destructive' : 'outline'}
                         onClick={() => window.open(`tel:${contact.number}`)}
+                        className="ml-2 flex-shrink-0"
                       >
-                        <Phone className="h-4 w-4" />
+                        <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                   ))}
@@ -203,38 +205,38 @@ export default function SecurityDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Recent Security Events */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Activity className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-base sm:text-lg">
+                <Activity className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Recent Security Events
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {recentEvents.map((event, index) => (
                   <div key={index} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg">
-                    <div className={`p-1 rounded-full ${
+                    <div className={`p-1 rounded-full flex-shrink-0 ${
                       event.severity === 'warning' ? 'bg-yellow-100' :
                       event.severity === 'success' ? 'bg-green-100' : 'bg-blue-100'
                     }`}>
                       {event.severity === 'warning' ? (
-                        <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                        <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
                       ) : event.severity === 'success' ? (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
                       ) : (
-                        <Shield className="h-4 w-4 text-blue-600" />
+                        <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
                       )}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium text-gray-900">{event.event}</p>
-                        <span className="text-sm text-gray-500">{event.time}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1">
+                        <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{event.event}</p>
+                        <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-0 sm:ml-2 flex-shrink-0">{event.time}</span>
                       </div>
-                      <p className="text-sm text-gray-600">{event.details}</p>
-                      <p className="text-xs text-gray-500 mt-1">Zone: {event.zone}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 mb-1">{event.details}</p>
+                      <p className="text-xs text-gray-500">Zone: {event.zone}</p>
                     </div>
                   </div>
                 ))}
@@ -245,33 +247,35 @@ export default function SecurityDashboard() {
           {/* Active Visitors */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <UserCheck className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-base sm:text-lg">
+                <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Active Visitors
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {activeVisitors.map((visitor, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-gray-900">{visitor.name}</p>
-                        <Badge variant="outline">{visitor.badge}</Badge>
+                  <div key={index} className="p-3 border border-gray-200 rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="font-medium text-gray-900 text-sm sm:text-base truncate flex-1">{visitor.name}</p>
+                          <Badge variant="outline" className="ml-2 text-xs">{visitor.badge}</Badge>
+                        </div>
+                        <p className="text-xs sm:text-sm text-gray-600 mb-1">{visitor.purpose}</p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
+                          <span className="truncate">{visitor.checkIn} • Escort: {visitor.escort}</span>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600">{visitor.purpose}</p>
-                      <div className="flex items-center text-xs text-gray-500 mt-1">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {visitor.checkIn} • Escort: {visitor.escort}
-                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full sm:w-auto sm:ml-3 text-red-600 border-red-300 hover:bg-red-50"
+                      >
+                        Check Out
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-3 text-red-600 border-red-300 hover:bg-red-50"
-                    >
-                      Check Out
-                    </Button>
                   </div>
                 ))}
               </div>
