@@ -24,6 +24,26 @@ import {
 } from "lucide-react";
 import { useXapiPageTracking } from "@/lib/xapiTracker";
 
+// Function to map module IDs to their respective routes
+const getModuleLink = (moduleId: string): string => {
+  const moduleRoutes: Record<string, string> = {
+    "shared-library": "/digital-library",
+    "my-locker": "/my-locker",
+    "school-calendar": "/calendar",
+    "class-management": "/class-management",
+    "lesson-planning": "/lesson-planning",
+    "digital-notebooks": "/digital-notebooks",
+    "apps-hub": "/apps-hub",
+    "stem-lab": "/stem-lab",
+    "teaching-analytics": "/teaching-analytics",
+    "student-progress": "/student-progress",
+    "assignment-center": "/assignment-center",
+    "virtual-classroom": "/virtual-classroom"
+  };
+  
+  return moduleRoutes[moduleId] || "#";
+};
+
 const teacherModules = [
   {
     id: "shared-library",
@@ -245,7 +265,7 @@ export default function TeacherDashboard() {
           {filteredModules.map((module) => {
             const Icon = module.icon;
             return (
-              <Link href={module.id === "class-management" ? "/class-management" : "#"} key={module.id}>
+              <Link href={getModuleLink(module.id)} key={module.id}>
                 <Card 
                   className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${
                     viewMode === "list" ? "flex items-center" : ""

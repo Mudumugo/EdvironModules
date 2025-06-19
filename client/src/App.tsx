@@ -43,6 +43,8 @@ import HotCall from "@/pages/HotCall";
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
 import ClassManagement from "@/pages/ClassManagement";
+import LessonPlanning from "@/pages/LessonPlanning";
+import DigitalNotebooks from "@/pages/DigitalNotebooks";
 import UserProfile from "@/pages/UserProfile";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
@@ -224,6 +226,19 @@ function Router() {
               <Route path="/class-management">
                 <RoleProtectedRoute moduleId="class-management">
                   <ClassManagement />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Teacher-specific modules */}
+              <Route path="/lesson-planning">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin"]}>
+                  <LessonPlanning />
+                </RoleProtectedRoute>
+              </Route>
+
+              <Route path="/digital-notebooks">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college"]}>
+                  <DigitalNotebooks />
                 </RoleProtectedRoute>
               </Route>
 

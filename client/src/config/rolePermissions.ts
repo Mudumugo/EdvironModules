@@ -50,6 +50,15 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     isCore: true
   },
   {
+    id: "class-management",
+    name: "Class Management",
+    path: "/class-management",
+    icon: "Users",
+    description: "Manage classes, student enrollment, and performance tracking",
+    allowedRoles: ["teacher", "school_admin"],
+    isCore: false
+  },
+  {
     id: "apps-hub",
     name: "Apps Hub",
     path: "/apps-hub",
