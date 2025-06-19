@@ -89,7 +89,7 @@ export default function MobileLanding() {
                 Get Started
               </Button>
             </Link>
-            <Link href="/signin">
+            <Link href="/login">
               <Button variant="outline" className="w-full" onClick={() => setIsMenuOpen(false)}>
                 Sign In
               </Button>
