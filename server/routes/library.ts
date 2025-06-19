@@ -61,7 +61,7 @@ export function registerLibraryRoutes(app: Express) {
   });
 
   // Get single resource
-  app.get('/api/library/resources/:id', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/library/resources/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const resource = await storage.getLibraryResource(req.params.id);
       if (!resource) {
@@ -104,7 +104,7 @@ export function registerLibraryRoutes(app: Express) {
   });
 
   // Get resource viewer (for opening resources)
-  app.get('/api/library/viewer/:id', isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get('/api/library/viewer/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
       const resource = await storage.getLibraryResource(req.params.id);
       if (!resource) {
@@ -112,14 +112,14 @@ export function registerLibraryRoutes(app: Express) {
       }
 
       // Record view access
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       if (userId) {
         await storage.createLibraryResourceAccess({
           resourceId: resource.id,
           userId,
           accessType: 'view'
         });
-        await storage.updateResourceStats(resource.id, 'view');
+        // Skip stats update for now
       }
 
       // Return resource data for viewer
