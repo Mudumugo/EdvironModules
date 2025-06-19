@@ -154,10 +154,10 @@ export default function LearningDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <Star className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -166,7 +166,7 @@ export default function LearningDashboard() {
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Free Basic Plan</span>
               </div>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
               <ArrowUpRight className="h-4 w-4 mr-2" />
               Upgrade to Premium
             </Button>
@@ -182,8 +182,8 @@ export default function LearningDashboard() {
           </div>
 
           {/* Search and Filter Section */}
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="relative flex-1 max-w-lg">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+            <div className="relative flex-1 w-full sm:max-w-lg">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Search modules..."
@@ -192,20 +192,20 @@ export default function LearningDashboard() {
                 className="pl-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-slate-500" />
                 <select 
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2 text-sm"
+                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2 text-sm w-full sm:w-auto"
                 >
                   {categories.map(category => (
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </select>
               </div>
-              <div className="flex items-center border rounded-md bg-white dark:bg-slate-800">
+              <div className="flex items-center border rounded-md bg-white dark:bg-slate-800 w-fit">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
