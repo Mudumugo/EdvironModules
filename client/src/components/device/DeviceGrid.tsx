@@ -69,29 +69,34 @@ export default function DeviceGrid({ devices, onDeviceAction }: DeviceGridProps)
   return (
     <div className="space-y-4">
       {selectedDevices.length > 0 && (
-        <div className="flex gap-2 p-4 bg-muted rounded-lg">
-          <span className="text-sm font-medium">
+        <div className="flex flex-col sm:flex-row gap-2 p-3 sm:p-4 bg-muted rounded-lg">
+          <span className="text-sm font-medium mb-2 sm:mb-0">
             {selectedDevices.length} device(s) selected:
           </span>
-          <Button size="sm" variant="outline" onClick={() => handleBulkAction('lock')}>
-            <Lock className="h-4 w-4 mr-1" />
-            Lock All
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => handleBulkAction('unlock')}>
-            <Unlock className="h-4 w-4 mr-1" />
-            Unlock All
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => handleBulkAction('restart')}>
-            <Power className="h-4 w-4 mr-1" />
-            Restart All
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => setSelectedDevices([])}>
-            Clear Selection
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={() => handleBulkAction('lock')} className="flex-1 sm:flex-none">
+              <Lock className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Lock All</span>
+              <span className="sm:hidden">Lock</span>
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => handleBulkAction('unlock')} className="flex-1 sm:flex-none">
+              <Unlock className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Unlock All</span>
+              <span className="sm:hidden">Unlock</span>
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => handleBulkAction('restart')} className="flex-1 sm:flex-none">
+              <Power className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Restart All</span>
+              <span className="sm:hidden">Restart</span>
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelectedDevices([])} className="w-full sm:w-auto">
+              Clear Selection
+            </Button>
+          </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {devices.map((device) => {
           const DeviceIcon = getDeviceIcon(device.type);
           const isSelected = selectedDevices.includes(device.id);

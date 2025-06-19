@@ -136,51 +136,54 @@ export default function DeviceManagement() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Device Management</h1>
-          <p className="text-muted-foreground">Monitor and control student devices across your institution</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Device Management</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Monitor and control student devices across your institution</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => refetch()}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
+          <Button variant="outline" onClick={() => refetch()} className="w-full sm:w-auto">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" className="w-full sm:w-auto">
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Add Device
           </Button>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <div className="flex items-center justify-between">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="devices">Devices</TabsTrigger>
-            <TabsTrigger value="groups">Groups</TabsTrigger>
-            <TabsTrigger value="policies">Policies</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 lg:w-auto">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="devices" className="text-xs sm:text-sm">Devices</TabsTrigger>
+            <TabsTrigger value="groups" className="text-xs sm:text-sm">Groups</TabsTrigger>
+            <TabsTrigger value="policies" className="text-xs sm:text-sm">Policies</TabsTrigger>
+            <TabsTrigger value="reports" className="text-xs sm:text-sm">Reports</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs sm:text-sm">Settings</TabsTrigger>
           </TabsList>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-2">
             <AddDeviceDialog onDeviceAdded={handleRefresh} />
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Download className="h-4 w-4 mr-2" />
-              Export
+              <span className="hidden sm:inline">Export</span>
+              <span className="sm:hidden">Export Data</span>
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Upload className="h-4 w-4 mr-2" />
-              Import
+              <span className="hidden sm:inline">Import</span>
+              <span className="sm:hidden">Import Data</span>
             </Button>
-            <Button size="sm" onClick={handleRefresh}>
+            <Button size="sm" onClick={handleRefresh} className="w-full sm:w-auto">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
+              <span className="sm:hidden">Refresh Data</span>
             </Button>
           </div>
         </div>
@@ -188,34 +191,34 @@ export default function DeviceManagement() {
         <TabsContent value="overview" className="space-y-6">
           <DeviceStats stats={stats} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Latest device management actions</CardDescription>
+                <CardTitle className="text-base sm:text-lg">Recent Activity</CardTitle>
+                <CardDescription className="text-sm">Latest device management actions</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <div className="font-medium">Device locked: Student Tablet 015</div>
-                      <div className="text-sm text-muted-foreground">Policy violation detected</div>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-lg space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm sm:text-base truncate">Device locked: Student Tablet 015</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Policy violation detected</div>
                     </div>
-                    <div className="text-sm text-muted-foreground">2 min ago</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground flex-shrink-0">2 min ago</div>
                   </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <div className="font-medium">App installation blocked</div>
-                      <div className="text-sm text-muted-foreground">Unauthorized game installation attempt</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-lg space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm sm:text-base truncate">App installation blocked</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Unauthorized game installation attempt</div>
                     </div>
-                    <div className="text-sm text-muted-foreground">5 min ago</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground flex-shrink-0">5 min ago</div>
                   </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <div className="font-medium">Device registered: Student Laptop 157</div>
-                      <div className="text-sm text-muted-foreground">New device added to management</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-lg space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm sm:text-base truncate">Device registered: Student Laptop 157</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">New device added to management</div>
                     </div>
-                    <div className="text-sm text-muted-foreground">1 hour ago</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground flex-shrink-0">1 hour ago</div>
                   </div>
                 </div>
               </CardContent>
@@ -223,31 +226,31 @@ export default function DeviceManagement() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Policy Violations</CardTitle>
-                <CardDescription>Devices requiring attention</CardDescription>
+                <CardTitle className="text-base sm:text-lg">Policy Violations</CardTitle>
+                <CardDescription className="text-sm">Devices requiring attention</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 border border-red-200 rounded-lg">
-                    <div>
-                      <div className="font-medium text-red-600">Critical: Unauthorized access attempt</div>
-                      <div className="text-sm text-muted-foreground">Student Tablet 008 • Library</div>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border border-red-200 rounded-lg space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-red-600 text-sm sm:text-base truncate">Critical: Unauthorized access attempt</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Student Tablet 008 • Library</div>
                     </div>
-                    <Button size="sm" variant="destructive">Action Required</Button>
+                    <Button size="sm" variant="destructive" className="w-full sm:w-auto">Action Required</Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 border border-yellow-200 rounded-lg">
-                    <div>
-                      <div className="font-medium text-yellow-600">Warning: App usage exceeded</div>
-                      <div className="text-sm text-muted-foreground">Student Laptop 034 • Classroom C</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border border-yellow-200 rounded-lg space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-yellow-600 text-sm sm:text-base truncate">Warning: App usage exceeded</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Student Laptop 034 • Classroom C</div>
                     </div>
-                    <Button size="sm" variant="outline">Review</Button>
+                    <Button size="sm" variant="outline" className="w-full sm:w-auto">Review</Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 border border-orange-200 rounded-lg">
-                    <div>
-                      <div className="font-medium text-orange-600">Info: Battery critically low</div>
-                      <div className="text-sm text-muted-foreground">Student Tablet 021 • Home</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border border-orange-200 rounded-lg space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-orange-600 text-sm sm:text-base truncate">Info: Battery critically low</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Student Tablet 021 • Home</div>
                     </div>
-                    <Button size="sm" variant="outline">Notify</Button>
+                    <Button size="sm" variant="outline" className="w-full sm:w-auto">Notify</Button>
                   </div>
                 </div>
               </CardContent>
@@ -268,14 +271,14 @@ export default function DeviceManagement() {
 
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
                 <div>
-                  <CardTitle>Managed Devices</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-base sm:text-lg">Managed Devices</CardTitle>
+                  <CardDescription className="text-sm">
                     {devices.length} devices found
                   </CardDescription>
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs sm:text-sm text-muted-foreground">
                   Last updated: {new Date().toLocaleString()}
                 </div>
               </div>

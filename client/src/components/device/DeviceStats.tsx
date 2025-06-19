@@ -22,14 +22,14 @@ export default function DeviceStats({ stats }: DeviceStatsProps) {
   const restrictedPercentage = (stats.restricted / stats.total) * 100;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Devices</CardTitle>
-          <Monitor className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Total Devices</CardTitle>
+          <Monitor className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.total}</div>
+        <CardContent className="pt-2">
+          <div className="text-xl sm:text-2xl font-bold">{stats.total}</div>
           <p className="text-xs text-muted-foreground">
             Managed devices
           </p>
@@ -38,11 +38,11 @@ export default function DeviceStats({ stats }: DeviceStatsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Online</CardTitle>
-          <Wifi className="h-4 w-4 text-green-500" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Online</CardTitle>
+          <Wifi className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-600">{stats.online}</div>
+        <CardContent className="pt-2">
+          <div className="text-xl sm:text-2xl font-bold text-green-600">{stats.online}</div>
           <div className="flex items-center gap-2">
             <Progress value={onlinePercentage} className="h-1 flex-1" />
             <span className="text-xs text-muted-foreground">
