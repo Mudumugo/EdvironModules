@@ -135,8 +135,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
   // Check for demo session first (allow demo sessions without strict expiration)
   if (sessionUser) {
-    req.user = sessionUser;
-    req.tenant = { id: sessionUser.tenantId || 'default' };
+    (req as any).user = sessionUser;
+    (req as any).tenant = { id: sessionUser.tenantId || 'default' };
     return next();
   }
 
