@@ -1,42 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
-import { trackUserLogin, xapiTracker } from "@/lib/xapiTracker";
+import { getQueryFn } from "@/lib/queryClient";
 
 interface User {
   id: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  role?: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  tenantId: string;
   profileImageUrl?: string;
-  grade?: string;
+  institutionId?: string;
+  gradeLevel?: string;
 }
 
 export function useAuth() {
-  const { data: user, isLoading } = useQuery<User>({
+  const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/user"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
+    refetchOnWindowFocus: false,
   });
 
-  const hasTrackedLogin = useRef(false);
-  const lastUserId = useRef<string | null>(null);
-
-  // Track user login only once per session or user change
-  useEffect(() => {
-    if (user && !isLoading) {
-      // Only track if this is a new user or first time
-      if (!hasTrackedLogin.current || lastUserId.current !== user.id) {
-        xapiTracker.setCurrentUser(user);
-        trackUserLogin(user);
-        hasTrackedLogin.current = true;
-        lastUserId.current = user.id;
-      }
-    }
-  }, [user?.id, isLoading]);
+  const isAuthenticated = !!user && !error;
 
   return {
-    user,
+    user: user as User | null,
+    isAuthenticated,
     isLoading,
-    isAuthenticated: !!user,
+    error
   };
 }

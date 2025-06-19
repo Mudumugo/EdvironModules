@@ -76,189 +76,189 @@ const componentMap: Record<string, any> = {
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Show loading state while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  // Show landing page if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={InteractiveSignUp} />
-        <Route path="/interactive-signup" component={InteractiveSignUp} />
-        <Route path="/old-signup" component={SignUp} />
-        <Route path="/demo" component={Login} />
-        <Route path="/features" component={Features} />
-        <Route path="/solutions" component={Solutions} />
-        <Route path="/cbe-overview" component={CBEOverview} />
-        <Route path="/about" component={About} />
-        <Route path="/mobile" component={MobileLanding} />
-        <Route component={Landing} />
-      </Switch>
-    );
-  }
-
-  // Show main application with role-based routing
+  // Show mobile landing page immediately for /mobile route
   return (
-    <Layout>
-      <Switch>
-        {/* Core modules - available to all authenticated users */}
-        <Route path="/">
-          <RoleProtectedRoute moduleId="dashboard">
-            {user?.role === 'school_admin' ? <AdminDashboard /> : 
-             user?.role === 'security_staff' ? <SecurityDashboard /> : 
-             user?.role === 'it_staff' ? <DeviceManagement /> : 
-             user?.role === 'teacher' ? <TeacherDashboard /> :
-             user?.role?.includes('student') || user?.role === 'demo_student_elementary' ? <Dashboard /> :
-             <Dashboard />}
-          </RoleProtectedRoute>
-        </Route>
-        
-        <Route path="/learning-dashboard">
-          <RoleProtectedRoute moduleId="dashboard">
-            <LearningDashboard />
-          </RoleProtectedRoute>
-        </Route>
-        
-        <Route path="/settings">
-          <RoleProtectedRoute moduleId="settings">
-            <Settings />
-          </RoleProtectedRoute>
-        </Route>
+    <Switch>
+      <Route path="/mobile" component={MobileLanding} />
+      
+      {/* Show loading state while checking authentication for other routes */}
+      <Route>
+        {isLoading ? (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+          </div>
+        ) : !isAuthenticated ? (
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={InteractiveSignUp} />
+            <Route path="/interactive-signup" component={InteractiveSignUp} />
+            <Route path="/old-signup" component={SignUp} />
+            <Route path="/demo" component={Login} />
+            <Route path="/features" component={Features} />
+            <Route path="/solutions" component={Solutions} />
+            <Route path="/cbe-overview" component={CBEOverview} />
+            <Route path="/about" component={About} />
+            <Route component={Landing} />
+          </Switch>
+        ) : (
+          <Layout>
+            <Switch>
+              {/* Core modules - available to all authenticated users */}
+              <Route path="/">
+                <RoleProtectedRoute moduleId="dashboard">
+                  {user?.role === 'school_admin' ? <AdminDashboard /> : 
+                   user?.role === 'security_staff' ? <SecurityDashboard /> : 
+                   user?.role === 'it_staff' ? <DeviceManagement /> : 
+                   user?.role === 'teacher' ? <TeacherDashboard /> :
+                   user?.role?.includes('student') || user?.role === 'demo_student_elementary' ? <Dashboard /> :
+                   <Dashboard />}
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/learning-dashboard">
+                <RoleProtectedRoute moduleId="dashboard">
+                  <LearningDashboard />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/settings">
+                <RoleProtectedRoute moduleId="settings">
+                  <Settings />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/user-profile">
-          <RoleProtectedRoute moduleId="user-profile">
-            <UserProfile />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/user-profile">
+                <RoleProtectedRoute moduleId="user-profile">
+                  <UserProfile />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Student and Teacher modules */}
-        <Route path="/digital-library">
-          <RoleProtectedRoute moduleId="digital-library">
-            <DigitalLibrary />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Student and Teacher modules */}
+              <Route path="/digital-library">
+                <RoleProtectedRoute moduleId="digital-library">
+                  <DigitalLibrary />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/my-locker">
-          <RoleProtectedRoute moduleId="my-locker">
-            <MyLocker />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/my-locker">
+                <RoleProtectedRoute moduleId="my-locker">
+                  <MyLocker />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Teacher-only modules */}
-        <Route path="/teacher-dashboard">
-          <RoleProtectedRoute moduleId="teacher-dashboard">
-            <TeacherDashboard />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Teacher-only modules */}
+              <Route path="/teacher-dashboard">
+                <RoleProtectedRoute moduleId="teacher-dashboard">
+                  <TeacherDashboard />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/tutor-hub">
-          <RoleProtectedRoute moduleId="tutor-hub">
-            <TutorHub />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/tutor-hub">
+                <RoleProtectedRoute moduleId="tutor-hub">
+                  <TutorHub />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/scheduling">
-          <RoleProtectedRoute moduleId="scheduling">
-            <Scheduling />
-          </RoleProtectedRoute>
-        </Route>
-        
-        <Route path="/school-calendar">
-          <RoleProtectedRoute moduleId="scheduling">
-            <SchoolCalendar />
-          </RoleProtectedRoute>
-        </Route>
-        
-        <Route path="/calendar">
-          <RoleProtectedRoute moduleId="scheduling">
-            <Calendar />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/scheduling">
+                <RoleProtectedRoute moduleId="scheduling">
+                  <Scheduling />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/school-calendar">
+                <RoleProtectedRoute moduleId="scheduling">
+                  <SchoolCalendar />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/calendar">
+                <RoleProtectedRoute moduleId="scheduling">
+                  <Calendar />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Administrative modules - School Admin only */}
-        <Route path="/users">
-          <RoleProtectedRoute moduleId="users">
-            <UserManagement />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Administrative modules - School Admin only */}
+              <Route path="/users">
+                <RoleProtectedRoute moduleId="users">
+                  <UserManagement />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/school-management">
-          <RoleProtectedRoute moduleId="school-management">
-            <SchoolManagement />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/school-management">
+                <RoleProtectedRoute moduleId="school-management">
+                  <SchoolManagement />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/analytics">
-          <RoleProtectedRoute moduleId="analytics">
-            <Analytics />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/analytics">
+                <RoleProtectedRoute moduleId="analytics">
+                  <Analytics />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/licensing">
-          <RoleProtectedRoute moduleId="licensing">
-            <Licensing />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/licensing">
+                <RoleProtectedRoute moduleId="licensing">
+                  <Licensing />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Technical modules - IT Staff + School Admin */}
-        <Route path="/device-management">
-          <RoleProtectedRoute moduleId="device-management">
-            <DeviceManagement />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Technical modules - IT Staff + School Admin */}
+              <Route path="/device-management">
+                <RoleProtectedRoute moduleId="device-management">
+                  <DeviceManagement />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Authoring module - Content creators */}
-        <Route path="/authoring-dashboard">
-          <RoleProtectedRoute moduleId="authoring-dashboard">
-            <AuthoringDashboard />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Authoring module - Content creators */}
+              <Route path="/authoring-dashboard">
+                <RoleProtectedRoute moduleId="authoring-dashboard">
+                  <AuthoringDashboard />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Security modules - Security Staff + School Admin */}
-        <Route path="/security-dashboard">
-          <RoleProtectedRoute moduleId="security-dashboard">
-            <SecurityDashboard />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Security modules - Security Staff + School Admin */}
+              <Route path="/security-dashboard">
+                <RoleProtectedRoute moduleId="security-dashboard">
+                  <SecurityDashboard />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/crm">
-          <RoleProtectedRoute moduleId="crm">
-            <CRM />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/crm">
+                <RoleProtectedRoute moduleId="crm">
+                  <CRM />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route path="/family-controls">
-          <RoleProtectedRoute moduleId="family-controls">
-            <FamilyControls />
-          </RoleProtectedRoute>
-        </Route>
+              <Route path="/family-controls">
+                <RoleProtectedRoute moduleId="family-controls">
+                  <FamilyControls />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Communication modules - Multiple roles */}
-        <Route path="/pbx">
-          <RoleProtectedRoute moduleId="pbx">
-            <PBXDashboard />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Communication modules - Multiple roles */}
+              <Route path="/pbx">
+                <RoleProtectedRoute moduleId="pbx">
+                  <PBXDashboard />
+                </RoleProtectedRoute>
+              </Route>
 
-        {/* Parent modules - Parent role only */}
-        <Route path="/parent-portal">
-          <RoleProtectedRoute moduleId="parent-portal">
-            <ParentPortal />
-          </RoleProtectedRoute>
-        </Route>
+              {/* Parent modules - Parent role only */}
+              <Route path="/parent-portal">
+                <RoleProtectedRoute moduleId="parent-portal">
+                  <ParentPortal />
+                </RoleProtectedRoute>
+              </Route>
 
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+              <Route component={NotFound} />
+            </Switch>
+          </Layout>
+        )}
+      </Route>
+    </Switch>
   );
 }
+
+
 
 function App() {
   return (
