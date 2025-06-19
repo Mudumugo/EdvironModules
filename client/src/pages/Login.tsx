@@ -69,7 +69,8 @@ export default function Login() {
           title: "Login Successful",
           description: "Welcome back to EdVirons!",
         });
-        setLocation("/");
+        // Force a full page reload to ensure authentication state is properly updated
+        window.location.href = "/";
       } else {
         throw new Error("Login failed");
       }
@@ -98,7 +99,8 @@ export default function Login() {
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        setLocation("/");
+        // Force a full page reload to ensure authentication state is properly updated
+        window.location.href = "/";
       } else {
         throw new Error("Demo login failed");
       }
