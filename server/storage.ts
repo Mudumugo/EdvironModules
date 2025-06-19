@@ -211,11 +211,6 @@ export class DatabaseStorage implements IStorage {
     console.log("Setting user password for:", userId);
   }
 
-  async getUserByEmail(email: string): Promise<any> {
-    // Mock implementation - return null for demo (no existing users)
-    console.log("Getting user by email:", email);
-    return null;
-  }
   // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));

@@ -45,34 +45,34 @@ export function DashboardHeader({
     <div className="mb-6">
       {/* Plan Info Header */}
       {showPlanInfo && (
-        <div className="flex items-center justify-between mb-6 bg-white rounded-lg p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <Star className="h-5 w-5 text-blue-600" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-0 sm:justify-between mb-4 sm:mb-6 bg-white rounded-lg p-3 sm:p-4 shadow-sm">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-1.5 sm:p-2 bg-blue-50 rounded-lg">
+              <Star className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             </div>
-            <span className="font-medium text-gray-700">Free Basic Plan</span>
+            <span className="font-medium text-gray-700 text-sm sm:text-base">Free Basic Plan</span>
           </div>
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+          <Button size="sm" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
             Upgrade to Premium
           </Button>
         </div>
       )}
 
       {/* Main Header */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+      <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="text-center mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
             {getGreeting()}, {user?.firstName || "Student"}!
           </h1>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">{title}</h2>
-          {subtitle && <p className="text-gray-600">{subtitle}</p>}
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700 mb-2">{title}</h2>
+          {subtitle && <p className="text-gray-600 text-sm sm:text-base">{subtitle}</p>}
         </div>
 
         {/* Search and Filters */}
         {(showSearch || showFilters) && (
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {showSearch && (
-              <div className="relative flex-1 max-w-md">
+              <div className="relative w-full sm:max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   placeholder="Search modules..."
@@ -84,9 +84,9 @@ export function DashboardHeader({
             )}
 
             {showFilters && (
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-center sm:justify-between">
                 <Select value={selectedCategory} onValueChange={onCategoryChange}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-full sm:w-[180px]">
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue />
                   </SelectTrigger>
@@ -103,6 +103,7 @@ export function DashboardHeader({
                     variant="outline"
                     size="icon"
                     onClick={() => onViewModeChange(viewMode === "grid" ? "list" : "grid")}
+                    className="hidden sm:flex"
                   >
                     {viewMode === "grid" ? <List className="h-4 w-4" /> : <Grid3X3 className="h-4 w-4" />}
                   </Button>
