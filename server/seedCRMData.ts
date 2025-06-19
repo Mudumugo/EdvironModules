@@ -91,8 +91,8 @@ export async function seedCRMData() {
     // Sample demo requests
     const sampleDemos = [
       {
-        first_name: "Dr. Michael",
-        last_name: "Waweru",
+        firstName: "Dr. Michael",
+        lastName: "Waweru",
         email: "mwaweru@education.go.ke",
         phone: "+254767890123",
         organization: "County Education Office",

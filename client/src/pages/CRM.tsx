@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Calendar, CalendarIcon } from "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -96,10 +96,11 @@ export default function CRM() {
   // Update lead mutation
   const updateLeadMutation = useMutation({
     mutationFn: async (data: { id: number; updates: Partial<Lead> }) => {
-      return apiRequest(`/api/crm/leads/${data.id}`, {
+      return fetch(`/api/crm/leads/${data.id}`, {
         method: "PATCH",
-        body: data.updates,
-      });
+        body: JSON.stringify(data.updates),
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.json());
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/crm/leads"] });
@@ -113,10 +114,11 @@ export default function CRM() {
   // Add activity mutation
   const addActivityMutation = useMutation({
     mutationFn: async (activity: any) => {
-      return apiRequest("/api/crm/activities", {
+      return fetch("/api/crm/activities", {
         method: "POST",
-        body: activity,
-      });
+        body: JSON.stringify(activity),
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.json());
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/crm/activities"] });
@@ -137,11 +139,12 @@ export default function CRM() {
 
   // Filter leads
   const filteredLeads = useMemo(() => {
-    return leads.filter((lead: Lead) => {
+    const leadsArray = Array.isArray(leads) ? leads : [];
+    return leadsArray.filter((lead: any) => {
       const matchesSearch = 
-        lead.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email.toLowerCase().includes(searchTerm.toLowerCase());
+        lead.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
       const matchesPriority = priorityFilter === "all" || lead.priority === priorityFilter;
@@ -152,10 +155,11 @@ export default function CRM() {
 
   // Statistics
   const stats = useMemo(() => {
-    const totalLeads = leads.length;
-    const newLeads = leads.filter((l: Lead) => l.status === "new").length;
-    const qualifiedLeads = leads.filter((l: Lead) => l.status === "qualified").length;
-    const convertedLeads = leads.filter((l: Lead) => l.status === "converted").length;
+    const leadsArray = Array.isArray(leads) ? leads : [];
+    const totalLeads = leadsArray.length;
+    const newLeads = leadsArray.filter((l: any) => l.status === "new").length;
+    const qualifiedLeads = leadsArray.filter((l: any) => l.status === "qualified").length;
+    const convertedLeads = leadsArray.filter((l: any) => l.status === "converted").length;
     const conversionRate = totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : "0";
 
     return {
