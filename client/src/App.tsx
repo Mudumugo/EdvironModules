@@ -22,6 +22,7 @@ import SchoolManagement from "@/pages/SchoolManagement";
 import DigitalLibrary from "@/pages/DigitalLibrary";
 import DigitalLibraryNew from "@/pages/DigitalLibraryNew";
 import SecurityDashboard from "@/pages/SecurityDashboard";
+import ITDashboard from "@/pages/ITDashboard";
 import TutorHub from "@/pages/TutorHub";
 import FamilyControls from "@/pages/FamilyControls";
 import Scheduling from "@/pages/Scheduling";
@@ -115,7 +116,7 @@ function Router() {
                 <RoleProtectedRoute moduleId="dashboard">
                   {user?.role === 'school_admin' ? <AdminDashboard /> : 
                    user?.role === 'security_staff' ? <SecurityDashboard /> : 
-                   user?.role === 'it_staff' ? <DeviceManagement /> : 
+                   user?.role === 'it_staff' ? <ITDashboard /> : 
                    user?.role === 'teacher' ? <TeacherDashboard /> :
                    user?.role?.includes('student') || user?.role === 'demo_student_elementary' ? <Dashboard /> :
                    <Dashboard />}
