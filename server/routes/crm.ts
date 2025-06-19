@@ -65,7 +65,7 @@ export function registerCRMRoutes(app: Express) {
   });
 
   // Lead Activities endpoints
-  app.get('/api/crm/activities', isAuthenticated, requireRole(['admin', 'sales', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.get('/api/crm/activities', isAuthenticated, async (req: any, res) => {
     try {
       const leadId = req.query.leadId ? parseInt(req.query.leadId as string) : undefined;
       const activities = await storage.getLeadActivities(leadId);
@@ -76,7 +76,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.post('/api/crm/activities', isAuthenticated, requireRole(['admin', 'sales', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.post('/api/crm/activities', isAuthenticated, async (req: any, res) => {
     try {
       const validatedData = insertLeadActivitySchema.parse(req.body);
       const activity = await storage.createLeadActivity(validatedData);
@@ -98,7 +98,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.get('/api/crm/demo-requests/:id', isAuthenticated, requireRole(['admin', 'sales', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.get('/api/crm/demo-requests/:id', isAuthenticated, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const demo = await storage.getDemoRequest(id);
@@ -123,7 +123,7 @@ export function registerCRMRoutes(app: Express) {
     }
   });
 
-  app.patch('/api/crm/demo-requests/:id', isAuthenticated, requireRole(['admin', 'sales', 'manager']), async (req: AuthenticatedRequest, res) => {
+  app.patch('/api/crm/demo-requests/:id', isAuthenticated, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const demo = await storage.updateDemoRequest(id, req.body);
