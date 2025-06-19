@@ -68,7 +68,7 @@ export function registerXapiRoutes(app: Express) {
           },
           object: {
             objectType: "Activity",
-            id: "https://school.edvirons.com/activities/lesson/math_001",
+            id: "https://school.example.com/activities/lesson/math_001",
             definition: {
               name: { "en-US": "Introduction to Algebra" },
               type: "http://adlnet.gov/expapi/activities/lesson"
@@ -95,7 +95,7 @@ export function registerXapiRoutes(app: Express) {
           },
           object: {
             objectType: "Activity",
-            id: "https://school.edvirons.com/activities/video/calculus_intro",
+            id: "https://school.example.com/activities/video/calculus_intro",
             definition: {
               name: { "en-US": "Calculus Introduction Video" },
               type: "https://w3id.org/xapi/video/activity-type/video"

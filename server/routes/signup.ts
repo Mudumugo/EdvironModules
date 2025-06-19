@@ -168,7 +168,7 @@ router.post("/adult", async (req, res) => {
     });
 
     // Send verification SMS
-    const message = `Your Edvirons verification code is:`;
+    const message = `Your verification code is:`;
     await sendVerificationSMS(validatedData.phone, verificationCode, message);
 
     res.json({
@@ -247,7 +247,7 @@ router.post("/family", async (req, res) => {
     });
 
     // Send verification SMS
-    const message = `Your Edvirons family account verification code is:`;
+    const message = `Your family account verification code is:`;
     await sendVerificationSMS(validatedData.parentPhone, verificationCode, message);
 
     res.json({
@@ -498,8 +498,8 @@ router.post("/resend-verification", async (req, res) => {
 
     // Send verification SMS
     const message = signupRequest.parentPhone ? 
-      `Your child is trying to create an Edvirons account. Use this code to verify:` :
-      `Your Edvirons verification code is:`;
+      `Your child is trying to create an account. Use this code to verify:` :
+      `Your verification code is:`;
     
     await sendVerificationSMS(contactMethod, verificationCode, message);
 

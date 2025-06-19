@@ -39,14 +39,14 @@ const advantages = [
   },
   {
     icon: Shield,
-    title: "EdVirons Cloud",
+    title: "Cloud Platform",
     description: "Secure online repository for institutional data and teaching design.",
     color: "text-purple-600",
     bgColor: "bg-purple-50"
   },
   {
     icon: Eye,
-    title: "EdVirons Sync",
+    title: "Sync Technology",
     description: "Enabling seamless device and data management for schools.",
     color: "text-teal-600",
     bgColor: "bg-teal-50"
@@ -321,7 +321,7 @@ export function About() {
             Ready to Transform Education?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of schools across Africa already using EdVirons to power their educational journey.
+            Join thousands of schools across Africa already using our platform to power their educational journey.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/demo">
