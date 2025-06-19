@@ -47,11 +47,12 @@ function checkSuspiciousActivity(req: Request): string | null {
     const developmentPatterns = [
       /@vite/,
       /@react-refresh/,
-      /\.tsx\?v=/,
-      /\.ts\?v=/,
-      /\.js\?v=/,
-      /\.css\?v=/,
-      /@fs\/home\/runner\/workspace/
+      /\.tsx(\?v=|$)/,
+      /\.ts(\?v=|$)/,
+      /\.js(\?v=|$)/,
+      /\.css(\?v=|$)/,
+      /@fs\/home\/runner\/workspace/,
+      /\/src\//
     ];
     
     if (developmentPatterns.some(pattern => pattern.test(req.url))) {
