@@ -11,7 +11,7 @@ import {
   insertNotebookSectionSchema,
   insertNotebookPageSchema 
 } from "@shared/schema";
-import { isAuthenticated } from "../../replitAuth";
+import { isAuthenticated } from "../../roleMiddleware";
 
 export function registerNotebookRoutes(app: Express) {
   // Get all notebooks for user with section and page counts
@@ -55,7 +55,7 @@ export function registerNotebookRoutes(app: Express) {
   // Get notebook with full hierarchy (sections and pages)
   app.get('/api/notebooks/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       const notebookId = parseInt(req.params.id);
 
       if (!userId) {
@@ -121,7 +121,7 @@ export function registerNotebookRoutes(app: Express) {
   // Create new notebook
   app.post('/api/notebooks', isAuthenticated, async (req: any, res: Response) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
@@ -129,7 +129,7 @@ export function registerNotebookRoutes(app: Express) {
       const validatedData = insertNotebookSchema.parse({
         ...req.body,
         userId,
-        tenantId: req.user.tenantId || 'default'
+        tenantId: req.user?.tenantId || 'default'
       });
 
       const [newNotebook] = await db
@@ -168,7 +168,7 @@ export function registerNotebookRoutes(app: Express) {
   // Update notebook
   app.patch('/api/notebooks/:id', isAuthenticated, async (req: any, res: Response) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       const notebookId = parseInt(req.params.id);
 
       if (!userId) {

@@ -495,6 +495,26 @@ export const pageComments = pgTable("page_comments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Insert schemas for notebooks
+export const insertNotebookSchema = createInsertSchema(notebooks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastAccessedAt: true,
+});
+
+export const insertNotebookSectionSchema = createInsertSchema(notebookSections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertNotebookPageSchema = createInsertSchema(notebookPages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const notebookActivity = pgTable("notebook_activity", {
   id: serial("id").primaryKey(),
   notebookId: integer("notebook_id").references(() => notebooks.id, { onDelete: "cascade" }).notNull(),
