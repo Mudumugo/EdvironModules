@@ -19,7 +19,8 @@ import {
   Briefcase,
   Download,
   GraduationCap,
-  FileText
+  FileText,
+  Check
 } from 'lucide-react';
 
 export default function MobileLanding() {
