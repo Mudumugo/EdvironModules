@@ -35,6 +35,7 @@ import CRM from "@/pages/CRM";
 import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
 import TeacherDashboard from "@/pages/TeacherDashboard";
+import StudentDashboard from "@/pages/StudentDashboard";
 import UserManagement from "@/pages/UserManagement-simple";
 import PBXDashboard from "@/pages/PBXDashboard";
 import ParentPortal from "@/pages/ParentPortal";
@@ -118,7 +119,7 @@ function Router() {
                    user?.role === 'security_staff' || user?.role === 'school_security' ? <SecurityDashboard /> : 
                    user?.role === 'it_staff' || user?.role === 'school_it_staff' ? <ITDashboard /> : 
                    user?.role === 'teacher' ? <TeacherDashboard /> :
-                   user?.role?.includes('student') || user?.role === 'student' || user?.role === 'demo_student_elementary' ? <Dashboard /> :
+                   user?.role?.includes('student') || user?.role === 'student' || user?.role === 'demo_student_elementary' ? <StudentDashboard /> :
                    <Dashboard />}
                 </RoleProtectedRoute>
               </Route>
