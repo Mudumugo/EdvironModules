@@ -126,7 +126,7 @@ export function MobileLanding() {
             EdVirons Learning Ecosystem
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Precision Learning, Leaving no Kid behind.
+            Education Reimagined: Local Needs, Global Standards.
           </p>
 
           {/* Mobile Tab Navigation */}
