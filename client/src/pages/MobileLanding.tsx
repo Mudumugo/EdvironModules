@@ -156,18 +156,56 @@ export function MobileLanding() {
           </p>
 
           {/* Mobile Tab Navigation */}
-          <div className="flex overflow-x-auto gap-2 mb-8 pb-2">
+          <div className="flex overflow-x-auto gap-2 mb-6 pb-2">
             {navigationTabs.map((tab) => (
               <Button
                 key={tab}
                 variant={activeTab === tabMapping[tab] ? "default" : "outline"}
-                onClick={() => setActiveTab(tabMapping[tab])}
+                onClick={() => {
+                  setActiveTab(tabMapping[tab]);
+                  setIsAutoPlaying(false); // Pause auto-play when user manually selects
+                }}
                 className="text-xs whitespace-nowrap flex-shrink-0"
                 size="sm"
               >
                 {tab}
               </Button>
             ))}
+          </div>
+
+          {/* Mobile Auto-play Controls */}
+          <div className="flex flex-col items-center gap-3 mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+              className="flex items-center gap-2 text-xs"
+            >
+              {isAutoPlaying ? (
+                <>
+                  <Pause className="h-3 w-3" />
+                  Pause
+                </>
+              ) : (
+                <>
+                  <Play className="h-3 w-3" />
+                  Play
+                </>
+              )}
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {fullNavigationTabs.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                    fullNavigationTabs[index] === activeTab 
+                      ? 'bg-blue-600' 
+                      : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Main Content Section */}
