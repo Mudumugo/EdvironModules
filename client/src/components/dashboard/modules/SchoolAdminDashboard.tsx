@@ -40,10 +40,11 @@ const quickStats = [
   { title: "Total Students", value: "2,847", change: "+12%", icon: Users, color: "bg-blue-500" },
   { title: "Active Teachers", value: "143", change: "+5%", icon: GraduationCap, color: "bg-green-500" },
   { title: "System Health", value: "98.5%", change: "+0.2%", icon: Shield, color: "bg-emerald-500" },
-  { title: "Monthly Revenue", value: "$47,230", change: "+8%", icon: CreditCard, color: "bg-purple-500" }
+  { title: "Active Classes", value: "67", change: "+3%", icon: BookOpen, color: "bg-purple-500" }
 ];
 
-const adminModules = [
+// School-level management modules (accessible by school administrators)
+const schoolAdminModules = [
   { 
     id: "school-management", 
     title: "School Management", 
@@ -57,29 +58,19 @@ const adminModules = [
     priority: 1
   },
   { 
-    id: "users", 
-    title: "User Management", 
-    description: "Manage students, teachers, and staff accounts", 
-    icon: Users, 
-    href: "/users", 
-    color: "bg-indigo-500",
-    category: "Core",
-    features: ["User Accounts", "Role Assignment", "Permission Control"]
-  },
-  { 
-    id: "analytics", 
-    title: "Analytics & Reports", 
-    description: "Comprehensive reporting and data analysis", 
+    id: "school-analytics", 
+    title: "School Analytics", 
+    description: "School performance metrics and academic reports", 
     icon: BarChart3, 
     href: "/analytics", 
     color: "bg-purple-500",
     category: "Analytics",
-    features: ["Performance Metrics", "Usage Reports", "Academic Analytics"]
+    features: ["Academic Performance", "Attendance Reports", "Grade Analytics"]
   },
   { 
     id: "scheduling", 
-    title: "Scheduling", 
-    description: "Class schedules and timetable management", 
+    title: "Class Scheduling", 
+    description: "Manage class schedules, timetables and school events", 
     icon: Calendar, 
     href: "/scheduling", 
     color: "bg-green-500",
@@ -87,25 +78,83 @@ const adminModules = [
     features: ["Class Schedules", "Event Planning", "Resource Booking"]
   },
   { 
-    id: "licensing", 
-    title: "Licensing", 
-    description: "Software licenses and subscription management", 
-    icon: CreditCard, 
-    href: "/licensing", 
-    color: "bg-orange-500",
-    category: "Finance",
-    features: ["License Tracking", "Billing Management", "Renewals"]
-  },
-  { 
-    id: "device-management", 
-    title: "Device Management", 
-    description: "Manage school devices and technical infrastructure", 
+    id: "school-devices", 
+    title: "School Devices", 
+    description: "Manage school-owned devices and classroom technology", 
     icon: Monitor, 
     href: "/device-management", 
     color: "bg-cyan-500",
     category: "Technology",
-    features: ["Device Inventory", "Maintenance", "Security"]
+    features: ["Device Inventory", "Classroom Tech", "Maintenance Requests"]
   },
+  { 
+    id: "digital-library", 
+    title: "Library Management", 
+    description: "Manage school's digital library and educational resources", 
+    icon: BookOpen, 
+    href: "/digital-library", 
+    color: "bg-emerald-500",
+    category: "Academic",
+    features: ["Resource Management", "Content Approval", "Usage Analytics"]
+  },
+  { 
+    id: "parent-communication", 
+    title: "Parent Portal", 
+    description: "Manage parent communications and school announcements", 
+    icon: MessageSquare, 
+    href: "/parent-portal-admin", 
+    color: "bg-pink-500",
+    category: "Communication",
+    features: ["Parent Updates", "Announcements", "Communication Tools"]
+  }
+];
+
+// Super-admin/Edvirons support modules (restricted to Edvirons team)
+const superAdminModules = [
+  { 
+    id: "global-users", 
+    title: "Global User Management", 
+    description: "Manage all users across the Edvirons platform", 
+    icon: Users, 
+    href: "/users", 
+    color: "bg-indigo-500",
+    category: "Global",
+    features: ["Platform Users", "Role Assignment", "Global Permissions"],
+    restricted: true
+  },
+  { 
+    id: "crm", 
+    title: "CRM Management", 
+    description: "Customer relationship management for Edvirons clients", 
+    icon: UserCheck, 
+    href: "/crm", 
+    color: "bg-red-500",
+    category: "Business",
+    features: ["Lead Management", "Client Relations", "Sales Pipeline"],
+    restricted: true
+  },
+  { 
+    id: "platform-licensing", 
+    title: "Platform Licensing", 
+    description: "Manage Edvirons software licenses and subscriptions", 
+    icon: CreditCard, 
+    href: "/licensing", 
+    color: "bg-orange-500",
+    category: "Business",
+    features: ["License Management", "Billing", "Subscription Control"],
+    restricted: true
+  },
+  { 
+    id: "system-settings", 
+    title: "System Settings", 
+    description: "Global platform configuration and system management", 
+    icon: Settings, 
+    href: "/admin/settings", 
+    color: "bg-gray-500",
+    category: "System",
+    features: ["Platform Config", "System Health", "Global Settings"],
+    restricted: true
+  }
 ];
 
 const recentActivities = [
@@ -117,9 +166,9 @@ const recentActivities = [
 ];
 
 const systemAlerts = [
-  { title: "License Renewal Due", description: "Educational software licenses expire in 30 days", priority: "high", time: "Today" },
-  { title: "Server Maintenance", description: "Scheduled maintenance tonight 2-4 AM", priority: "medium", time: "Tomorrow" },
-  { title: "New Feature Available", description: "Enhanced analytics dashboard is ready", priority: "low", time: "Yesterday" }
+  { title: "Parent-Teacher Conferences", description: "Schedule meetings for next week", priority: "high", time: "Today" },
+  { title: "System Update", description: "New features available for teachers", priority: "medium", time: "2 hours ago" },
+  { title: "Library Resources", description: "New digital books added to collection", priority: "low", time: "Yesterday" }
 ];
 
 export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps) {
@@ -128,12 +177,19 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedPeriod, setSelectedPeriod] = useState("7d");
 
-  const categories = ["All Modules", "Core", "Analytics", "Operations", "Finance", "Technology"];
+  const categories = ["All Modules", "Core", "Analytics", "Operations", "Technology", "Academic", "Communication"];
+
+  // Determine which modules to show based on user role
+  const availableModules = useMemo(() => {
+    // For now, show only school-level modules for school administrators
+    // In the future, you could check user.role === 'super_admin' to show superAdminModules
+    return schoolAdminModules;
+  }, []);
 
   const filteredModules = useMemo(() => {
     // Always show School Management first, regardless of filters
-    const schoolManagement = adminModules.find(m => m.id === 'school-management');
-    const otherModules = adminModules.filter(m => m.id !== 'school-management');
+    const schoolManagement = availableModules.find(m => m.id === 'school-management');
+    const otherModules = availableModules.filter(m => m.id !== 'school-management');
     
     const filtered = otherModules.filter(module => {
       const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,7 +206,7 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
        schoolManagement?.description.toLowerCase().includes(searchTerm.toLowerCase()));
     
     return shouldShowSchoolManagement ? [schoolManagement, ...filtered].filter(Boolean) : filtered;
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, availableModules]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -216,8 +272,8 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <Settings className="h-5 w-5 mr-2" />
-                    Administrative Modules
+                    <Building2 className="h-5 w-5 mr-2" />
+                    School Management Modules
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button
