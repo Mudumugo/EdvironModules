@@ -167,7 +167,7 @@ export function CollapsibleDashboardLayout({
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full">
-        <Sidebar variant="default" collapsible="icon">
+        <Sidebar variant="default" collapsible="icon" side="left">
           <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-2 py-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -283,8 +283,8 @@ export function CollapsibleDashboardLayout({
 
         <SidebarInset className="flex-1">
           {/* Header */}
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
-            <SidebarTrigger className="-ml-1" />
+          <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+            <SidebarTrigger className="h-8 w-8" />
             <div className="flex flex-1 items-center gap-2">
               <div>
                 <h1 className="text-lg font-semibold">{title}</h1>
@@ -301,8 +301,8 @@ export function CollapsibleDashboardLayout({
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto">
-            <div className="p-4 lg:p-6">
+          <main className="flex-1 overflow-auto bg-muted/10">
+            <div className="container mx-auto max-w-screen-2xl p-4 lg:p-6">
               {children}
             </div>
           </main>
