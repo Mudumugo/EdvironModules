@@ -165,21 +165,40 @@ export function CollapsibleDashboardLayout({
   };
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        <Sidebar variant="sidebar" collapsible="icon" className="border-r border-border">
-          <SidebarHeader className="border-b border-border p-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <GraduationCap className="h-4 w-4" />
+    <div className="min-h-screen w-full">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+        <div className="flex flex-1 items-center gap-2 overflow-hidden">
+          <div className="min-w-0 flex-1">
+            {title && <h1 className="text-lg font-semibold truncate">{title}</h1>}
+            {subtitle && (
+              <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
+            )}
+          </div>
+        </div>
+        {user && (
+          <div className="text-sm text-muted-foreground shrink-0">
+            {user.firstName} {user.lastName}
+          </div>
+        )}
+      </header>
+
+      {/* Sidebar and Main Content */}
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex pt-16 min-h-[calc(100vh-4rem)]">
+          <Sidebar variant="sidebar" collapsible="icon" className="border-r border-border">
+            <SidebarHeader className="border-b border-border p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                  <span className="font-semibold">EdVirons</span>
+                  <span className="text-xs text-muted-foreground">Learning Portal</span>
+                </div>
               </div>
-              <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                <span className="font-semibold">EdVirons</span>
-                <span className="text-xs text-muted-foreground">Learning Portal</span>
-              </div>
-            </div>
-            <SidebarTrigger className="h-8 w-8 hover:bg-accent hover:text-accent-foreground rounded-md transition-colors" />
-          </SidebarHeader>
+              <SidebarTrigger className="h-8 w-8 hover:bg-accent hover:text-accent-foreground rounded-md transition-colors" />
+            </SidebarHeader>
 
           <SidebarContent>
             <SidebarGroup>
@@ -282,32 +301,16 @@ export function CollapsibleDashboardLayout({
           <SidebarRail />
         </Sidebar>
 
-        <SidebarInset className="flex flex-col">
-          {/* Header */}
-          <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
-            <div className="flex flex-1 items-center gap-2 overflow-hidden">
-              <div className="min-w-0 flex-1">
-                {title && <h1 className="text-lg font-semibold truncate">{title}</h1>}
-                {subtitle && (
-                  <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
-                )}
+          <SidebarInset className="flex-1">
+            {/* Main Content */}
+            <main className="flex-1 overflow-auto bg-muted/10">
+              <div className="container mx-auto p-4 lg:p-6 max-w-none">
+                {children}
               </div>
-            </div>
-            {user && (
-              <div className="text-sm text-muted-foreground shrink-0">
-                {user.firstName} {user.lastName}
-              </div>
-            )}
-          </header>
-
-          {/* Main Content */}
-          <main className="flex-1 overflow-auto bg-muted/10">
-            <div className="container mx-auto p-4 lg:p-6 max-w-none">
-              {children}
-            </div>
-          </main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+            </main>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </div>
   );
 }
