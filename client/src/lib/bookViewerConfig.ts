@@ -51,17 +51,103 @@ export const WORKSHEET_VIEWER_TYPES = [
 ];
 
 // Check if a resource should use the enhanced BookViewer
-export function shouldUseBookViewer(resource: LibraryResource): boolean {
-  return BOOK_VIEWER_TYPES.includes(resource.type.toLowerCase());
+export function shouldUseBookViewer(resource: any): boolean {
+  const resourceType = resource.resourceType || resource.type || '';
+  return BOOK_VIEWER_TYPES.includes(resourceType.toLowerCase());
 }
 
 // Check if a resource should use the WorksheetViewer
-export function shouldUseWorksheetViewer(resource: LibraryResource): boolean {
-  return WORKSHEET_VIEWER_TYPES.includes(resource.type.toLowerCase());
+export function shouldUseWorksheetViewer(resource: any): boolean {
+  const resourceType = resource.resourceType || resource.type || '';
+  return WORKSHEET_VIEWER_TYPES.includes(resourceType.toLowerCase());
 }
 
-// Convert a library resource to book configuration
-export function convertResourceToBookConfig(resource: LibraryResource): BookConfig {
+// Convert a resource to BookConfig format
+export function convertResourceToBookConfig(resource: any): BookConfig {
+  return {
+    id: parseInt(resource.id.replace('lib_', '')) || 1,
+    title: resource.title || 'Untitled',
+    author: resource.author || 'Unknown Author',
+    pages: generateBookPages(resource),
+    totalPages: resource.pageCount || 20,
+    thumbnailUrl: resource.thumbnailUrl,
+    description: resource.description || '',
+    grade: resource.grade || '',
+    subject: resource.subject || '',
+    language: resource.language || 'English',
+    type: resource.resourceType || resource.type || 'book',
+    isInteractive: resource.type === 'interactive',
+    hasVideo: false,
+    hasAudio: false,
+    xapiEnabled: false,
+    content: resource.content || generateBookContent(resource),
+    mediaAssets: [],
+    interactiveElements: [],
+    trackingConfig: {
+      trackPageViews: true,
+      trackReadingTime: true,
+      trackCompletionRate: true,
+    }
+  };
+}
+
+// Generate sample book pages for demo
+function generateBookPages(resource: any): string[] {
+  const pages = [];
+  const totalPages = 20;
+  
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1) {
+      pages.push(`<div class="text-center p-8">
+        <h1 class="text-4xl font-bold mb-4">${resource.title}</h1>
+        <p class="text-lg text-gray-600 mb-8">${resource.description}</p>
+        <p class="text-sm text-gray-500">Grade ${resource.grade} • ${resource.subject}</p>
+      </div>`);
+    } else {
+      pages.push(`<div class="p-6">
+        <h2 class="text-2xl font-bold mb-4">Chapter ${i - 1}</h2>
+        <p class="text-base leading-relaxed mb-4">
+          This is page ${i} of ${resource.title}. This educational content provides comprehensive 
+          coverage of ${resource.subject} topics suitable for grade ${resource.grade} students.
+        </p>
+        <p class="text-base leading-relaxed mb-4">
+          The material is designed to enhance understanding through clear explanations, 
+          practical examples, and engaging activities that promote active learning.
+        </p>
+        <p class="text-sm text-gray-500 mt-8">Page ${i} of ${totalPages}</p>
+      </div>`);
+    }
+  }
+  
+  return pages;
+}
+
+// Generate book content
+function generateBookContent(resource: any): string {
+  return `<div class="book-content">
+    <h1>${resource.title}</h1>
+    <p>${resource.description}</p>
+    <p>This is a comprehensive ${resource.subject} resource for grade ${resource.grade} students.</p>
+  </div>`;
+}
+
+// Get book open message
+export function getBookOpenMessage(resource: any) {
+  if (shouldUseBookViewer(resource)) {
+    return {
+      title: "Opening Book Viewer",
+      description: `${resource.title} will open in the interactive book reader.`
+    };
+  } else {
+    return {
+      title: "Resource Accessed",
+      description: `Opening ${resource.title}.`
+    };
+  }
+}
+
+// Convert a library resource to book configuration (alternative implementation)
+function convertResourceToBookConfigAlternative(resource: LibraryResource): BookConfig {
   return {
     id: resource.id,
     title: resource.title,
@@ -456,24 +542,4 @@ function generateWorksheetInstructions(resource: LibraryResource): string {
   return baseInstructions.join(' ');
 }
 
-// Get appropriate toast message for all resource types
-export function getBookOpenMessage(resource: LibraryResource): { title: string; description: string } {
-  if (shouldUseBookViewer(resource)) {
-    return {
-      title: "Opening Immersive Reader",
-      description: `Loading ${resource.type} with enhanced reading features`
-    };
-  }
-  
-  if (shouldUseWorksheetViewer(resource)) {
-    return {
-      title: "Opening Interactive Worksheet",
-      description: `Loading ${resource.type} with worksheet tools and answer key`
-    };
-  }
-  
-  return {
-    title: "Opening Preview",
-    description: `Loading preview for ${resource.title}`
-  };
-}
+// Duplicate function removed - using earlier definition

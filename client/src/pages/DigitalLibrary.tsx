@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 import {
   LibraryHeader,
   LibrarySearchFilters,
@@ -10,12 +11,19 @@ import {
   getLayoutConfig,
   LibraryResourceTypes
 } from '@/components/library';
+import { BookViewer } from '@/components/books/BookViewer';
+import { convertResourceToBookConfig, shouldUseBookViewer, getBookOpenMessage } from '@/lib/bookViewerConfig';
 
 export default function DigitalLibrary() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedResourceType, setSelectedResourceType] = useState('all');
+
+  // Book viewer state
+  const [showBookViewer, setShowBookViewer] = useState(false);
+  const [currentBook, setCurrentBook] = useState<any>(null);
 
   // Allow manual grade level switching for demo purposes
   const [demoGradeLevel, setDemoGradeLevel] = useState<string>('primary');
@@ -55,17 +63,44 @@ export default function DigitalLibrary() {
 
   const handleResourceAccess = async (resource: any, accessType: 'view' | 'save_to_locker') => {
     try {
-      await apiRequest('POST', '/api/library/access', {
+      const response = await apiRequest('POST', '/api/library/access', {
         resourceId: resource.id,
         accessType
       });
       
       if (accessType === 'view') {
-        // Open resource viewer
-        window.open(`/library/viewer/${resource.id}`, '_blank');
+        const message = getBookOpenMessage(resource);
+        
+        // Use enhanced BookViewer for book-type resources
+        if (shouldUseBookViewer(resource)) {
+          const bookData = convertResourceToBookConfig(resource);
+          setCurrentBook(bookData);
+          setShowBookViewer(true);
+          
+          toast({
+            title: message.title,
+            description: message.description,
+          });
+        } else {
+          // For non-book resources, show a simple message
+          toast({
+            title: "Resource Accessed",
+            description: `Opening ${resource.title}`,
+          });
+        }
+      } else if (accessType === 'save_to_locker') {
+        toast({
+          title: "Saved to Locker",
+          description: `${resource.title} has been saved to your locker`,
+        });
       }
     } catch (error) {
       console.error('Failed to access resource:', error);
+      toast({
+        title: "Error",
+        description: "Failed to access resource. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -104,6 +139,17 @@ export default function DigitalLibrary() {
             layout={layout}
             gradeLevel={gradeLevel}
             onResourceAccess={handleResourceAccess}
+          />
+        )}
+
+        {/* Book Viewer Modal */}
+        {showBookViewer && currentBook && (
+          <BookViewer
+            bookData={currentBook}
+            onClose={() => {
+              setShowBookViewer(false);
+              setCurrentBook(null);
+            }}
           />
         )}
       </div>

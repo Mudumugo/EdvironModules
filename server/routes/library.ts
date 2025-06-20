@@ -200,4 +200,41 @@ export function registerLibraryRoutes(app: Express) {
       res.status(500).json({ error: 'Failed to track interaction' });
     }
   });
+
+  // Access resource endpoint
+  app.post('/api/library/access', isAuthenticated, (req, res) => {
+    try {
+      const { resourceId, accessType } = req.body;
+      const resource = libraryResources.find(r => r.id === resourceId);
+      
+      if (!resource) {
+        return res.status(404).json({ error: 'Resource not found' });
+      }
+
+      // Track the access
+      if (accessType === 'view') {
+        const resourceIndex = libraryResources.findIndex(r => r.id === resourceId);
+        if (resourceIndex !== -1) {
+          libraryResources[resourceIndex].downloads += 1;
+        }
+      }
+
+      // Return the resource data for the viewer
+      const mappedResource = {
+        ...resource,
+        resourceType: resource.type,
+        viewCount: resource.downloads || 0,
+        duration: Math.floor(Math.random() * 60) + 10
+      };
+
+      res.json({ 
+        success: true,
+        resource: mappedResource,
+        accessType
+      });
+    } catch (error) {
+      console.error('Error accessing resource:', error);
+      res.status(500).json({ error: 'Failed to access resource' });
+    }
+  });
 }
