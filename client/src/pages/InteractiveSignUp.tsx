@@ -1,17 +1,30 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { WelcomeStep } from "@/components/interactive-signup/WelcomeStep";
-import { UserTypeStep } from "@/components/interactive-signup/UserTypeStep";
-import { AgeCheckStep } from "@/components/interactive-signup/AgeCheckStep";
-import { StudentInfoStep } from "@/components/interactive-signup/StudentInfoStep";
-import { ParentInfoStep } from "@/components/interactive-signup/ParentInfoStep";
-import { ChildInfoStep } from "@/components/interactive-signup/ChildInfoStep";
-import { NavigationButtons } from "@/components/interactive-signup/NavigationButtons";
-import { type QuizStep, type QuizData } from "@/components/interactive-signup/types";
+import { 
+  ArrowRight, 
+  ArrowLeft, 
+  BookOpen, 
+  User, 
+  Heart, 
+  School,
+  CheckCircle,
+  MapPin,
+  Phone,
+  Mail,
+  Calendar,
+  Users,
+  GraduationCap
+} from "lucide-react";
 
 
 
