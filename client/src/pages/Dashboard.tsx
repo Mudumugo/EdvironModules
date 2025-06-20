@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { UserRole } from "@shared/schema";
 import ITDashboard from "./ITDashboard";
 import SecurityDashboard from "./SecurityDashboard";
-import { PrimaryDashboard, JuniorDashboard, SeniorDashboard } from "@/components/dashboard/modules";
+import { PrimaryDashboard, JuniorDashboard, SeniorDashboard, TeacherDashboard } from "@/components/dashboard/modules";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -41,7 +41,7 @@ export default function Dashboard() {
       return 'senior';
     }
     
-    if (user.role === 'teacher' || user.role === 'demo_teacher') return 'senior';
+    if (user.role === 'teacher' || user.role === 'demo_teacher') return 'teacher';
     if (user.role === 'admin') return 'senior';
     return 'junior';
   };
@@ -72,6 +72,7 @@ export default function Dashboard() {
   // Return appropriate dashboard based on academic level
   if (academicLevel === 'primary') return <PrimaryDashboard user={user} />;
   if (academicLevel === 'junior') return <JuniorDashboard user={user} stats={stats} />;
+  if (academicLevel === 'teacher') return <TeacherDashboard user={user} stats={stats} />;
   if (academicLevel === 'senior' || academicLevel === 'college') return <SeniorDashboard user={user} stats={stats} />;
   
   return <JuniorDashboard user={user} stats={stats} />; // fallback

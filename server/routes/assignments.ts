@@ -54,11 +54,57 @@ const sampleAssignments = [
   }
 ];
 
+const teacherAssignments = [
+  {
+    id: "t1",
+    title: "Math Quiz - Grade 7A",
+    subject: "Mathematics", 
+    dueDate: "2025-06-23T23:59:00Z",
+    status: "active",
+    priority: "high",
+    studentsAssigned: 28,
+    submissionsReceived: 18,
+    graded: 12,
+    description: "Weekly math assessment covering algebra basics"
+  },
+  {
+    id: "t2",
+    title: "Science Lab Report - Chemistry",
+    subject: "Science",
+    dueDate: "2025-06-25T23:59:00Z", 
+    status: "active",
+    priority: "medium",
+    studentsAssigned: 24,
+    submissionsReceived: 15,
+    graded: 8,
+    description: "Lab report on chemical reactions experiment"
+  },
+  {
+    id: "t3",
+    title: "History Essay - WWI",
+    subject: "History",
+    dueDate: "2025-06-28T23:59:00Z",
+    status: "draft",
+    priority: "medium", 
+    studentsAssigned: 30,
+    submissionsReceived: 0,
+    graded: 0,
+    description: "Research essay on causes of World War I"
+  }
+];
+
 export function registerAssignmentRoutes(app: Express) {
   // Get assignment status overview
   app.get('/api/assignments/status', isAuthenticated, (req, res) => {
     try {
-      res.json(sampleAssignments);
+      const user = req.user as any;
+      
+      // Return teacher assignments for teachers, student assignments for students
+      if (user?.role === 'teacher' || user?.role === 'demo_teacher') {
+        res.json(teacherAssignments);
+      } else {
+        res.json(sampleAssignments);
+      }
     } catch (error) {
       console.error('Error fetching assignment status:', error);
       res.status(500).json({ error: 'Failed to fetch assignment status' });

@@ -30,6 +30,8 @@ export function TechTutorCard({ viewMode = "grid", onClick, variant = "junior" }
         return ["Digital Literacy", "Coding Basics", "AI Tutoring"];
       case "senior":
         return ["Advanced Programming", "Tech Career Prep", "Industry Skills"];
+      case "teacher":
+        return ["EdTech Integration", "Digital Classroom Tools", "Professional Development"];
       default:
         return ["AI Tutoring", "Interactive Learning"];
     }
