@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,9 +20,22 @@ import {
   Phone,
   MapPin
 } from "lucide-react";
+import { MobileLanding } from "./MobileLanding";
 
 export function Landing() {
   const [activeTab, setActiveTab] = useState("Educational Modules Dashboard");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if screen is mobile size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const navigationTabs = [
     "Educational Modules Dashboard",
@@ -94,6 +107,11 @@ export function Landing() {
       moreCount: 2
     }
   ];
+
+  // Show mobile version on small screens
+  if (isMobile) {
+    return <MobileLanding />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -1231,31 +1249,9 @@ export function Landing() {
                           </CardContent>
                         </Card>
 
-                        <Card className="group hover:shadow-md transition-shadow cursor-pointer">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="p-2 bg-orange-100 rounded-lg">
-                                <FileText className="h-5 w-5 text-orange-600" />
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
-                            </div>
-                            <h5 className="font-medium text-gray-900 mb-1">Curriculum Tracker</h5>
-                            <p className="text-sm text-gray-600">Monitor syllabus completion</p>
-                          </CardContent>
-                        </Card>
+                        
 
-                        <Card className="group hover:shadow-md transition-shadow cursor-pointer">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="p-2 bg-red-100 rounded-lg">
-                                <Calendar className="h-5 w-5 text-red-600" />
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
-                            </div>
-                            <h5 className="font-medium text-gray-900 mb-1">Holiday Planner</h5>
-                            <p className="text-sm text-gray-600">Manage term breaks and holidays</p>
-                          </CardContent>
-                        </Card>
+                        
                       </div>
                     </div>
                   </div>

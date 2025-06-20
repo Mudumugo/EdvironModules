@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
-import MobileLanding from "@/pages/MobileLanding";
+import { MobileLanding } from "@/pages/MobileLanding";
 import { Solutions } from "@/pages/Solutions";
 import { CBEOverview } from "@/pages/CBEOverview";
 import { About } from "@/pages/About";

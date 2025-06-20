@@ -1,328 +1,507 @@
-import { useState } from 'react';
-import { Link } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Logo } from '@/components/Logo';
+import { useState } from "react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   BookOpen, 
+  Calendar, 
   Users, 
-  Calendar,
-  Award,
-  PlayCircle,
-  Smartphone,
+  FolderOpen,
+  FileText,
+  BarChart3,
+  Search,
   Menu,
   X,
   ChevronRight,
-  Star,
-  Library,
-  Briefcase,
-  Download,
-  GraduationCap,
-  FileText,
-  Check
-} from 'lucide-react';
+  Mail,
+  Phone,
+  MapPin,
+  Grid3X3
+} from "lucide-react";
 
-export default function MobileLanding() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export function MobileLanding() {
+  const [activeTab, setActiveTab] = useState("Educational Modules Dashboard");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const features = [
+  const navigationTabs = [
+    "Modules",
+    "Library", 
+    "Manager",
+    "Lockers",
+    "Calendar"
+  ];
+
+  const tabMapping = {
+    "Modules": "Educational Modules Dashboard",
+    "Library": "Interactive Digital Library",
+    "Manager": "School Managers Tool", 
+    "Lockers": "Teacher & Student Lockers",
+    "Calendar": "Academic Calendar & Planning"
+  };
+
+  const modules = [
     {
-      icon: GraduationCap,
-      title: "CBE Curriculum",
-      description: "Competency-based education designed for modern learners"
+      title: "Shared Library",
+      description: "Educational resources and materials",
+      icon: BookOpen,
+      color: "bg-blue-100",
+      iconColor: "text-blue-600",
+      badge: "Core"
     },
     {
-      icon: Library,
-      title: "Digital Library",
-      description: "Access thousands of books, resources, and learning materials"
+      title: "My Locker", 
+      description: "Personal workspace for files",
+      icon: FolderOpen,
+      color: "bg-green-100",
+      iconColor: "text-green-600", 
+      badge: "Personal"
     },
     {
-      icon: Briefcase,
-      title: "Personal Locker",
-      description: "Store and organize your assignments, notes, and achievements"
+      title: "School Calendar",
+      description: "Events and schedules",
+      icon: Calendar,
+      color: "bg-purple-100",
+      iconColor: "text-purple-600",
+      badge: "Management"
     },
     {
-      icon: Download,
-      title: "Offline Learning",
-      description: "Download content and continue learning without internet"
-    },
-    {
-      icon: Users,
-      title: "Free Signups",
-      description: "Join thousands of students with completely free registration"
-    },
-    {
-      icon: Award,
-      title: "Track Progress",
-      description: "Monitor competency achievements and learning milestones"
+      title: "Lesson Planning",
+      description: "AI-powered lesson plans",
+      icon: FileText,
+      color: "bg-orange-100",
+      iconColor: "text-orange-600",
+      badge: "Teaching"
     }
   ];
 
-  const stats = [
-    { number: "10K+", label: "Active Students" },
-    { number: "500+", label: "Courses" },
-    { number: "98%", label: "Success Rate" },
-    { number: "24/7", label: "Support" }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Mobile Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between px-4 py-3">
-          <Logo size="sm" />
-          
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile Navigation */}
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="px-4">
+          <div className="flex justify-between items-center h-14">
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 bg-gray-800 rounded flex items-center justify-center">
+                <span className="text-white font-bold text-xs">E</span>
+              </div>
+              <span className="text-lg font-semibold text-gray-900">EdVirons</span>
+            </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-6 space-y-4">
-            <Link href="/signup">
-              <Button className="w-full" onClick={() => setIsMenuOpen(false)}>
-                Get Started
+            <div className="flex items-center space-x-2">
+              <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                Demo
               </Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="outline" className="w-full" onClick={() => setIsMenuOpen(false)}>
-                Sign In
+              <Button size="sm" className="text-xs px-3 py-1">
+                Login
               </Button>
-            </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-1"
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
-        )}
-      </header>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="pb-4 border-t border-gray-200 mt-2 pt-2">
+              <div className="space-y-2">
+                <Link href="/features" className="block text-gray-600 py-2">Features</Link>
+                <Link href="/solutions" className="block text-gray-600 py-2">Solutions</Link>
+                <Link href="/about" className="block text-gray-600 py-2">About</Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
 
       {/* Hero Section */}
-      <section className="px-4 py-12 text-center">
-        <div className="max-w-md mx-auto space-y-6">
-          <Badge variant="secondary" className="inline-flex items-center gap-2">
-            <Smartphone className="w-4 h-4" />
-            Mobile Optimized
-          </Badge>
-          
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-            Edvirons Learning Portal:
-            <span className="text-blue-600 dark:text-blue-400"> Connecting every CBE student with a modern learning ecosystem</span>
+      <section className="bg-white py-8 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            EdVirons Learning Ecosystem
           </h1>
+          <p className="text-lg text-gray-600 mb-8">
+            Precision Learning, Leaving no Kid behind.
+          </p>
 
-          <div className="space-y-3 pt-4">
-            <Link href="/signup">
-              <Button size="lg" className="w-full">
-                Start Learning Free
-                <ChevronRight className="ml-2 w-4 h-4" />
+          {/* Mobile Tab Navigation */}
+          <div className="flex overflow-x-auto gap-2 mb-8 pb-2">
+            {navigationTabs.map((tab) => (
+              <Button
+                key={tab}
+                variant={activeTab === tabMapping[tab] ? "default" : "outline"}
+                onClick={() => setActiveTab(tabMapping[tab])}
+                className="text-xs whitespace-nowrap flex-shrink-0"
+                size="sm"
+              >
+                {tab}
               </Button>
-            </Link>
-            
-            <Link href="/login">
-              <Button variant="outline" size="lg" className="w-full">
-                Sign In to Continue
-              </Button>
-            </Link>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-4 pt-8">
-            {stats.slice(0, 2).map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {stat.number}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {stat.label}
-                </div>
-              </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* CBE Curriculum Highlight */}
-      <section className="px-4 py-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10">
-        <div className="max-w-md mx-auto text-center space-y-6">
-          <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-            <GraduationCap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-          </div>
-          
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Built for CBE Excellence
-          </h2>
-          
-          <p className="text-gray-600 dark:text-gray-300">
-            Our Competency-Based Education approach ensures every student masters skills at their own pace, 
-            with personalized pathways and measurable outcomes.
-          </p>
-          
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="text-center p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
-              <div className="font-semibold text-blue-600 dark:text-blue-400">Skill Mastery</div>
-              <div className="text-gray-600 dark:text-gray-400">Focus on competencies</div>
-            </div>
-            <div className="text-center p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg">
-              <div className="font-semibold text-blue-600 dark:text-blue-400">Self-Paced</div>
-              <div className="text-gray-600 dark:text-gray-400">Learn at your speed</div>
-            </div>
-          </div>
-        </div>
-      </section>
+          {/* Main Content Section */}
+          <div className="bg-white rounded-lg shadow-lg p-4">
+            {activeTab === "Educational Modules Dashboard" && (
+              <>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">
+                    Educational Modules
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Navigate through organized educational tools and resources.
+                  </p>
+                </div>
 
-      {/* Features Section */}
-      <section className="px-4 py-12 bg-white/50 dark:bg-gray-800/50">
-        <div className="max-w-md mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            Everything You Need
-          </h2>
-          
-          <div className="space-y-4">
-            {features.map((feature, index) => (
-              <Card key={index} className="border-0 shadow-sm">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                      <feature.icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                {/* Mobile Dashboard */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Good Afternoon!</h3>
+                    <p className="text-sm text-gray-600">Access your teaching tools</p>
+                  </div>
+
+                  {/* Mobile Search */}
+                  <div className="relative mb-4">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search modules..."
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
+                    />
+                  </div>
+
+                  {/* Mobile Modules Grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {modules.map((module, index) => {
+                      const Icon = module.icon;
+                      return (
+                        <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow">
+                          <CardContent className="p-3">
+                            <div className={`p-2 rounded-lg ${module.color} mb-2 w-fit`}>
+                              <Icon className={`h-4 w-4 ${module.iconColor}`} />
+                            </div>
+                            <h3 className="font-medium text-sm text-gray-900 mb-1">{module.title}</h3>
+                            <p className="text-xs text-gray-600 mb-2">{module.description}</p>
+                            <Badge variant="secondary" className="text-xs">
+                              {module.badge}
+                            </Badge>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === "Interactive Digital Library" && (
+              <>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">
+                    Digital Library
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Access educational resources and interactive content.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Browse Content</h3>
+                    <Badge className="bg-blue-100 text-blue-800 text-xs">12K+ Resources</Badge>
+                  </div>
+
+                  <div className="relative mb-4">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search books, videos..."
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <BookOpen className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="font-medium text-sm">CBC Mathematics</h5>
+                        <p className="text-xs text-gray-600">Grade 1-8 Resources</p>
+                        <Badge variant="outline" className="text-xs mt-1">847 items</Badge>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-                        {feature.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {feature.description}
-                      </p>
+
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <BookOpen className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="font-medium text-sm">Science Experiments</h5>
+                        <p className="text-xs text-gray-600">Interactive Labs</p>
+                        <Badge variant="outline" className="text-xs mt-1">324 items</Badge>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Video Preview Section */}
-      <section className="px-4 py-12">
-        <div className="max-w-md mx-auto text-center space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            See It In Action
-          </h2>
-          
-          <div className="relative aspect-video bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Button size="lg" variant="secondary" className="gap-2">
-                <PlayCircle className="w-5 h-5" />
-                Watch Demo
-              </Button>
-            </div>
-          </div>
-          
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            2-minute overview of the platform
-          </p>
-        </div>
-      </section>
-
-      {/* Social Proof */}
-      <section className="px-4 py-12 bg-white/50 dark:bg-gray-800/50">
-        <div className="max-w-md mx-auto text-center space-y-6">
-          <div className="flex items-center justify-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            ))}
-          </div>
-          
-          <blockquote className="text-gray-700 dark:text-gray-300 italic">
-            "With CBE on Edvirons, I master skills at my own pace. The personal locker keeps my progress organized, and offline learning means I never fall behind."
-          </blockquote>
-          
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            — Maya R., CBE Student
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 pt-4">
-            {stats.slice(2).map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                  {stat.number}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {stat.label}
+              </>
+            )}
+
+            {activeTab === "School Managers Tool" && (
+              <>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">
+                    School Management
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Comprehensive administration tools for school operations.
+                  </p>
                 </div>
-              </div>
-            ))}
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <Card>
+                      <CardContent className="p-3 text-center">
+                        <div className="text-lg font-bold text-blue-600">1,247</div>
+                        <div className="text-xs text-gray-600">Students</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-3 text-center">
+                        <div className="text-lg font-bold text-green-600">89</div>
+                        <div className="text-xs text-gray-600">Staff</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Card className="cursor-pointer">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <Users className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">Student Management</h5>
+                            <p className="text-xs text-gray-600">Records & progress tracking</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="cursor-pointer">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-purple-100 rounded-lg">
+                            <BarChart3 className="h-4 w-4 text-purple-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">Financial Management</h5>
+                            <p className="text-xs text-gray-600">Fees & M-Pesa integration</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === "Teacher & Student Lockers" && (
+              <>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">
+                    Digital Lockers
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Personal storage for files and assignments.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <Card>
+                      <CardContent className="p-3 text-center">
+                        <div className="text-lg font-bold text-blue-600">2.4 GB</div>
+                        <div className="text-xs text-gray-600">Used</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-3 text-center">
+                        <div className="text-lg font-bold text-green-600">847</div>
+                        <div className="text-xs text-gray-600">Files</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Card className="cursor-pointer">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <FileText className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">Lesson Materials</h5>
+                            <p className="text-xs text-gray-600">234 files</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="cursor-pointer">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-green-100 rounded-lg">
+                            <FolderOpen className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">Assignments</h5>
+                            <p className="text-xs text-gray-600">89 submissions</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === "Academic Calendar & Planning" && (
+              <>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">
+                    Academic Calendar
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    Academic scheduling and planning tools.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Term 2 Progress</h3>
+                    <p className="text-sm text-gray-600">Week 8 of 13 • June 2024</p>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-3 border mb-4">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Term Completion</span>
+                      <span>62%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '62%' }}></div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Card>
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-red-100 rounded-lg">
+                            <Calendar className="h-4 w-4 text-red-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">KCPE Mock Exams</h5>
+                            <p className="text-xs text-gray-600">June 24-28, 2024</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-green-100 rounded-lg">
+                            <Users className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">Parent Conference</h5>
+                            <p className="text-xs text-gray-600">July 5, 2024</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-4 py-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-        <div className="max-w-md mx-auto text-center space-y-6">
-          <h2 className="text-2xl font-bold">
-            Start Your CBE Journey Today
+      {/* Mobile CTA */}
+      <section className="bg-white py-8 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Ready to transform learning?
           </h2>
-          
-          <p className="text-blue-100">
-            Join thousands of students mastering competencies at their own pace with our free CBE platform
-          </p>
-
           <div className="space-y-3">
-            <Link href="/signup">
-              <Button size="lg" className="w-full bg-white text-blue-600 hover:bg-blue-50">
-                Get Started Free
-              </Button>
-            </Link>
-            
-            <p className="text-xs text-blue-100">
-              100% Free Signup • No Credit Card Required • Start Learning Instantly
+            <Button className="w-full">
+              Access Portal
+            </Button>
+            <Button variant="outline" className="w-full">
+              Request Demo
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile Footer */}
+      <footer className="bg-white border-t border-gray-200 py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <div className="w-6 h-6 bg-gray-800 rounded flex items-center justify-center">
+                <span className="text-white font-bold text-xs">E</span>
+              </div>
+              <span className="text-lg font-semibold">EdVirons</span>
+            </div>
+            <p className="text-sm text-gray-600">
+              Empowering education in Kenya through innovative technology.
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-6 pt-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" />
-              <span>Digital Library</span>
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <div>
+              <h3 className="font-semibold mb-3 text-sm">Product</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link href="/features">Features</Link></li>
+                <li><Link href="/digital-library">Digital Library</Link></li>
+                <li><Link href="/school-management">School Management</Link></li>
+              </ul>
             </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" />
-              <span>Personal Locker</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" />
-              <span>Offline Learning</span>
+            
+            <div>
+              <h3 className="font-semibold mb-3 text-sm">Support</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link href="/help">Help Center</Link></li>
+                <li><Link href="/about">About</Link></li>
+                <li><Link href="/contact">Contact</Link></li>
+              </ul>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="px-4 py-8 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-        <div className="max-w-md mx-auto text-center space-y-4">
-          <Logo size="sm" />
-          
-          <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
-            <div>
-              <a href="#" className="block py-1 hover:text-blue-600 dark:hover:text-blue-400">
-                About
-              </a>
-              <a href="#" className="block py-1 hover:text-blue-600 dark:hover:text-blue-400">
-                Contact
-              </a>
+          <div className="text-center space-y-2 text-sm text-gray-600">
+            <div className="flex items-center justify-center">
+              <Mail className="h-4 w-4 mr-2" />
+              hello@edvirons.com
             </div>
-            <div>
-              <a href="#" className="block py-1 hover:text-blue-600 dark:hover:text-blue-400">
-                Privacy
-              </a>
-              <a href="#" className="block py-1 hover:text-blue-600 dark:hover:text-blue-400">
-                Terms
-              </a>
+            <div className="flex items-center justify-center">
+              <MapPin className="h-4 w-4 mr-2" />
+              Nairobi, Kenya
             </div>
           </div>
           
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            © 2024 Learning Portal. All rights reserved.
-          </p>
+          <div className="border-t border-gray-200 mt-6 pt-4 text-center text-xs text-gray-600">
+            © 2024 EdVirons Learning Platform. All rights reserved.
+          </div>
         </div>
       </footer>
     </div>
