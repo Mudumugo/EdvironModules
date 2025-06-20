@@ -1,79 +1,24 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"; 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { toast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Search, Filter } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { 
-  Search, 
-  Plus, 
-  Eye, 
-  Edit, 
-  Phone, 
-  Mail, 
-  Calendar as CalendarIcon2, 
-  User, 
-  Building, 
-  MapPin, 
-  Clock,
-  Filter,
-  Download,
-  Star,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Users,
-  TrendingUp,
-  DollarSign,
-  Target
-} from "lucide-react";
-import type { Lead, LeadActivity, DemoRequest } from "@shared/schema";
-
-const statusColors = {
-  new: "bg-blue-100 text-blue-800",
-  contacted: "bg-yellow-100 text-yellow-800", 
-  qualified: "bg-green-100 text-green-800",
-  converted: "bg-purple-100 text-purple-800",
-  lost: "bg-red-100 text-red-800",
-};
-
-const priorityColors = {
-  low: "bg-gray-100 text-gray-800",
-  medium: "bg-orange-100 text-orange-800",
-  high: "bg-red-100 text-red-800",
-};
-
-const accountTypeIcons = {
-  individual: User,
-  family: Users,
-  school: Building,
-};
+import { useToast } from "@/hooks/use-toast";
+import { LeadForm } from "@/components/crm/LeadForm";
+import { LeadList } from "@/components/crm/LeadList";
+import { CRMStats } from "@/components/crm/CRMStats";
+import { Lead, Activity, DemoRequest } from "@/components/crm/types";
 
 export default function CRM() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [isLeadDialogOpen, setIsLeadDialogOpen] = useState(false);
-  const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false);
-  const [newActivity, setNewActivity] = useState({
-    type: "",
-    subject: "",
-    description: "",
-    outcome: "",
-    scheduledDate: null as Date | null,
-  });
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [editingLead, setEditingLead] = useState<Lead | null>(null);
 
   const queryClient = useQueryClient();
 
