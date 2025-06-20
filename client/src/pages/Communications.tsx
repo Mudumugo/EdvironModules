@@ -1,95 +1,21 @@
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  MessageSquare, 
-  Send, 
-  Users, 
-  Bell, 
-  Plus, 
-  Search,
-  Filter,
-  Calendar,
-  Clock,
-  Eye,
-  Edit,
-  Trash2,
-  CheckCircle,
-  AlertCircle,
-  Mail,
-  Phone,
-  Globe,
-  Settings,
-  Download,
-  Upload,
-  Archive,
-  Star,
-  Reply,
-  Forward,
-  UserCheck,
-  GraduationCap,
-  Home
-} from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { Plus, Search, Filter } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { format, parseISO } from "date-fns";
-
-interface Communication {
-  id: string;
-  title: string;
-  content: string;
-  type: 'announcement' | 'newsletter' | 'alert' | 'reminder' | 'event_update';
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  status: 'draft' | 'scheduled' | 'sent' | 'archived';
-  targetAudience: string[];
-  channels: string[];
-  scheduledAt?: string;
-  sentAt?: string;
-  createdAt: string;
-  createdBy: string;
-  readCount?: number;
-  totalRecipients?: number;
-  attachments?: string[];
-}
-
-const communicationTypes = [
-  { id: 'announcement', label: 'General Announcement', icon: Bell, color: 'bg-blue-500' },
-  { id: 'newsletter', label: 'Newsletter', icon: Mail, color: 'bg-green-500' },
-  { id: 'alert', label: 'Emergency Alert', icon: AlertCircle, color: 'bg-red-500' },
-  { id: 'reminder', label: 'Reminder', icon: Clock, color: 'bg-orange-500' },
-  { id: 'event_update', label: 'Event Update', icon: Calendar, color: 'bg-purple-500' }
-];
-
-const audienceTypes = [
-  { id: 'all_parents', label: 'All Parents', icon: Home },
-  { id: 'all_students', label: 'All Students', icon: GraduationCap },
-  { id: 'all_staff', label: 'All Staff', icon: UserCheck },
-  { id: 'grade_specific', label: 'Grade Specific', icon: Users },
-  { id: 'class_specific', label: 'Class Specific', icon: Users },
-  { id: 'custom', label: 'Custom Selection', icon: Users }
-];
-
-const communicationChannels = [
-  { id: 'email', label: 'Email', icon: Mail },
-  { id: 'sms', label: 'SMS', icon: Phone },
-  { id: 'app_notification', label: 'App Notification', icon: Bell },
-  { id: 'website', label: 'Website Banner', icon: Globe },
-  { id: 'parent_portal', label: 'Parent Portal', icon: Users }
-];
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { CommunicationForm } from "@/components/communications/CommunicationForm";
+import { CommunicationList } from "@/components/communications/CommunicationList";
+import { CommunicationStats } from "@/components/communications/CommunicationStats";
+import { CommunicationDetails } from "@/components/communications/CommunicationDetails";
+import { Communication, CommunicationFormData } from "@/components/communications/types";
 
 export default function CommunicationsPage() {
-  const [activeTab, setActiveTab] = useState('inbox');
+  const [activeView, setActiveView] = useState<"all" | "draft" | "scheduled" | "sent" | "archived">("all");
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
