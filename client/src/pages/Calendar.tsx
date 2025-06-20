@@ -1,38 +1,15 @@
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  MapPin, 
-  Users, 
-  Plus, 
-  ChevronLeft,
-  ChevronRight,
-  Bell,
-  BookOpen,
-  UserCheck,
-  Coffee,
-  Home,
-  GraduationCap,
-  AlertCircle,
-  Search,
-  Filter,
-  Download,
-  Printer
-} from "lucide-react";
+import { Plus, Filter, Grid, List } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { format, startOfMonth, endOfMonth, addMonths, subMonths, isSameMonth, isSameDay, parseISO, isWithinInterval, addDays } from "date-fns";
+import { apiRequest } from "@/lib/queryClient";
+import { CalendarGrid } from "@/components/calendar/CalendarGrid";
+import { EventForm } from "@/components/calendar/EventForm";
+import { EventDetails } from "@/components/calendar/EventDetails";
+import { CalendarEvent } from "@/components/calendar/types";
 
 interface CalendarEvent {
   id: string;
