@@ -131,12 +131,25 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
   const categories = ["All Modules", "Core", "Analytics", "Operations", "Finance", "Technology"];
 
   const filteredModules = useMemo(() => {
-    return adminModules.filter(module => {
+    // Always show School Management first, regardless of filters
+    const schoolManagement = adminModules.find(m => m.id === 'school-management');
+    const otherModules = adminModules.filter(m => m.id !== 'school-management');
+    
+    const filtered = otherModules.filter(module => {
       const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            module.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === "All Modules" || module.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
+    
+    // If search term matches school management or category is Core/All, include it
+    const shouldShowSchoolManagement = 
+      (selectedCategory === "All Modules" || selectedCategory === "Core") &&
+      (searchTerm === "" || 
+       schoolManagement?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       schoolManagement?.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    return shouldShowSchoolManagement ? [schoolManagement, ...filtered].filter(Boolean) : filtered;
   }, [searchTerm, selectedCategory]);
 
   return (
