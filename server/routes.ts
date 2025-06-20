@@ -30,6 +30,10 @@ import { registerAssignmentRoutes } from "./routes/assignments";
 import { registerLibraryRoutes } from "./routes/library";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication first
+  const { setupAuth } = await import("./replitAuth");
+  await setupAuth(app);
+  
   // Register all modularized routes
   await registerAuthRoutes(app);
   registerXapiRoutes(app);

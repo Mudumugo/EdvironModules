@@ -23,12 +23,21 @@ export interface AuthenticatedRequest extends Request {
 
 // Authentication middleware that checks session
 export const isAuthenticated = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  // Check session-based authentication first (for demo login)
   if (req.session?.user) {
     req.user = req.session.user;
-    next();
-  } else {
-    res.status(401).json({ message: 'Authentication required' });
+    return next();
   }
+  
+  // Check passport-based authentication (for Replit auth)
+  if (req.user) {
+    return next();
+  }
+  
+  res.status(401).json({ 
+    error: 'Not authenticated',
+    code: 'NOT_AUTHENTICATED'
+  });
 };
 
 

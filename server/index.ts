@@ -12,17 +12,7 @@ setupSecurity(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Session configuration for demo authentication
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'demo-session-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, // Set to true in production with HTTPS
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
+// Session configuration will be handled by setupAuth
 
 app.use((req, res, next) => {
   const start = Date.now();
