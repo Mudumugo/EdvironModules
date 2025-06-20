@@ -284,7 +284,7 @@ export function CollapsibleDashboardLayout({
         <SidebarInset className="flex flex-col">
           {/* Header */}
           <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
-            <SidebarTrigger className="h-8 w-8" />
+            <SidebarTrigger className="h-9 w-9 hover:bg-accent hover:text-accent-foreground rounded-md border border-input bg-background shadow-sm transition-colors" />
             <div className="flex flex-1 items-center gap-2 overflow-hidden">
               <div className="min-w-0 flex-1">
                 {title && <h1 className="text-lg font-semibold truncate">{title}</h1>}
