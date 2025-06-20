@@ -147,6 +147,11 @@ export default function SchoolCalendar() {
     }
   });
 
+  // RSVP handler
+  const handleRSVP = (eventId: string, status: string, response?: string) => {
+    rsvpMutation.mutate({ eventId, status, response });
+  };
+
   // Get event type color
   const getEventTypeColor = (eventType: string) => {
     const colors = {

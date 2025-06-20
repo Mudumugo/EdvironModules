@@ -122,59 +122,49 @@ function sanitizeObject(obj: any): any {
   return sanitized;
 }
 
-function sanitizeString(input: any): any {
-  if (typeof input !== 'string') return input;
+function sanitizeString(input: any): string {
+  if (typeof input !== 'string') {
+    return String(input);
+  }
   
-  // Remove potentially dangerous characters
+  // Remove dangerous characters and patterns
   return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
-    .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/on\w+\s*=/gi, '') // Remove event handlers
-    .replace(/[<>]/g, '') // Remove angle brackets
-    .trim();
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .replace(/[<>'"]/g, '');
 }
 
-// File upload security middleware
+// File upload validation
 export function validateFileUpload(req: Request, res: Response, next: NextFunction) {
   if (!req.file && !req.files) {
     return next();
   }
 
-  const files = req.files ? (Array.isArray(req.files) ? req.files : [req.files]) : [req.file];
+  const files = req.files ? (Array.isArray(req.files) ? req.files : Object.values(req.files).flat()) : [req.file];
   
   for (const file of files) {
     if (!file) continue;
-
-    // Check file extension
-    const ext = '.' + file.originalname.split('.').pop()?.toLowerCase();
-    if (!educationalSecurityRules.allowedFileExtensions.includes(ext)) {
+    
+    const extension = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
+    
+    if (!educationalSecurityRules.allowedFileExtensions.includes(extension)) {
       return res.status(400).json({
         error: 'File type not allowed',
-        code: 'INVALID_FILE_TYPE',
         allowedTypes: educationalSecurityRules.allowedFileExtensions
       });
     }
-
-    // Check file size
-    const maxSize = getMaxFileSizeForType(ext);
+    
+    const maxSize = getMaxFileSizeForType(extension);
     if (file.size > maxSize) {
       return res.status(400).json({
-        error: 'File size exceeds limit',
-        code: 'FILE_TOO_LARGE',
+        error: 'File too large',
         maxSize: maxSize,
-        actualSize: file.size
-      });
-    }
-
-    // Check filename for suspicious patterns
-    if (!validationPatterns.filename.test(file.originalname)) {
-      return res.status(400).json({
-        error: 'Invalid filename',
-        code: 'INVALID_FILENAME'
+        fileSize: file.size
       });
     }
   }
-
+  
   next();
 }
 
@@ -211,6 +201,40 @@ export function scanForSensitiveData(req: Request, res: Response, next: NextFunc
   next();
 }
 
+// Session security validation
+export function validateSession(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  if (!req.user || !req.session) {
+    return next();
+  }
+
+  // Check session age
+  const sessionAge = Date.now() - (req.session.cookie.originalMaxAge || 0);
+  const maxSessionAge = 24 * 60 * 60 * 1000; // 24 hours
+
+  if (sessionAge > maxSessionAge) {
+    req.session.destroy((err) => {
+      if (err) console.error('Error destroying session:', err);
+    });
+    return res.status(401).json({ error: 'Session expired' });
+  }
+
+  next();
+}
+
+// Request size limiting middleware
+export function limitRequestSize(maxSize: number) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const contentLength = parseInt(req.get('content-length') || '0');
+    if (contentLength > maxSize) {
+      return res.status(413).json({
+        error: 'Request too large',
+        maxSize: maxSize
+      });
+    }
+    next();
+  };
+}
+
 // Role-based access control
 export function requirePermissions(permissions: string[]) {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -235,66 +259,6 @@ export function requirePermissions(permissions: string[]) {
         code: 'PERMISSION_DENIED',
         required: permissions,
         userRole: userRole
-      });
-    }
-
-    next();
-  };
-}
-
-// Session security validation
-export function validateSession(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  if (!req.user || !req.session) {
-    return next();
-  }
-
-  // Check session age
-  const sessionAge = Date.now() - (req.session.cookie.originalMaxAge || 0);
-  const maxSessionAge = 24 * 60 * 60 * 1000; // 24 hours
-
-  if (sessionAge > maxSessionAge) {
-    req.session.destroy((err) => {
-      if (err) console.error('Session destruction error:', err);
-    });
-    return res.status(401).json({
-      error: 'Session expired',
-      code: 'SESSION_EXPIRED'
-    });
-  }
-
-  // Check for session hijacking indicators
-  const currentIP = req.ip;
-  const currentUserAgent = req.get('User-Agent');
-  
-  if (req.session.lastIP && req.session.lastIP !== currentIP) {
-    console.warn(`[SECURITY] IP change detected for user ${req.user.id}: ${req.session.lastIP} -> ${currentIP}`);
-    // In production, you might want to force re-authentication here
-  }
-
-  if (req.session.lastUserAgent && req.session.lastUserAgent !== currentUserAgent) {
-    console.warn(`[SECURITY] User agent change detected for user ${req.user.id}`);
-    // In production, you might want to force re-authentication here
-  }
-
-  // Update session tracking
-  req.session.lastIP = currentIP;
-  req.session.lastUserAgent = currentUserAgent;
-  req.session.lastActivity = Date.now();
-
-  next();
-}
-
-// Request size limiting
-export function limitRequestSize(maxSize: number) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const contentLength = parseInt(req.get('Content-Length') || '0');
-    
-    if (contentLength > maxSize) {
-      return res.status(413).json({
-        error: 'Request too large',
-        code: 'REQUEST_TOO_LARGE',
-        maxSize: maxSize,
-        actualSize: contentLength
       });
     }
 
