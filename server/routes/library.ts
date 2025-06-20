@@ -138,7 +138,15 @@ export function registerLibraryRoutes(app: Express) {
         );
       }
 
-      res.json(filteredResources);
+      // Map the data to match frontend expectations
+      const mappedResources = filteredResources.map(resource => ({
+        ...resource,
+        resourceType: resource.type,
+        viewCount: resource.downloads || 0,
+        duration: Math.floor(Math.random() * 60) + 10 // Temporary for demo
+      }));
+
+      res.json(mappedResources);
     } catch (error) {
       console.error('Error fetching library resources:', error);
       res.status(500).json({ error: 'Failed to fetch resources' });
