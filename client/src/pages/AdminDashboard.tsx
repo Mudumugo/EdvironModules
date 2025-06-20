@@ -33,11 +33,11 @@ const quickStats = [
 ];
 
 const adminActions = [
-  { title: "User Management", description: "Manage users, roles, and permissions", icon: Users, href: "/admin/users", color: "bg-blue-500" },
-  { title: "System Settings", description: "Configure system-wide settings", icon: Settings, href: "/admin/settings", color: "bg-gray-500" },
-  { title: "Analytics", description: "View platform analytics and reports", icon: BarChart3, href: "/admin/analytics", color: "bg-purple-500" },
-  { title: "Security Center", description: "Monitor security and access logs", icon: Shield, href: "/admin/security", color: "bg-red-500" },
-  { title: "CRM Management", description: "Manage leads and customer relationships", icon: UserCheck, href: "/crm", color: "bg-indigo-500" },
+  { title: "Student Management", description: "Manage student enrollment and records", icon: Users, href: "/school-management", color: "bg-blue-500" },
+  { title: "School Settings", description: "Configure school-specific settings", icon: Settings, href: "/school/settings", color: "bg-gray-500" },
+  { title: "Analytics", description: "View school analytics and reports", icon: BarChart3, href: "/analytics", color: "bg-purple-500" },
+  { title: "Security Center", description: "Monitor school security and access", icon: Shield, href: "/school/security", color: "bg-red-500" },
+  { title: "Teacher Management", description: "Manage faculty and staff accounts", icon: UserCheck, href: "/school-management", color: "bg-indigo-500" },
   { title: "Course Management", description: "Oversee curriculum and courses", icon: GraduationCap, href: "/admin/courses", color: "bg-green-500" },
   { title: "Digital Library", description: "Manage educational resources", icon: BookOpen, href: "/digital-library", color: "bg-teal-500" },
   { title: "Events & Calendar", description: "Manage school events and schedules", icon: Calendar, href: "/calendar", color: "bg-yellow-500" },
