@@ -58,7 +58,7 @@ export const BookPageContent: React.FC<BookPageContentProps> = ({
               title={`Page ${currentPage}`}
               sandbox="allow-scripts allow-same-origin allow-forms"
             />
-          ) : (
+          ) : bookData?.pages?.[currentPage - 1]?.startsWith('http') || bookData?.pages?.[currentPage - 1]?.startsWith('data:image') ? (
             <img
               src={bookData?.pages?.[currentPage - 1] || ''}
               alt={`Page ${currentPage}`}
@@ -67,6 +67,15 @@ export const BookPageContent: React.FC<BookPageContentProps> = ({
                 maxWidth: '100%',
                 maxHeight: '100%'
               }}
+            />
+          ) : (
+            <div 
+              className="w-full h-full overflow-auto bg-white rounded-lg shadow-inner p-4"
+              style={{ 
+                maxWidth: '100%',
+                maxHeight: '100%'
+              }}
+              dangerouslySetInnerHTML={{ __html: bookData?.pages?.[currentPage - 1] || '' }}
             />
           )}
           
