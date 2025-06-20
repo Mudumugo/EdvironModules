@@ -160,87 +160,287 @@ export function Landing() {
 
           {/* Main Content Section */}
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Educational Modules Dashboard
-              </h2>
-              <p className="text-gray-600 mb-8 max-w-3xl mx-auto">
-                Navigate through organized educational modules including shared libraries, personal 
-                lockers, calendars, lesson planning, and interactive learning tools.
-              </p>
-            </div>
-
-            {/* Dashboard Interface */}
-            <div className="bg-gray-50 rounded-lg p-6 mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-2xl font-semibold text-gray-900">Good Afternoon, Miss!</h3>
-                  <p className="text-gray-600">Manage your classes and access teaching tools to enhance learning.</p>
+            {activeTab === "Educational Modules Dashboard" && (
+              <>
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Educational Modules Dashboard
+                  </h2>
+                  <p className="text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Navigate through organized educational modules including shared libraries, personal 
+                    lockers, calendars, lesson planning, and interactive learning tools.
+                  </p>
                 </div>
-              </div>
 
-              {/* Search and Controls */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search modules..."
-                    className="pl-10"
-                  />
-                </div>
-                <div className="flex items-center space-x-2 ml-4">
-                  <span className="text-sm text-gray-600">All Modules</span>
-                  <Button variant="outline" size="sm">
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+                {/* Dashboard Interface */}
+                <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900">Good Afternoon, Miss!</h3>
+                      <p className="text-gray-600">Manage your classes and access teaching tools to enhance learning.</p>
+                    </div>
+                  </div>
 
-              {/* Modules Grid */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {modules.map((module, index) => {
-                  const Icon = module.icon;
-                  return (
-                    <Card key={index} className="group hover:shadow-md transition-shadow cursor-pointer">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className={`p-3 rounded-lg ${module.color}`}>
-                            <Icon className={`h-6 w-6 ${module.iconColor}`} />
+                  {/* Search and Controls */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="relative flex-1 max-w-md">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search modules..."
+                        className="pl-10"
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2 ml-4">
+                      <span className="text-sm text-gray-600">All Modules</span>
+                      <Button variant="outline" size="sm">
+                        <Grid3X3 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <List className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Modules Grid */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {modules.map((module, index) => {
+                      const Icon = module.icon;
+                      return (
+                        <Card key={index} className="group hover:shadow-md transition-shadow cursor-pointer">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className={`p-3 rounded-lg ${module.color}`}>
+                                <Icon className={`h-6 w-6 ${module.iconColor}`} />
+                              </div>
+                              <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                            </div>
+                            
+                            <h3 className="font-semibold text-lg text-gray-900 mb-2">{module.title}</h3>
+                            <p className="text-gray-600 text-sm mb-4">{module.description}</p>
+                            
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {module.features.map((feature, featureIndex) => (
+                                <span key={featureIndex} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                                  {feature}
+                                </span>
+                              ))}
+                              {module.moreCount && (
+                                <span className="text-xs text-gray-500">+{module.moreCount} more</span>
+                              )}
+                            </div>
+                            
+                            <Badge variant="secondary" className="text-xs">
+                              {module.badge}
+                            </Badge>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="text-center mt-8">
+                    <span className="text-sm text-gray-500">1 of 5</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === "Interactive Digital Library" && (
+              <>
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Interactive Digital Library
+                  </h2>
+                  <p className="text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Access thousands of educational resources, interactive books, multimedia content, 
+                    and curriculum-aligned materials designed for modern learning.
+                  </p>
+                </div>
+
+                {/* Library Interface */}
+                <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                  {/* Library Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900">Digital Library</h3>
+                      <p className="text-gray-600">Browse and access educational content across all subjects</p>
+                    </div>
+                    <Badge className="bg-blue-100 text-blue-800">
+                      12,450+ Resources
+                    </Badge>
+                  </div>
+
+                  {/* Search and Filters */}
+                  <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search books, videos, articles..."
+                        className="pl-10"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">All Subjects</Button>
+                      <Button variant="outline" size="sm">Grade Level</Button>
+                      <Button variant="outline" size="sm">Content Type</Button>
+                    </div>
+                  </div>
+
+                  {/* Featured Collections */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Featured Collections</h4>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <BookOpen className="h-5 w-5 text-green-600" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium text-gray-900">CBC Mathematics</h5>
+                              <p className="text-sm text-gray-600">Grade 1-8 Resources</p>
+                            </div>
                           </div>
-                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
-                        </div>
-                        
-                        <h3 className="font-semibold text-lg text-gray-900 mb-2">{module.title}</h3>
-                        <p className="text-gray-600 text-sm mb-4">{module.description}</p>
-                        
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {module.features.map((feature, featureIndex) => (
-                            <span key={featureIndex} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                              {feature}
-                            </span>
-                          ))}
-                          {module.moreCount && (
-                            <span className="text-xs text-gray-500">+{module.moreCount} more</span>
-                          )}
-                        </div>
-                        
-                        <Badge variant="secondary" className="text-xs">
-                          {module.badge}
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+                          <p className="text-xs text-gray-500">847 items</p>
+                        </CardContent>
+                      </Card>
 
-              {/* Pagination */}
-              <div className="text-center mt-8">
-                <span className="text-sm text-gray-500">1 of 5</span>
-              </div>
-            </div>
+                      <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="p-2 bg-purple-100 rounded-lg">
+                              <BookOpen className="h-5 w-5 text-purple-600" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium text-gray-900">Science Experiments</h5>
+                              <p className="text-sm text-gray-600">Interactive Labs</p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500">324 items</p>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="p-2 bg-orange-100 rounded-lg">
+                              <BookOpen className="h-5 w-5 text-orange-600" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium text-gray-900">Kiswahili Resources</h5>
+                              <p className="text-sm text-gray-600">Language Learning</p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500">562 items</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Recent & Popular */}
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Recently Added</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Interactive Geometry</h5>
+                            <p className="text-sm text-gray-600">Grade 7 Mathematics</p>
+                            <Badge variant="outline" className="text-xs">Interactive</Badge>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <FileText className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Kenya History Timeline</h5>
+                            <p className="text-sm text-gray-600">Social Studies</p>
+                            <Badge variant="outline" className="text-xs">Document</Badge>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <BarChart3 className="h-6 w-6 text-purple-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Data Analysis Basics</h5>
+                            <p className="text-sm text-gray-600">Grade 8 Mathematics</p>
+                            <Badge variant="outline" className="text-xs">Video</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Most Popular</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-6 w-6 text-yellow-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">English Grammar Guide</h5>
+                            <p className="text-sm text-gray-600">Grade 4-6 English</p>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">eBook</Badge>
+                              <span className="text-xs text-gray-500">2.4k views</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <FileText className="h-6 w-6 text-red-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Fractions Made Easy</h5>
+                            <p className="text-sm text-gray-600">Grade 3-5 Mathematics</p>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">Interactive</Badge>
+                              <span className="text-xs text-gray-500">1.8k views</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-6 w-6 text-indigo-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Animal Classification</h5>
+                            <p className="text-sm text-gray-600">Grade 5 Science</p>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">Video</Badge>
+                              <span className="text-xs text-gray-500">1.6k views</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Access */}
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900">Quick Access</h4>
+                        <p className="text-sm text-gray-600">Jump to frequently used resources</p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        View All Categories
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
