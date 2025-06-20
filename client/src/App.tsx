@@ -34,7 +34,7 @@ import Settings from "@/pages/Settings";
 import CRM from "@/pages/CRM";
 import MyLocker from "@/pages/MyLocker";
 import DeviceManagement from "@/pages/DeviceManagement";
-import TeacherDashboard from "@/pages/TeacherDashboard";
+
 import StudentDashboard from "@/pages/StudentDashboard";
 import UserManagement from "@/pages/UserManagement-simple";
 import PBXDashboard from "@/pages/PBXDashboard";
@@ -120,7 +120,7 @@ function Router() {
                   {user?.role === 'school_admin' ? <AdminDashboard /> : 
                    user?.role === 'security_staff' || user?.role === 'school_security' ? <SecurityDashboard /> : 
                    user?.role === 'it_staff' || user?.role === 'school_it_staff' ? <ITDashboard /> : 
-                   user?.role === 'teacher' ? <TeacherDashboard /> :
+                   user?.role === 'teacher' ? <Dashboard /> :
                    user?.role?.includes('student') || user?.role === 'student' ? <StudentDashboard /> :
                    <Dashboard />}
                 </RoleProtectedRoute>
@@ -160,7 +160,7 @@ function Router() {
               {/* Teacher-only modules */}
               <Route path="/teacher-dashboard">
                 <RoleProtectedRoute moduleId="teacher-dashboard">
-                  <TeacherDashboard />
+                  <Dashboard />
                 </RoleProtectedRoute>
               </Route>
 

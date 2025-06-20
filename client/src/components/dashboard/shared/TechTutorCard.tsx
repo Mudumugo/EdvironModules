@@ -5,7 +5,7 @@ import techTutorLogo from "@assets/techtutor_1750281329236.png";
 interface TechTutorCardProps {
   viewMode?: "grid" | "list";
   onClick?: () => void;
-  variant?: "primary" | "junior" | "senior";
+  variant?: "primary" | "junior" | "senior" | "teacher";
 }
 
 export function TechTutorCard({ viewMode = "grid", onClick, variant = "junior" }: TechTutorCardProps) {
@@ -17,6 +17,8 @@ export function TechTutorCard({ viewMode = "grid", onClick, variant = "junior" }
         return "Master essential technology skills with personalized AI tutoring";
       case "senior":
         return "Advanced technology training and digital literacy with AI-powered instruction";
+      case "teacher":
+        return "Professional development and advanced teaching technology tools";
       default:
         return "Learn technology skills with AI-powered tutoring";
     }
