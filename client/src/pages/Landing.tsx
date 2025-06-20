@@ -441,6 +441,265 @@ export function Landing() {
                 </div>
               </>
             )}
+
+            {activeTab === "School Managers Tool" && (
+              <>
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    School Managers Tool
+                  </h2>
+                  <p className="text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Comprehensive school administration platform for managing students, staff, 
+                    academics, finances, and operations in one integrated system.
+                  </p>
+                </div>
+
+                {/* School Management Interface */}
+                <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                  {/* Management Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900">School Administration</h3>
+                      <p className="text-gray-600">Centralized management dashboard for all school operations</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge className="bg-green-100 text-green-800">All Systems Online</Badge>
+                      <Badge className="bg-blue-100 text-blue-800">Term 2, 2024</Badge>
+                    </div>
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-blue-600">1,247</div>
+                        <div className="text-sm text-gray-600">Total Students</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-green-600">89</div>
+                        <div className="text-sm text-gray-600">Teaching Staff</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-purple-600">95.2%</div>
+                        <div className="text-sm text-gray-600">Attendance Rate</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-orange-600">KES 2.4M</div>
+                        <div className="text-sm text-gray-600">Monthly Revenue</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Management Modules */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-blue-100 rounded-lg">
+                            <Users className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Student Management</h3>
+                        <p className="text-gray-600 text-sm mb-4">Enrollment, records, academic progress, and parent communication</p>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Admissions</span>
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Records</span>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">Core Module</Badge>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-green-100 rounded-lg">
+                            <Calendar className="h-6 w-6 text-green-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Timetable & Scheduling</h3>
+                        <p className="text-gray-600 text-sm mb-4">Class schedules, exam timetables, and resource allocation</p>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Auto-Schedule</span>
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Conflict Detection</span>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">Academic</Badge>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-purple-100 rounded-lg">
+                            <BarChart3 className="h-6 w-6 text-purple-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Financial Management</h3>
+                        <p className="text-gray-600 text-sm mb-4">Fee collection, budgeting, payroll, and financial reporting</p>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">M-Pesa Integration</span>
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Invoicing</span>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">Finance</Badge>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-orange-100 rounded-lg">
+                            <FileText className="h-6 w-6 text-orange-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Examination System</h3>
+                        <p className="text-gray-600 text-sm mb-4">Exam creation, grading, result processing, and report generation</p>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Auto-Grading</span>
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Analytics</span>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">Assessment</Badge>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-red-100 rounded-lg">
+                            <Users className="h-6 w-6 text-red-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Staff Management</h3>
+                        <p className="text-gray-600 text-sm mb-4">HR records, payroll, attendance, and performance tracking</p>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Payroll</span>
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Leave Management</span>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">Human Resources</Badge>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-indigo-100 rounded-lg">
+                            <BookOpen className="h-6 w-6 text-indigo-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Communication Hub</h3>
+                        <p className="text-gray-600 text-sm mb-4">SMS, email, notices, and parent-teacher communication</p>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Bulk SMS</span>
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Notices</span>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">Communication</Badge>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Recent Activities & Alerts */}
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Term 2 Results Published</h5>
+                            <p className="text-sm text-gray-600">Grade 8 examination results now available</p>
+                            <span className="text-xs text-gray-500">2 hours ago</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Fee Collection Update</h5>
+                            <p className="text-sm text-gray-600">98% fee collection rate achieved this month</p>
+                            <span className="text-xs text-gray-500">4 hours ago</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">New Staff Onboarded</h5>
+                            <p className="text-sm text-gray-600">3 new teachers joined the Mathematics department</p>
+                            <span className="text-xs text-gray-500">1 day ago</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">System Alerts</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Attendance Warning</h5>
+                            <p className="text-sm text-gray-600">23 students below 85% attendance threshold</p>
+                            <span className="text-xs text-gray-500">Requires attention</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Fee Arrears</h5>
+                            <p className="text-sm text-gray-600">KES 340,000 in outstanding fees this term</p>
+                            <span className="text-xs text-gray-500">Action required</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">System Backup</h5>
+                            <p className="text-sm text-gray-600">Daily backup completed successfully</p>
+                            <span className="text-xs text-gray-500">All systems secure</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900">Quick Actions</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                        Generate Reports
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Send Bulk SMS
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Process Fees
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Create Timetable
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Staff Meeting
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
