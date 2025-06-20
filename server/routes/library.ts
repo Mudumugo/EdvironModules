@@ -1,137 +1,186 @@
-import type { Express, Response } from "express";
-import { storage } from "../storage";
+import type { Express } from "express";
 import { isAuthenticated } from "../roleMiddleware";
 
+const libraryRecommendations = [
+  {
+    id: "1",
+    title: "Introduction to Algebra",
+    type: "book",
+    subject: "Mathematics",
+    rating: 4,
+    isNew: true,
+    description: "Learn fundamental algebraic concepts with clear examples"
+  },
+  {
+    id: "2",
+    title: "The Solar System Explained",
+    type: "video",
+    subject: "Science",
+    rating: 5,
+    isNew: false,
+    description: "Documentary exploring planets and celestial bodies"
+  },
+  {
+    id: "3",
+    title: "World War II Timeline",
+    type: "interactive",
+    subject: "History",
+    rating: 4,
+    isNew: true,
+    description: "Interactive timeline of major WWII events"
+  },
+  {
+    id: "4",
+    title: "Creative Writing Techniques",
+    type: "article",
+    subject: "English",
+    rating: 3,
+    isNew: false,
+    description: "Tips and strategies for improving creative writing"
+  },
+  {
+    id: "5",
+    title: "Chemistry Lab Simulations",
+    type: "interactive",
+    subject: "Science",
+    rating: 5,
+    isNew: true,
+    description: "Virtual chemistry experiments and reactions"
+  },
+  {
+    id: "6",
+    title: "Shakespeare's Greatest Works",
+    type: "book",
+    subject: "Literature",
+    rating: 4,
+    isNew: false,
+    description: "Collection of Shakespeare's most famous plays"
+  }
+];
+
+const libraryResources = [
+  {
+    id: "lib_1",
+    title: "Advanced Calculus Textbook",
+    type: "book",
+    subject: "Mathematics",
+    grade: "12",
+    rating: 4.5,
+    downloads: 1250,
+    description: "Comprehensive calculus textbook with practice problems"
+  },
+  {
+    id: "lib_2", 
+    title: "Biology Interactive Labs",
+    type: "interactive",
+    subject: "Biology",
+    grade: "10-12",
+    rating: 4.8,
+    downloads: 890,
+    description: "Virtual biology lab experiments and simulations"
+  },
+  {
+    id: "lib_3",
+    title: "American History Documentary Series",
+    type: "video",
+    subject: "History",
+    grade: "9-12", 
+    rating: 4.3,
+    downloads: 2100,
+    description: "10-part documentary series on American history"
+  }
+];
+
 export function registerLibraryRoutes(app: Express) {
-  // Get library categories
-  app.get('/api/library/categories', isAuthenticated, async (req: any, res: Response) => {
+  // Get personalized library recommendations
+  app.get('/api/library/recommendations', isAuthenticated, (req, res) => {
     try {
-      const { gradeLevel } = req.query;
-      const categories = await storage.getLibraryCategories(gradeLevel as string);
-      res.json(categories);
+      // In a real implementation, this would be personalized based on:
+      // - User's current subjects
+      // - Learning progress
+      // - Previous interactions
+      // - Peer recommendations
+      
+      const personalizedRecommendations = libraryRecommendations
+        .sort(() => 0.5 - Math.random()) // Randomize for demo
+        .slice(0, 6);
+        
+      res.json(personalizedRecommendations);
     } catch (error) {
-      console.error('Error fetching library categories:', error);
-      res.status(500).json({ message: 'Failed to fetch categories' });
+      console.error('Error fetching library recommendations:', error);
+      res.status(500).json({ error: 'Failed to fetch recommendations' });
     }
   });
 
-  // Get library subjects with resource counts
-  app.get('/api/library/subjects', isAuthenticated, async (req: any, res: Response) => {
+  // Get library resources with search/filter
+  app.get('/api/library/resources', isAuthenticated, (req, res) => {
     try {
-      const { gradeLevel, categoryId } = req.query;
-      const subjects = await storage.getLibrarySubjects(
-        gradeLevel as string, 
-        categoryId as string
-      );
-      
-      // Get resource counts for each subject
-      const resourceCounts = await storage.getResourceCountsBySubject(gradeLevel as string);
-      
-      // Add resource counts to subjects
-      const subjectsWithCounts = subjects.map(subject => ({
-        ...subject,
-        resourceCounts: resourceCounts[subject.id] || { books: 0, worksheets: 0, quizzes: 0 }
-      }));
-      
-      res.json(subjectsWithCounts);
-    } catch (error) {
-      console.error('Error fetching library subjects:', error);
-      res.status(500).json({ message: 'Failed to fetch subjects' });
-    }
-  });
+      const { subject, type, grade, search } = req.query;
+      let filteredResources = [...libraryResources];
 
-  // Get library resources
-  app.get('/api/library/resources', isAuthenticated, async (req: any, res: Response) => {
-    try {
-      const filters = {
-        gradeLevel: req.query.gradeLevel as string,
-        categoryId: req.query.categoryId as string,
-        subjectId: req.query.subjectId as string,
-        resourceType: req.query.resourceType as string,
-        search: req.query.search as string,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : 50
-      };
+      if (subject) {
+        filteredResources = filteredResources.filter(r => 
+          r.subject.toLowerCase() === (subject as string).toLowerCase()
+        );
+      }
 
-      const resources = await storage.getLibraryResources(filters);
-      res.json(resources);
+      if (type) {
+        filteredResources = filteredResources.filter(r => 
+          r.type === type
+        );
+      }
+
+      if (search) {
+        const searchTerm = (search as string).toLowerCase();
+        filteredResources = filteredResources.filter(r =>
+          r.title.toLowerCase().includes(searchTerm) ||
+          r.description.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      res.json(filteredResources);
     } catch (error) {
       console.error('Error fetching library resources:', error);
-      res.status(500).json({ message: 'Failed to fetch resources' });
+      res.status(500).json({ error: 'Failed to fetch resources' });
     }
   });
 
-  // Get single resource
-  app.get('/api/library/resources/:id', isAuthenticated, async (req: any, res: Response) => {
+  // Get specific resource details
+  app.get('/api/library/resources/:id', isAuthenticated, (req, res) => {
     try {
-      const resource = await storage.getLibraryResource(req.params.id);
+      const resource = libraryResources.find(r => r.id === req.params.id);
       if (!resource) {
-        return res.status(404).json({ message: 'Resource not found' });
+        return res.status(404).json({ error: 'Resource not found' });
       }
       res.json(resource);
     } catch (error) {
-      console.error('Error fetching library resource:', error);
-      res.status(500).json({ message: 'Failed to fetch resource' });
+      console.error('Error fetching resource:', error);
+      res.status(500).json({ error: 'Failed to fetch resource' });
     }
   });
 
-  // Record resource access
-  app.post('/api/library/access', isAuthenticated, async (req: any, res: Response) => {
+  // Track resource interaction (view, download, etc.)
+  app.post('/api/library/resources/:id/interact', isAuthenticated, (req, res) => {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
-        return res.status(401).json({ message: 'User not authenticated' });
-      }
-
-      const { resourceId, accessType } = req.body;
+      const { action } = req.body; // 'view', 'download', 'bookmark', etc.
+      const resourceIndex = libraryResources.findIndex(r => r.id === req.params.id);
       
-      // Create access record
-      await storage.createLibraryResourceAccess({
-        resourceId,
-        userId,
-        accessType
-      });
-
-      // Update resource stats
-      if (accessType === 'view') {
-        await storage.updateResourceStats(resourceId, 'view');
+      if (resourceIndex === -1) {
+        return res.status(404).json({ error: 'Resource not found' });
       }
 
-      res.json({ success: true });
-    } catch (error) {
-      console.error('Error recording resource access:', error);
-      res.status(500).json({ message: 'Failed to record access' });
-    }
-  });
-
-  // Get resource viewer (for opening resources)
-  app.get('/api/library/viewer/:id', isAuthenticated, async (req: any, res: Response) => {
-    try {
-      const resource = await storage.getLibraryResource(req.params.id);
-      if (!resource) {
-        return res.status(404).json({ message: 'Resource not found' });
+      if (action === 'download') {
+        libraryResources[resourceIndex].downloads += 1;
       }
 
-      // Record view access
-      const userId = req.user?.id;
-      if (userId) {
-        await storage.createLibraryResourceAccess({
-          resourceId: resource.id,
-          userId,
-          accessType: 'view'
-        });
-        // Skip stats update for now
-      }
-
-      // Return resource data for viewer
-      res.json({
-        resource,
-        viewerUrl: `/library/viewer/${resource.id}`,
-        fileUrl: resource.fileUrl,
-        canDownload: false // Security: no direct downloads
+      res.json({ 
+        success: true,
+        message: `${action} tracked successfully`,
+        resource: libraryResources[resourceIndex]
       });
     } catch (error) {
-      console.error('Error accessing resource viewer:', error);
-      res.status(500).json({ message: 'Failed to access resource' });
+      console.error('Error tracking interaction:', error);
+      res.status(500).json({ error: 'Failed to track interaction' });
     }
   });
 }

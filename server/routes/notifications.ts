@@ -36,16 +36,52 @@ interface NotificationPreferences {
   };
 }
 
-// Mock data storage (in production, use database)
+// Sample data for demonstration
 let notifications: Notification[] = [
   {
     id: "notif_001",
-    userId: "demo-teacher-1",
+    userId: "demo_student_elementary",
     type: "info",
+    category: "assignment",
+    title: "Math Assignment Due Tomorrow",
+    message: "Don't forget to complete your Math Problem Set #5. Due tomorrow at 11:59 PM.",
+    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    read: false,
+    actionRequired: true,
+    priority: "high"
+  },
+  {
+    id: "notif_002",
+    userId: "demo_student_elementary",
+    type: "success",
     category: "academic",
-    title: "New Assignment Submitted",
-    message: "3 students have submitted their Math Assignment #5. Click to review submissions.",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    title: "Great Job on Science Project!",
+    message: "Your teacher has graded your science lab report. You received an A! Keep up the excellent work.",
+    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    read: false,
+    actionRequired: false,
+    priority: "medium"
+  },
+  {
+    id: "notif_003",
+    userId: "demo_student_elementary",
+    type: "info",
+    category: "event",
+    title: "School Assembly Tomorrow",
+    message: "Join us for the monthly school assembly in the main auditorium at 9:00 AM.",
+    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    read: true,
+    actionRequired: false,
+    priority: "low"
+  },
+  {
+    id: "notif_004",
+    userId: "demo_student_elementary",
+    type: "warning",
+    category: "academic",
+    title: "Library Book Due Soon",
+    message: "Your library book 'The Magic Tree House' is due in 2 days. Please return or renew it.",
+    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
     read: false,
     actionRequired: true,
     priority: "medium",

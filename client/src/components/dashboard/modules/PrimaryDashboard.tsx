@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { DashboardHeader } from "../shared/DashboardHeader";
 import { ModuleGrid } from "../shared/ModuleGrid";
-import { Module } from "../shared/ModuleCard";
+import { Module, ModuleCard } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
 import { AssignmentStatusCard, NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
 
@@ -93,6 +93,14 @@ export function PrimaryDashboard({ user }: PrimaryDashboardProps) {
           user={user}
         />
 
+        {/* Status Cards Section - Simplified for Primary */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+          <AssignmentStatusCard />
+          <NotificationsCard />
+          <NextEventCard />
+          <LibraryRecommendationsCard />
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           <TechTutorCard 
             variant="primary"
@@ -101,14 +109,15 @@ export function PrimaryDashboard({ user }: PrimaryDashboardProps) {
               // Future: Implement SSO redirect to Tech Tutor
             }}
           />
+          {modules.map((module) => (
+            <ModuleCard 
+              key={module.id} 
+              module={module}
+              variant="primary"
+              onClick={() => console.log(`Opening ${module.title}`)}
+            />
+          ))}
         </div>
-        
-        <ModuleGrid 
-          modules={modules}
-          onModuleClick={(moduleId) => {
-            console.log(`Opening module: ${moduleId}`);
-          }}
-        />
       </div>
     </div>
   );
