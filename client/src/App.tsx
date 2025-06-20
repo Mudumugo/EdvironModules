@@ -48,6 +48,7 @@ import ClassManagement from "@/pages/ClassManagement";
 import LessonPlanning from "@/pages/LessonPlanning";
 import DigitalNotebooks from "@/pages/DigitalNotebooks";
 import NotificationsCenter from "@/pages/NotificationsCenter";
+import Communications from "@/pages/Communications";
 import UserProfile from "@/pages/UserProfile";
 import TechTutor from "@/pages/TechTutor";
 import Help from "@/pages/Help";
@@ -80,6 +81,7 @@ const componentMap: Record<string, any> = {
 
   'timetable': TimetableManagement,
   'security-dashboard': SecurityDashboard,
+  'admin/communications': Communications,
 };
 
 function Router() {
