@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-// import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { CollapsibleDashboardLayout } from "../CollapsibleDashboardLayout";
 
 interface SchoolAdminDashboardProps {
   user?: any;

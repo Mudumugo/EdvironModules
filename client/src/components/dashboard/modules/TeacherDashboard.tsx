@@ -231,11 +231,14 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
   }, [searchTerm, selectedCategory, modules]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+    <CollapsibleDashboardLayout 
+      title="Teacher Dashboard"
+      subtitle="Empower your teaching with comprehensive classroom management tools"
+    >
       <div className="max-w-7xl mx-auto">
         <DashboardHeader
-          title="Teacher Dashboard"
-          subtitle="Empower your teaching with comprehensive classroom management tools"
+          title=""
+          subtitle=""
           user={user}
           showSearch={true}
           showFilters={true}
@@ -287,6 +290,6 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
           </div>
         )}
       </div>
-    </div>
+    </CollapsibleDashboardLayout>
   );
 }

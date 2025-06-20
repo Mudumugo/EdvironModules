@@ -12,6 +12,7 @@ import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module, ModuleCard } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
 import { AssignmentStatusCard, NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
+import { CollapsibleDashboardLayout } from "../CollapsibleDashboardLayout";
 
 interface PrimaryDashboardProps {
   user?: any;
@@ -85,11 +86,14 @@ export function PrimaryDashboard({ user }: PrimaryDashboardProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-3 sm:p-6">
+    <CollapsibleDashboardLayout 
+      title="My Learning Adventure"
+      subtitle="Explore fun activities and learn new things!"
+    >
       <div className="max-w-7xl mx-auto">
         <DashboardHeader
-          title="My Learning Adventure"
-          subtitle="Explore fun activities and learn new things!"
+          title=""
+          subtitle=""
           user={user}
         />
 
@@ -119,6 +123,6 @@ export function PrimaryDashboard({ user }: PrimaryDashboardProps) {
           ))}
         </div>
       </div>
-    </div>
+    </CollapsibleDashboardLayout>
   );
 }

@@ -164,11 +164,14 @@ export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
   }, [searchTerm, selectedCategory, modules]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+    <CollapsibleDashboardLayout 
+      title="Senior Student Dashboard"
+      subtitle="Advanced tools for academic excellence and college preparation"
+    >
       <div className="max-w-7xl mx-auto">
         <DashboardHeader
-          title="Senior Student Dashboard"
-          subtitle="Advanced tools for academic excellence and college preparation"
+          title=""
+          subtitle=""
           user={user}
           showSearch={true}
           showFilters={true}
@@ -220,6 +223,6 @@ export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
           </div>
         )}
       </div>
-    </div>
+    </CollapsibleDashboardLayout>
   );
 }
