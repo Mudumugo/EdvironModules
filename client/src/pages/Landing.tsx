@@ -1,40 +1,18 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { MarketingNav } from "@/components/MarketingNav";
-import { 
-  BookOpen, 
-  Users, 
-  Shield, 
-  BarChart3, 
-  Zap, 
-  Globe,
-  ChevronRight,
-  Play,
-  Star,
-  CheckCircle,
-  ArrowRight,
-  Search,
-  Filter,
-  Target,
-  Calendar,
-  Presentation,
-  Notebook,
-  Settings,
-  BookMarked,
-  FileText,
-  GraduationCap,
-  Clock,
-  ChevronDown,
-  ChevronLeft,
-  X
-} from "lucide-react";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { CTASection } from "@/components/landing/CTASection";
 
 export function Landing() {
+  const handleGetStarted = () => {
+    window.location.href = '/signup';
+  };
 
-  const [activeFeature, setActiveFeature] = useState('dashboard');
+  const handleWatchDemo = () => {
+    window.open('https://demo.edvirons.com', '_blank');
+  };
 
   const renderDashboardPreview = () => {
     if (activeFeature === 'dashboard') {
@@ -656,7 +634,14 @@ export function Landing() {
             </div>
           </div>
         </div>
-      </footer>
+      <HeroSection 
+        onGetStarted={handleGetStarted}
+        onWatchDemo={handleWatchDemo}
+      />
+      
+      <FeaturesSection />
+      
+      <CTASection onGetStarted={handleGetStarted} />
     </div>
   );
 }
