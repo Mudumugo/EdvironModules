@@ -33,7 +33,7 @@ export default function InteractiveContentViewer({
   xapiEnabled,
   trackingConfig,
   onClose
-}: InteractiveContentViewerProps) => {
+}: InteractiveContentViewerProps) {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [completedElements, setCompletedElements] = useState<Set<string>>(new Set());
   const [currentTime, setCurrentTime] = useState(0);
