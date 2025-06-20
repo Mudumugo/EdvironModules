@@ -40,7 +40,7 @@ const adminActions = [
   { title: "Teacher Management", description: "Manage faculty and staff accounts", icon: UserCheck, href: "/school-management", color: "bg-indigo-500" },
   { title: "Course Management", description: "Oversee curriculum and courses", icon: GraduationCap, href: "/admin/courses", color: "bg-green-500" },
   { title: "Digital Library", description: "Manage educational resources", icon: BookOpen, href: "/digital-library", color: "bg-teal-500" },
-  { title: "Events & Calendar", description: "Manage school events and schedules", icon: Calendar, href: "/calendar", color: "bg-yellow-500" },
+  { title: "Events & Calendar", description: "Manage school events and schedules", icon: Calendar, href: "/scheduling", color: "bg-yellow-500" },
   { title: "Communications", description: "Manage announcements and messages", icon: MessageSquare, href: "/admin/communications", color: "bg-pink-500" }
 ];
 
