@@ -1026,6 +1026,305 @@ export function Landing() {
                 </div>
               </>
             )}
+
+            {activeTab === "Academic Calendar & Planning" && (
+              <>
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Academic Calendar & Planning
+                  </h2>
+                  <p className="text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Comprehensive academic scheduling system for managing terms, exams, events, 
+                    and institutional planning with automated conflict detection and resource allocation.
+                  </p>
+                </div>
+
+                {/* Calendar Interface */}
+                <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                  {/* Calendar Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900">Academic Calendar 2024</h3>
+                      <p className="text-gray-600">Term 2 • Week 8 of 13 • June 2024</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline">Month View</Button>
+                      <Button size="sm" className="bg-blue-600">Term View</Button>
+                      <Button size="sm" variant="outline">Year View</Button>
+                    </div>
+                  </div>
+
+                  {/* Calendar Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-blue-600">156</div>
+                        <div className="text-sm text-gray-600">School Days</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-green-600">23</div>
+                        <div className="text-sm text-gray-600">Exam Days</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-purple-600">87</div>
+                        <div className="text-sm text-gray-600">Events Planned</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-orange-600">12</div>
+                        <div className="text-sm text-gray-600">Holidays</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Current Term Overview */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Term 2 Progress</h4>
+                    <div className="bg-white rounded-lg p-4 border">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium">Term Completion</span>
+                        <span className="text-sm text-gray-600">8 of 13 weeks</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                        <div className="bg-blue-600 h-3 rounded-full" style={{ width: '62%' }}></div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-lg font-semibold text-gray-900">May 6</div>
+                          <div className="text-xs text-gray-600">Term Started</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-semibold text-blue-600">June 20</div>
+                          <div className="text-xs text-gray-600">Today</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-semibold text-gray-900">Aug 2</div>
+                          <div className="text-xs text-gray-600">Term Ends</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Upcoming Events & Planning Modules */}
+                  <div className="grid md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h4>
+                      <div className="space-y-3">
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <Calendar className="h-6 w-6 text-red-600" />
+                              </div>
+                              <div className="flex-1">
+                                <h5 className="font-medium text-gray-900">Grade 8 KCPE Mock Exams</h5>
+                                <p className="text-sm text-gray-600">Mathematics, English, Kiswahili, Science</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant="outline" className="text-xs bg-red-50 text-red-600">Exam</Badge>
+                                  <span className="text-xs text-gray-500">June 24-28, 2024</span>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <Users className="h-6 w-6 text-green-600" />
+                              </div>
+                              <div className="flex-1">
+                                <h5 className="font-medium text-gray-900">Parent-Teacher Conference</h5>
+                                <p className="text-sm text-gray-600">Mid-term progress discussions</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-600">Meeting</Badge>
+                                  <span className="text-xs text-gray-500">July 5, 2024</span>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <BookOpen className="h-6 w-6 text-blue-600" />
+                              </div>
+                              <div className="flex-1">
+                                <h5 className="font-medium text-gray-900">Science Fair & Exhibition</h5>
+                                <p className="text-sm text-gray-600">Student project presentations</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600">Event</Badge>
+                                  <span className="text-xs text-gray-500">July 12, 2024</span>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <Calendar className="h-6 w-6 text-purple-600" />
+                              </div>
+                              <div className="flex-1">
+                                <h5 className="font-medium text-gray-900">Mid-Term Break</h5>
+                                <p className="text-sm text-gray-600">School closure for mid-term holidays</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600">Holiday</Badge>
+                                  <span className="text-xs text-gray-500">July 15-19, 2024</span>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Planning Tools</h4>
+                      <div className="grid gap-4">
+                        <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="p-2 bg-blue-100 rounded-lg">
+                                <Calendar className="h-5 w-5 text-blue-600" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                            </div>
+                            <h5 className="font-medium text-gray-900 mb-1">Exam Scheduler</h5>
+                            <p className="text-sm text-gray-600">Automated exam timetable generation</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="p-2 bg-green-100 rounded-lg">
+                                <Users className="h-5 w-5 text-green-600" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                            </div>
+                            <h5 className="font-medium text-gray-900 mb-1">Event Manager</h5>
+                            <p className="text-sm text-gray-600">Plan and coordinate school events</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="p-2 bg-purple-100 rounded-lg">
+                                <BarChart3 className="h-5 w-5 text-purple-600" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                            </div>
+                            <h5 className="font-medium text-gray-900 mb-1">Resource Planner</h5>
+                            <p className="text-sm text-gray-600">Allocate facilities and resources</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="p-2 bg-orange-100 rounded-lg">
+                                <FileText className="h-5 w-5 text-orange-600" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                            </div>
+                            <h5 className="font-medium text-gray-900 mb-1">Curriculum Tracker</h5>
+                            <p className="text-sm text-gray-600">Monitor syllabus completion</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="p-2 bg-red-100 rounded-lg">
+                                <Calendar className="h-5 w-5 text-red-600" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                            </div>
+                            <h5 className="font-medium text-gray-900 mb-1">Holiday Planner</h5>
+                            <p className="text-sm text-gray-600">Manage term breaks and holidays</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Term Schedule Overview */}
+                  <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">2024 Academic Year Overview</h4>
+                    <div className="bg-white rounded-lg border overflow-hidden">
+                      <div className="grid grid-cols-3 divide-x">
+                        <div className="p-4">
+                          <div className="text-center">
+                            <h5 className="font-medium text-gray-900 mb-2">Term 1</h5>
+                            <div className="text-sm text-gray-600 space-y-1">
+                              <div>Jan 15 - Apr 12</div>
+                              <div className="text-green-600 font-medium">Completed</div>
+                              <div>12 weeks • 156 days</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 bg-blue-50">
+                          <div className="text-center">
+                            <h5 className="font-medium text-gray-900 mb-2">Term 2</h5>
+                            <div className="text-sm text-gray-600 space-y-1">
+                              <div>May 6 - Aug 2</div>
+                              <div className="text-blue-600 font-medium">Current</div>
+                              <div>13 weeks • 8 completed</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="text-center">
+                            <h5 className="font-medium text-gray-900 mb-2">Term 3</h5>
+                            <div className="text-sm text-gray-600 space-y-1">
+                              <div>Sep 2 - Nov 22</div>
+                              <div className="text-gray-500 font-medium">Upcoming</div>
+                              <div>12 weeks • KCPE Prep</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Planning Actions */}
+                  <div className="pt-6 border-t border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900">Quick Actions</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                        Schedule Event
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Create Exam Timetable
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Plan Term 3
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Generate Reports
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Notify Parents
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
