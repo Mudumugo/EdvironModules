@@ -105,10 +105,12 @@ export default function CommunicationsPage() {
   const { data: communications = [], isLoading } = useQuery<Communication[]>({
     queryKey: ['/api/communications'],
     queryFn: () => apiRequest('GET', '/api/communications'),
+    select: (data) => Array.isArray(data) ? data : [],
   });
 
   // Filter communications
   const filteredCommunications = useMemo(() => {
+    if (!Array.isArray(communications)) return [];
     return communications.filter(comm => {
       const matchesType = filterType === 'all' || comm.type === filterType;
       const matchesStatus = filterStatus === 'all' || comm.status === filterStatus;
@@ -121,6 +123,9 @@ export default function CommunicationsPage() {
 
   // Group communications by status
   const communicationsByStatus = useMemo(() => {
+    if (!Array.isArray(filteredCommunications)) {
+      return { draft: [], scheduled: [], sent: [], archived: [] };
+    }
     const grouped = {
       draft: filteredCommunications.filter(c => c.status === 'draft'),
       scheduled: filteredCommunications.filter(c => c.status === 'scheduled'),
