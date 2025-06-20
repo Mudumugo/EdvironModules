@@ -168,7 +168,7 @@ export function CollapsibleDashboardLayout({
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full">
         <Sidebar variant="sidebar" collapsible="icon" className="border-r border-border">
-          <SidebarHeader className="border-b border-border p-4 h-16 flex items-center">
+          <SidebarHeader className="border-b border-border p-4 h-16 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <GraduationCap className="h-4 w-4" />
@@ -178,6 +178,7 @@ export function CollapsibleDashboardLayout({
                 <span className="text-xs text-muted-foreground">Learning Portal</span>
               </div>
             </div>
+            <SidebarTrigger className="h-8 w-8 hover:bg-accent hover:text-accent-foreground rounded-md transition-colors" />
           </SidebarHeader>
 
           <SidebarContent>
@@ -284,7 +285,6 @@ export function CollapsibleDashboardLayout({
         <SidebarInset className="flex flex-col">
           {/* Header */}
           <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
-            <SidebarTrigger className="h-9 w-9 hover:bg-accent hover:text-accent-foreground rounded-md border border-input bg-background shadow-sm transition-colors" />
             <div className="flex flex-1 items-center gap-2 overflow-hidden">
               <div className="min-w-0 flex-1">
                 {title && <h1 className="text-lg font-semibold truncate">{title}</h1>}
