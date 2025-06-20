@@ -700,6 +700,332 @@ export function Landing() {
                 </div>
               </>
             )}
+
+            {activeTab === "Teacher & Student Lockers" && (
+              <>
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Teacher & Student Lockers
+                  </h2>
+                  <p className="text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Personal digital workspaces for organizing files, assignments, resources, 
+                    and collaborative content with secure access and sharing capabilities.
+                  </p>
+                </div>
+
+                {/* Lockers Interface */}
+                <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                  {/* Header with User Toggle */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900">Digital Lockers</h3>
+                      <p className="text-gray-600">Secure personal storage for educational content and collaboration</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" className="bg-blue-600">Teacher View</Button>
+                      <Button size="sm" variant="outline">Student View</Button>
+                    </div>
+                  </div>
+
+                  {/* Storage Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-blue-600">2.4 GB</div>
+                        <div className="text-sm text-gray-600">Used Storage</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-green-600">847</div>
+                        <div className="text-sm text-gray-600">Total Files</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-purple-600">156</div>
+                        <div className="text-sm text-gray-600">Shared Items</div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-orange-600">23</div>
+                        <div className="text-sm text-gray-600">Collaborations</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Locker Categories */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-blue-100 rounded-lg">
+                            <FileText className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Lesson Materials</h3>
+                        <p className="text-gray-600 text-sm mb-4">Teaching resources, presentations, and lesson plans</p>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">234 files</Badge>
+                          <span className="text-xs text-gray-500">Last updated: 2h ago</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-green-100 rounded-lg">
+                            <FolderOpen className="h-6 w-6 text-green-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Student Assignments</h3>
+                        <p className="text-gray-600 text-sm mb-4">Submitted work, graded assignments, and feedback</p>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">89 submissions</Badge>
+                          <span className="text-xs text-gray-500">Due: Today</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-purple-100 rounded-lg">
+                            <Users className="h-6 w-6 text-purple-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Shared Resources</h3>
+                        <p className="text-gray-600 text-sm mb-4">Collaborative folders and team projects</p>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">12 shared</Badge>
+                          <span className="text-xs text-gray-500">3 collaborators</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-orange-100 rounded-lg">
+                            <BookOpen className="h-6 w-6 text-orange-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Personal Notes</h3>
+                        <p className="text-gray-600 text-sm mb-4">Private notes, reflections, and personal documents</p>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">67 notes</Badge>
+                          <span className="text-xs text-gray-500">Private</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-red-100 rounded-lg">
+                            <BarChart3 className="h-6 w-6 text-red-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Assessment Data</h3>
+                        <p className="text-gray-600 text-sm mb-4">Grades, rubrics, and performance analytics</p>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">45 assessments</Badge>
+                          <span className="text-xs text-gray-500">Confidential</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="group hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="p-3 bg-indigo-100 rounded-lg">
+                            <Calendar className="h-6 w-6 text-indigo-600" />
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Class Archives</h3>
+                        <p className="text-gray-600 text-sm mb-4">Previous term materials and historical records</p>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">2023-2024</Badge>
+                          <span className="text-xs text-gray-500">Archived</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Recent Activity & Quick Access */}
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <FileText className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Mathematics Quiz - Grade 7</h5>
+                            <p className="text-sm text-gray-600">Uploaded to Lesson Materials</p>
+                            <span className="text-xs text-gray-500">15 minutes ago</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <FolderOpen className="h-5 w-5 text-green-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Essay Submissions</h5>
+                            <p className="text-sm text-gray-600">12 new submissions received</p>
+                            <span className="text-xs text-gray-500">1 hour ago</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <Users className="h-5 w-5 text-purple-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Science Project Folder</h5>
+                            <p className="text-sm text-gray-600">Shared with Grade 8 students</p>
+                            <span className="text-xs text-gray-500">2 hours ago</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                          <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-5 w-5 text-orange-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">Lesson Plan Notes</h5>
+                            <p className="text-sm text-gray-600">Updated personal teaching notes</p>
+                            <span className="text-xs text-gray-500">3 hours ago</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Quick Access</h4>
+                      <div className="space-y-3">
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                                  <FileText className="h-4 w-4 text-blue-600" />
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">Today's Lesson Plan</h5>
+                                  <p className="text-xs text-gray-600">Grade 7 Mathematics</p>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">PDF</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
+                                  <FolderOpen className="h-4 w-4 text-green-600" />
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">Pending Assignments</h5>
+                                  <p className="text-xs text-gray-600">23 submissions to grade</p>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs bg-red-50 text-red-600">Urgent</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
+                                  <Users className="h-4 w-4 text-purple-600" />
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">Team Resources</h5>
+                                  <p className="text-xs text-gray-600">Shared with Math Dept.</p>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">Shared</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="cursor-pointer hover:shadow-sm transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-orange-100 rounded flex items-center justify-center">
+                                  <BookOpen className="h-4 w-4 text-orange-600" />
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">Personal Folder</h5>
+                                  <p className="text-xs text-gray-600">Private teaching notes</p>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">Private</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* Storage Usage */}
+                      <div className="mt-6 p-4 bg-white rounded-lg border">
+                        <h5 className="font-medium text-sm mb-3">Storage Usage</h5>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Used Storage</span>
+                            <span>2.4 GB / 10 GB</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '24%' }}></div>
+                          </div>
+                          <p className="text-xs text-gray-600">7.6 GB available</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900">Locker Actions</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                        Upload Files
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Create Folder
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Share Resource
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Manage Access
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Archive Old Files
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
