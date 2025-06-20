@@ -45,9 +45,9 @@ export function ModuleCard({ module, viewMode = "grid", onClick, variant = "juni
         className={`hover:scale-105 transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${module.bgColor}`}
         onClick={onClick}
       >
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="p-3 sm:p-4 md:p-6">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white mb-3 sm:mb-4 shadow-sm">
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full bg-white mb-2 sm:mb-3 md:mb-4 shadow-sm">
               <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${iconColor}`} />
             </div>
             
