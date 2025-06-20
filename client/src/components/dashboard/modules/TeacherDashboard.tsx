@@ -19,6 +19,7 @@ import { Module } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
 import { NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
 import { TeacherAssignmentStatusCard, TeacherClassOverviewCard, TeacherPerformanceCard } from "../shared/TeacherStatusCards";
+import { useLocation } from "wouter";
 
 interface TeacherDashboardProps {
   user?: any;
@@ -29,6 +30,25 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Modules");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [, setLocation] = useLocation();
+
+  const getModuleRoute = (moduleId: string): string => {
+    const routeMap: { [key: string]: string } = {
+      "teaching-center": "/teacher-dashboard",
+      "digital-library": "/digital-library",
+      "assignment-center": "/assignments",
+      "student-analytics": "/analytics",
+      "lesson-planning": "/lesson-planning",
+      "class-management": "/class-management",
+      "video-conferencing": "/apps-hub",
+      "resource-center": "/digital-library",
+      "parent-communication": "/parent-portal-admin",
+      "grading-center": "/assignments",
+      "professional-development": "/apps-hub",
+      "classroom-tools": "/teacher-dashboard"
+    };
+    return routeMap[moduleId] || "/";
+  };
 
   const techTutorModule = {
     id: "tech-tutor",

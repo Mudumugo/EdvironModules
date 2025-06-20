@@ -26,6 +26,7 @@ export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Modules");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [, setLocation] = useLocation();
 
   const techTutorModule = {
     id: "tech-tutor",

@@ -14,6 +14,7 @@ import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
 import { AssignmentStatusCard, NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
+import { useLocation } from "wouter";
 
 interface JuniorDashboardProps {
   user?: any;
@@ -24,6 +25,7 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Modules");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [, setLocation] = useLocation();
 
   const techTutorModule = {
     id: "tech-tutor",
@@ -31,6 +33,20 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
     description: "Master essential technology skills with personalized AI tutoring",
     category: "Learning",
     isExternal: true
+  };
+
+  const getModuleRoute = (moduleId: string): string => {
+    const routeMap: { [key: string]: string } = {
+      "digital-library": "/digital-library",
+      "my-portfolio": "/my-locker",
+      "class-schedule": "/calendar",
+      "assignments": "/my-locker",
+      "science-lab": "/apps-hub",
+      "study-groups": "/apps-hub",
+      "progress-tracker": "/analytics",
+      "educational-games": "/apps-hub"
+    };
+    return routeMap[moduleId] || "/";
   };
 
   const modules: Module[] = [
@@ -168,8 +184,7 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
             variant="junior"
             viewMode={viewMode}
             onClick={() => {
-              console.log("Opening Tech Tutor external app with SSO...");
-              // Future: Implement SSO redirect to Tech Tutor
+              setLocation("/tech-tutor");
             }}
           />
         </div>
@@ -179,7 +194,8 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
           viewMode={viewMode}
           variant="junior"
           onModuleClick={(moduleId) => {
-            console.log(`Opening module: ${moduleId}`);
+            const route = getModuleRoute(moduleId);
+            setLocation(route);
           }}
         />
 
