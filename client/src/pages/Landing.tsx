@@ -151,13 +151,10 @@ export function Landing() {
           </div>
         </div>
       </nav>
-
       {/* Hero Section */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            EdVirons Learning Ecosystem
-          </h1>
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">EdVirons Learning Portal</h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
             Precision Learning, Leaving no Kid behind.
           </p>
@@ -1324,7 +1321,6 @@ export function Landing() {
           </div>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="bg-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -1343,7 +1339,6 @@ export function Landing() {
           </div>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
