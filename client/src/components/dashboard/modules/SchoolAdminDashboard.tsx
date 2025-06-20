@@ -37,10 +37,10 @@ interface SchoolAdminDashboardProps {
 }
 
 const quickStats = [
-  { title: "Total Students", value: "2,847", change: "+12%", icon: Users, color: "bg-blue-500" },
-  { title: "Active Teachers", value: "143", change: "+5%", icon: GraduationCap, color: "bg-green-500" },
-  { title: "System Health", value: "98.5%", change: "+0.2%", icon: Shield, color: "bg-emerald-500" },
-  { title: "Active Classes", value: "67", change: "+3%", icon: BookOpen, color: "bg-purple-500" }
+  { title: "Total Students", value: "847", change: "+12%", icon: Users, color: "bg-blue-500" },
+  { title: "Teaching Staff", value: "43", change: "+5%", icon: GraduationCap, color: "bg-green-500" },
+  { title: "Attendance Rate", value: "94.2%", change: "+2.1%", icon: CheckCircle, color: "bg-emerald-500" },
+  { title: "Active Classes", value: "32", change: "+3%", icon: BookOpen, color: "bg-purple-500" }
 ];
 
 // School-level management modules (accessible by school administrators)
@@ -158,11 +158,11 @@ const superAdminModules = [
 ];
 
 const recentActivities = [
-  { action: "New teacher registered", user: "Sarah Johnson", time: "2 minutes ago", type: "success" },
-  { action: "Student enrollment completed", user: "Emma Wilson", time: "15 minutes ago", type: "success" },
-  { action: "System backup completed", user: "System", time: "1 hour ago", type: "info" },
-  { action: "Payment received", user: "Finance Dept", time: "2 hours ago", type: "success" },
-  { action: "Class schedule updated", user: "Dr. Smith", time: "3 hours ago", type: "info" }
+  { action: "New student enrolled", user: "Emma Wilson", time: "2 minutes ago", type: "success" },
+  { action: "Teacher profile updated", user: "Sarah Johnson", time: "15 minutes ago", type: "info" },
+  { action: "Class schedule modified", user: "Dr. Smith", time: "1 hour ago", type: "info" },
+  { action: "Parent meeting scheduled", user: "Admin Office", time: "2 hours ago", type: "success" },
+  { action: "Library book added", user: "Ms. Chen", time: "3 hours ago", type: "info" }
 ];
 
 const systemAlerts = [
@@ -217,7 +217,7 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
           <div>
             <h1 className="text-3xl font-bold tracking-tight">School Administrator Dashboard</h1>
             <p className="text-muted-foreground">
-              Manage your institution with comprehensive administrative tools
+              Manage your school with comprehensive administrative tools and insights
             </p>
           </div>
           <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
