@@ -293,3 +293,5 @@ export function EventDetails({
     </Dialog>
   );
 }
+
+export default EventDetails;

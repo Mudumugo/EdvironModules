@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { Link } from "wouter";
 import { MarketingNav } from "@/components/MarketingNav";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
@@ -14,7 +12,21 @@ export function Landing() {
     window.open('https://demo.edvirons.com', '_blank');
   };
 
-  const renderDashboardPreview = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <MarketingNav />
+      
+      <HeroSection 
+        onGetStarted={handleGetStarted}
+        onWatchDemo={handleWatchDemo}
+      />
+      
+      <FeaturesSection />
+      
+      <CTASection onGetStarted={handleGetStarted} />
+    </div>
+  );
+}
     if (activeFeature === 'dashboard') {
       return (
         <div className="space-y-6">
@@ -634,6 +646,8 @@ export function Landing() {
             </div>
           </div>
         </div>
+      </footer>
+
       <HeroSection 
         onGetStarted={handleGetStarted}
         onWatchDemo={handleWatchDemo}

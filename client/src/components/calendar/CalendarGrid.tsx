@@ -297,3 +297,5 @@ export function CalendarGrid({
     </div>
   );
 }
+
+export default CalendarGrid;

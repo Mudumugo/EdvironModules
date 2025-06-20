@@ -309,3 +309,5 @@ export function EventForm({
     </Dialog>
   );
 }
+
+export default EventForm;
