@@ -336,12 +336,22 @@ export function registerNotificationRoutes(app: Express) {
       const userId = req.user.id;
       const updates = req.body;
       
+      // Validate and sanitize updates - only allow specific properties
+      const allowedProperties = ['email', 'push', 'inApp', 'categories', 'quietHours'];
+      const sanitizedUpdates: Partial<NotificationPreferences> = {};
+      
+      for (const key of allowedProperties) {
+        if (updates.hasOwnProperty(key)) {
+          sanitizedUpdates[key as keyof NotificationPreferences] = updates[key];
+        }
+      }
+      
       const existingIndex = userPreferences.findIndex(p => p.userId === userId);
       
       if (existingIndex >= 0) {
         userPreferences[existingIndex] = { 
           ...userPreferences[existingIndex], 
-          ...updates 
+          ...sanitizedUpdates 
         };
       } else {
         userPreferences.push({
@@ -362,7 +372,7 @@ export function registerNotificationRoutes(app: Express) {
             start: "22:00",
             end: "08:00"
           },
-          ...updates
+          ...sanitizedUpdates
         });
       }
       
