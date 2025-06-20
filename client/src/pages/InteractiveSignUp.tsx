@@ -1,87 +1,19 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { 
-  Users, School, Baby, User, ArrowRight, ArrowLeft, 
-  CheckCircle, BookOpen, Calendar, MapPin, Phone, 
-  Mail, GraduationCap, Building, Heart
-} from "lucide-react";
-import { LocationSelector } from "@/components/forms/LocationSelector";
+import { WelcomeStep } from "@/components/interactive-signup/WelcomeStep";
+import { UserTypeStep } from "@/components/interactive-signup/UserTypeStep";
+import { AgeCheckStep } from "@/components/interactive-signup/AgeCheckStep";
+import { StudentInfoStep } from "@/components/interactive-signup/StudentInfoStep";
+import { ParentInfoStep } from "@/components/interactive-signup/ParentInfoStep";
+import { ChildInfoStep } from "@/components/interactive-signup/ChildInfoStep";
+import { NavigationButtons } from "@/components/interactive-signup/NavigationButtons";
+import { type QuizStep, type QuizData } from "@/components/interactive-signup/types";
 
-// Quiz step types
-type QuizStep = 
-  | "welcome"
-  | "user-type"
-  | "age-check"
-  | "student-info"
-  | "parent-info"
-  | "child-info"
-  | "school-info"
-  | "location"
-  | "contact"
-  | "interests"
-  | "review"
-  | "complete";
 
-interface QuizData {
-  userType: "student" | "parent" | "school" | null;
-  age?: number;
-  birthDate?: string;
-  email?: string;
-  phone?: string;
-  firstName?: string;
-  lastName?: string;
-  county?: string;
-  constituency?: string;
-  ward?: string;
-  interests?: string[];
-  // Student specific
-  gradeLevel?: string;
-  subjects?: string[];
-  // Parent specific
-  childFirstName?: string;
-  childLastName?: string;
-  childBirthDate?: string;
-  childGrade?: string;
-  // School specific
-  schoolName?: string;
-  contactName?: string;
-  role?: string;
-  schoolType?: string;
-  studentPopulation?: string;
-  gradeRange?: string;
-  hasComputerLab?: string;
-  currentTechnology?: string;
-  curriculum?: string;
-  painPoints?: string;
-  budget?: string;
-  timeline?: string;
-}
-
-const interests = [
-  "Mathematics", "Science", "Literature", "History", "Geography",
-  "Computer Science", "Art", "Music", "Sports", "Languages"
-];
-
-const subjects = [
-  "Mathematics", "English", "Kiswahili", "Science", "Social Studies",
-  "Christian Religious Education", "Islamic Religious Education",
-  "Hindu Religious Education", "Life Skills", "Creative Arts"
-];
 
 export default function InteractiveSignUp() {
   const [currentStep, setCurrentStep] = useState<QuizStep>("welcome");
@@ -517,69 +449,10 @@ export default function InteractiveSignUp() {
 
       case "child-info":
         return (
-          <Card className="w-full max-w-2xl mx-auto">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">About Your Child</CardTitle>
-              <CardDescription>
-                Tell us about your child's learning needs
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="childFirstName">Child's First Name</Label>
-                  <Input
-                    id="childFirstName"
-                    value={quizData.childFirstName || ""}
-                    onChange={(e) => updateQuizData({ childFirstName: e.target.value })}
-                    placeholder="Child's first name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="childLastName">Child's Last Name</Label>
-                  <Input
-                    id="childLastName"
-                    value={quizData.childLastName || ""}
-                    onChange={(e) => updateQuizData({ childLastName: e.target.value })}
-                    placeholder="Child's last name"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="childBirthDate">Child's Birth Date</Label>
-                  <Input
-                    id="childBirthDate"
-                    type="date"
-                    value={quizData.childBirthDate || ""}
-                    onChange={(e) => updateQuizData({ childBirthDate: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label>Child's Current Grade</Label>
-                  <Select
-                    value={quizData.childGrade || ""}
-                    onValueChange={(value) => updateQuizData({ childGrade: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select grade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pre-k">Pre-K</SelectItem>
-                      <SelectItem value="kindergarten">Kindergarten</SelectItem>
-                      <SelectItem value="grade-1">Grade 1</SelectItem>
-                      <SelectItem value="grade-2">Grade 2</SelectItem>
-                      <SelectItem value="grade-3">Grade 3</SelectItem>
-                      <SelectItem value="grade-4">Grade 4</SelectItem>
-                      <SelectItem value="grade-5">Grade 5</SelectItem>
-                      <SelectItem value="grade-6">Grade 6</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ChildInfoStep 
+            quizData={quizData}
+            onUpdateData={updateQuizData}
+          />
         );
 
       case "school-info":
