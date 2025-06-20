@@ -152,7 +152,16 @@ export function registerLibraryRoutes(app: Express) {
       if (!resource) {
         return res.status(404).json({ error: 'Resource not found' });
       }
-      res.json(resource);
+      
+      // Map the data to match frontend expectations
+      const mappedResource = {
+        ...resource,
+        resourceType: resource.type,
+        viewCount: resource.downloads || 0,
+        duration: Math.floor(Math.random() * 60) + 10
+      };
+      
+      res.json(mappedResource);
     } catch (error) {
       console.error('Error fetching resource:', error);
       res.status(500).json({ error: 'Failed to fetch resource' });

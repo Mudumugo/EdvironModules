@@ -11,8 +11,10 @@ interface ResourceCardProps {
 }
 
 export const ResourceCard = ({ resource, layout, onAccess }: ResourceCardProps) => {
-  const ResourceIcon = LibraryResourceTypes.getResourceIcon(resource.resourceType);
-  const resourceTypeColor = LibraryResourceTypes.getResourceTypeColor(resource.resourceType);
+  // Provide fallback values for missing resourceType
+  const resourceType = resource.resourceType || resource.type || 'document';
+  const ResourceIcon = LibraryResourceTypes.getResourceIcon(resourceType);
+  const resourceTypeColor = LibraryResourceTypes.getResourceTypeColor(resourceType);
   
   return (
     <Card className={`${layout.cardStyle} group cursor-pointer hover:shadow-lg transition-shadow`}>
@@ -26,7 +28,10 @@ export const ResourceCard = ({ resource, layout, onAccess }: ResourceCardProps) 
               {resource.title}
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-              {resource.resourceType.charAt(0).toUpperCase() + resource.resourceType.slice(1)}
+              {resource.resourceType ? 
+                resource.resourceType.charAt(0).toUpperCase() + resource.resourceType.slice(1) : 
+                'Resource'
+              }
             </p>
           </div>
         </div>
