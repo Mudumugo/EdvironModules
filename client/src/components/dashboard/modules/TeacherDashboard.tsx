@@ -235,7 +235,7 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
       title="Teacher Dashboard"
       subtitle="Empower your teaching with comprehensive classroom management tools"
     >
-      <div className="w-full">
+      <div className="max-w-7xl mx-auto">
         <DashboardHeader
           title=""
           subtitle=""
@@ -253,7 +253,7 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
         />
 
         {/* Status Cards Section */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-4 lg:mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
           <TeacherAssignmentStatusCard />
           <TeacherClassOverviewCard />
           <NotificationsCard />
@@ -271,24 +271,22 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
           />
         </div>
 
-        <div className="w-full">
-          <ModuleGrid 
-            modules={filteredModules.filter(m => m.id !== "tech-tutor")}
-            viewMode={viewMode}
-            variant="teacher"
-            onModuleClick={(moduleId) => {
-              console.log(`Opening module: ${moduleId}`);
-            }}
-          />
-        </div>
+        <ModuleGrid 
+          modules={filteredModules.filter(m => m.id !== "tech-tutor")}
+          viewMode={viewMode}
+          variant="teacher"
+          onModuleClick={(moduleId) => {
+            console.log(`Opening module: ${moduleId}`);
+          }}
+        />
 
         {filteredModules.length === 0 && (
-          <div className="text-center py-6 sm:py-8 lg:py-12">
+          <div className="text-center py-8 sm:py-12">
             <div className="text-gray-400 mb-4">
-              <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 mx-auto" />
+              <BookOpen className="h-8 w-8 sm:h-12 sm:w-12 mx-auto" />
             </div>
-            <h3 className="text-sm sm:text-base lg:text-lg font-medium text-gray-900 mb-2">No modules found</h3>
-            <p className="text-xs sm:text-sm lg:text-base text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No modules found</h3>
+            <p className="text-sm sm:text-base text-gray-600">Try adjusting your search or filter criteria</p>
           </div>
         )}
       </div>

@@ -76,16 +76,16 @@ export function ModuleCard({ module, viewMode = "grid", onClick, variant = "juni
       }`}
       onClick={onClick}
     >
-      <CardContent className={viewMode === "grid" ? "p-3 sm:p-4 lg:p-6" : "flex items-center gap-3 sm:gap-4 p-3 sm:p-4 flex-1"}>
-        <div className={`${viewMode === "grid" ? "mb-2 sm:mb-3 lg:mb-4" : ""} flex-shrink-0`}>
-          <Icon className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 ${iconColor}`} />
+      <CardContent className={viewMode === "grid" ? "p-4 sm:p-6" : "flex items-center gap-3 sm:gap-4 p-0 flex-1"}>
+        <div className={`${viewMode === "grid" ? "mb-3 sm:mb-4" : ""} flex-shrink-0`}>
+          <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${iconColor}`} />
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm sm:text-base lg:text-lg mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors truncate">
+          <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors truncate">
             {module.title}
           </h3>
-          <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 lg:mb-4 line-clamp-2">
+          <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
             {module.description}
           </p>
           

@@ -86,17 +86,17 @@ export function AssignmentStatusCard() {
 
   if (isLoading) {
     return (
-      <Card className="h-full">
-        <CardHeader className="pb-2 p-3 lg:p-4">
-          <CardTitle className="flex items-center gap-2 text-sm lg:text-base">
-            <FileText className="h-4 w-4" />
-            Assignments
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Assignment Status
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-3 lg:p-4 pt-0">
-          <div className="animate-pulse space-y-2">
-            <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+        <CardContent>
+          <div className="animate-pulse space-y-3">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>

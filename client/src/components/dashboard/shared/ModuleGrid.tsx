@@ -24,8 +24,8 @@ export function ModuleGrid({ modules, viewMode = "grid", variant = "junior", onM
   return (
     <div className={
       viewMode === "grid" 
-        ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4"
-        : "space-y-2 lg:space-y-3"
+        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+        : "space-y-3 sm:space-y-4"
     }>
       {modules.map((module) => (
         <ModuleCard
