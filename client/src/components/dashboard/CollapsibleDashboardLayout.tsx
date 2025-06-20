@@ -169,14 +169,17 @@ export function CollapsibleDashboardLayout({
       <div className="flex min-h-screen w-full">
         <Sidebar variant="default" collapsible="icon" side="left">
           <SidebarHeader className="border-b border-sidebar-border">
-            <div className="flex items-center gap-2 px-2 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <GraduationCap className="h-4 w-4" />
+            <div className="flex items-center justify-between gap-2 px-2 py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                  <span className="font-semibold">EdVirons</span>
+                  <span className="text-xs text-muted-foreground">Learning Portal</span>
+                </div>
               </div>
-              <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                <span className="font-semibold">EdVirons</span>
-                <span className="text-xs text-muted-foreground">Learning Portal</span>
-              </div>
+              <SidebarTrigger className="h-8 w-8 group-data-[collapsible=icon]:hidden" />
             </div>
           </SidebarHeader>
 
@@ -284,7 +287,6 @@ export function CollapsibleDashboardLayout({
         <SidebarInset className="flex-1">
           {/* Header */}
           <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
-            <SidebarTrigger className="h-8 w-8" />
             <div className="flex flex-1 items-center gap-2">
               <div>
                 <h1 className="text-lg font-semibold">{title}</h1>
