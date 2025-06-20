@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
@@ -206,13 +206,20 @@ export function MediaPlayer({
             }`}>
               {/* Progress Bar */}
               <div className="mb-4">
-                <Slider
-                  value={[progressPercentage]}
-                  onValueChange={handleSeek}
-                  max={100}
-                  step={0.1}
-                  className="w-full"
-                />
+                <div 
+                  className="w-full h-2 bg-white/20 rounded-full cursor-pointer"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percentage = (x / rect.width) * 100;
+                    handleSeek([percentage]);
+                  }}
+                >
+                  <div 
+                    className="h-full bg-white rounded-full transition-all"
+                    style={{ width: `${progressPercentage}%` }}
+                  />
+                </div>
                 <div className="flex justify-between text-xs text-white mt-1">
                   <span>{formatTime(currentTime)}</span>
                   <span>{formatTime(duration)}</span>
@@ -286,12 +293,18 @@ export function MediaPlayer({
                         <Volume2 className="h-4 w-4" />
                       )}
                     </Button>
-                    <div className="w-20">
-                      <Slider
-                        value={[settings.volume * 100]}
-                        onValueChange={handleVolumeChange}
-                        max={100}
-                        step={1}
+                    <div 
+                      className="w-20 h-2 bg-white/20 rounded-full cursor-pointer flex items-center"
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const percentage = (x / rect.width) * 100;
+                        handleVolumeChange([percentage]);
+                      }}
+                    >
+                      <div 
+                        className="h-full bg-white rounded-full"
+                        style={{ width: `${settings.volume * 100}%` }}
                       />
                     </div>
                   </div>
