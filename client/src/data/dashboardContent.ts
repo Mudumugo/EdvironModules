@@ -1,396 +1,349 @@
 import type { EducationLevel } from "@/components/dashboard/DashboardSwitcher";
 
-export interface Subject {
+export interface EdvironsModule {
   id: string;
   name: string;
-  progress: number;
-  color: string;
-  lessons: number;
-  completed: number;
-  icon: string;
-}
-
-export interface Assignment {
-  id: string;
-  title: string;
-  subject: string;
-  dueDate: string;
-  status: 'pending' | 'completed' | 'overdue';
-  priority: 'high' | 'medium' | 'low';
-}
-
-export interface Achievement {
-  id: string;
-  title: string;
   description: string;
   icon: string;
-  earned: boolean;
-  date?: string;
+  color: string;
+  href: string;
+  features: string[];
+  isAvailable: boolean;
+}
+
+export interface RecentActivity {
+  id: string;
+  title: string;
+  module: string;
+  time: string;
+  type: 'accessed' | 'created' | 'completed' | 'shared';
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  priority: 'high' | 'medium' | 'low';
+  author: string;
 }
 
 export interface DashboardContent {
-  subjects: Subject[];
-  assignments: Assignment[];
-  achievements: Achievement[];
+  modules: EdvironsModule[];
+  recentActivities: RecentActivity[];
+  announcements: Announcement[];
   stats: {
-    totalSubjects: number;
-    completedLessons: number;
-    averageGrade: string;
-    studyHours: number;
+    modulesAccessed: number;
+    resourcesViewed: number;
+    timeSpent: string;
+    lastLogin: string;
   };
 }
 
 export const dashboardContentByLevel: Record<EducationLevel, DashboardContent> = {
   primary: {
-    subjects: [
+    modules: [
       {
-        id: 'math_basic',
-        name: 'Basic Mathematics',
-        progress: 75,
+        id: 'digital_library',
+        name: 'Digital Library',
+        description: 'Access age-appropriate books, stories, and educational resources',
+        icon: '📚',
         color: 'bg-blue-500',
-        lessons: 20,
-        completed: 15,
-        icon: '🔢'
+        href: '/digital-library',
+        features: ['Picture books', 'Interactive stories', 'Basic reference'],
+        isAvailable: true
       },
       {
-        id: 'english_reading',
-        name: 'Reading & Writing',
-        progress: 60,
+        id: 'my_locker',
+        name: 'My Locker',
+        description: 'Store your favorite content, notes, and creative work',
+        icon: '🗂️',
         color: 'bg-green-500',
-        lessons: 18,
-        completed: 11,
-        icon: '📚'
+        href: '/my-locker',
+        features: ['Save favorites', 'Digital notebooks', 'Art gallery'],
+        isAvailable: true
       },
       {
-        id: 'science_nature',
-        name: 'Nature Studies',
-        progress: 45,
-        color: 'bg-yellow-500',
-        lessons: 15,
-        completed: 7,
-        icon: '🌱'
+        id: 'apps_hub',
+        name: 'Apps Hub',
+        description: 'Fun educational games and learning activities',
+        icon: '🎮',
+        color: 'bg-purple-500',
+        href: '/apps-hub',
+        features: ['Learning games', 'Puzzles', 'Art tools'],
+        isAvailable: true
       },
       {
-        id: 'art_craft',
-        name: 'Arts & Crafts',
-        progress: 80,
-        color: 'bg-pink-500',
-        lessons: 12,
-        completed: 10,
-        icon: '🎨'
-      }
-    ],
-    assignments: [
-      {
-        id: 'math_hw1',
-        title: 'Addition & Subtraction Practice',
-        subject: 'Mathematics',
-        dueDate: '2025-06-22',
-        status: 'pending',
-        priority: 'medium'
-      },
-      {
-        id: 'reading_hw1',
-        title: 'Read "The Little Prince" Chapter 1',
-        subject: 'Reading',
-        dueDate: '2025-06-23',
-        status: 'pending',
-        priority: 'low'
-      },
-      {
-        id: 'art_project1',
-        title: 'Draw Your Family',
-        subject: 'Arts',
-        dueDate: '2025-06-25',
-        status: 'completed',
-        priority: 'medium'
-      }
-    ],
-    achievements: [
-      {
-        id: 'first_steps',
-        title: 'First Steps',
-        description: 'Completed your first lesson!',
-        icon: '👣',
-        earned: true,
-        date: '2025-06-15'
-      },
-      {
-        id: 'math_star',
-        title: 'Math Star',
-        description: 'Scored 100% on 5 math quizzes',
-        icon: '⭐',
-        earned: true,
-        date: '2025-06-18'
-      },
-      {
-        id: 'reading_champion',
-        title: 'Reading Champion',
-        description: 'Read 10 books this month',
-        icon: '🏆',
-        earned: false
-      }
-    ],
-    stats: {
-      totalSubjects: 4,
-      completedLessons: 43,
-      averageGrade: 'A-',
-      studyHours: 25
-    }
-  },
-  
-  junior_secondary: {
-    subjects: [
-      {
-        id: 'math_algebra',
-        name: 'Algebra',
-        progress: 65,
-        color: 'bg-blue-600',
-        lessons: 30,
-        completed: 19,
-        icon: '📐'
-      },
-      {
-        id: 'english_lit',
-        name: 'English Literature',
-        progress: 70,
-        color: 'bg-green-600',
-        lessons: 25,
-        completed: 18,
-        icon: '📖'
-      },
-      {
-        id: 'science_biology',
-        name: 'Biology',
-        progress: 55,
-        color: 'bg-emerald-500',
-        lessons: 28,
-        completed: 15,
-        icon: '🧬'
-      },
-      {
-        id: 'history',
-        name: 'World History',
-        progress: 40,
-        color: 'bg-amber-500',
-        lessons: 22,
-        completed: 9,
-        icon: '🏛️'
-      },
-      {
-        id: 'geography',
-        name: 'Geography',
-        progress: 85,
-        color: 'bg-cyan-500',
-        lessons: 20,
-        completed: 17,
-        icon: '🌍'
-      }
-    ],
-    assignments: [
-      {
-        id: 'algebra_test',
-        title: 'Quadratic Equations Test',
-        subject: 'Algebra',
-        dueDate: '2025-06-21',
-        status: 'pending',
-        priority: 'high'
-      },
-      {
-        id: 'bio_lab',
-        title: 'Cell Structure Lab Report',
-        subject: 'Biology',
-        dueDate: '2025-06-24',
-        status: 'pending',
-        priority: 'medium'
-      },
-      {
-        id: 'lit_essay',
-        title: 'Shakespeare Essay: Romeo & Juliet',
-        subject: 'Literature',
-        dueDate: '2025-06-26',
-        status: 'completed',
-        priority: 'high'
-      },
-      {
-        id: 'geo_project',
-        title: 'Climate Change Presentation',
-        subject: 'Geography',
-        dueDate: '2025-06-28',
-        status: 'pending',
-        priority: 'medium'
-      }
-    ],
-    achievements: [
-      {
-        id: 'scholar',
-        title: 'Young Scholar',
-        description: 'Maintained A+ average for 3 months',
-        icon: '🎓',
-        earned: true,
-        date: '2025-06-10'
-      },
-      {
-        id: 'lab_expert',
-        title: 'Lab Expert',
-        description: 'Completed 15 science experiments',
-        icon: '🔬',
-        earned: true,
-        date: '2025-06-16'
-      },
-      {
-        id: 'debate_master',
-        title: 'Debate Master',
-        description: 'Won school debate competition',
-        icon: '🗣️',
-        earned: false
-      }
-    ],
-    stats: {
-      totalSubjects: 5,
-      completedLessons: 78,
-      averageGrade: 'B+',
-      studyHours: 45
-    }
-  },
-  
-  senior_secondary: {
-    subjects: [
-      {
-        id: 'calculus',
-        name: 'Advanced Calculus',
-        progress: 50,
-        color: 'bg-indigo-600',
-        lessons: 40,
-        completed: 20,
-        icon: '∫'
-      },
-      {
-        id: 'physics',
-        name: 'Physics',
-        progress: 75,
-        color: 'bg-purple-600',
-        lessons: 35,
-        completed: 26,
-        icon: '⚛️'
-      },
-      {
-        id: 'chemistry',
-        name: 'Organic Chemistry',
-        progress: 60,
-        color: 'bg-red-500',
-        lessons: 32,
-        completed: 19,
-        icon: '🧪'
-      },
-      {
-        id: 'literature',
-        name: 'Advanced Literature',
-        progress: 80,
-        color: 'bg-teal-600',
-        lessons: 28,
-        completed: 22,
-        icon: '✍️'
-      },
-      {
-        id: 'economics',
-        name: 'Economics',
-        progress: 45,
+        id: 'tech_tutor',
+        name: 'Tech Tutor',
+        description: 'Get help with basic computer and internet skills',
+        icon: '🤖',
         color: 'bg-orange-500',
-        lessons: 30,
-        completed: 14,
-        icon: '📊'
+        href: '/tech-tutor',
+        features: ['Basic computing', 'Internet safety', 'Digital citizenship'],
+        isAvailable: true
       },
       {
-        id: 'computer_science',
-        name: 'Computer Science',
-        progress: 90,
-        color: 'bg-gray-700',
-        lessons: 25,
-        completed: 23,
-        icon: '💻'
+        id: 'help_center',
+        name: 'Help Center',
+        description: 'Get assistance and learn how to use the portal',
+        icon: '❓',
+        color: 'bg-gray-500',
+        href: '/help',
+        features: ['How-to guides', 'Ask for help', 'Parent resources'],
+        isAvailable: true
       }
     ],
-    assignments: [
+    recentActivities: [
       {
-        id: 'calc_exam',
-        title: 'Integral Calculus Final Exam',
-        subject: 'Calculus',
-        dueDate: '2025-06-20',
-        status: 'pending',
-        priority: 'high'
+        id: '1',
+        title: 'Read "The Three Little Pigs"',
+        module: 'Digital Library',
+        time: '2 hours ago',
+        type: 'accessed'
       },
       {
-        id: 'physics_lab',
-        title: 'Quantum Mechanics Lab',
-        subject: 'Physics',
-        dueDate: '2025-06-22',
-        status: 'pending',
-        priority: 'high'
+        id: '2',
+        title: 'Drew a picture in Art Tools',
+        module: 'Apps Hub',
+        time: 'Yesterday',
+        type: 'created'
       },
       {
-        id: 'chem_synthesis',
-        title: 'Organic Synthesis Project',
-        subject: 'Chemistry',
-        dueDate: '2025-06-25',
-        status: 'pending',
-        priority: 'medium'
-      },
-      {
-        id: 'lit_thesis',
-        title: 'Literary Analysis Thesis',
-        subject: 'Literature',
-        dueDate: '2025-06-30',
-        status: 'completed',
-        priority: 'high'
-      },
-      {
-        id: 'cs_project',
-        title: 'Machine Learning Algorithm',
-        subject: 'Computer Science',
-        dueDate: '2025-07-05',
-        status: 'pending',
-        priority: 'medium'
+        id: '3',
+        title: 'Saved story to favorites',
+        module: 'My Locker',
+        time: '2 days ago',
+        type: 'shared'
       }
     ],
-    achievements: [
+    announcements: [
       {
-        id: 'academic_excellence',
-        title: 'Academic Excellence',
-        description: 'Dean\'s List for 4 consecutive semesters',
-        icon: '🏅',
-        earned: true,
-        date: '2025-05-30'
+        id: '1',
+        title: 'New Story Collection Available',
+        content: 'Check out our new collection of fairy tales in the Digital Library!',
+        date: '2025-06-18',
+        priority: 'medium',
+        author: 'Library Team'
       },
       {
-        id: 'research_pioneer',
-        title: 'Research Pioneer',
-        description: 'Published research paper',
-        icon: '📄',
-        earned: true,
-        date: '2025-06-05'
-      },
-      {
-        id: 'olympiad_winner',
-        title: 'Science Olympiad Winner',
-        description: 'Won national science competition',
-        icon: '🥇',
-        earned: false
-      },
-      {
-        id: 'coding_master',
-        title: 'Coding Master',
-        description: 'Completed 100 programming challenges',
-        icon: '⚡',
-        earned: true,
-        date: '2025-06-12'
+        id: '2',
+        title: 'Art Contest This Month',
+        content: 'Submit your best digital artwork for our monthly contest!',
+        date: '2025-06-17',
+        priority: 'high',
+        author: 'Activities Team'
       }
     ],
     stats: {
-      totalSubjects: 6,
-      completedLessons: 124,
-      averageGrade: 'A',
-      studyHours: 72
+      modulesAccessed: 4,
+      resourcesViewed: 23,
+      timeSpent: '2.5 hours',
+      lastLogin: 'Today at 9:30 AM'
+    }
+  },
+
+  junior_secondary: {
+    modules: [
+      {
+        id: 'digital_library',
+        name: 'Digital Library',
+        description: 'Access academic resources, research materials, and reference books',
+        icon: '📖',
+        color: 'bg-blue-600',
+        href: '/digital-library',
+        features: ['Academic databases', 'Research tools', 'Subject guides'],
+        isAvailable: true
+      },
+      {
+        id: 'my_locker',
+        name: 'My Locker',
+        description: 'Organize research notes, projects, and academic resources',
+        icon: '📋',
+        color: 'bg-green-600',
+        href: '/my-locker',
+        features: ['Research notes', 'Project files', 'Citation manager'],
+        isAvailable: true
+      },
+      {
+        id: 'apps_hub',
+        name: 'Apps Hub',
+        description: 'Educational applications for collaborative learning',
+        icon: '🔬',
+        color: 'bg-purple-600',
+        href: '/apps-hub',
+        features: ['Lab simulations', 'Collaboration tools', 'Study aids'],
+        isAvailable: true
+      },
+      {
+        id: 'tech_tutor',
+        name: 'Tech Tutor',
+        description: 'Learn digital research skills and academic technology',
+        icon: '💻',
+        color: 'bg-orange-600',
+        href: '/tech-tutor',
+        features: ['Research skills', 'Digital literacy', 'Online safety'],
+        isAvailable: true
+      },
+      {
+        id: 'help_center',
+        name: 'Help Center',
+        description: 'Academic support and technical assistance',
+        icon: '🆘',
+        color: 'bg-gray-600',
+        href: '/help',
+        features: ['Study help', 'Tech support', 'Academic guidance'],
+        isAvailable: true
+      }
+    ],
+    recentActivities: [
+      {
+        id: '1',
+        title: 'Downloaded Biology research paper',
+        module: 'Digital Library',
+        time: '1 hour ago',
+        type: 'accessed'
+      },
+      {
+        id: '2',
+        title: 'Created new project folder',
+        module: 'My Locker',
+        time: '3 hours ago',
+        type: 'created'
+      },
+      {
+        id: '3',
+        title: 'Completed lab simulation',
+        module: 'Apps Hub',
+        time: 'Yesterday',
+        type: 'completed'
+      }
+    ],
+    announcements: [
+      {
+        id: '1',
+        title: 'New Science Database Available',
+        content: 'Access the latest scientific journals and research papers.',
+        date: '2025-06-19',
+        priority: 'high',
+        author: 'Library Services'
+      },
+      {
+        id: '2',
+        title: 'Study Group Tools Updated',
+        content: 'New collaboration features added to Apps Hub.',
+        date: '2025-06-16',
+        priority: 'medium',
+        author: 'Tech Team'
+      }
+    ],
+    stats: {
+      modulesAccessed: 5,
+      resourcesViewed: 47,
+      timeSpent: '6.2 hours',
+      lastLogin: 'Today at 8:15 AM'
+    }
+  },
+
+  senior_secondary: {
+    modules: [
+      {
+        id: 'digital_library',
+        name: 'Digital Library',
+        description: 'Advanced academic resources, research databases, and scholarly publications',
+        icon: '🎓',
+        color: 'bg-indigo-700',
+        href: '/digital-library',
+        features: ['Scholarly articles', 'Thesis databases', 'Advanced search'],
+        isAvailable: true
+      },
+      {
+        id: 'my_locker',
+        name: 'My Locker',
+        description: 'Advanced project management and research organization tools',
+        icon: '📁',
+        color: 'bg-green-700',
+        href: '/my-locker',
+        features: ['Research portfolio', 'Project management', 'Bibliography tools'],
+        isAvailable: true
+      },
+      {
+        id: 'apps_hub',
+        name: 'Apps Hub',
+        description: 'Professional-grade tools for advanced learning and research',
+        icon: '⚗️',
+        color: 'bg-purple-700',
+        href: '/apps-hub',
+        features: ['Research tools', 'Data analysis', 'Collaboration platforms'],
+        isAvailable: true
+      },
+      {
+        id: 'tech_tutor',
+        name: 'Tech Tutor',
+        description: 'Advanced digital skills and research methodology training',
+        icon: '🧠',
+        color: 'bg-orange-700',
+        href: '/tech-tutor',
+        features: ['Research methods', 'Data analysis', 'Academic writing'],
+        isAvailable: true
+      },
+      {
+        id: 'help_center',
+        name: 'Help Center',
+        description: 'Comprehensive academic and technical support services',
+        icon: '🎯',
+        color: 'bg-gray-700',
+        href: '/help',
+        features: ['Academic counseling', 'Research support', 'Career guidance'],
+        isAvailable: true
+      }
+    ],
+    recentActivities: [
+      {
+        id: '1',
+        title: 'Downloaded advanced physics journals',
+        module: 'Digital Library',
+        time: '30 minutes ago',
+        type: 'accessed'
+      },
+      {
+        id: '2',
+        title: 'Updated research project bibliography',
+        module: 'My Locker',
+        time: '2 hours ago',
+        type: 'created'
+      },
+      {
+        id: '3',
+        title: 'Completed data analysis tutorial',
+        module: 'Tech Tutor',
+        time: 'Yesterday',
+        type: 'completed'
+      }
+    ],
+    announcements: [
+      {
+        id: '1',
+        title: 'University Research Partnership',
+        content: 'New collaboration with leading universities for advanced research access.',
+        date: '2025-06-20',
+        priority: 'high',
+        author: 'Academic Affairs'
+      },
+      {
+        id: '2',
+        title: 'Career Guidance Sessions',
+        content: 'Schedule one-on-one sessions with career counselors.',
+        date: '2025-06-18',
+        priority: 'medium',
+        author: 'Counseling Services'
+      }
+    ],
+    stats: {
+      modulesAccessed: 5,
+      resourcesViewed: 89,
+      timeSpent: '12.7 hours',
+      lastLogin: 'Today at 7:45 AM'
     }
   }
 };

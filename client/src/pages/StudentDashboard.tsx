@@ -58,32 +58,32 @@ export default function StudentDashboard() {
         {/* Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatsCard
-            title="Total Subjects"
-            value={dashboardData.stats.totalSubjects.toString()}
-            change={currentLevel === 'primary' ? '+1 this semester' : currentLevel === 'junior_secondary' ? '+2 this year' : '+3 this year'}
+            title="Modules Accessed"
+            value={dashboardData.stats.modulesAccessed.toString()}
+            change="This week"
             icon={<BookOpen className="h-6 w-6" />}
             color="bg-blue-500"
           />
           <StatsCard
-            title="Completed Lessons"
-            value={dashboardData.stats.completedLessons.toString()}
-            change={currentLevel === 'primary' ? '+5 this week' : currentLevel === 'junior_secondary' ? '+8 this week' : '+12 this week'}
+            title="Resources Viewed"
+            value={dashboardData.stats.resourcesViewed.toString()}
+            change="This month"
             icon={<CheckCircle className="h-6 w-6" />}
             color="bg-green-500"
           />
           <StatsCard
-            title="Average Grade"
-            value={dashboardData.stats.averageGrade}
-            change={currentLevel === 'primary' ? '+0.2 improvement' : currentLevel === 'junior_secondary' ? '+0.3 improvement' : '+0.1 improvement'}
-            icon={<Star className="h-6 w-6" />}
-            color="bg-yellow-500"
-          />
-          <StatsCard
-            title="Study Hours"
-            value={`${dashboardData.stats.studyHours}h`}
+            title="Time Spent"
+            value={dashboardData.stats.timeSpent}
             change="This week"
             icon={<Clock className="h-6 w-6" />}
             color="bg-purple-500"
+          />
+          <StatsCard
+            title="Last Login"
+            value={dashboardData.stats.lastLogin.split(' ')[0]}
+            change={dashboardData.stats.lastLogin.split(' ').slice(1).join(' ')}
+            icon={<Star className="h-6 w-6" />}
+            color="bg-orange-500"
           />
         </div>
 
@@ -91,37 +91,47 @@ export default function StudentDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            {/* Current Subjects */}
+            {/* Edvirons Modules */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5" />
-                  Your Subjects
+                  Learning Modules
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {dashboardData.subjects.map((subject) => (
-                    <div key={subject.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 ${subject.color} rounded-lg flex items-center justify-center text-white text-lg`}>
-                          {subject.icon}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {dashboardData.modules.map((module) => (
+                    <div key={module.id} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group cursor-pointer">
+                      <div className="flex items-start space-x-4">
+                        <div className={`w-12 h-12 ${module.color} rounded-lg flex items-center justify-center text-white text-xl flex-shrink-0`}>
+                          {module.icon}
                         </div>
-                        <div>
-                          <h4 className="font-medium">{subject.name}</h4>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {subject.completed}/{subject.lessons} lessons completed
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {module.name}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            {module.description}
                           </p>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {module.features.slice(0, 2).map((feature, index) => (
+                              <span key={index} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
+                                {feature}
+                              </span>
+                            ))}
+                            {module.features.length > 2 && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
+                                +{module.features.length - 2} more
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                          <p className="text-sm font-medium">{subject.progress}%</p>
-                          <Progress value={subject.progress} className="w-20 h-2" />
-                        </div>
-                        <Button size="sm" variant="outline">
-                          <Play className="h-4 w-4 mr-1" />
-                          Continue
+                      <div className="mt-3 flex justify-end">
+                        <Button size="sm" variant="outline" className="group-hover:bg-blue-50 group-hover:border-blue-200 dark:group-hover:bg-blue-900/20">
+                          <Play className="h-3 w-3 mr-1" />
+                          Open
                         </Button>
                       </div>
                     </div>
@@ -133,58 +143,64 @@ export default function StudentDashboard() {
 
           {/* Right Column */}
           <div className="space-y-4 sm:space-y-6">
-            {/* Upcoming Assignments */}
+            {/* Recent Activities */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Upcoming Assignments
+                  <Clock className="h-5 w-5" />
+                  Recent Activities
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {dashboardData.assignments.map((assignment) => (
-                    <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  {dashboardData.recentActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${
+                        activity.type === 'accessed' ? 'bg-blue-500' :
+                        activity.type === 'created' ? 'bg-green-500' :
+                        activity.type === 'completed' ? 'bg-purple-500' : 'bg-orange-500'
+                      }`}>
+                        {activity.type === 'accessed' ? '👁️' :
+                         activity.type === 'created' ? '➕' :
+                         activity.type === 'completed' ? '✅' : '📤'}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm truncate">{assignment.title}</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{assignment.subject}</p>
+                        <h4 className="font-medium text-sm truncate">{activity.title}</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{activity.module}</p>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <Badge 
-                          variant={assignment.status === 'completed' ? 'default' : assignment.status === 'overdue' ? 'destructive' : 'secondary'}
-                          className="text-xs"
-                        >
-                          {assignment.status}
-                        </Badge>
-                        <p className="text-xs text-gray-500 mt-1">{assignment.dueDate}</p>
-                      </div>
+                      <p className="text-xs text-gray-500 flex-shrink-0">{activity.time}</p>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Recent Achievements */}
+            {/* Announcements */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5" />
-                  Recent Achievements
+                  <Bell className="h-5 w-5" />
+                  Announcements
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {dashboardData.achievements.map((achievement) => (
-                    <div key={achievement.id} className={`flex items-center space-x-3 p-3 rounded-lg ${achievement.earned ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'opacity-60'}`}>
-                      <div className="text-2xl flex-shrink-0">{achievement.icon}</div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm">{achievement.title}</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{achievement.description}</p>
-                        {achievement.earned && achievement.date && (
-                          <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">Earned on {achievement.date}</p>
-                        )}
+                  {dashboardData.announcements.map((announcement) => (
+                    <div key={announcement.id} className="p-3 border rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-sm">{announcement.title}</h4>
+                        <Badge 
+                          variant={announcement.priority === 'high' ? 'destructive' : announcement.priority === 'medium' ? 'default' : 'secondary'}
+                          className="text-xs"
+                        >
+                          {announcement.priority}
+                        </Badge>
                       </div>
-                      {achievement.earned && <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />}
+                      <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">{announcement.content}</p>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>{announcement.author}</span>
+                        <span>{announcement.date}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
