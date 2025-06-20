@@ -13,6 +13,7 @@ import { DashboardHeader } from "../shared/DashboardHeader";
 import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
+import { AssignmentStatusCard, NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
 
 interface JuniorDashboardProps {
   user?: any;
@@ -153,6 +154,14 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
+
+        {/* Status Cards Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+          <AssignmentStatusCard />
+          <NotificationsCard />
+          <NextEventCard />
+          <LibraryRecommendationsCard />
+        </div>
 
         <div className="mb-4 sm:mb-6">
           <TechTutorCard 

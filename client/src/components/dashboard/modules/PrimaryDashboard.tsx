@@ -11,6 +11,7 @@ import { DashboardHeader } from "../shared/DashboardHeader";
 import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
+import { AssignmentStatusCard, NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
 
 interface PrimaryDashboardProps {
   user?: any;
