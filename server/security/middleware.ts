@@ -66,20 +66,14 @@ function checkSuspiciousActivity(req: Request): string | null {
       headers: req.headers || {}
     });
 
-    // Skip authentication and basic API endpoints from pattern matching
-    const skipPatterns = ['/api/auth/', '/api/notifications', '/api/'];
+    // Skip all API endpoints and development requests from suspicious pattern matching
+    const skipPatterns = ['/api/', '/@', '/src/', '/node_modules/'];
     if (skipPatterns.some(skip => req.url.includes(skip))) {
       return null;
     }
 
-    // Skip common legitimate query patterns
-    const legitimatePatterns = [
-      /\?v=/, // Vite cache busting
-      /\?t=/, // Timestamp query
-      /\/api\//, // API endpoints
-    ];
-    
-    if (legitimatePatterns.some(pattern => pattern.test(req.url))) {
+    // Skip legitimate requests like root path and static assets
+    if (req.url === '/' || req.url.match(/\.(js|css|png|jpg|ico|svg)$/)) {
       return null;
     }
 

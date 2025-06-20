@@ -95,9 +95,9 @@ export const validationPatterns = {
 
 // Suspicious patterns to detect potential attacks
 export const suspiciousPatterns = [
-  // SQL Injection patterns
-  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b)/i,
-  /(\b(OR|AND)\s+[\d\w'"=\s]+\s*[=><]\s*[\d\w'"=\s]*)/i,
+  // SQL Injection patterns (but not too aggressive)
+  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b).*(\b(FROM|WHERE|VALUES)\b)/i,
+  /(\b(OR|AND)\s+[\d\w'"=\s]+\s*[=><]\s*[\d\w'"=\s]*\s*--)/i,
   /(['"][\s]*;[\s]*--)/i,
   
   // XSS patterns
@@ -112,9 +112,10 @@ export const suspiciousPatterns = [
   /\/etc\/passwd/i,
   /\/windows\/system32/i,
   
-  // Command injection (excluding Vite development patterns)
-  /[;&|`$()]/,
-  /\b(cat|ls|pwd|id|whoami|uname)\b/,
+  // Command injection patterns (more specific to avoid false positives)
+  /[;&|`]\s*(cat|ls|pwd|rm|chmod|sudo|su|bash|sh|curl|wget)/i,
+  /\$\([^)]*\)/,  // Command substitution
+  /\b(cat|ls|pwd|id|whoami|uname)\s+[\/\w]/,
 ];
 
 // Educational platform specific security rules

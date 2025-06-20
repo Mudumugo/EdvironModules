@@ -78,6 +78,7 @@ export function registerAuthRoutes(app: Express) {
         req.session.loginTime = Date.now();
         req.session.lastIP = req.ip;
         req.session.lastUserAgent = req.get('User-Agent');
+        req.session.lastActivity = Date.now();
 
         // Log successful demo login
         console.log(`[SECURITY] Demo login successful for user: ${user.email} (${user.id}) from IP: ${req.ip}`);
