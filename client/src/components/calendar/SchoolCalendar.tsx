@@ -60,6 +60,7 @@ export default function SchoolCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEventDialog, setShowEventDialog] = useState(false);
+  const [showEventDetails, setShowEventDetails] = useState(false);
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'agenda'>('month');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');

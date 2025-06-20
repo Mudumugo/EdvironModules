@@ -1,7 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { registerRoutes } from "./routes";
-import { registerCalendarRoutes } from "./routes/calendar";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupSecurity } from "./security/index.js";
 
