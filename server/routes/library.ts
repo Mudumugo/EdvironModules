@@ -61,13 +61,13 @@ const libraryRecommendations = [
 const libraryResources = [
   {
     id: "lib_1",
-    title: "Advanced Calculus Textbook",
+    title: "Interactive Calculus Textbook",
     type: "book",
-    subject: "Mathematics",
+    subject: "Mathematics", 
     grade: "12",
-    rating: 4.5,
+    rating: 4.8,
     downloads: 1250,
-    description: "Comprehensive calculus textbook with practice problems"
+    description: "Interactive digital calculus textbook with videos, animations, and practice exercises"
   },
   {
     id: "lib_2", 

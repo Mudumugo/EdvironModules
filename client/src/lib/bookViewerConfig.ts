@@ -67,22 +67,60 @@ export function convertResourceToBookConfig(resource: any): BookConfig {
   return {
     id: parseInt(resource.id.replace('lib_', '')) || 1,
     title: resource.title || 'Untitled',
-    author: resource.author || 'Unknown Author',
+    author: resource.author || 'Digital Learning Team',
     pages: generateBookPages(resource),
-    totalPages: resource.pageCount || 20,
+    totalPages: 15, // Updated to match new content
     thumbnailUrl: resource.thumbnailUrl,
     description: resource.description || '',
     grade: resource.grade || '',
     subject: resource.subject || '',
     language: resource.language || 'English',
     type: resource.resourceType || resource.type || 'book',
-    isInteractive: resource.type === 'interactive',
-    hasVideo: false,
-    hasAudio: false,
-    xapiEnabled: false,
+    isInteractive: true, // Enable interactive features
+    hasVideo: true, // Include video content
+    hasAudio: true, // Include audio elements
+    xapiEnabled: true, // Enable learning analytics
     content: resource.content || generateBookContent(resource),
-    mediaAssets: [],
-    interactiveElements: [],
+    mediaAssets: [
+      {
+        id: 'video_limits',
+        type: 'video',
+        title: 'Understanding Limits',
+        url: '/demo/calculus-limits.mp4',
+        duration: 330,
+        thumbnail: '/demo/limits-thumb.jpg'
+      },
+      {
+        id: 'audio_pronunciation',
+        type: 'audio', 
+        title: 'Mathematical Terms Pronunciation',
+        url: '/demo/math-pronunciation.mp3',
+        duration: 180
+      }
+    ],
+    interactiveElements: [
+      {
+        id: 'graph_plotter',
+        type: 'widget',
+        title: 'Interactive Function Grapher',
+        page: 4,
+        config: { allowDragging: true, showGrid: true }
+      },
+      {
+        id: 'limit_calculator',
+        type: 'calculator',
+        title: 'Limit Calculator',
+        page: 6,
+        config: { stepByStep: true, showWork: true }
+      },
+      {
+        id: 'quiz_limits',
+        type: 'assessment',
+        title: 'Limits Quiz',
+        page: 7,
+        config: { questions: 2, timeLimit: 300, showFeedback: true }
+      }
+    ],
     trackingConfig: {
       trackPageViews: true,
       trackReadingTime: true,
@@ -91,31 +129,394 @@ export function convertResourceToBookConfig(resource: any): BookConfig {
   };
 }
 
-// Generate sample book pages for demo
+// Generate sample book pages for demo with interactive content
 function generateBookPages(resource: any): string[] {
   const pages = [];
-  const totalPages = 20;
+  const totalPages = 15;
   
-  for (let i = 1; i <= totalPages; i++) {
-    if (i === 1) {
-      pages.push(`<div class="text-center p-8">
-        <h1 class="text-4xl font-bold mb-4">${resource.title}</h1>
+  // Cover page
+  pages.push(`
+    <div class="text-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100 h-full flex flex-col justify-center">
+      <div class="mb-8">
+        <div class="w-24 h-24 mx-auto mb-6 bg-blue-500 rounded-full flex items-center justify-center">
+          <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h1 class="text-4xl font-bold mb-4 text-gray-800">${resource.title}</h1>
         <p class="text-lg text-gray-600 mb-8">${resource.description}</p>
-        <p class="text-sm text-gray-500">Grade ${resource.grade} • ${resource.subject}</p>
-      </div>`);
+        <div class="flex justify-center space-x-4">
+          <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-sm">Grade ${resource.grade}</span>
+          <span class="px-3 py-1 bg-green-500 text-white rounded-full text-sm">${resource.subject}</span>
+        </div>
+      </div>
+      <div class="text-sm text-gray-500">
+        <p>Interactive Digital Edition</p>
+        <p>Tap anywhere to begin</p>
+      </div>
+    </div>
+  `);
+
+  // Table of Contents
+  pages.push(`
+    <div class="p-8">
+      <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Table of Contents</h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+          <span class="font-semibold">Chapter 1: Introduction to Functions</span>
+          <span class="text-blue-500">Page 3</span>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+          <span class="font-semibold">Chapter 2: Limits and Continuity</span>
+          <span class="text-blue-500">Page 5</span>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+          <span class="font-semibold">Chapter 3: Derivatives</span>
+          <span class="text-blue-500">Page 8</span>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+          <span class="font-semibold">Chapter 4: Integration</span>
+          <span class="text-blue-500">Page 11</span>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+          <span class="font-semibold">Practice Problems</span>
+          <span class="text-blue-500">Page 14</span>
+        </div>
+      </div>
+    </div>
+  `);
+
+  // Chapter 1: Introduction with interactive elements
+  pages.push(`
+    <div class="p-6">
+      <h2 class="text-2xl font-bold mb-6 text-blue-600">Chapter 1: Introduction to Functions</h2>
+      
+      <div class="mb-6">
+        <p class="text-base leading-relaxed mb-4">
+          A function is a mathematical relationship between two sets of numbers, where each input value 
+          corresponds to exactly one output value.
+        </p>
+        
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 my-6">
+          <h3 class="font-semibold text-blue-800 mb-2">💡 Interactive Definition</h3>
+          <p class="text-blue-700">Click the examples below to see how functions work:</p>
+          
+          <div class="mt-4 space-y-2">
+            <div class="bg-white p-3 rounded cursor-pointer hover:bg-blue-100 border border-blue-200">
+              <strong>f(x) = 2x + 1</strong> - Linear function
+            </div>
+            <div class="bg-white p-3 rounded cursor-pointer hover:bg-blue-100 border border-blue-200">
+              <strong>g(x) = x²</strong> - Quadratic function  
+            </div>
+            <div class="bg-white p-3 rounded cursor-pointer hover:bg-blue-100 border border-blue-200">
+              <strong>h(x) = sin(x)</strong> - Trigonometric function
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-sm text-gray-500 mt-8">Page 3 of ${totalPages}</div>
+    </div>
+  `);
+
+  // Interactive graph page
+  pages.push(`
+    <div class="p-6">
+      <h3 class="text-xl font-bold mb-4">Interactive Function Graphing</h3>
+      
+      <div class="bg-gray-50 p-6 rounded-lg mb-6">
+        <div class="text-center mb-4">
+          <div class="w-full h-64 bg-white border-2 border-gray-300 rounded relative">
+            <svg class="w-full h-full" viewBox="0 0 400 300">
+              <!-- Grid -->
+              <defs>
+                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+              
+              <!-- Axes -->
+              <line x1="0" y1="150" x2="400" y2="150" stroke="#374151" stroke-width="2"/>
+              <line x1="200" y1="0" x2="200" y2="300" stroke="#374151" stroke-width="2"/>
+              
+              <!-- Function curve y = x² -->
+              <path d="M 120 210 Q 200 90 280 210" stroke="#3b82f6" stroke-width="3" fill="none"/>
+              
+              <!-- Points -->
+              <circle cx="160" cy="170" r="4" fill="#ef4444"/>
+              <circle cx="200" cy="150" r="4" fill="#ef4444"/>
+              <circle cx="240" cy="170" r="4" fill="#ef4444"/>
+            </svg>
+            
+            <div class="absolute bottom-2 left-2 text-xs text-gray-600">
+              Interactive: Drag points to modify the function
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center">
+          <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600">
+            📊 Change Function
+          </button>
+          <button class="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600">
+            ▶️ Animate
+          </button>
+          <button class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+            🔄 Reset
+          </button>
+        </div>
+      </div>
+      
+      <div class="text-sm text-gray-500 mt-8">Page 4 of ${totalPages}</div>
+    </div>
+  `);
+
+  // Limits chapter with video placeholder
+  pages.push(`
+    <div class="p-6">
+      <h2 class="text-2xl font-bold mb-6 text-green-600">Chapter 2: Limits and Continuity</h2>
+      
+      <div class="mb-6">
+        <p class="text-base leading-relaxed mb-4">
+          The concept of a limit is fundamental to calculus. It describes the behavior of a function 
+          as its input approaches a particular value.
+        </p>
+        
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg mb-6">
+          <h3 class="font-semibold text-green-800 mb-3">🎥 Watch: Understanding Limits</h3>
+          
+          <div class="bg-black rounded-lg overflow-hidden mb-4">
+            <div class="aspect-video flex items-center justify-center bg-gray-800 text-white">
+              <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                  </svg>
+                </div>
+                <p class="text-sm">Click to play interactive video</p>
+                <p class="text-xs text-gray-400">Duration: 5:30</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-center space-x-2">
+            <button class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">▶️ Play</button>
+            <button class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600">⏸️ Pause</button>
+            <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">📝 Take Notes</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-sm text-gray-500 mt-8">Page 5 of ${totalPages}</div>
+    </div>
+  `);
+
+  // Interactive limit calculator
+  pages.push(`
+    <div class="p-6">
+      <h3 class="text-xl font-bold mb-4">Interactive Limit Calculator</h3>
+      
+      <div class="bg-gray-50 p-6 rounded-lg mb-6">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Enter a function:</label>
+          <input type="text" value="x² - 1" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="e.g., x² - 1">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Approaching value:</label>
+          <input type="text" value="1" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="e.g., 1">
+        </div>
+        
+        <button class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 w-full mb-4">
+          Calculate Limit
+        </button>
+        
+        <div class="bg-white p-4 rounded border-2 border-blue-200">
+          <h4 class="font-semibold mb-2">Result:</h4>
+          <div class="text-lg font-mono">
+            lim<sub>x→1</sub> (x² - 1) = <span class="text-blue-600 font-bold">0</span>
+          </div>
+          <div class="text-sm text-gray-600 mt-2">
+            Step-by-step solution available in premium version
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-sm text-gray-500 mt-8">Page 6 of ${totalPages}</div>
+    </div>
+  `);
+
+  // Quiz/Assessment page
+  pages.push(`
+    <div class="p-6">
+      <h3 class="text-xl font-bold mb-4 text-purple-600">📝 Quick Assessment: Limits</h3>
+      
+      <div class="space-y-6">
+        <div class="bg-purple-50 p-4 rounded-lg">
+          <h4 class="font-semibold mb-3">Question 1:</h4>
+          <p class="mb-4">What is lim<sub>x→2</sub> (3x + 1)?</p>
+          
+          <div class="space-y-2">
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q1" class="mr-3">
+              <span>A) 5</span>
+            </label>
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q1" class="mr-3">
+              <span>B) 7</span>
+            </label>
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q1" class="mr-3">
+              <span>C) 6</span>
+            </label>
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q1" class="mr-3">
+              <span>D) Does not exist</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="bg-purple-50 p-4 rounded-lg">
+          <h4 class="font-semibold mb-3">Question 2:</h4>
+          <p class="mb-4">A function is continuous at x = a if:</p>
+          
+          <div class="space-y-2">
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q2" class="mr-3">
+              <span>A) f(a) exists</span>
+            </label>
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q2" class="mr-3">
+              <span>B) lim<sub>x→a</sub> f(x) exists</span>
+            </label>
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q2" class="mr-3">
+              <span>C) lim<sub>x→a</sub> f(x) = f(a)</span>
+            </label>
+            <label class="flex items-center cursor-pointer hover:bg-white p-2 rounded">
+              <input type="radio" name="q2" class="mr-3">
+              <span>D) All of the above</span>
+            </label>
+          </div>
+        </div>
+        
+        <button class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 w-full">
+          Submit Quiz
+        </button>
+      </div>
+      
+      <div class="text-sm text-gray-500 mt-8">Page 7 of ${totalPages}</div>
+    </div>
+  `);
+
+  // Add more pages with similar interactive content...
+  for (let i = 8; i <= totalPages; i++) {
+    if (i === totalPages) {
+      // Final page with summary and links
+      pages.push(`
+        <div class="p-6">
+          <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Course Summary</h2>
+          
+          <div class="space-y-4 mb-8">
+            <div class="bg-green-50 border-l-4 border-green-400 p-4">
+              <h3 class="font-semibold text-green-800">✅ Completed Topics</h3>
+              <ul class="text-green-700 mt-2 space-y-1">
+                <li>• Introduction to Functions</li>
+                <li>• Limits and Continuity</li>
+                <li>• Basic Derivatives</li>
+                <li>• Integration Fundamentals</li>
+              </ul>
+            </div>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+              <h3 class="font-semibold text-blue-800">🎯 Your Progress</h3>
+              <div class="mt-2">
+                <div class="bg-blue-200 rounded-full h-3">
+                  <div class="bg-blue-500 h-3 rounded-full" style="width: 85%"></div>
+                </div>
+                <p class="text-blue-700 text-sm mt-1">85% Complete</p>
+              </div>
+            </div>
+            
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              <h3 class="font-semibold text-yellow-800">📚 Next Steps</h3>
+              <p class="text-yellow-700">Continue with Advanced Calculus II</p>
+            </div>
+          </div>
+          
+          <div class="text-center space-y-3">
+            <button class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 w-full">
+              📊 View Detailed Progress Report
+            </button>
+            <button class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 w-full">
+              📖 Continue to Next Book
+            </button>
+            <button class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 w-full">
+              🔄 Review Previous Chapters
+            </button>
+          </div>
+          
+          <div class="text-center text-sm text-gray-500 mt-8">
+            <p>Page ${i} of ${totalPages} • Course Complete!</p>
+          </div>
+        </div>
+      `);
     } else {
-      pages.push(`<div class="p-6">
-        <h2 class="text-2xl font-bold mb-4">Chapter ${i - 1}</h2>
-        <p class="text-base leading-relaxed mb-4">
-          This is page ${i} of ${resource.title}. This educational content provides comprehensive 
-          coverage of ${resource.subject} topics suitable for grade ${resource.grade} students.
-        </p>
-        <p class="text-base leading-relaxed mb-4">
-          The material is designed to enhance understanding through clear explanations, 
-          practical examples, and engaging activities that promote active learning.
-        </p>
-        <p class="text-sm text-gray-500 mt-8">Page ${i} of ${totalPages}</p>
-      </div>`);
+      // Other content pages with various interactive elements
+      const chapterTopics = [
+        'Derivative Rules and Techniques',
+        'Applications of Derivatives', 
+        'Introduction to Integration',
+        'Integration Techniques',
+        'Applications of Integration',
+        'Practice Problems Set A',
+        'Practice Problems Set B'
+      ];
+      
+      const topic = chapterTopics[i - 8] || 'Advanced Topics';
+      
+      pages.push(`
+        <div class="p-6">
+          <h2 class="text-2xl font-bold mb-6 text-indigo-600">Chapter ${i - 4}: ${topic}</h2>
+          
+          <div class="mb-6">
+            <p class="text-base leading-relaxed mb-4">
+              This chapter covers essential concepts in ${topic.toLowerCase()}. 
+              Understanding these principles will provide a solid foundation for advanced calculus topics.
+            </p>
+            
+            <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
+              <h3 class="font-semibold text-indigo-800 mb-3">🔍 Key Concepts</h3>
+              <ul class="space-y-2 text-indigo-700">
+                <li class="flex items-center">
+                  <div class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></div>
+                  Mathematical foundations and theory
+                </li>
+                <li class="flex items-center">
+                  <div class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></div>
+                  Practical applications and examples
+                </li>
+                <li class="flex items-center">
+                  <div class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></div>
+                  Step-by-step problem solving
+                </li>
+              </ul>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <button class="bg-blue-100 hover:bg-blue-200 p-3 rounded-lg text-blue-800 text-sm">
+                💡 Show Examples
+              </button>
+              <button class="bg-green-100 hover:bg-green-200 p-3 rounded-lg text-green-800 text-sm">
+                🎯 Practice Problems
+              </button>
+            </div>
+          </div>
+          
+          <div class="text-sm text-gray-500 mt-8">Page ${i} of ${totalPages}</div>
+        </div>
+      `);
     }
   }
   
