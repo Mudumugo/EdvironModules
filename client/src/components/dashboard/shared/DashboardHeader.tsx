@@ -59,13 +59,13 @@ export function DashboardHeader({
       )}
 
       {/* Main Header */}
-      <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm">
-        <div className="text-center mb-3 sm:mb-4 lg:mb-6">
-          <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">
+      <div className="bg-white rounded-lg p-3 lg:p-4 shadow-sm">
+        <div className="text-center mb-3 lg:mb-4">
+          <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1">
             {getGreeting()}, {user?.firstName || "Student"}!
           </h1>
-          <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-semibold text-gray-700 mb-1 sm:mb-2">{title}</h2>
-          {subtitle && <p className="text-gray-600 text-xs sm:text-sm lg:text-base">{subtitle}</p>}
+          <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-700 mb-1">{title}</h2>
+          {subtitle && <p className="text-gray-600 text-xs sm:text-sm">{subtitle}</p>}
         </div>
 
         {/* Search and Filters */}
