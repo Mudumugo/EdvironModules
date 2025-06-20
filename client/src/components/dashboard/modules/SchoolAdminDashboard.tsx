@@ -209,17 +209,14 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
   }, [searchTerm, selectedCategory, availableModules]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-6">
+    <CollapsibleDashboardLayout 
+      title="School Administrator Dashboard"
+      subtitle="Manage your school with comprehensive administrative tools and insights"
+    >
+      <div className="container mx-auto space-y-6">
         
         {/* Header */}
         <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">School Administrator Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage your school with comprehensive administrative tools and insights
-            </p>
-          </div>
           <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -441,6 +438,6 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
           </div>
         </div>
       </div>
-    </div>
+    </CollapsibleDashboardLayout>
   );
 }
