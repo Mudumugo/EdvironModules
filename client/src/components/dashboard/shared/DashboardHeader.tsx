@@ -59,20 +59,20 @@ export function DashboardHeader({
       )}
 
       {/* Main Header */}
-      <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
-        <div className="text-center mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
+      <div className="bg-white rounded-lg p-4 lg:p-6 shadow-sm">
+        <div className="text-center mb-4 lg:mb-6">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
             {getGreeting()}, {user?.firstName || "Student"}!
           </h1>
-          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700 mb-2">{title}</h2>
-          {subtitle && <p className="text-gray-600 text-sm sm:text-base">{subtitle}</p>}
+          <h2 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-700 mb-2">{title}</h2>
+          {subtitle && <p className="text-gray-600 text-sm md:text-base">{subtitle}</p>}
         </div>
 
         {/* Search and Filters */}
         {(showSearch || showFilters) && (
-          <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex flex-col md:flex-row gap-3 lg:gap-4">
             {showSearch && (
-              <div className="relative w-full sm:max-w-md">
+              <div className="relative w-full md:max-w-md lg:max-w-lg">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   placeholder="Search modules..."
@@ -84,9 +84,9 @@ export function DashboardHeader({
             )}
 
             {showFilters && (
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-center sm:justify-between">
+              <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 sm:items-center sm:justify-between">
                 <Select value={selectedCategory} onValueChange={onCategoryChange}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectTrigger className="w-full sm:w-[180px] lg:w-[200px]">
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue />
                   </SelectTrigger>

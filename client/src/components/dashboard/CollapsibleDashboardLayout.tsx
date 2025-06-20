@@ -283,18 +283,18 @@ export function CollapsibleDashboardLayout({
 
         <SidebarInset className="flex-1">
           {/* Header */}
-          <header className="flex h-12 md:h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-2 md:px-4">
-            <SidebarTrigger className="-ml-1 h-8 w-8 md:h-10 md:w-10" />
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
+            <SidebarTrigger className="-ml-1" />
             <div className="flex flex-1 items-center gap-2 min-w-0">
               <div className="min-w-0 flex-1">
-                <h1 className="text-sm md:text-lg font-semibold truncate">{title}</h1>
+                <h1 className="text-lg font-semibold truncate">{title}</h1>
                 {subtitle && (
-                  <p className="text-xs md:text-sm text-muted-foreground truncate hidden sm:block">{subtitle}</p>
+                  <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
                 )}
               </div>
             </div>
             {user && (
-              <div className="text-xs md:text-sm text-muted-foreground hidden md:block">
+              <div className="text-sm text-muted-foreground">
                 {user.firstName} {user.lastName}
               </div>
             )}
@@ -302,7 +302,7 @@ export function CollapsibleDashboardLayout({
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto">
-            <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+            <div className="p-4 lg:p-6">
               {children}
             </div>
           </main>
