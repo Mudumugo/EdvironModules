@@ -295,6 +295,12 @@ function Router() {
               </Route>
 
               {/* Communication modules - Multiple roles */}
+              <Route path="/admin/communications">
+                <RoleProtectedRoute allowedRoles={["school_admin", "admin"]}>
+                  <Communications />
+                </RoleProtectedRoute>
+              </Route>
+
               <Route path="/pbx">
                 <RoleProtectedRoute moduleId="pbx">
                   <PBXDashboard />
