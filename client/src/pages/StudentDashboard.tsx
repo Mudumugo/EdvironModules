@@ -6,183 +6,123 @@ import { Progress } from "@/components/ui/progress";
 import { 
   BookOpen, 
   Clock, 
-  Award, 
-  Target,
-  TrendingUp,
-  Calendar,
-  CheckCircle,
-  PlayCircle,
-  FileText,
-  Users,
+  Trophy,
   Star,
-  Download,
-  Eye
+  Play,
+  CheckCircle,
+  Calendar,
+  Bell,
+  MessageSquare
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { Link } from "wouter";
-
-const assignments = [
-  { 
-    id: 1, 
-    title: "Mathematics Assignment - Fractions", 
-    subject: "Mathematics", 
-    dueDate: "2025-06-20", 
-    status: "pending", 
-    priority: "high",
-    progress: 60
-  },
-  { 
-    id: 2, 
-    title: "Science Project - Solar System", 
-    subject: "Science", 
-    dueDate: "2025-06-22", 
-    status: "in-progress", 
-    priority: "medium",
-    progress: 30
-  },
-  { 
-    id: 3, 
-    title: "English Essay - My Hero", 
-    subject: "English", 
-    dueDate: "2025-06-25", 
-    status: "completed", 
-    priority: "low",
-    progress: 100
-  }
-];
-
-const recentActivities = [
-  { action: "Completed Math Quiz", subject: "Mathematics", time: "2 hours ago", score: 95 },
-  { action: "Accessed Digital Library", subject: "Reading", time: "3 hours ago", score: null },
-  { action: "Submitted Science Report", subject: "Science", time: "Yesterday", score: 88 },
-  { action: "Participated in Discussion", subject: "Social Studies", time: "2 days ago", score: null }
-];
-
-const learningStats = [
-  { title: "Assignments Completed", value: "12", change: "+3 this week", icon: CheckCircle, color: "text-green-600" },
-  { title: "Study Hours", value: "24.5", change: "+2.5 this week", icon: Clock, color: "text-blue-600" },
-  { title: "Average Score", value: "92%", change: "+5% improvement", icon: TrendingUp, color: "text-purple-600" },
-  { title: "Reading Goals", value: "8/10", change: "2 books remaining", icon: BookOpen, color: "text-orange-600" }
-];
-
-const upcomingEvents = [
-  { title: "Math Test", date: "Tomorrow", time: "10:00 AM", type: "test" },
-  { title: "Science Fair", date: "Friday", time: "2:00 PM", type: "event" },
-  { title: "Library Session", date: "Monday", time: "11:00 AM", type: "activity" }
-];
-
-const quickActions = [
-  { title: "Digital Library", description: "Access books and resources", icon: BookOpen, href: "/digital-library", color: "bg-blue-500" },
-  { title: "My Locker", description: "View saved content", icon: FileText, href: "/my-locker", color: "bg-green-500" },
-  { title: "Apps Hub", description: "Educational apps", icon: PlayCircle, href: "/apps-hub", color: "bg-purple-500" },
-  { title: "Calendar", description: "View schedule", icon: Calendar, href: "/calendar", color: "bg-orange-500" }
-];
+import { DashboardSwitcher, type EducationLevel } from "@/components/dashboard/DashboardSwitcher";
+import { dashboardContentByLevel } from "@/data/dashboardContent";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
-  const [selectedFilter, setSelectedFilter] = useState("all");
-
-  const filteredAssignments = assignments.filter(assignment => 
-    selectedFilter === "all" || assignment.status === selectedFilter
-  );
+  const [currentLevel, setCurrentLevel] = useState<EducationLevel>('primary');
+  
+  const dashboardData = dashboardContentByLevel[currentLevel];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 lg:p-6">
-      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              Welcome back, {user?.firstName || 'Student'}! 
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">
+              Welcome back, {user?.firstName}! 👋
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm sm:text-base">
-              Ready to continue your learning journey?
-            </p>
+            <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm sm:text-base">Ready to continue your learning journey?</p>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-            <Button variant="outline" className="w-full sm:w-auto">
-              <Download className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Download Progress</span>
-              <span className="sm:hidden">Progress</span>
-            </Button>
-            <Button className="w-full sm:w-auto">
-              <Eye className="h-4 w-4 mr-2" />
-              View All Activities
-            </Button>
+          
+          {/* Dashboard Switcher and Actions */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <DashboardSwitcher 
+              currentLevel={currentLevel} 
+              onLevelChange={setCurrentLevel} 
+            />
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                <Bell className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Notifications</span>
+              </Button>
+              <Button size="sm" className="flex-1 sm:flex-none">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Ask Teacher</span>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Learning Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-          {learningStats.map((stat) => (
-            <Card key={stat.title} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 truncate">{stat.title}</p>
-                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{stat.change}</p>
-                  </div>
-                  <div className={`p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-slate-700 flex-shrink-0`}>
-                    <stat.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.color}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <StatsCard
+            title="Total Subjects"
+            value={dashboardData.stats.totalSubjects.toString()}
+            change={currentLevel === 'primary' ? '+1 this semester' : currentLevel === 'junior_secondary' ? '+2 this year' : '+3 this year'}
+            icon={<BookOpen className="h-6 w-6" />}
+            color="bg-blue-500"
+          />
+          <StatsCard
+            title="Completed Lessons"
+            value={dashboardData.stats.completedLessons.toString()}
+            change={currentLevel === 'primary' ? '+5 this week' : currentLevel === 'junior_secondary' ? '+8 this week' : '+12 this week'}
+            icon={<CheckCircle className="h-6 w-6" />}
+            color="bg-green-500"
+          />
+          <StatsCard
+            title="Average Grade"
+            value={dashboardData.stats.averageGrade}
+            change={currentLevel === 'primary' ? '+0.2 improvement' : currentLevel === 'junior_secondary' ? '+0.3 improvement' : '+0.1 improvement'}
+            icon={<Star className="h-6 w-6" />}
+            color="bg-yellow-500"
+          />
+          <StatsCard
+            title="Study Hours"
+            value={`${dashboardData.stats.studyHours}h`}
+            change="This week"
+            icon={<Clock className="h-6 w-6" />}
+            color="bg-purple-500"
+          />
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-          {/* Assignments */}
-          <div className="xl:col-span-2">
-            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur">
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            {/* Current Subjects */}
+            <Card>
               <CardHeader>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                  <CardTitle className="flex items-center text-base sm:text-lg">
-                    <Target className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                    My Assignments
-                  </CardTitle>
-                  <div className="flex space-x-2">
-                    {["all", "pending", "in-progress", "completed"].map((filter) => (
-                      <Button
-                        key={filter}
-                        variant={selectedFilter === filter ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedFilter(filter)}
-                        className="text-xs capitalize"
-                      >
-                        {filter.replace("-", " ")}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5" />
+                  Your Subjects
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3 sm:space-y-4">
-                  {filteredAssignments.map((assignment) => (
-                    <div key={assignment.id} className="p-3 sm:p-4 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h3 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base truncate">{assignment.title}</h3>
-                            <Badge variant={assignment.priority === 'high' ? 'destructive' : assignment.priority === 'medium' ? 'default' : 'secondary'} className="text-xs">
-                              {assignment.priority}
-                            </Badge>
-                          </div>
-                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2">{assignment.subject} • Due {assignment.dueDate}</p>
-                          <div className="space-y-1">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-gray-500 dark:text-gray-400">Progress</span>
-                              <span className="font-medium">{assignment.progress}%</span>
-                            </div>
-                            <Progress value={assignment.progress} className="h-2" />
-                          </div>
+                <div className="space-y-4">
+                  {dashboardData.subjects.map((subject) => (
+                    <div key={subject.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-12 h-12 ${subject.color} rounded-lg flex items-center justify-center text-white text-lg`}>
+                          {subject.icon}
                         </div>
-                        <div className="flex items-center space-x-2 mt-2 sm:mt-0 sm:ml-4">
-                          <Badge variant={assignment.status === 'completed' ? 'default' : 'outline'} className="text-xs">
-                            {assignment.status.replace("-", " ")}
-                          </Badge>
+                        <div>
+                          <h4 className="font-medium">{subject.name}</h4>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {subject.completed}/{subject.lessons} lessons completed
+                          </p>
                         </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <p className="text-sm font-medium">{subject.progress}%</p>
+                          <Progress value={subject.progress} className="w-20 h-2" />
+                        </div>
+                        <Button size="sm" variant="outline">
+                          <Play className="h-4 w-4 mr-1" />
+                          Continue
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -191,51 +131,60 @@ export default function StudentDashboard() {
             </Card>
           </div>
 
-          {/* Sidebar */}
+          {/* Right Column */}
           <div className="space-y-4 sm:space-y-6">
-            {/* Quick Actions */}
-            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur">
+            {/* Upcoming Assignments */}
+            <Card>
               <CardHeader>
-                <CardTitle className="text-base sm:text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-1 gap-3">
-                  {quickActions.map((action) => (
-                    <Link key={action.title} href={action.href}>
-                      <div className="flex items-center p-3 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer transition-colors">
-                        <div className={`p-2 rounded-full ${action.color} mr-3 flex-shrink-0`}>
-                          <action.icon className="h-4 w-4 text-white" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{action.title}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{action.description}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Upcoming Events */}
-            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur">
-              <CardHeader>
-                <CardTitle className="flex items-center text-base sm:text-lg">
-                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  Upcoming Events
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Upcoming Assignments
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {upcomingEvents.map((event, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border border-gray-200 dark:border-slate-600 rounded-lg">
+                  {dashboardData.assignments.map((assignment) => (
+                    <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{event.title}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{event.date} at {event.time}</p>
+                        <h4 className="font-medium text-sm truncate">{assignment.title}</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{assignment.subject}</p>
                       </div>
-                      <Badge variant="outline" className="text-xs ml-2">
-                        {event.type}
-                      </Badge>
+                      <div className="text-right flex-shrink-0">
+                        <Badge 
+                          variant={assignment.status === 'completed' ? 'default' : assignment.status === 'overdue' ? 'destructive' : 'secondary'}
+                          className="text-xs"
+                        >
+                          {assignment.status}
+                        </Badge>
+                        <p className="text-xs text-gray-500 mt-1">{assignment.dueDate}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Achievements */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5" />
+                  Recent Achievements
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {dashboardData.achievements.map((achievement) => (
+                    <div key={achievement.id} className={`flex items-center space-x-3 p-3 rounded-lg ${achievement.earned ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'opacity-60'}`}>
+                      <div className="text-2xl flex-shrink-0">{achievement.icon}</div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-sm">{achievement.title}</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{achievement.description}</p>
+                        {achievement.earned && achievement.date && (
+                          <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">Earned on {achievement.date}</p>
+                        )}
+                      </div>
+                      {achievement.earned && <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />}
                     </div>
                   ))}
                 </div>
@@ -243,35 +192,33 @@ export default function StudentDashboard() {
             </Card>
           </div>
         </div>
-
-        {/* Recent Activities */}
-        <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur">
-          <CardHeader>
-            <CardTitle className="flex items-center text-base sm:text-lg">
-              <Star className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Recent Activities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {recentActivities.map((activity, index) => (
-                <div key={index} className="p-3 border border-gray-200 dark:border-slate-600 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-medium text-gray-900 dark:text-white text-sm">{activity.action}</p>
-                    {activity.score && (
-                      <Badge variant="default" className="text-xs">
-                        {activity.score}%
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-1">{activity.subject}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
+  );
+}
+
+// Stats Card Component
+function StatsCard({ title, value, change, icon, color }: {
+  title: string;
+  value: string;
+  change: string;
+  icon: React.ReactNode;
+  color: string;
+}) {
+  return (
+    <Card>
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">{title}</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{change}</p>
+          </div>
+          <div className={`${color} rounded-full p-2 sm:p-3 text-white flex-shrink-0 ml-2`}>
+            {icon}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
