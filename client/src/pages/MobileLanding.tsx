@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,12 +17,15 @@ import {
   Mail,
   Phone,
   MapPin,
-  Grid3X3
+  Grid3X3,
+  Play,
+  Pause
 } from "lucide-react";
 
 export function MobileLanding() {
   const [activeTab, setActiveTab] = useState("Educational Modules Dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const navigationTabs = [
     "Modules",
@@ -39,6 +42,29 @@ export function MobileLanding() {
     "Lockers": "Teacher & Student Lockers",
     "Calendar": "Academic Calendar & Planning"
   };
+
+  const fullNavigationTabs = [
+    "Educational Modules Dashboard",
+    "Interactive Digital Library", 
+    "School Managers Tool",
+    "Teacher & Student Lockers",
+    "Academic Calendar & Planning"
+  ];
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setActiveTab(currentTab => {
+        const currentIndex = fullNavigationTabs.indexOf(currentTab);
+        const nextIndex = (currentIndex + 1) % fullNavigationTabs.length;
+        return fullNavigationTabs[nextIndex];
+      });
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
 
   const modules = [
     {

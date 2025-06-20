@@ -18,13 +18,16 @@ import {
   ChevronRight,
   Mail,
   Phone,
-  MapPin
+  MapPin,
+  Play,
+  Pause
 } from "lucide-react";
 import { MobileLanding } from "./MobileLanding";
 
 export function Landing() {
   const [activeTab, setActiveTab] = useState("Educational Modules Dashboard");
   const [isMobile, setIsMobile] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   // Check if screen is mobile size
   useEffect(() => {
@@ -36,6 +39,21 @@ export function Landing() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setActiveTab(currentTab => {
+        const currentIndex = navigationTabs.indexOf(currentTab);
+        const nextIndex = (currentIndex + 1) % navigationTabs.length;
+        return navigationTabs[nextIndex];
+      });
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
 
   const navigationTabs = [
     "Educational Modules Dashboard",
@@ -160,17 +178,55 @@ export function Landing() {
           </p>
 
           {/* Tab Navigation */}
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
             {navigationTabs.map((tab) => (
               <Button
                 key={tab}
                 variant={activeTab === tab ? "default" : "outline"}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setIsAutoPlaying(false); // Pause auto-play when user manually selects
+                }}
                 className="text-sm"
               >
                 {tab}
               </Button>
             ))}
+          </div>
+
+          {/* Auto-play Controls */}
+          <div className="flex justify-center items-center gap-4 mb-8">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+              className="flex items-center gap-2"
+            >
+              {isAutoPlaying ? (
+                <>
+                  <Pause className="h-4 w-4" />
+                  Pause Slideshow
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  Play Slideshow
+                </>
+              )}
+            </Button>
+            
+            <div className="flex items-center gap-2">
+              {navigationTabs.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    navigationTabs[index] === activeTab 
+                      ? 'bg-blue-600' 
+                      : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Main Content Section */}
