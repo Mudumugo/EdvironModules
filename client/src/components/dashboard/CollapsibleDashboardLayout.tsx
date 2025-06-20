@@ -166,41 +166,62 @@ export function CollapsibleDashboardLayout({
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        <Sidebar variant="default" collapsible="icon" side="left">
-          <SidebarHeader className="border-b border-sidebar-border">
-            <div className="flex items-center gap-2 px-2 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <GraduationCap className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                <span className="font-semibold">EdVirons</span>
-                <span className="text-xs text-muted-foreground">Learning Portal</span>
-              </div>
+      <div className="flex min-h-screen w-full flex-col">
+        {/* Desktop Header */}
+        <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6">
+          {/* Mobile sidebar trigger - only show on mobile */}
+          <SidebarTrigger className="md:hidden h-8 w-8" />
+          <div className="flex flex-1 items-center gap-2">
+            <div>
+              <h1 className="text-lg font-semibold">{title}</h1>
+              {subtitle && (
+                <p className="text-sm text-muted-foreground">{subtitle}</p>
+              )}
             </div>
-          </SidebarHeader>
+          </div>
+          {user && (
+            <div className="text-sm text-muted-foreground">
+              {user.firstName} {user.lastName}
+            </div>
+          )}
+        </header>
 
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {navigationItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <SidebarMenuItem key={item.id}>
-                        <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                          <Link href={item.url}>
-                            <Icon className="h-4 w-4" />
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+        {/* Main Layout with Sidebar */}
+        <div className="flex flex-1 min-h-0">
+          <Sidebar variant="default" collapsible="icon" side="left" className="hidden md:flex">
+            <SidebarHeader className="border-b border-sidebar-border">
+              <div className="flex items-center gap-2 px-2 py-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                  <span className="font-semibold">EdVirons</span>
+                  <span className="text-xs text-muted-foreground">Learning Portal</span>
+                </div>
+              </div>
+            </SidebarHeader>
+
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {navigationItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <SidebarMenuItem key={item.id}>
+                          <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                            <Link href={item.url}>
+                              <Icon className="h-4 w-4" />
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
 
             {/* Additional sections for different user types */}
             {(user?.role?.includes('teacher') || user?.role === 'demo_teacher') && (
@@ -278,36 +299,132 @@ export function CollapsibleDashboardLayout({
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
-          <SidebarRail />
-        </Sidebar>
+            <SidebarRail />
+          </Sidebar>
 
-        <SidebarInset className="flex-1">
-          {/* Header */}
-          <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
-            {/* Mobile sidebar trigger - only show on mobile */}
-            <SidebarTrigger className="md:hidden h-8 w-8" />
-            <div className="flex flex-1 items-center gap-2">
-              <div>
-                <h1 className="text-lg font-semibold">{title}</h1>
-                {subtitle && (
-                  <p className="text-sm text-muted-foreground">{subtitle}</p>
-                )}
+          {/* Mobile Sidebar */}
+          <Sidebar variant="default" collapsible="offcanvas" side="left" className="md:hidden">
+            <SidebarHeader className="border-b border-sidebar-border">
+              <div className="flex items-center gap-2 px-2 py-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-semibold">EdVirons</span>
+                  <span className="text-xs text-muted-foreground">Learning Portal</span>
+                </div>
               </div>
-            </div>
-            {user && (
-              <div className="text-sm text-muted-foreground">
-                {user.firstName} {user.lastName}
-              </div>
-            )}
-          </header>
+            </SidebarHeader>
+
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {navigationItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <SidebarMenuItem key={item.id}>
+                          <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                            <Link href={item.url}>
+                              <Icon className="h-4 w-4" />
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+
+              {/* Additional sections for different user types */}
+              {(user?.role?.includes('teacher') || user?.role === 'demo_teacher') && (
+                <SidebarGroup>
+                  <SidebarGroupLabel>Teaching Tools</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/parent-portal-admin">
+                            <Users className="h-4 w-4" />
+                            <span>Parent Communication</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/apps-hub">
+                            <Video className="h-4 w-4" />
+                            <span>Video Conferencing</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              )}
+
+              {(user?.role?.includes('admin') || user?.role === 'demo_school_admin') && (
+                <SidebarGroup>
+                  <SidebarGroupLabel>Administration</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/timetable">
+                            <Calendar className="h-4 w-4" />
+                            <span>Timetable Management</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link href="/admin/communications">
+                            <Monitor className="h-4 w-4" />
+                            <span>Communications</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              )}
+            </SidebarContent>
+
+            <SidebarFooter className="border-t border-sidebar-border">
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link href="/user-profile">
+                      <User className="h-4 w-4" />
+                      <span className="truncate">
+                        {user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email : 'User'}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link href="/settings">
+                      <Settings className="h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarFooter>
+          </Sidebar>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto bg-muted/10">
-            <div className="container mx-auto max-w-screen-2xl p-4 lg:p-6">
-              {children}
-            </div>
-          </main>
-        </SidebarInset>
+          <SidebarInset className="flex-1">
+            <main className="flex-1 overflow-auto bg-muted/10">
+              <div className="container mx-auto max-w-screen-2xl p-4 lg:p-6">
+                {children}
+              </div>
+            </main>
+          </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );
