@@ -14,6 +14,7 @@ import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
 import { AssignmentStatusCard, NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
+import { CollapsibleDashboardLayout } from "../CollapsibleDashboardLayout";
 import { useLocation } from "wouter";
 
 interface JuniorDashboardProps {
@@ -153,11 +154,14 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
   }, [searchTerm, selectedCategory, modules]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+    <CollapsibleDashboardLayout 
+      title="Junior Student Dashboard"
+      subtitle="Explore your subjects and enhance your learning journey"
+    >
       <div className="max-w-7xl mx-auto">
         <DashboardHeader
-          title="Junior Student Dashboard"
-          subtitle="Explore your subjects and enhance your learning journey"
+          title=""
+          subtitle=""
           user={user}
           showSearch={true}
           showFilters={true}
@@ -209,6 +213,6 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
           </div>
         )}
       </div>
-    </div>
+    </CollapsibleDashboardLayout>
   );
 }

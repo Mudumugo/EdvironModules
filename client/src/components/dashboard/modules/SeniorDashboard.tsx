@@ -16,6 +16,8 @@ import { ModuleGrid } from "../shared/ModuleGrid";
 import { Module } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
 import { AssignmentStatusCard, NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
+import { CollapsibleDashboardLayout } from "../CollapsibleDashboardLayout";
+import { useLocation } from "wouter";
 
 interface SeniorDashboardProps {
   user?: any;

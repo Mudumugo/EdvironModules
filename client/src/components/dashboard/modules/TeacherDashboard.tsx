@@ -19,6 +19,7 @@ import { Module } from "../shared/ModuleCard";
 import { TechTutorCard } from "../shared/TechTutorCard";
 import { NotificationsCard, NextEventCard, LibraryRecommendationsCard } from "../shared/StatusCards";
 import { TeacherAssignmentStatusCard, TeacherClassOverviewCard, TeacherPerformanceCard } from "../shared/TeacherStatusCards";
+import { CollapsibleDashboardLayout } from "../CollapsibleDashboardLayout";
 import { useLocation } from "wouter";
 
 interface TeacherDashboardProps {
