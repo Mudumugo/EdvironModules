@@ -86,6 +86,12 @@ export function CollapsibleDashboardLayout({
     ];
 
     const teacherItems = [
+      { 
+        id: "teachers-dashboard", 
+        title: "Teachers Dashboard", 
+        icon: Home, 
+        url: "/teachers-dashboard" 
+      },
       ...baseItems,
       { 
         id: "analytics", 
@@ -160,6 +166,9 @@ export function CollapsibleDashboardLayout({
   const isActive = (url: string) => {
     if (url === '/dashboard') {
       return location === '/' || location === '/dashboard';
+    }
+    if (url === '/teachers-dashboard') {
+      return location === '/teachers-dashboard';
     }
     return location.startsWith(url);
   };

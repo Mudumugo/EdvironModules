@@ -52,6 +52,7 @@ import Communications from "@/pages/Communications";
 import UserProfile from "@/pages/UserProfile";
 import TechTutor from "@/pages/TechTutor";
 import Help from "@/pages/Help";
+import { TeachersDashboard } from "@/pages/TeachersDashboard";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
@@ -78,6 +79,7 @@ const componentMap: Record<string, any> = {
   'parent-portal': ParentPortal,
   'parent-portal-admin': ParentPortalAdmin,
   'apps-hub': AppsHub,
+  'teachers-dashboard': TeachersDashboard,
 
   'timetable': TimetableManagement,
   'security-dashboard': SecurityDashboard,
@@ -237,6 +239,12 @@ function Router() {
               </Route>
 
               {/* Teacher-specific modules */}
+              <Route path="/teachers-dashboard">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin"]}>
+                  <TeachersDashboard />
+                </RoleProtectedRoute>
+              </Route>
+
               <Route path="/lesson-planning">
                 <RoleProtectedRoute allowedRoles={["teacher", "school_admin"]}>
                   <LessonPlanning />
