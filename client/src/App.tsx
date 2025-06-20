@@ -280,6 +280,18 @@ function Router() {
                 </RoleProtectedRoute>
               </Route>
 
+              {/* Tech Tutor - Students and Teachers */}
+              <Route path="/tech-tutor">
+                <RoleProtectedRoute allowedRoles={["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin"]}>
+                  <TechTutor />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Help Center - All users */}
+              <Route path="/help">
+                <Help />
+              </Route>
+
               {/* Communication modules - Multiple roles */}
               <Route path="/pbx">
                 <RoleProtectedRoute moduleId="pbx">
