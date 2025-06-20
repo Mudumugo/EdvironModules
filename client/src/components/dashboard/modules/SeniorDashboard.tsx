@@ -201,6 +201,7 @@ export function SeniorDashboard({ user, stats }: SeniorDashboardProps) {
         <ModuleGrid 
           modules={filteredModules.filter(m => m.id !== "tech-tutor")}
           viewMode={viewMode}
+          variant="senior"
           onModuleClick={(moduleId) => {
             console.log(`Opening module: ${moduleId}`);
           }}

@@ -226,6 +226,7 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
         <ModuleGrid 
           modules={filteredModules.filter(m => m.id !== "tech-tutor")}
           viewMode={viewMode}
+          variant="teacher"
           onModuleClick={(moduleId) => {
             console.log(`Opening module: ${moduleId}`);
           }}

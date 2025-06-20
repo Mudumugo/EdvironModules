@@ -20,6 +20,7 @@ interface ModuleCardProps {
   module: Module;
   viewMode?: "grid" | "list";
   onClick?: () => void;
+  variant?: "primary" | "junior" | "senior" | "teacher";
 }
 
 const getIconColor = (colorClass: string): string => {
@@ -33,7 +34,7 @@ const getIconColor = (colorClass: string): string => {
   return 'text-gray-600';
 };
 
-export function ModuleCard({ module, viewMode = "grid", onClick }: ModuleCardProps) {
+export function ModuleCard({ module, viewMode = "grid", onClick, variant = "junior" }: ModuleCardProps) {
   const Icon = module.icon;
   const iconColor = module.iconColor || getIconColor(module.color);
 
@@ -67,10 +68,10 @@ export function ModuleCard({ module, viewMode = "grid", onClick }: ModuleCardPro
     );
   }
 
-  // Junior/Senior dashboard style (advanced)
+  // Teacher/Junior/Senior dashboard style (advanced)
   return (
     <Card 
-      className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 ${
+      className={`hover:shadow-lg transition-all duration-300 cursor-pointer group ${module.color} border-l-4 bg-white ${
         viewMode === "list" ? "flex items-center p-3 sm:p-4" : ""
       }`}
       onClick={onClick}

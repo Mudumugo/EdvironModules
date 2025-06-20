@@ -177,6 +177,7 @@ export function JuniorDashboard({ user, stats }: JuniorDashboardProps) {
         <ModuleGrid 
           modules={filteredModules.filter(m => m.id !== "tech-tutor")}
           viewMode={viewMode}
+          variant="junior"
           onModuleClick={(moduleId) => {
             console.log(`Opening module: ${moduleId}`);
           }}

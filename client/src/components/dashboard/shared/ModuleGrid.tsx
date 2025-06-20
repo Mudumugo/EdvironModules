@@ -4,10 +4,11 @@ import { Search } from "lucide-react";
 interface ModuleGridProps {
   modules: Module[];
   viewMode?: "grid" | "list";
+  variant?: "primary" | "junior" | "senior" | "teacher";
   onModuleClick?: (moduleId: string) => void;
 }
 
-export function ModuleGrid({ modules, viewMode = "grid", onModuleClick }: ModuleGridProps) {
+export function ModuleGrid({ modules, viewMode = "grid", variant = "junior", onModuleClick }: ModuleGridProps) {
   if (modules.length === 0) {
     return (
       <div className="text-center py-12">
@@ -31,6 +32,7 @@ export function ModuleGrid({ modules, viewMode = "grid", onModuleClick }: Module
           key={module.id}
           module={module}
           viewMode={viewMode}
+          variant={variant}
           onClick={() => onModuleClick?.(module.id)}
         />
       ))}
