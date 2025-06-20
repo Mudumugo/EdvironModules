@@ -50,10 +50,11 @@ const adminModules = [
     description: "Comprehensive school administration and institutional settings", 
     icon: Building2, 
     href: "/school-management", 
-    color: "bg-blue-500",
+    color: "bg-blue-600",
     category: "Core",
     features: ["Student Management", "Teacher Management", "Class Organization", "Academic Records"],
-    isNew: true
+    isNew: true,
+    priority: 1
   },
   { 
     id: "users", 
@@ -225,22 +226,28 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
               </CardHeader>
               <CardContent>
                 {viewMode === "grid" ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredModules.map((module) => (
                       <Link key={module.id} href={module.href}>
-                        <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer group relative overflow-hidden">
+                        <Card className={`hover:shadow-lg transition-all duration-200 cursor-pointer group relative overflow-hidden ${
+                          module.id === 'school-management' ? 'ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100' : ''
+                        }`}>
                           <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-4">
-                              <div className={`w-12 h-12 rounded-lg ${module.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                                <module.icon className="h-6 w-6 text-white" />
+                              <div className={`w-14 h-14 rounded-lg ${module.color} flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg ${
+                                module.id === 'school-management' ? 'shadow-blue-300' : ''
+                              }`}>
+                                <module.icon className="h-7 w-7 text-white" />
                               </div>
                               {module.isNew && (
-                                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                <Badge variant="secondary" className="bg-green-100 text-green-800 animate-pulse">
                                   New
                                 </Badge>
                               )}
                             </div>
-                            <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                            <h3 className={`font-semibold text-lg mb-2 group-hover:text-primary transition-colors ${
+                              module.id === 'school-management' ? 'text-blue-700 font-bold' : ''
+                            }`}>
                               {module.title}
                             </h3>
                             <p className="text-sm text-muted-foreground mb-4">
