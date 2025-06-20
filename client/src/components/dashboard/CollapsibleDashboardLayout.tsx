@@ -302,7 +302,7 @@ export function CollapsibleDashboardLayout({
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto">
-            <div className="p-4 lg:p-6">
+            <div className="p-2 sm:p-3 md:p-4 lg:p-6">
               {children}
             </div>
           </main>

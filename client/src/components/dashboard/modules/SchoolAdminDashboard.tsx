@@ -240,7 +240,7 @@ export function SchoolAdminDashboard({ user, stats }: SchoolAdminDashboardProps)
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {quickStats.map((stat) => (
             <Card key={stat.title} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">

@@ -117,7 +117,7 @@ export function AssignmentStatusCard() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 sm:gap-4 text-center">
           <div>
             <div className="text-2xl font-bold text-green-600">{completedAssignments.length}</div>
             <div className="text-xs text-muted-foreground">Completed</div>
