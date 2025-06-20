@@ -49,6 +49,8 @@ import LessonPlanning from "@/pages/LessonPlanning";
 import DigitalNotebooks from "@/pages/DigitalNotebooks";
 import NotificationsCenter from "@/pages/NotificationsCenter";
 import UserProfile from "@/pages/UserProfile";
+import TechTutor from "@/pages/TechTutor";
+import Help from "@/pages/Help";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
