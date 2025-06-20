@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { UserRole } from "@shared/schema";
 import ITDashboard from "./ITDashboard";
 import SecurityDashboard from "./SecurityDashboard";
-import { PrimaryDashboard, JuniorDashboard, SeniorDashboard, TeacherDashboard } from "@/components/dashboard/modules";
+import { PrimaryDashboard, JuniorDashboard, SeniorDashboard, TeacherDashboard, SchoolAdminDashboard } from "@/components/dashboard/modules";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -67,6 +67,10 @@ export default function Dashboard() {
         </div>
       </div>
     );
+  }
+
+  if (user?.role === "school_admin" || user?.role === "demo_school_admin") {
+    return <SchoolAdminDashboard user={user} stats={stats} />;
   }
 
   // Return appropriate dashboard based on academic level
