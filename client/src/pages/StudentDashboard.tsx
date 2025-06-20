@@ -15,6 +15,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "wouter";
 import { DashboardSwitcher, type EducationLevel } from "@/components/dashboard/DashboardSwitcher";
 import { dashboardContentByLevel } from "@/data/dashboardContent";
 
@@ -102,39 +103,41 @@ export default function StudentDashboard() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {dashboardData.modules.map((module) => (
-                    <div key={module.id} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group cursor-pointer">
-                      <div className="flex items-start space-x-4">
-                        <div className={`w-12 h-12 ${module.color} rounded-lg flex items-center justify-center text-white text-xl flex-shrink-0`}>
-                          {module.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                            {module.name}
-                          </h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                            {module.description}
-                          </p>
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {module.features.slice(0, 2).map((feature, index) => (
-                              <span key={index} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
-                                {feature}
-                              </span>
-                            ))}
-                            {module.features.length > 2 && (
-                              <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
-                                +{module.features.length - 2} more
-                              </span>
-                            )}
+                    <Link key={module.id} href={module.href}>
+                      <div className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group cursor-pointer">
+                        <div className="flex items-start space-x-4">
+                          <div className={`w-12 h-12 ${module.color} rounded-lg flex items-center justify-center text-white text-xl flex-shrink-0`}>
+                            {module.icon}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                              {module.name}
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                              {module.description}
+                            </p>
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {module.features.slice(0, 2).map((feature, index) => (
+                                <span key={index} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
+                                  {feature}
+                                </span>
+                              ))}
+                              {module.features.length > 2 && (
+                                <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
+                                  +{module.features.length - 2} more
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
+                        <div className="mt-3 flex justify-end">
+                          <Button size="sm" variant="outline" className="group-hover:bg-blue-50 group-hover:border-blue-200 dark:group-hover:bg-blue-900/20">
+                            <Play className="h-3 w-3 mr-1" />
+                            Open
+                          </Button>
+                        </div>
                       </div>
-                      <div className="mt-3 flex justify-end">
-                        <Button size="sm" variant="outline" className="group-hover:bg-blue-50 group-hover:border-blue-200 dark:group-hover:bg-blue-900/20">
-                          <Play className="h-3 w-3 mr-1" />
-                          Open
-                        </Button>
-                      </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </CardContent>
