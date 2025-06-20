@@ -1,53 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import {
-  Monitor,
-  Laptop,
-  Tablet,
-  Smartphone,
-  Users,
-  Shield,
-  MapPin,
-  Plus,
-  Settings,
-  Play,
-  Square,
-  RotateCcw,
-  Power,
-  RefreshCw,
-  Trash2,
-  Lock,
-  Unlock,
-  Eye,
-  EyeOff
-} from "lucide-react";
-
-interface Device {
-  id: string;
-  name: string;
-  type: 'desktop' | 'laptop' | 'tablet' | 'mobile';
-  status: 'online' | 'offline' | 'maintenance';
-  location: string;
-  zone: string;
-  user: string;
-  ip: string;
-  os: string;
-  lastSeen: string;
-  policies: string[];
-  isLocked: boolean;
-}
+import { DeviceList } from "./DeviceList";
+import { GroupManager } from "./GroupManager";
+import { DeviceActions } from "./DeviceActions";
+import { Device, DeviceGroup, DeviceAction } from "./types";
 
 interface DeviceGroup {
   id: string;
