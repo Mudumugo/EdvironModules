@@ -1,53 +1,32 @@
-import { useState, useMemo } from "react";
+// Re-export from modular dashboard hooks
+export * from './dashboard/types';
+export { useDashboard } from './dashboard';
 
-export interface DashboardWidget {
-  id: string;
-  title: string;
-  type: 'chart' | 'stat' | 'list' | 'calendar' | 'progress' | 'activity';
-  size: 'small' | 'medium' | 'large';
-  position: { x: number; y: number };
-  data?: any;
-  config?: Record<string, any>;
-  isVisible: boolean;
-}
-
-export interface DashboardLayout {
-  id: string;
-  name: string;
-  description?: string;
-  widgets: DashboardWidget[];
-  isDefault: boolean;
-}
-
-export interface QuickAction {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  action: () => void;
-  category: 'academic' | 'administrative' | 'communication' | 'tools';
-  isEnabled: boolean;
-}
-
-export interface RecentActivity {
-  id: string;
-  type: 'assignment' | 'grade' | 'message' | 'attendance' | 'resource';
-  title: string;
-  description: string;
-  timestamp: Date;
-  user?: string;
-  status?: string;
-  priority?: 'low' | 'medium' | 'high';
-}
-
-export interface DashboardStats {
-  students: {
-    total: number;
-    active: number;
-    newThisWeek: number;
+// Legacy compatibility wrapper
+export function useDashboardContent() {
+  const dashboard = useDashboard();
+  
+  return {
+    // Legacy interface
+    widgets: dashboard.widgets,
+    quickActions: dashboard.quickActions,
+    recentActivity: dashboard.activities,
+    stats: dashboard.stats,
+    preferences: dashboard.preferences,
+    
+    // Legacy methods
+    addWidget: dashboard.addWidget,
+    updateWidget: dashboard.updateWidget,
+    removeWidget: dashboard.removeWidget,
+    executeAction: dashboard.executeAction,
+    addActivity: dashboard.addActivity,
+    refreshStats: dashboard.refreshStats,
+    
+    // Loading states
+    loading: dashboard.statsLoading,
+    isCustomizing: dashboard.isCustomizing
   };
-  assignments: {
-    total: number;
+}
     pending: number;
     overdue: number;
     completed: number;

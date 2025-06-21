@@ -27,7 +27,11 @@ export { LibraryStatusCard } from './StatusCards/LibraryStatusCard';
 // Aliases for backward compatibility
 export { LibraryStatusCard as LibraryRecommendationsCard } from './StatusCards/LibraryStatusCard';
 
-// Legacy placeholder exports - TODO: create dedicated components
+// Legacy placeholder exports - add to index file for proper exports
+export { PerformanceStatusCard } from './StatusCards/PerformanceStatusCard';
+export { ProgressStatusCard } from './StatusCards/ProgressStatusCard';
+
+// TODO: create dedicated components for these
 export function NextEventCard() {
   return <div>Next Event Card</div>;
 }

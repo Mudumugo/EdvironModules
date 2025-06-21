@@ -1,38 +1,5 @@
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BookOpen, 
-  FileText, 
-  Video, 
-  Headphones, 
-  Gamepad2, 
-  GraduationCap,
-  Award
-} from 'lucide-react';
-import { LayoutConfig } from './LibraryLayoutConfig';
-import { ResourceCard } from './ResourceCard';
-
-interface SecondaryLayoutProps {
-  categories: any[];
-  subjects: any[];
-  resources: any[];
-  layout: LayoutConfig;
-  gradeLevel: string;
-  onResourceAccess: (resource: any, type: 'view' | 'save_to_locker') => void;
-}
-
-export const SecondaryLayout = ({ 
-  categories, 
-  subjects, 
-  resources, 
-  layout, 
-  gradeLevel, 
-  onResourceAccess 
-}: SecondaryLayoutProps) => {
-  const [activeTab, setActiveTab] = useState('subjects');
+// Re-export from modular SecondaryLayout
+export { SecondaryLayout } from './SecondaryLayout';
 
   return (
     <div className="space-y-6 sm:space-y-8">
