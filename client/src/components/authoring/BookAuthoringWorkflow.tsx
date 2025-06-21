@@ -142,8 +142,228 @@ export default function BookAuthoringWorkflow() {
     }
   };
 
+  const handlePreviewBook = (project: any) => {
+    setPreviewProject(project);
+    setCurrentPreviewPage(1);
+    setShowPreview(true);
+  };
+
+  const generatePreviewContent = (project: any) => {
+    const chapters = [
+      {
+        title: "Introduction",
+        content: `Welcome to ${project.title}. This comprehensive ${project.subject} textbook is designed for ${project.gradeLevel} students. 
+
+This book covers fundamental concepts and advanced topics in ${project.subject}, providing clear explanations, practical examples, and engaging exercises to enhance your learning experience.
+
+Throughout this book, you'll discover:
+• Key concepts explained in simple terms
+• Real-world applications and examples
+• Practice exercises and assessments
+• Interactive elements and multimedia content
+
+Let's begin your journey into the fascinating world of ${project.subject}!`
+      },
+      {
+        title: "Chapter 1: Fundamentals",
+        content: `In this chapter, we'll explore the fundamental concepts that form the foundation of ${project.subject}.
+
+Learning Objectives:
+By the end of this chapter, you will be able to:
+• Understand basic principles
+• Apply fundamental concepts
+• Solve introductory problems
+• Connect theory to practice
+
+1.1 Basic Concepts
+The study of ${project.subject} begins with understanding core principles...
+
+1.2 Key Terminology
+Before we dive deeper, let's familiarize ourselves with essential terms...
+
+1.3 Practical Applications
+These concepts are used in everyday life in the following ways...`
+      },
+      {
+        title: "Chapter 2: Advanced Topics",
+        content: `Building on the foundations from Chapter 1, we now explore more complex topics in ${project.subject}.
+
+Learning Objectives:
+• Master advanced concepts
+• Analyze complex problems
+• Develop critical thinking skills
+• Apply knowledge creatively
+
+2.1 Complex Theories
+Advanced topics require deeper understanding...
+
+2.2 Problem-Solving Strategies
+When facing challenging problems, consider these approaches...
+
+2.3 Case Studies
+Let's examine real-world examples that demonstrate these concepts...`
+      }
+    ];
+    return chapters;
+  };
+
   if (showEditor) {
     return <ScrivenerInspiredEditor />;
+  }
+
+  if (showPreview && previewProject) {
+    const previewChapters = generatePreviewContent(previewProject);
+    const totalPages = previewChapters.length + 2; // +2 for title page and table of contents
+    
+    const renderPreviewPage = () => {
+      if (currentPreviewPage === 1) {
+        // Title Page
+        return (
+          <div className="h-full flex flex-col justify-center items-center text-center space-y-8 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-900">
+            <div className="space-y-4">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                {previewProject.title}
+              </h1>
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                {previewProject.subject} • {previewProject.gradeLevel}
+              </p>
+              <div className="mt-8 p-4 bg-white/50 dark:bg-black/20 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {previewProject.description || `A comprehensive ${previewProject.subject} textbook`}
+                </p>
+              </div>
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                EdVirons Educational Content
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Interactive Digital Learning
+              </p>
+            </div>
+          </div>
+        );
+      }
+      
+      if (currentPreviewPage === 2) {
+        // Table of Contents
+        return (
+          <div className="h-full p-8 bg-white dark:bg-gray-900">
+            <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">
+              Table of Contents
+            </h2>
+            <div className="space-y-4 max-w-2xl mx-auto">
+              <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                <span className="font-medium text-gray-900 dark:text-white">Introduction</span>
+                <span className="text-gray-500 dark:text-gray-400">1</span>
+              </div>
+              {previewChapters.map((chapter, index) => (
+                <div key={index} className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                  <span className="font-medium text-gray-900 dark:text-white">{chapter.title}</span>
+                  <span className="text-gray-500 dark:text-gray-400">{index + 2}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+      
+      // Chapter Content
+      const chapterIndex = currentPreviewPage - 3;
+      const chapter = previewChapters[chapterIndex];
+      
+      if (chapter) {
+        return (
+          <div className="h-full p-8 bg-white dark:bg-gray-900 overflow-y-auto">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                {chapter.title}
+              </h2>
+              <div className="prose prose-lg dark:prose-invert max-w-none">
+                {chapter.content.split('\n').map((paragraph, index) => (
+                  <p key={index} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      return null;
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-6xl h-full max-h-[90vh] flex flex-col">
+          {/* Preview Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <BookOpen className="h-6 w-6 text-blue-600" />
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Book Preview</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{previewProject.title}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Page {currentPreviewPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Preview Content */}
+          <div className="flex-1 relative">
+            {renderPreviewPage()}
+          </div>
+
+          {/* Preview Navigation */}
+          <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPreviewPage(Math.max(1, currentPreviewPage - 1))}
+              disabled={currentPreviewPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+            
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  onClick={() => setCurrentPreviewPage(i + 1)}
+                  className={`w-8 h-8 rounded text-sm font-medium transition-colors ${
+                    currentPreviewPage === i + 1
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPreviewPage(Math.min(totalPages, currentPreviewPage + 1))}
+              disabled={currentPreviewPage === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
