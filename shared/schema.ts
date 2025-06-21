@@ -115,9 +115,6 @@ export const assignmentSubmissionsRelations = relations(assignmentSubmissions, (
     fields: [assignmentSubmissions.assignmentId],
     references: [assignments.id],
   }),
-  student: one(users, {
-    fields: [assignmentSubmissions.studentId],
-    references: [users.id],
   }),
   grader: one(users, {
     fields: [assignmentSubmissions.gradedBy],
