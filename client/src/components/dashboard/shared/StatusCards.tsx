@@ -18,6 +18,22 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
+export function AssignmentStatusCard() {
+  return <div>Assignment Status Card</div>;
+}
+
+export function NotificationsCard() {
+  return <div>Notifications Card</div>;
+}
+
+export function NextEventCard() {
+  return <div>Next Event Card</div>;
+}
+
+export function LibraryRecommendationsCard() {
+  return <div>Library Recommendations Card</div>;
+}
+
 export default function StatusCards() {
   const {
     activeCard,
