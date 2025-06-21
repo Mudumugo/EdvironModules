@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,6 @@ import {
   Shield, 
   GraduationCap,
   ArrowRight,
-  Star,
   CheckCircle
 } from "lucide-react";
 
@@ -190,8 +189,8 @@ export default function Landing() {
                 <div className="text-center">
                   <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     {(() => {
-                      const Icon = features[activeFeature].icon;
-                      return <Icon className="h-8 w-8 text-blue-600" />;
+                      const IconComponent = features[activeFeature].icon;
+                      return <IconComponent className="h-8 w-8 text-blue-600" />;
                     })()}
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">

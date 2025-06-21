@@ -32,7 +32,26 @@ export class Storage {
 
 // Create and export storage instance
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const storage = new Storage(pool);
+const storageInstance = new Storage(pool);
+
+// Add legacy method support directly to the instance
+(storageInstance as any).getUserByEmail = async (email: string) => {
+  return storageInstance.core.getUserByEmail(email);
+};
+
+(storageInstance as any).createUser = async (userData: any) => {
+  return storageInstance.core.createUser(userData);
+};
+
+(storageInstance as any).getUserById = async (id: string) => {
+  return storageInstance.core.getUserById(id);
+};
+
+(storageInstance as any).updateUser = async (id: string, userData: any) => {
+  return storageInstance.core.updateUser(id, userData);
+};
+
+export const storage = storageInstance;
 
 // Legacy interface support (for backward compatibility)
 export interface IStorage {
