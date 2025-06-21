@@ -11,7 +11,8 @@ import {
   Monitor,
   RotateCcw,
   Maximize2,
-  BookmarkPlus
+  BookmarkPlus,
+  Menu
 } from 'lucide-react';
 import { BookTableOfContents } from './BookTableOfContents';
 
@@ -174,16 +175,17 @@ export const BookControls: React.FC<BookControlsProps> = ({
                   variant="ghost" 
                   size="sm" 
                   onClick={onToggleTableOfContents}
-                  className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
-                  title="Table of Contents"
+                  className={`${showTableOfContents ? 'bg-blue-500 bg-opacity-80' : 'bg-black bg-opacity-40'} hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm transition-all duration-200`}
+                  title="Table of Contents (Navigate to chapters)"
                 >
-                  <List className="h-5 w-5 sm:h-4 sm:w-4" />
+                  <Menu className="h-5 w-5 sm:h-4 sm:w-4" />
                 </Button>
                 
                 <BookTableOfContents
                   isVisible={showTableOfContents}
                   onGoToPage={onGoToPage}
                   onClose={() => onToggleTableOfContents()}
+                  currentPage={currentPage}
                 />
               </div>
               
