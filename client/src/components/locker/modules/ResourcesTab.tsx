@@ -59,11 +59,11 @@ export function ResourcesTab({ lockerItems, isLoading, onViewItem }: ResourcesTa
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Saved Resources ({lockerItems.length})</h2>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+        <h2 className="text-xl sm:text-2xl font-semibold">Saved Resources ({lockerItems.length})</h2>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {lockerItems.map((item: LockerItem) => (
           <Card key={item.id} className="hover:shadow-lg transition-shadow cursor-pointer">
             <CardHeader className="pb-3">
