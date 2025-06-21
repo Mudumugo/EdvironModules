@@ -52,7 +52,7 @@ import Communications from "@/pages/Communications";
 import UserProfile from "@/pages/UserProfile";
 import TechTutor from "@/pages/TechTutor";
 import Help from "@/pages/Help";
-import { TeachersDashboard } from "@/pages/TeachersDashboard";
+import TeachersDashboard from "@/pages/TeachersDashboard";
 import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
