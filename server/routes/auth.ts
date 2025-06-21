@@ -67,8 +67,6 @@ export function registerAuthRoutes(app: Express) {
     }
   });
 
-
-
   // Logout endpoint with security logging (POST)
   app.post('/api/auth/logout', (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id || req.session?.user?.id;

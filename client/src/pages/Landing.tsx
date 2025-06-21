@@ -189,7 +189,10 @@ export default function Landing() {
               <div className="bg-gray-100 rounded-lg aspect-[4/3] flex items-center justify-center">
                 <div className="text-center">
                   <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <features[activeFeature].icon className="h-8 w-8 text-blue-600" />
+                    {(() => {
+                      const Icon = features[activeFeature].icon;
+                      return <Icon className="h-8 w-8 text-blue-600" />;
+                    })()}
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {features[activeFeature]?.title}
