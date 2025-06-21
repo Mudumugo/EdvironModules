@@ -36,6 +36,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register all modularized routes
   await registerAuthRoutes(app);
+  
+  // Demo authentication routes
+  const { registerDemoAuthRoutes } = await import('./routes/demo-auth');
+  registerDemoAuthRoutes(app);
   registerXapiRoutes(app);
   registerDevicePolicyRoutes(app);
   registerAnalyticsRoutes(app);

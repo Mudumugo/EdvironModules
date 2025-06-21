@@ -2,7 +2,7 @@ import { Express, Request, Response } from 'express';
 import { storage } from '../storage';
 
 export function registerDemoAuthRoutes(app: Express) {
-  // Simple demo login without complex middleware
+  // Simple demo login endpoint
   app.post('/api/auth/demo-login', async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
@@ -30,22 +30,6 @@ export function registerDemoAuthRoutes(app: Express) {
           error: 'Account is locked',
           code: 'ACCOUNT_LOCKED'
         });
-      }
-
-      // Create session
-      if (req.session) {
-        req.session.user = {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          tenantId: user.tenantId,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          permissions: user.permissions || []
-        };
-        
-        req.session.loginTime = Date.now();
-        req.session.lastActivity = Date.now();
       }
 
       console.log(`Demo login successful for: ${user.email}`);
