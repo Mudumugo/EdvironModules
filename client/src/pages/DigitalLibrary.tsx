@@ -11,7 +11,7 @@ import {
   getLayoutConfig,
   LibraryResourceTypes
 } from '@/components/library';
-import { BookViewer } from '@/components/books/BookViewer';
+import LibraryBookViewer from '@/components/books/LibraryBookViewer';
 import { convertResourceToBookConfig, shouldUseBookViewer, getBookOpenMessage } from '@/lib/bookViewerConfig';
 
 export default function DigitalLibrary() {

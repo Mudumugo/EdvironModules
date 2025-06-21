@@ -154,7 +154,7 @@ export const LibraryModals: React.FC<LibraryModalsProps> = ({
 
       {/* Enhanced BookViewer for immersive book reading - Rendered as Portal */}
       {showBookViewer && currentBook && createPortal(
-        <BookViewer
+        <LibraryBookViewer
           bookData={currentBook}
           onClose={onCloseBookViewer}
         />,
