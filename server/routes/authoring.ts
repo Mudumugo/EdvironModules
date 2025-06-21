@@ -171,22 +171,49 @@ export function registerAuthoringRoutes(app: Express) {
 
   app.post("/api/authoring/book-projects", isAuthenticated, async (req: Request, res: Response) => {
     try {
+      console.log("Book project creation request:", {
+        body: req.body,
+        user: req.user,
+        timestamp: new Date().toISOString()
+      });
+      
       const projectData = req.body;
+      
+      // Validate required fields
+      if (!projectData.title || !projectData.subject || !projectData.gradeLevel) {
+        console.error("Missing required fields:", {
+          title: projectData.title,
+          subject: projectData.subject,
+          gradeLevel: projectData.gradeLevel
+        });
+        return res.status(400).json({ 
+          message: "Missing required fields: title, subject, and gradeLevel are required" 
+        });
+      }
+      
       const newProject = {
         id: `proj_${Date.now()}`,
-        ...projectData,
+        title: projectData.title,
+        subject: projectData.subject,
+        gradeLevel: projectData.gradeLevel,
+        description: projectData.description || '',
+        targetWords: projectData.targetWords || 10000,
+        deadline: projectData.deadline || null,
+        templateId: projectData.templateId || 'textbook',
         authorId: (req.user as any)?.id,
         currentWords: 0,
         status: 'planning',
-        collaborators: [(req.user as any)?.firstName + ' ' + (req.user as any)?.lastName],
+        chaptersCount: 0,
+        collaborators: [(req.user as any)?.firstName + ' ' + (req.user as any)?.lastName].filter(Boolean),
         created: new Date().toISOString(),
         modified: new Date().toISOString()
       };
       
+      console.log("Created project:", newProject);
       res.json(newProject);
     } catch (error) {
       console.error("Error creating book project:", error);
-      res.status(500).json({ message: "Failed to create book project" });
+      res.status(500).json({ message: "Failed to create book project", error: error.message });
     }
   });
 

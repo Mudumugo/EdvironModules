@@ -104,10 +104,10 @@ export default function BookAuthoringWorkflow() {
   });
 
   const handleCreateProject = () => {
-    if (!selectedTemplate || !formData.title.trim()) {
+    if (!selectedTemplate || !formData.title.trim() || !formData.subject || !formData.gradeLevel) {
       toast({
         title: "Missing Information",
-        description: "Please select a template and enter a book title.",
+        description: "Please select a template, enter a book title, subject, and grade level.",
         variant: "destructive",
       });
       return;
@@ -298,7 +298,7 @@ export default function BookAuthoringWorkflow() {
                 <Button 
                   onClick={handleCreateProject}
                   className="flex-1"
-                  disabled={!selectedTemplate || !formData.title.trim() || createProjectMutation.isPending}
+                  disabled={!selectedTemplate || !formData.title.trim() || !formData.subject || !formData.gradeLevel || createProjectMutation.isPending}
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
                   {createProjectMutation.isPending ? 'Creating...' : 'Create & Open Editor'}
