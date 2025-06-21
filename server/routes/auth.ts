@@ -4,6 +4,72 @@ import { isAuthenticated } from '../roleMiddleware';
 import type { AuthenticatedRequest } from '../roleMiddleware';
 import { validationPatterns } from '../security/config.js';
 import { validateInput, validationSchemas } from '../security/validation.js';
+import NodeCache from 'node-cache';
+
+// Cache for demo users to improve login performance
+const demoUserCache = new NodeCache({ 
+  stdTTL: 300, // 5 minutes cache
+  checkperiod: 60 // Check for expired keys every minute
+});
+
+// Pre-populate demo user cache for instant login
+const DEMO_USERS = {
+  'student@edvirons.com': {
+    id: 'demo_student_elementary',
+    email: 'student@edvirons.com',
+    role: 'student_elementary',
+    tenantId: 'demo_tenant',
+    firstName: 'Demo',
+    lastName: 'Student',
+    isActive: true,
+    permissions: []
+  },
+  'demo.teacher@edvirons.com': {
+    id: 'demo_teacher',
+    email: 'demo.teacher@edvirons.com',
+    role: 'teacher',
+    tenantId: 'demo_tenant',
+    firstName: 'Demo',
+    lastName: 'Teacher',
+    isActive: true,
+    permissions: []
+  },
+  'demo.school_admin@edvirons.com': {
+    id: 'demo_school_admin',
+    email: 'demo.school_admin@edvirons.com',
+    role: 'school_admin',
+    tenantId: 'demo_tenant',
+    firstName: 'Demo',
+    lastName: 'Admin',
+    isActive: true,
+    permissions: []
+  },
+  'demo.school_it_staff@edvirons.com': {
+    id: 'demo_school_it_staff',
+    email: 'demo.school_it_staff@edvirons.com',
+    role: 'school_it_staff',
+    tenantId: 'demo_tenant',
+    firstName: 'Demo',
+    lastName: 'IT Staff',
+    isActive: true,
+    permissions: []
+  },
+  'demo.school_security@edvirons.com': {
+    id: 'demo_school_security',
+    email: 'demo.school_security@edvirons.com',
+    role: 'school_security',
+    tenantId: 'demo_tenant',
+    firstName: 'Demo',
+    lastName: 'Security',
+    isActive: true,
+    permissions: []
+  }
+};
+
+// Initialize demo user cache
+Object.entries(DEMO_USERS).forEach(([email, user]) => {
+  demoUserCache.set(email, user);
+});
 
 export function registerAuthRoutes(app: Express) {
   // Get current user endpoint with session validation
@@ -30,7 +96,7 @@ export function registerAuthRoutes(app: Express) {
     });
   });
 
-  // Demo login endpoint for testing with enhanced security
+  // Demo login endpoint for testing with enhanced security and caching
   app.post('/api/auth/demo-login', 
     validateInput({
       email: {
@@ -43,8 +109,18 @@ export function registerAuthRoutes(app: Express) {
       try {
         const { email } = req.body;
 
-        // Find user by email
-        const user = await storage.getUserByEmail(email);
+        // Check cache first for demo users (instant response)
+        let user = demoUserCache.get(email);
+        
+        if (!user) {
+          // Only hit database for non-demo users
+          user = await storage.getUserByEmail(email);
+          
+          // Cache non-demo users temporarily
+          if (user) {
+            demoUserCache.set(email, user, 60); // 1 minute cache for non-demo
+          }
+        }
         
         if (!user) {
           console.warn(`[SECURITY] Demo login attempt for non-existent user: ${email} from IP: ${req.ip}`);
@@ -63,8 +139,8 @@ export function registerAuthRoutes(app: Express) {
           });
         }
 
-        // Create session with security tracking
-        req.session.user = {
+        // Create optimized session with minimal data
+        const sessionUser = {
           id: user.id,
           email: user.email,
           role: user.role,
@@ -74,21 +150,25 @@ export function registerAuthRoutes(app: Express) {
           permissions: user.permissions || []
         };
 
-        // Track session security info
-        req.session.loginTime = Date.now();
+        // Set session data efficiently
+        const currentTime = Date.now();
+        req.session.user = sessionUser;
+        req.session.loginTime = currentTime;
         req.session.lastIP = req.ip;
-        req.session.lastUserAgent = req.get('User-Agent');
-        req.session.lastActivity = Date.now();
+        req.session.lastActivity = currentTime;
 
-        // Log successful demo login
-        console.log(`[SECURITY] Demo login successful for user: ${user.email} (${user.id}) from IP: ${req.ip}`);
+        // Log successful demo login (async to not block response)
+        setImmediate(() => {
+          console.log(`[SECURITY] Demo login successful for user: ${user.email} (${user.id}) from IP: ${req.ip}`);
+        });
 
+        // Send immediate response
         res.json({ 
           success: true, 
-          user: req.session.user,
+          user: sessionUser,
           sessionInfo: {
-            loginTime: req.session.loginTime,
-            expiresAt: Date.now() + (24 * 60 * 60 * 1000)
+            loginTime: currentTime,
+            expiresAt: currentTime + (24 * 60 * 60 * 1000)
           }
         });
       } catch (error) {

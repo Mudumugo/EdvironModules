@@ -39,6 +39,7 @@ export function getSession() {
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    rolling: false, // Don't reset session expiry on every request
     cookie: {
       httpOnly: true,
       secure: false, // Set to false for development
