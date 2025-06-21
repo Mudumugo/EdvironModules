@@ -61,8 +61,8 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
-    // On mobile, only render the sheet overlay
-    if (isMobile) {
+    // On mobile, render the sheet overlay only if collapsible is offcanvas
+    if (isMobile && collapsible === "offcanvas") {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
@@ -84,6 +84,11 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
           </SheetContent>
         </Sheet>
       )
+    }
+
+    // Hide mobile non-offcanvas sidebars
+    if (isMobile && collapsible !== "offcanvas") {
+      return null
     }
 
     // On desktop, render the fixed sidebar that respects header space

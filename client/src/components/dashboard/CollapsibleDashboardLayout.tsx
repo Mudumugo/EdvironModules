@@ -175,11 +175,28 @@ export function CollapsibleDashboardLayout({
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        <Sidebar variant="default" collapsible="icon">
+      {/* Mobile Layout - Completely Separate */}
+      <div className="lg:hidden min-h-screen bg-gray-50">
+        <header className="flex h-16 items-center justify-between bg-white border-b px-4 sticky top-0 z-50">
+          <SidebarTrigger className="h-8 w-8 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md" />
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <GraduationCap className="h-4 w-4" />
+            </div>
+            <span className="font-semibold">EdVirons</span>
+          </div>
+          <div className="w-8"></div>
+        </header>
+        <main className="p-4">
+          {children}
+        </main>
+      </div>
 
-          <SidebarHeader className="border-b border-sidebar-border">
-            <div className="flex items-center gap-2 px-2 py-2">
+      {/* Desktop Layout - Completely Separate */}
+      <div className="hidden lg:flex min-h-screen">
+        <Sidebar variant="default" collapsible="icon" className="border-r">
+          <SidebarHeader className="border-b border-sidebar-border p-4">
+            <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <GraduationCap className="h-4 w-4" />
               </div>
