@@ -1,146 +1,504 @@
-import { useBookAuthoring } from "@/hooks/useBookAuthoring";
-import { AuthoringHeader } from "@/components/authoring/AuthoringHeader";
-import { ChapterEditor } from "@/components/authoring/ChapterEditor";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, BookOpen, FileText } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import ScrivenerInspiredEditor from "./ScrivenerInspiredEditor";
+import {
+  BookOpen,
+  FileText,
+  Target,
+  Calendar,
+  Users,
+  Archive,
+  Settings,
+  Play,
+  Save,
+  Share,
+  Eye,
+  Edit3,
+  Layers,
+  Bookmark,
+  CheckCircle,
+  Clock,
+  AlertTriangle
+} from "lucide-react";
+
+interface BookProject {
+  id: string;
+  title: string;
+  description: string;
+  subject: string;
+  gradeLevel: string;
+  targetWords: number;
+  currentWords: number;
+  deadline?: Date;
+  status: 'planning' | 'writing' | 'editing' | 'review' | 'complete';
+  chaptersCount: number;
+  collaborators: string[];
+  created: Date;
+  modified: Date;
+}
+
+interface BookTemplate {
+  id: string;
+  name: string;
+  description: string;
+  structure: string[];
+  targetAudience: string;
+  estimatedPages: number;
+}
 
 export default function BookAuthoringWorkflow() {
-  const [newProject, setNewProject] = useState({
-    title: "",
-    subject: "",
-    grade: "",
-    description: ""
-  });
+  const [showEditor, setShowEditor] = useState(false);
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
-  const {
-    selectedProject,
-    setSelectedProject,
-    selectedChapter,
-    setSelectedChapter,
-    showCreateDialog,
-    setShowCreateDialog,
-    isPreviewMode,
-    setIsPreviewMode,
-    projects,
-    isLoading,
-    createProject,
-    updateProject,
-    createChapter,
-    updateChapter,
-    submitForReview,
-    publish,
-    isCreatingProject,
-    isUpdatingProject,
-    isSubmitting,
-    isPublishing
-  } = useBookAuthoring();
+  const [projects] = useState<BookProject[]>([
+    {
+      id: 'proj1',
+      title: 'Advanced Chemistry Textbook',
+      description: 'Comprehensive chemistry textbook for Grade 11-12 students',
+      subject: 'Chemistry',
+      gradeLevel: 'Grade 11-12',
+      targetWords: 50000,
+      currentWords: 12450,
+      deadline: new Date('2024-08-15'),
+      status: 'writing',
+      chaptersCount: 15,
+      collaborators: ['Dr. Sarah Chen', 'Prof. Mike Johnson'],
+      created: new Date('2024-05-01'),
+      modified: new Date('2024-06-18')
+    },
+    {
+      id: 'proj2',
+      title: 'Introduction to Biology',
+      description: 'Interactive biology textbook with multimedia content',
+      subject: 'Biology',
+      gradeLevel: 'Grade 9-10',
+      targetWords: 35000,
+      currentWords: 8200,
+      status: 'planning',
+      chaptersCount: 12,
+      collaborators: ['Dr. Lisa Wang'],
+      created: new Date('2024-06-10'),
+      modified: new Date('2024-06-17')
+    }
+  ]);
 
-  if (selectedProject && selectedChapter) {
+  const [templates] = useState<BookTemplate[]>([
+    {
+      id: 'science-textbook',
+      name: 'Science Textbook',
+      description: 'Structured for scientific concepts with experiments and examples',
+      structure: [
+        'Introduction & Learning Objectives',
+        'Theoretical Concepts',
+        'Practical Applications',
+        'Laboratory Experiments',
+        'Real-world Examples',
+        'Assessment & Review',
+        'Further Reading'
+      ],
+      targetAudience: 'High School Students',
+      estimatedPages: 200
+    },
+    {
+      id: 'interactive-guide',
+      name: 'Interactive Learning Guide',
+      description: 'Multimedia-rich guide with interactive elements',
+      structure: [
+        'Welcome & Navigation',
+        'Core Concepts',
+        'Interactive Activities',
+        'Case Studies',
+        'Practice Exercises',
+        'Progress Assessment',
+        'Resources & References'
+      ],
+      targetAudience: 'Middle School Students',
+      estimatedPages: 150
+    },
+    {
+      id: 'research-handbook',
+      name: 'Research Handbook',
+      description: 'Comprehensive guide for research and reference',
+      structure: [
+        'Overview & Methodology',
+        'Literature Review',
+        'Research Findings',
+        'Data Analysis',
+        'Conclusions',
+        'Appendices',
+        'Bibliography'
+      ],
+      targetAudience: 'College Students',
+      estimatedPages: 300
+    }
+  ]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'complete': return 'bg-green-100 text-green-800';
+      case 'review': return 'bg-blue-100 text-blue-800';
+      case 'editing': return 'bg-yellow-100 text-yellow-800';
+      case 'writing': return 'bg-purple-100 text-purple-800';
+      case 'planning': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'complete': return <CheckCircle className="h-4 w-4" />;
+      case 'review': return <Eye className="h-4 w-4" />;
+      case 'editing': return <Edit3 className="h-4 w-4" />;
+      case 'writing': return <FileText className="h-4 w-4" />;
+      case 'planning': return <Target className="h-4 w-4" />;
+      default: return <Clock className="h-4 w-4" />;
+    }
+  };
+
+  if (showEditor) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <AuthoringHeader
-          projectTitle={`${selectedChapter.title} - ${selectedProject.title}`}
-          status={selectedProject.status}
-          onSave={() => updateChapter({ id: selectedChapter.id, data: selectedChapter })}
-          onPreview={() => setIsPreviewMode(!isPreviewMode)}
-          onSubmitForReview={() => submitForReview(selectedProject.id)}
-          onPublish={() => publish(selectedProject.id)}
-          onBack={() => setSelectedChapter(null)}
-          isSaving={isUpdatingProject}
-          isSubmitting={isSubmitting}
-          isPublishing={isPublishing}
-        />
-
-        <div className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto">
-            <ChapterEditor 
-              chapter={selectedChapter}
-              onUpdateChapter={(data) => updateChapter({ id: selectedChapter.id, data })}
-              onCreatePage={(data) => createChapter({ ...data, projectId: selectedProject.id })}
-              onUpdatePage={(pageId, data) => updateChapter({ id: pageId, data })}
-              onDeletePage={(pageId) => console.log('Delete page:', pageId)}
-            />
+      <div className="h-screen">
+        <div className="flex items-center justify-between p-4 border-b bg-white dark:bg-gray-800">
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowEditor(false)}
+            >
+              ← Back to Projects
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <h1 className="text-xl font-semibold">Advanced Chemistry Textbook</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <Save className="h-4 w-4 mr-2" />
+              Save
+            </Button>
+            <Button variant="outline" size="sm">
+              <Share className="h-4 w-4 mr-2" />
+              Share
+            </Button>
+            <Button size="sm">
+              <Play className="h-4 w-4 mr-2" />
+              Preview
+            </Button>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (selectedProject) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="p-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Project: {selectedProject.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {selectedProject.chapters?.map((chapter) => (
-                  <Card key={chapter.id} className="cursor-pointer hover:shadow-md" onClick={() => setSelectedChapter(chapter)}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <FileText className="h-5 w-5 text-blue-600" />
-                        <span className="font-medium">{chapter.title}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-                
-                <Card className="cursor-pointer hover:shadow-md border-dashed" onClick={() => createChapter({ title: "New Chapter", projectId: selectedProject.id })}>
-                  <CardContent className="p-4 flex items-center justify-center">
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <Plus className="h-5 w-5" />
-                      <span>Add Chapter</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <ScrivenerInspiredEditor />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Book Authoring</h1>
-          <p className="text-gray-600">Create and manage your educational content</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Book Authoring Studio</h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Create comprehensive educational books with Scrivener-inspired tools
+          </p>
         </div>
+        <Dialog open={showNewProjectDialog} onOpenChange={setShowNewProjectDialog}>
+          <DialogTrigger asChild>
+            <Button>
+              <BookOpen className="h-4 w-4 mr-2" />
+              New Book Project
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create New Book Project</DialogTitle>
+              <DialogDescription>
+                Choose a template and configure your book project settings
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Template Selection */}
+              <div>
+                <label className="text-sm font-medium">Choose Template</label>
+                <div className="grid gap-3 mt-2">
+                  {templates.map(template => (
+                    <Card 
+                      key={template.id} 
+                      className={`cursor-pointer transition-all ${
+                        selectedTemplate === template.id 
+                          ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950' 
+                          : 'hover:shadow-md'
+                      }`}
+                      onClick={() => setSelectedTemplate(template.id)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-medium">{template.name}</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                              {template.description}
+                            </p>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                              <span>{template.targetAudience}</span>
+                              <span>~{template.estimatedPages} pages</span>
+                              <span>{template.structure.length} sections</span>
+                            </div>
+                          </div>
+                          {selectedTemplate === template.id && (
+                            <CheckCircle className="h-5 w-5 text-blue-500 mt-1" />
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <Card key={project.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setSelectedProject(project)}>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-3">
-                  <BookOpen className="h-6 w-6 text-blue-600 mt-1" />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{project.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{project.metadata?.description}</p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{project.subject}</span>
-                      <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">{project.status}</span>
+              {/* Project Details */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="text-sm font-medium">Book Title</label>
+                  <Input placeholder="Enter book title..." className="mt-1" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Subject</label>
+                  <Select>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mathematics">Mathematics</SelectItem>
+                      <SelectItem value="science">Science</SelectItem>
+                      <SelectItem value="chemistry">Chemistry</SelectItem>
+                      <SelectItem value="physics">Physics</SelectItem>
+                      <SelectItem value="biology">Biology</SelectItem>
+                      <SelectItem value="english">English</SelectItem>
+                      <SelectItem value="history">History</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Grade Level</label>
+                  <Select>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select grade level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="elementary">Elementary (K-5)</SelectItem>
+                      <SelectItem value="middle">Middle School (6-8)</SelectItem>
+                      <SelectItem value="high">High School (9-12)</SelectItem>
+                      <SelectItem value="college">College/University</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Target Word Count</label>
+                  <Input 
+                    type="number" 
+                    placeholder="e.g., 50000" 
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <Textarea 
+                  placeholder="Describe the book's content and objectives..."
+                  className="mt-1 h-24"
+                />
+              </div>
+
+              {selectedTemplate && (
+                <div>
+                  <label className="text-sm font-medium">Book Structure Preview</label>
+                  <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="text-sm font-medium mb-2">
+                      {templates.find(t => t.id === selectedTemplate)?.name} Structure:
+                    </div>
+                    <div className="space-y-1">
+                      {templates.find(t => t.id === selectedTemplate)?.structure.map((section, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <span className="text-gray-500">{index + 1}.</span>
+                          <span>{section}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-          
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow border-dashed" onClick={() => setShowCreateDialog(true)}>
-            <CardContent className="p-6 flex items-center justify-center">
-              <div className="text-center">
-                <Plus className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <span className="text-gray-600">Create New Project</span>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  onClick={() => {
+                    setShowNewProjectDialog(false);
+                    setShowEditor(true);
+                  }}
+                  className="flex-1"
+                  disabled={!selectedTemplate}
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Create & Open Editor
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowNewProjectDialog(false)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Projects Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map(project => (
+          <Card key={project.id} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{project.title}</CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {project.description}
+                  </p>
+                </div>
+                <Badge className={getStatusColor(project.status)}>
+                  {getStatusIcon(project.status)}
+                  <span className="ml-1 capitalize">{project.status}</span>
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Progress */}
+              <div>
+                <div className="flex justify-between items-center text-sm">
+                  <span>Progress</span>
+                  <span>{project.currentWords.toLocaleString()} / {project.targetWords.toLocaleString()} words</span>
+                </div>
+                <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
+                  <div 
+                    className="h-full bg-blue-500 rounded-full"
+                    style={{ width: `${Math.min((project.currentWords / project.targetWords) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Subject:</span>
+                  <div className="font-medium">{project.subject}</div>
+                </div>
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Grade:</span>
+                  <div className="font-medium">{project.gradeLevel}</div>
+                </div>
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Chapters:</span>
+                  <div className="font-medium">{project.chaptersCount}</div>
+                </div>
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Contributors:</span>
+                  <div className="font-medium">{project.collaborators.length}</div>
+                </div>
+              </div>
+
+              {/* Deadline */}
+              {project.deadline && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4 text-gray-500" />
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Due: {project.deadline.toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-2">
+                <Button 
+                  className="flex-1"
+                  onClick={() => setShowEditor(true)}
+                >
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  Open Editor
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Settings className="h-4 w-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>
-        </div>
+        ))}
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <BookOpen className="h-8 w-8 text-blue-600" />
+              <div>
+                <div className="text-2xl font-bold">{projects.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Active Projects</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <FileText className="h-8 w-8 text-green-600" />
+              <div>
+                <div className="text-2xl font-bold">
+                  {projects.reduce((sum, p) => sum + p.currentWords, 0).toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total Words</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Users className="h-8 w-8 text-purple-600" />
+              <div>
+                <div className="text-2xl font-bold">
+                  {new Set(projects.flatMap(p => p.collaborators)).size}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Collaborators</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Target className="h-8 w-8 text-orange-600" />
+              <div>
+                <div className="text-2xl font-bold">
+                  {Math.round(
+                    projects.reduce((sum, p) => sum + (p.currentWords / p.targetWords), 0) / projects.length * 100
+                  )}%
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Avg Progress</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

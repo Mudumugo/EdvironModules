@@ -1,7 +1,7 @@
 import type { Express, Response } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
-// Note: topics, chapters, and subjects removed as they're not part of modular schema
+import { topics, chapters, subjects } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
 
 

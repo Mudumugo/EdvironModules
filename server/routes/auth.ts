@@ -30,45 +30,76 @@ export function registerAuthRoutes(app: Express) {
     });
   });
 
-  // Demo login endpoint
-  app.post('/api/auth/demo-login', async (req: Request, res: Response) => {
-    try {
-      const { email } = req.body;
-      
-      if (!email) {
-        return res.status(400).json({ error: 'Email required' });
+  // Demo login endpoint for testing with enhanced security
+  app.post('/api/auth/demo-login', 
+    validateInput({
+      email: {
+        required: true,
+        type: 'string',
+        pattern: validationPatterns.email
       }
+    }),
+    async (req: Request, res: Response) => {
+      try {
+        const { email } = req.body;
 
-      // Find user in database with correct column names
-      const user = await storage.core.getUserByEmail(email);
-      if (!user || !user.is_active) {
-        return res.status(404).json({ error: 'User not found' });
-      }
+        // Find user by email
+        const user = await storage.getUserByEmail(email);
+        
+        if (!user) {
+          console.warn(`[SECURITY] Demo login attempt for non-existent user: ${email} from IP: ${req.ip}`);
+          return res.status(404).json({ 
+            error: 'User not found',
+            code: 'USER_NOT_FOUND'
+          });
+        }
 
-      // Create session with proper structure
-      if (req.session) {
+        // Check if account is active
+        if (user.isActive === false) {
+          console.warn(`[SECURITY] Demo login attempt for inactive user: ${email} from IP: ${req.ip}`);
+          return res.status(423).json({ 
+            error: 'Account is locked. Please contact administrator.',
+            code: 'ACCOUNT_LOCKED'
+          });
+        }
+
+        // Create session with security tracking
         req.session.user = {
           id: user.id,
           email: user.email,
           role: user.role,
-          tenantId: user.tenant_id,
-          firstName: user.first_name,
-          lastName: user.last_name,
+          tenantId: user.tenantId,
+          firstName: user.firstName,
+          lastName: user.lastName,
           permissions: user.permissions || []
         };
-      }
 
-      console.log(`Demo login successful for: ${user.email}`);
-      
-      res.json({ 
-        success: true, 
-        user: req.session?.user 
-      });
-    } catch (error) {
-      console.error('Demo login error:', error);
-      res.status(500).json({ error: 'Login failed' });
+        // Track session security info
+        req.session.loginTime = Date.now();
+        req.session.lastIP = req.ip;
+        req.session.lastUserAgent = req.get('User-Agent');
+        req.session.lastActivity = Date.now();
+
+        // Log successful demo login
+        console.log(`[SECURITY] Demo login successful for user: ${user.email} (${user.id}) from IP: ${req.ip}`);
+
+        res.json({ 
+          success: true, 
+          user: req.session.user,
+          sessionInfo: {
+            loginTime: req.session.loginTime,
+            expiresAt: Date.now() + (24 * 60 * 60 * 1000)
+          }
+        });
+      } catch (error) {
+        console.error('Demo login error:', error);
+        res.status(500).json({ 
+          error: 'Internal server error',
+          code: 'INTERNAL_ERROR'
+        });
+      }
     }
-  });
+  );
 
   // Logout endpoint with security logging (POST)
   app.post('/api/auth/logout', (req: AuthenticatedRequest, res: Response) => {

@@ -92,8 +92,8 @@ export const signupRequests = pgTable("signup_requests", {
   expiresAt: timestamp("expires_at").notNull(),
 });
 
-// Import users table reference
-import { users } from "./core";
+// Import users table reference (assuming it exists)
+import { users } from "../schema";
 
 export type FamilyAccount = typeof familyAccounts.$inferSelect;
 export type InsertFamilyAccount = typeof familyAccounts.$inferInsert;

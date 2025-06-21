@@ -4,11 +4,13 @@ import { db } from "../../db";
 import { 
   notebooks, 
   notebookSections, 
-  notebookPages,
+  notebookPages, 
+  pageComments,
+  notebookActivity,
   insertNotebookSchema,
   insertNotebookSectionSchema,
   insertNotebookPageSchema 
-} from "@shared/schemas/content";
+} from "@shared/schema";
 import { isAuthenticated } from "../../roleMiddleware";
 
 export function registerNotebookRoutes(app: Express) {

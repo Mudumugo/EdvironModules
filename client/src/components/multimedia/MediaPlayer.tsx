@@ -1,4 +1,4 @@
-import { useMediaPlayer, MediaContent, ViewerSettings, QUALITY_OPTIONS, PLAYBACK_SPEEDS } from "@/hooks/useMediaPlayer";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -16,13 +16,14 @@ import {
   SkipForward,
   RotateCcw
 } from "lucide-react";
+import { MediaContent, ViewerSettings, QUALITY_OPTIONS, PLAYBACK_SPEEDS } from "./types";
 
 interface MediaPlayerProps {
   content: MediaContent;
   settings: ViewerSettings;
   onSettingsChange: (settings: Partial<ViewerSettings>) => void;
-  onTimeUpdate?: (currentTime: number) => void;
-  onInteraction?: (interaction: any) => void;
+  onTimeUpdate: (currentTime: number) => void;
+  onInteraction: (interaction: any) => void;
 }
 
 export function MediaPlayer({ 
@@ -32,234 +33,401 @@ export function MediaPlayer({
   onTimeUpdate,
   onInteraction 
 }: MediaPlayerProps) {
-  const {
-    mediaRef,
-    containerRef,
-    isPlaying,
-    currentTime,
-    duration,
-    showControls,
-    showSettings,
-    isFullscreen,
-    isMuted,
-    isLoading,
-    settings: playerSettings,
-    togglePlay,
-    seek,
-    skipForward,
-    skipBackward,
-    toggleMute,
-    setVolume,
-    toggleFullscreen,
-    updateSettings,
-    setShowControls,
-    setShowSettings,
-    handleMouseMove,
-    formatTime,
-    progress
-  } = useMediaPlayer(content, settings, onTimeUpdate, onInteraction);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const handleSeek = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const percentage = (event.clientX - rect.left) / rect.width;
-    seek(percentage * duration);
+  const mediaRef = content.type === 'video' ? videoRef : audioRef;
+
+  useEffect(() => {
+    const media = mediaRef.current;
+    if (!media) return;
+
+    const handleTimeUpdate = () => {
+      const time = media.currentTime;
+      setCurrentTime(time);
+      onTimeUpdate(time);
+    };
+
+    const handleDurationChange = () => {
+      setDuration(media.duration);
+    };
+
+    const handlePlay = () => {
+      setIsPlaying(true);
+      onInteraction({ type: 'play', timestamp: media.currentTime });
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+      onInteraction({ type: 'pause', timestamp: media.currentTime });
+    };
+
+    media.addEventListener('timeupdate', handleTimeUpdate);
+    media.addEventListener('durationchange', handleDurationChange);
+    media.addEventListener('play', handlePlay);
+    media.addEventListener('pause', handlePause);
+
+    return () => {
+      media.removeEventListener('timeupdate', handleTimeUpdate);
+      media.removeEventListener('durationchange', handleDurationChange);
+      media.removeEventListener('play', handlePlay);
+      media.removeEventListener('pause', handlePause);
+    };
+  }, [mediaRef, onTimeUpdate, onInteraction]);
+
+  const togglePlay = () => {
+    const media = mediaRef.current;
+    if (!media) return;
+
+    if (isPlaying) {
+      media.pause();
+    } else {
+      media.play();
+    }
   };
 
-  const handleVolumeChange = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const percentage = (event.clientX - rect.left) / rect.width;
-    setVolume(percentage);
+  const handleSeek = (value: number[]) => {
+    const media = mediaRef.current;
+    if (!media || !duration) return;
+
+    const time = (value[0] / 100) * duration;
+    media.currentTime = time;
+    setCurrentTime(time);
+    onInteraction({ type: 'seek', timestamp: time });
   };
 
-  const handleSettingsChange = (key: keyof ViewerSettings, value: any) => {
-    const newSettings = { ...playerSettings, [key]: value };
-    updateSettings({ [key]: value });
-    onSettingsChange(newSettings);
+  const handleVolumeChange = (value: number[]) => {
+    const media = mediaRef.current;
+    if (!media) return;
+
+    const volume = value[0] / 100;
+    media.volume = volume;
+    onSettingsChange({ volume });
+    onInteraction({ type: 'volume', data: { volume } });
   };
+
+  const toggleMute = () => {
+    const media = mediaRef.current;
+    if (!media) return;
+
+    media.muted = !media.muted;
+    onSettingsChange({ volume: media.muted ? 0 : settings.volume });
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      videoRef.current?.requestFullscreen();
+      onSettingsChange({ fullscreen: true });
+    } else {
+      document.exitFullscreen();
+      onSettingsChange({ fullscreen: false });
+    }
+    onInteraction({ type: 'fullscreen', data: { fullscreen: !settings.fullscreen } });
+  };
+
+  const skip = (seconds: number) => {
+    const media = mediaRef.current;
+    if (!media) return;
+
+    const newTime = Math.max(0, Math.min(duration, currentTime + seconds));
+    media.currentTime = newTime;
+    setCurrentTime(newTime);
+    onInteraction({ type: 'seek', timestamp: newTime });
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleMouseMove = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    controlsTimeoutRef.current = setTimeout(() => {
+      if (isPlaying) setShowControls(false);
+    }, 3000);
+  };
+
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div 
-      ref={containerRef}
-      className={`relative bg-black rounded-lg overflow-hidden ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setShowControls(false)}
-    >
-      {/* Media Element */}
-      {content.type === 'video' ? (
-        <video
-          ref={mediaRef as React.RefObject<HTMLVideoElement>}
-          src={content.url}
-          className="w-full h-full object-contain"
-          poster={content.thumbnail}
-        />
-      ) : (
-        <div className="w-full h-64 bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
-          <audio
-            ref={mediaRef as React.RefObject<HTMLAudioElement>}
-            src={content.url}
-          />
-          <div className="text-center text-white">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Play className="h-8 w-8" />
-            </div>
-            <h3 className="text-lg font-medium">{content.title}</h3>
-          </div>
-        </div>
-      )}
-
-      {/* Loading Overlay */}
-      {isLoading && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full" />
-        </div>
-      )}
-
-      {/* Controls Overlay */}
-      <div 
-        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300 ${
-          showControls ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        {/* Settings Panel */}
-        {showSettings && (
-          <div className="absolute top-4 right-4 bg-black/80 rounded-lg p-4 text-white min-w-48">
-            <h4 className="font-medium mb-3">Settings</h4>
-            
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm mb-1">Quality</label>
-                <Select 
-                  value={playerSettings.quality} 
-                  onValueChange={(value) => handleSettingsChange('quality', value)}
-                >
-                  <SelectTrigger className="bg-black/50 border-gray-600">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {QUALITY_OPTIONS.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm mb-1">Playback Speed</label>
-                <Select 
-                  value={playerSettings.playbackSpeed.toString()} 
-                  onValueChange={(value) => handleSettingsChange('playbackSpeed', parseFloat(value))}
-                >
-                  <SelectTrigger className="bg-black/50 border-gray-600">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PLAYBACK_SPEEDS.map(speed => (
-                      <SelectItem key={speed} value={speed.toString()}>
-                        {speed}x
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Bottom Controls */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          {/* Progress Bar */}
-          <div 
-            className="w-full h-2 bg-white/20 rounded-full mb-4 cursor-pointer"
-            onClick={handleSeek}
-          >
-            <div 
-              className="h-full bg-white rounded-full transition-all"
-              style={{ width: `${progress}%` }}
+    <Card className="relative group">
+      <CardContent className="p-0">
+        <div 
+          className="relative bg-black"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => isPlaying && setShowControls(false)}
+        >
+          {content.type === 'video' ? (
+            <video
+              ref={videoRef}
+              src={content.url}
+              className="w-full h-auto max-h-96"
+              autoPlay={settings.autoplay}
+              volume={settings.volume}
+              onClick={togglePlay}
             />
-          </div>
+          ) : content.type === 'audio' ? (
+            <div className="w-full h-48 bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
+              <audio
+                ref={audioRef}
+                src={content.url}
+                autoPlay={settings.autoplay}
+                volume={settings.volume}
+              />
+              <div className="text-center text-white">
+                <div className="text-2xl mb-2">🎵</div>
+                <h3 className="text-lg font-medium">{content.title}</h3>
+                <p className="text-sm opacity-75">Audio Content</p>
+              </div>
+            </div>
+          ) : (
+            <img 
+              src={content.url} 
+              alt={content.title}
+              className="w-full h-auto max-h-96 object-contain"
+            />
+          )}
 
-          {/* Control Buttons */}
-          <div className="flex items-center justify-between text-white">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => skipBackward(10)}
-                className="text-white hover:bg-white/20"
-              >
-                <SkipBack className="h-5 w-5" />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={togglePlay}
-                className="text-white hover:bg-white/20"
-              >
-                {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => skipForward(10)}
-                className="text-white hover:bg-white/20"
-              >
-                <SkipForward className="h-5 w-5" />
-              </Button>
-
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleMute}
-                  className="text-white hover:bg-white/20"
-                >
-                  {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-                </Button>
-
+          {/* Media Controls Overlay */}
+          {(content.type === 'video' || content.type === 'audio') && (
+            <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 ${
+              showControls ? 'opacity-100' : 'opacity-0'
+            }`}>
+              {/* Progress Bar */}
+              <div className="mb-4">
                 <div 
-                  className="w-20 h-1 bg-white/20 rounded-full cursor-pointer"
-                  onClick={handleVolumeChange}
+                  className="w-full h-2 bg-white/20 rounded-full cursor-pointer"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percentage = (x / rect.width) * 100;
+                    handleSeek([percentage]);
+                  }}
                 >
                   <div 
-                    className="h-full bg-white rounded-full"
-                    style={{ width: `${playerSettings.volume * 100}%` }}
+                    className="h-full bg-white rounded-full transition-all"
+                    style={{ width: `${progressPercentage}%` }}
                   />
+                </div>
+                <div className="flex justify-between text-xs text-white mt-1">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
                 </div>
               </div>
 
-              <span className="text-sm">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
-            </div>
+              {/* Control Buttons */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => skip(-10)}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
 
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowSettings(!showSettings)}
-                className="text-white hover:bg-white/20"
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => skip(-5)}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <SkipBack className="h-4 w-4" />
+                  </Button>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleFullscreen}
-                className="text-white hover:bg-white/20"
-              >
-                {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
-              </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={togglePlay}
+                    className="text-white hover:bg-white/20"
+                  >
+                    {isPlaying ? (
+                      <Pause className="h-6 w-6" />
+                    ) : (
+                      <Play className="h-6 w-6" />
+                    )}
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => skip(5)}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <SkipForward className="h-4 w-4" />
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => skip(10)}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <SkipForward className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {/* Volume Control */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={toggleMute}
+                      className="text-white hover:bg-white/20"
+                    >
+                      {settings.volume === 0 ? (
+                        <VolumeX className="h-4 w-4" />
+                      ) : (
+                        <Volume2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <div 
+                      className="w-20 h-2 bg-white/20 rounded-full cursor-pointer flex items-center"
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const percentage = (x / rect.width) * 100;
+                        handleVolumeChange([percentage]);
+                      }}
+                    >
+                      <div 
+                        className="h-full bg-white rounded-full"
+                        style={{ width: `${settings.volume * 100}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Settings */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowSettings(!showSettings)}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+
+                  {/* Fullscreen (Video only) */}
+                  {content.type === 'video' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={toggleFullscreen}
+                      className="text-white hover:bg-white/20"
+                    >
+                      {settings.fullscreen ? (
+                        <Minimize className="h-4 w-4" />
+                      ) : (
+                        <Maximize className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Settings Panel */}
+          {showSettings && (
+            <div className="absolute top-4 right-4 bg-black/90 rounded-lg p-4 text-white min-w-48">
+              <h4 className="font-medium mb-3">Settings</h4>
+              
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm text-gray-300">Playback Speed</label>
+                  <Select
+                    value={settings.playbackSpeed.toString()}
+                    onValueChange={(value) => {
+                      const speed = parseFloat(value);
+                      if (mediaRef.current) {
+                        mediaRef.current.playbackRate = speed;
+                      }
+                      onSettingsChange({ playbackSpeed: speed });
+                    }}
+                  >
+                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PLAYBACK_SPEEDS.map((speed) => (
+                        <SelectItem key={speed.value} value={speed.value.toString()}>
+                          {speed.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {content.type === 'video' && (
+                  <div>
+                    <label className="text-sm text-gray-300">Quality</label>
+                    <Select
+                      value={settings.quality}
+                      onValueChange={(value) => onSettingsChange({ quality: value })}
+                    >
+                      <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {QUALITY_OPTIONS.map((quality) => (
+                          <SelectItem key={quality.value} value={quality.value}>
+                            {quality.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
+
+        {/* Content Info */}
+        <div className="p-4">
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <h3 className="font-medium text-lg">{content.title}</h3>
+              {content.description && (
+                <p className="text-sm text-gray-600 mt-1">{content.description}</p>
+              )}
+            </div>
+            <Badge variant="outline">
+              {content.type}
+            </Badge>
+          </div>
+
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            {content.duration && (
+              <span>Duration: {formatTime(content.duration)}</span>
+            )}
+            <span>Format: {content.format}</span>
+            <Badge variant="secondary">{content.difficulty}</Badge>
+          </div>
+
+          {content.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {content.tags.map((tag) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
-
-export default MediaPlayer;

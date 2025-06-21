@@ -120,7 +120,7 @@ const solutions = [
   }
 ];
 
-export default function Solutions() {
+export function Solutions() {
   return (
     <div className="min-h-screen bg-white">
       <MarketingNav />

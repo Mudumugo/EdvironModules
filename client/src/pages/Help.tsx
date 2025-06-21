@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { InteractiveGuide } from "@/components/help/InteractiveGuide";
-import RoleOnboarding from "@/components/help/RoleOnboarding";
+import { RoleOnboarding } from "@/components/help/RoleOnboarding";
 import { SearchInterface } from "@/components/help/SearchInterface";
 import { HelpCategories } from "@/components/help/HelpCategories";
 import { PopularArticles } from "@/components/help/PopularArticles";
