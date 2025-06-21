@@ -19,10 +19,12 @@ export const SidebarTrigger = React.forwardRef<
       variant="ghost"
       size="icon"
       className={cn(
-        "h-7 w-7 transition-all duration-200 ease-in-out",
-        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        "h-8 w-8 transition-all duration-200 ease-in-out",
+        "hover:bg-gray-200 text-gray-700",
         "active:scale-95 transform",
-        "focus:ring-2 focus:ring-sidebar-ring focus:ring-offset-2",
+        "focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+        "border border-gray-300 bg-white",
+        "!flex !visible !opacity-100", // Force visibility
         className
       )}
       onClick={(event) => {
