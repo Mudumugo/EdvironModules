@@ -24,7 +24,7 @@ interface CollapsibleDashboardLayoutProps {
   subtitle?: string;
 }
 
-export default function CollapsibleDashboardLayout({ 
+export function CollapsibleDashboardLayout({ 
   children, 
   title = "Dashboard",
   subtitle 
@@ -198,3 +198,5 @@ export default function CollapsibleDashboardLayout({
     </SidebarProvider>
   );
 }
+
+export default CollapsibleDashboardLayout;
