@@ -1,77 +1,46 @@
-import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
-import { LayoutConfig } from './LibraryLayoutConfig';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Filter, BookOpen } from "lucide-react";
 
 interface LibraryHeaderProps {
-  layout: LayoutConfig;
-  gradeLevel: string;
-  demoGradeLevel: string;
-  onGradeLevelChange: (level: string) => void;
+  title: string;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  showFilters?: boolean;
+  onToggleFilters?: () => void;
 }
 
-export const LibraryHeader = ({ 
-  layout, 
-  gradeLevel, 
-  demoGradeLevel, 
-  onGradeLevelChange 
-}: LibraryHeaderProps) => {
+export function LibraryHeader({ 
+  title, 
+  searchTerm, 
+  onSearchChange, 
+  showFilters = true,
+  onToggleFilters 
+}: LibraryHeaderProps) {
   return (
-    <div className={`bg-gradient-to-r ${layout.headerColor} text-white`}>
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">{layout.title}</h1>
-          <p className="text-sm sm:text-lg opacity-90 mb-4 sm:mb-6 px-2">{layout.subtitle}</p>
-          
-          {/* Demo Grade Level Switcher */}
-          <div className="mb-4 sm:mb-6">
-            <p className="text-xs sm:text-sm opacity-75 mb-2">Demo: Switch Grade Levels</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-2 px-4">
-              <button
-                onClick={() => onGradeLevelChange('primary')}
-                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                  demoGradeLevel === 'primary' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white/20 text-white hover:bg-white/30'
-                }`}
-              >
-                Primary
-              </button>
-              <button
-                onClick={() => onGradeLevelChange('junior_secondary')}
-                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                  demoGradeLevel === 'junior_secondary' 
-                    ? 'bg-white text-teal-600' 
-                    : 'bg-white/20 text-white hover:bg-white/30'
-                }`}
-              >
-                Junior Secondary
-              </button>
-              <button
-                onClick={() => onGradeLevelChange('senior_secondary')}
-                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                  demoGradeLevel === 'senior_secondary' 
-                    ? 'bg-white text-purple-600' 
-                    : 'bg-white/20 text-white hover:bg-white/30'
-                }`}
-              >
-                Senior Secondary
-              </button>
-            </div>
-          </div>
-          
-          {gradeLevel === 'primary' && (
-            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-4 sm:mb-6 px-4">
-              <Button variant="secondary" className={`${layout.buttonStyle} w-full sm:w-auto`}>
-                <Sparkles className="w-4 h-4 mr-2" />
-                Continue Learning
-              </Button>
-              <Button variant="outline" className={`${layout.buttonStyle} bg-white/10 border-white/20 text-white hover:bg-white/20 w-full sm:w-auto`}>
-                Learning Goals
-              </Button>
-            </div>
-          )}
+    <div className="flex flex-col space-y-4 mb-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <BookOpen className="h-8 w-8 text-blue-600" />
+          <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
         </div>
+        {showFilters && (
+          <Button variant="outline" onClick={onToggleFilters}>
+            <Filter className="h-4 w-4 mr-2" />
+            Filters
+          </Button>
+        )}
+      </div>
+      
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Input
+          placeholder="Search resources..."
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pl-10"
+        />
       </div>
     </div>
   );
-};
+}

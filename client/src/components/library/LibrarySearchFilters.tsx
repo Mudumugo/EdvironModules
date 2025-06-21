@@ -1,62 +1,72 @@
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-import { LibraryResourceTypes } from './LibraryResourceTypes';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface LibrarySearchFiltersProps {
-  searchTerm: string;
   selectedCategory: string;
   selectedResourceType: string;
-  categories: any[];
-  onSearchChange: (value: string) => void;
   onCategoryChange: (value: string) => void;
   onResourceTypeChange: (value: string) => void;
+  categories?: any[];
+  resourceTypes?: any[];
 }
 
-export const LibrarySearchFilters = ({
-  searchTerm,
+export function LibrarySearchFilters({
   selectedCategory,
   selectedResourceType,
-  categories,
-  onSearchChange,
   onCategoryChange,
-  onResourceTypeChange
-}: LibrarySearchFiltersProps) => {
-  const resourceTypes = LibraryResourceTypes.getResourceTypes();
-
+  onResourceTypeChange,
+  categories = [],
+  resourceTypes = []
+}: LibrarySearchFiltersProps) {
   return (
-    <div className="mb-4 sm:mb-8">
-      <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Search resources..."
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 h-10 sm:h-auto"
-          />
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <select
-            value={selectedCategory}
-            onChange={(e) => onCategoryChange(e.target.value)}
-            className="flex-1 px-3 py-2 border rounded-lg bg-background text-sm"
-          >
-            <option value="all">All Categories</option>
-            {categories.map(category => (
-              <option key={category.id} value={category.id}>{category.name}</option>
+    <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+      <div className="flex items-center space-x-2">
+        <span className="text-sm font-medium text-gray-700">Category:</span>
+        <Select value={selectedCategory} onValueChange={onCategoryChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
+              </SelectItem>
             ))}
-          </select>
-          <select
-            value={selectedResourceType}
-            onChange={(e) => onResourceTypeChange(e.target.value)}
-            className="flex-1 px-3 py-2 border rounded-lg bg-background text-sm"
-          >
-            {resourceTypes.map((type: any) => (
-              <option key={type.id} value={type.id}>{type.name}</option>
-            ))}
-          </select>
-        </div>
+          </SelectContent>
+        </Select>
       </div>
+
+      <div className="flex items-center space-x-2">
+        <span className="text-sm font-medium text-gray-700">Type:</span>
+        <Select value={selectedResourceType} onValueChange={onResourceTypeChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            {resourceTypes.map((type) => (
+              <SelectItem key={type.value} value={type.value}>
+                {type.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {(selectedCategory !== 'all' || selectedResourceType !== 'all') && (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => {
+            onCategoryChange('all');
+            onResourceTypeChange('all');
+          }}
+        >
+          Clear Filters
+        </Button>
+      )}
     </div>
   );
-};
+}

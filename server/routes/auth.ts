@@ -39,30 +39,33 @@ export function registerAuthRoutes(app: Express) {
         return res.status(400).json({ error: 'Email required' });
       }
 
-      // Find user
-      const user = await storage.getUserByEmail(email);
-      if (!user || !user.isActive) {
+      // Find user in database with correct column names
+      const user = await storage.core.getUserByEmail(email);
+      if (!user || !user.is_active) {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Simple session creation
+      // Create session with proper structure
       if (req.session) {
         req.session.user = {
           id: user.id,
           email: user.email,
           role: user.role,
-          tenantId: user.tenantId,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          tenantId: user.tenant_id,
+          firstName: user.first_name,
+          lastName: user.last_name,
           permissions: user.permissions || []
         };
       }
 
+      console.log(`Demo login successful for: ${user.email}`);
+      
       res.json({ 
         success: true, 
         user: req.session?.user 
       });
     } catch (error) {
+      console.error('Demo login error:', error);
       res.status(500).json({ error: 'Login failed' });
     }
   });
