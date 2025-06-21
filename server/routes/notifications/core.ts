@@ -1,7 +1,7 @@
 import type { Express } from "express";
-import { isAuthenticated, requirePermission } from "../roleMiddleware";
-import { storage } from "../storage";
-import type { AuthenticatedRequest } from "../roleMiddleware";
+import { isAuthenticated, requirePermission } from "../../roleMiddleware";
+import { storage } from "../../storage";
+import type { AuthenticatedRequest } from "../../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
 
 export interface NotificationData {
