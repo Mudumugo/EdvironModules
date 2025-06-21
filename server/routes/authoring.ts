@@ -6,6 +6,14 @@ import { storage } from "../storage";
 
 export function registerAuthoringRoutes(app: Express) {
   
+  // Check if authoring routes should be enabled (only in global builds)
+  const buildType = process.env.BUILD_TYPE || 'development';
+  if (buildType === 'tenant') {
+    // Skip registering authoring routes for tenant builds
+    console.log('[INFO] Authoring routes disabled for tenant build');
+    return;
+  }
+  
   // Content authoring dashboard routes
   app.get("/api/authoring/dashboard", isAuthenticated, async (req: Request, res: Response) => {
     try {

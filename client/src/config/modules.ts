@@ -12,6 +12,7 @@ export interface ModuleConfig {
   dependencies?: string[]; // Other modules this depends on
   permissions?: string[]; // Required user roles/permissions
   isPremium?: boolean; // Requires premium subscription
+  isGlobalOnly?: boolean; // Excluded from tenant builds
 }
 
 export const MODULE_REGISTRY: ModuleConfig[] = [
@@ -175,12 +176,27 @@ export const MODULE_REGISTRY: ModuleConfig[] = [
     icon: 'Settings',
     category: 'system',
     permissions: ['*']
+  },
+  
+  // Global-only modules (excluded from tenant builds)
+  {
+    id: 'authoring-dashboard',
+    name: 'Content Authoring',
+    description: 'Global content creation and management for digital library',
+    enabled: true,
+    route: '/authoring-dashboard',
+    icon: 'BookOpen',
+    category: 'system',
+    permissions: ['global_author', 'content_admin', 'super_admin'],
+    isGlobalOnly: true // Mark as global-only feature
   }
 ];
 
+import { isModuleIncluded } from "./buildConfig";
+
 // Helper functions for module management
 export function getEnabledModules(): ModuleConfig[] {
-  return MODULE_REGISTRY.filter(module => module.enabled);
+  return MODULE_REGISTRY.filter(module => module.enabled && isModuleIncluded(module.id));
 }
 
 export function getModulesByCategory(category: ModuleConfig['category']): ModuleConfig[] {
@@ -190,6 +206,7 @@ export function getModulesByCategory(category: ModuleConfig['category']): Module
 export function getModulesForUser(userRole: string): ModuleConfig[] {
   return MODULE_REGISTRY.filter(module => 
     module.enabled && 
+    isModuleIncluded(module.id) && // Check build configuration
     (module.permissions?.includes('*') || module.permissions?.includes(userRole))
   );
 }

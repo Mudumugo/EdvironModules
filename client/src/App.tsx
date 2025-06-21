@@ -57,6 +57,7 @@ import Layout from "@/components/Layout";
 import NotFound from "@/pages/not-found";
 import RoleProtectedRoute from "@/components/RoleProtectedRoute";
 import { USER_ROLES } from "@shared/schema";
+import { isRouteIncluded, hasGlobalAuthoringAccess } from "@/config/buildConfig";
 
 // Component mapping for dynamic routing
 const componentMap: Record<string, any> = {
@@ -224,12 +225,17 @@ function Router() {
                 </RoleProtectedRoute>
               </Route>
 
-              {/* Authoring module - Content creators */}
-              <Route path="/authoring-dashboard">
-                <RoleProtectedRoute moduleId="authoring-dashboard">
-                  <AuthoringDashboard />
-                </RoleProtectedRoute>
-              </Route>
+              {/* Authoring module - Global content creators only */}
+              {isRouteIncluded('/authoring-dashboard') && (
+                <Route path="/authoring-dashboard">
+                  <RoleProtectedRoute 
+                    moduleId="authoring-dashboard"
+                    customAccessCheck={(user) => hasGlobalAuthoringAccess(user?.role)}
+                  >
+                    <AuthoringDashboard />
+                  </RoleProtectedRoute>
+                </Route>
+              )}
 
               {/* Class Management - Teachers */}
               <Route path="/class-management">

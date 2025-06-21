@@ -9,13 +9,15 @@ interface RoleProtectedRouteProps {
   moduleId?: string;
   allowedRoles?: UserRole[];
   redirectTo?: string;
+  customAccessCheck?: (user: any) => boolean;
 }
 
 export default function RoleProtectedRoute({ 
   children, 
   moduleId, 
   allowedRoles = [], 
-  redirectTo = "/" 
+  redirectTo = "/",
+  customAccessCheck
 }: RoleProtectedRouteProps) {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
@@ -29,6 +31,13 @@ export default function RoleProtectedRoute({
     }
 
     const userRole = user.role as UserRole;
+    
+    // Check custom access logic first
+    if (customAccessCheck && !customAccessCheck(user)) {
+      console.warn(`Access denied: Custom access check failed for user '${user.id}'`);
+      setLocation(redirectTo);
+      return;
+    }
     
     // Check module-based access
     if (moduleId && !hasModuleAccess(userRole, moduleId)) {
@@ -58,6 +67,18 @@ export default function RoleProtectedRoute({
   }
 
   const userRole = user.role as UserRole;
+
+  // Check custom access logic first
+  if (customAccessCheck && !customAccessCheck(user)) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600">You don't have permission to access this feature.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Check access permissions
   if (moduleId && !hasModuleAccess(userRole, moduleId)) {
