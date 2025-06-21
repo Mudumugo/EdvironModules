@@ -1,6 +1,7 @@
 import { pgTable, varchar, text, timestamp, boolean, integer, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { z } from "zod";
 
 // Family accounts table for managing multiple children under one parent account
 export const familyAccounts = pgTable("family_accounts", {
@@ -92,8 +93,8 @@ export const signupRequests = pgTable("signup_requests", {
   expiresAt: timestamp("expires_at").notNull(),
 });
 
-// Import users table reference (assuming it exists)
-import { users } from "../schema";
+// Import users table reference
+import { users } from "./core";
 
 export type FamilyAccount = typeof familyAccounts.$inferSelect;
 export type InsertFamilyAccount = typeof familyAccounts.$inferInsert;

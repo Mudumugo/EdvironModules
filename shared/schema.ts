@@ -3,6 +3,8 @@ export * from "./schemas/core";
 export * from "./schemas/roles";
 export * from "./schemas/content";
 export * from "./schemas/system";
+export * from "./schemas/crm";
+export * from "./schemas/signup.schema";
 
 // Relations
 import { relations } from "drizzle-orm";
@@ -35,6 +37,11 @@ import {
   eventParticipants,
   eventTemplates
 } from "./schemas/system";
+import {
+  leads,
+  leadActivities,
+  demoRequests
+} from "./schemas/crm";
 
 // Define relationships
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -130,17 +137,9 @@ export const notebookSectionsRelations = relations(notebookSections, ({ one, man
 }));
 
 export const notebookPagesRelations = relations(notebookPages, ({ one }) => ({
-  notebook: one(notebooks, {
-    fields: [notebookPages.notebookId],
-    references: [notebooks.id],
-  }),
   section: one(notebookSections, {
     fields: [notebookPages.sectionId],
     references: [notebookSections.id],
-  }),
-  lastEditor: one(users, {
-    fields: [notebookPages.lastEditedBy],
-    references: [users.id],
   }),
 }));
 
