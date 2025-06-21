@@ -30,32 +30,23 @@ export function registerAuthRoutes(app: Express) {
     });
   });
 
-  // Demo login endpoint for testing
+  // Demo login endpoint
   app.post('/api/auth/demo-login', async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+      }
 
-        // Find user by email
-        const user = await storage.getUserByEmail(email);
-        
-        if (!user) {
-          console.warn(`[SECURITY] Demo login attempt for non-existent user: ${email} from IP: ${req.ip}`);
-          return res.status(404).json({ 
-            error: 'User not found',
-            code: 'USER_NOT_FOUND'
-          });
-        }
+      // Find user
+      const user = await storage.getUserByEmail(email);
+      if (!user || !user.isActive) {
+        return res.status(404).json({ error: 'User not found' });
+      }
 
-        // Check if account is active
-        if (user.isActive === false) {
-          console.warn(`[SECURITY] Demo login attempt for inactive user: ${email} from IP: ${req.ip}`);
-          return res.status(423).json({ 
-            error: 'Account is locked. Please contact administrator.',
-            code: 'ACCOUNT_LOCKED'
-          });
-        }
-
-        // Create session with security tracking
+      // Simple session creation
+      if (req.session) {
         req.session.user = {
           id: user.id,
           email: user.email,
@@ -65,32 +56,18 @@ export function registerAuthRoutes(app: Express) {
           lastName: user.lastName,
           permissions: user.permissions || []
         };
-
-        // Track session security info
-        req.session.loginTime = Date.now();
-        req.session.lastIP = req.ip;
-        req.session.lastUserAgent = req.get('User-Agent');
-        req.session.lastActivity = Date.now();
-
-        // Log successful demo login
-        console.log(`[SECURITY] Demo login successful for user: ${user.email} (${user.id}) from IP: ${req.ip}`);
-
-        res.json({ 
-          success: true, 
-          user: req.session.user,
-          sessionInfo: {
-            loginTime: req.session.loginTime,
-            expiresAt: Date.now() + (24 * 60 * 60 * 1000)
-          }
-        });
-      } catch (error) {
-        console.error('Demo login error:', error);
-        res.status(500).json({ 
-          error: 'Internal server error',
-          code: 'INTERNAL_ERROR'
-        });
       }
-    });
+
+      res.json({ 
+        success: true, 
+        user: req.session?.user 
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Login failed' });
+    }
+  });
+
+
 
   // Logout endpoint with security logging (POST)
   app.post('/api/auth/logout', (req: AuthenticatedRequest, res: Response) => {
