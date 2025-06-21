@@ -45,7 +45,21 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
                              bookData?.type === 'interactive' || bookData?.type === 'html5';
 
   // Initialize tracking
-  const { trackPageView, trackBookmark } = useBookTracking(bookData);
+  const { trackPageView, trackBookmark, trackInteraction } = useBookTracking(bookData);
+
+  // Handle xAPI messages from interactive content
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'xapi') {
+        trackInteraction(event.data.verb, event.data.object, event.data.result);
+      } else if (event.data?.type === 'navigate') {
+        goToPage(event.data.page);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [trackInteraction, goToPage]);
 
   // Initialize controls
   const {
