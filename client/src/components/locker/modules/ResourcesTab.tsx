@@ -23,12 +23,12 @@ export function ResourcesTab({ lockerItems, isLoading, onViewItem }: ResourcesTa
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Saved Resources</h2>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+          <h2 className="text-xl sm:text-2xl font-semibold">Saved Resources</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            <div key={i} className="h-48 sm:h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -38,8 +38,8 @@ export function ResourcesTab({ lockerItems, isLoading, onViewItem }: ResourcesTa
   if (lockerItems.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Saved Resources (0)</h2>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+          <h2 className="text-xl sm:text-2xl font-semibold">Saved Resources (0)</h2>
         </div>
         <div className="text-center py-12">
           <Archive className="h-12 w-12 mx-auto text-gray-400 mb-4" />

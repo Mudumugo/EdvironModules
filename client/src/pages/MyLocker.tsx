@@ -76,18 +76,26 @@ export default function MyLocker() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       <LockerHeader 
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="notebooks">Digital Notebooks</TabsTrigger>
-          <TabsTrigger value="resources">Saved Resources</TabsTrigger>
-          <TabsTrigger value="calculator">Calculator</TabsTrigger>
-          <TabsTrigger value="dictionary">Dictionary</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 h-auto p-1">
+          <TabsTrigger value="notebooks" className="text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <span className="hidden sm:inline">Digital </span>Notebooks
+          </TabsTrigger>
+          <TabsTrigger value="resources" className="text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <span className="hidden sm:inline">Saved </span>Resources
+          </TabsTrigger>
+          <TabsTrigger value="calculator" className="text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            Calculator
+          </TabsTrigger>
+          <TabsTrigger value="dictionary" className="text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            Dictionary
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="notebooks" className="space-y-4">
