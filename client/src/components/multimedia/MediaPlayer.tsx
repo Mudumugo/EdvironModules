@@ -25,7 +25,7 @@ interface MediaPlayerProps {
   onInteraction?: (interaction: any) => void;
 }
 
-export default function MediaPlayer({ 
+export function MediaPlayer({ 
   content, 
   settings, 
   onSettingsChange, 
@@ -261,3 +261,5 @@ export default function MediaPlayer({
     </div>
   );
 }
+
+export default MediaPlayer;

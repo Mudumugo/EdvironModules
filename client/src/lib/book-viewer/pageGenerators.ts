@@ -1,4 +1,7 @@
-// Generate book pages based on resource content
+// Legacy page generators - use modular hooks from usePageGenerators.ts
+export * from '../../hooks/usePageGenerators';
+
+// Generate book pages based on resource content  
 export function generateBookPages(resource: any): string[] {
   const pages = [];
   const totalPages = 15;

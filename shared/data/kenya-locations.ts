@@ -1,23 +1,5 @@
-// Kenyan Geographic Divisions: Counties, Constituencies, and Wards
-// Data source: Independent Electoral and Boundaries Commission (IEBC) of Kenya
-
-export interface Ward {
-  id: string;
-  name: string;
-}
-
-export interface Constituency {
-  id: string;
-  name: string;
-  wards: Ward[];
-}
-
-export interface County {
-  id: string;
-  name: string;
-  code: string;
-  constituencies: Constituency[];
-}
+// Legacy kenya locations - use modular data from kenya-locations-data.ts
+export * from './kenya-locations-data';
 
 export const KENYAN_COUNTIES: County[] = [
   {

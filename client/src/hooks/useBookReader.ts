@@ -1,359 +1,372 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
-interface BookPage {
-  id: number;
+export interface BookPage {
+  id: string;
   pageNumber: number;
+  title?: string;
   content: string;
-  imageUrl?: string;
-  text?: string;
+  type: 'cover' | 'toc' | 'chapter' | 'content' | 'activity' | 'assessment';
+  metadata?: Record<string, any>;
 }
 
-interface BookData {
-  id: number;
+export interface Book {
+  id: string;
   title: string;
   author: string;
-  pages: BookPage[];
+  subject: string;
+  grade: string;
+  description?: string;
+  coverImage?: string;
   totalPages: number;
-  metadata?: {
-    isbn?: string;
-    publisher?: string;
-    publishDate?: string;
-    language?: string;
-    grade?: string;
-    subject?: string;
+  pages: BookPage[];
+  metadata?: Record<string, any>;
+}
+
+export interface ReaderSettings {
+  fontSize: number;
+  fontFamily: string;
+  lineHeight: number;
+  theme: 'light' | 'dark' | 'sepia';
+  autoScroll: boolean;
+  autoScrollSpeed: number;
+  showAnnotations: boolean;
+  highlightColor: string;
+}
+
+export interface Annotation {
+  id: string;
+  pageId: string;
+  text: string;
+  note?: string;
+  color: string;
+  position: {
+    start: number;
+    end: number;
   };
+  createdAt: Date;
 }
 
-interface BookReaderState {
-  currentPage: number;
-  zoom: number;
-  rotation: number;
-  viewMode: 'single' | 'double';
-  isFullscreen: boolean;
-  bookmarks: number[];
-  readingProgress: number;
-  lastReadPage: number;
-  readingTime: number;
+export interface Bookmark {
+  id: string;
+  pageId: string;
+  pageNumber: number;
+  title: string;
+  createdAt: Date;
 }
 
-interface UseBookReaderOptions {
-  bookId: number;
-  autoSave?: boolean;
-  enableAnalytics?: boolean;
-}
+const DEFAULT_SETTINGS: ReaderSettings = {
+  fontSize: 16,
+  fontFamily: 'serif',
+  lineHeight: 1.6,
+  theme: 'light',
+  autoScroll: false,
+  autoScrollSpeed: 1,
+  showAnnotations: true,
+  highlightColor: '#fbbf24'
+};
 
-export const useBookReader = (options: UseBookReaderOptions) => {
-  const { bookId, autoSave = true, enableAnalytics = true } = options;
+export function useBookReader(bookId?: string) {
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [settings, setSettings] = useState<ReaderSettings>(DEFAULT_SETTINGS);
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [selectedText, setSelectedText] = useState<string>('');
+  const [isAnnotationMode, setIsAnnotationMode] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showBookmarks, setShowBookmarks] = useState(false);
 
-  const [bookData, setBookData] = useState<BookData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  const [readerState, setReaderState] = useState<BookReaderState>({
-    currentPage: 1,
-    zoom: 100,
-    rotation: 0,
-    viewMode: 'single',
-    isFullscreen: false,
-    bookmarks: [],
-    readingProgress: 0,
-    lastReadPage: 1,
-    readingTime: 0
+  const readerRef = useRef<HTMLDivElement>(null);
+  const autoScrollRef = useRef<NodeJS.Timeout>();
+
+  // Fetch book data
+  const { data: book, isLoading } = useQuery<Book>({
+    queryKey: ['/api/books', bookId],
+    queryFn: () => apiRequest('GET', `/api/books/${bookId}`),
+    enabled: !!bookId,
   });
 
-  // Load book data
-  const loadBook = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Current page
+  const currentPage = book?.pages?.[currentPageIndex];
 
-      // In a real implementation, this would fetch from an API
-      // For now, we'll create mock data based on the resource
-      const mockBookData: BookData = {
-        id: bookId,
-        title: 'Sample Educational Book',
-        author: 'Education Team',
-        pages: Array.from({ length: 20 }, (_, i) => ({
-          id: i + 1,
-          pageNumber: i + 1,
-          content: `Page ${i + 1} content`,
-          imageUrl: `/api/placeholder/400/500?page=${i + 1}`,
-          text: `This is the content for page ${i + 1}. Educational content goes here.`
-        })),
-        totalPages: 20,
-        metadata: {
-          language: 'English',
-          grade: 'Grade 5',
-          subject: 'Mathematics'
-        }
-      };
+  // Navigation
+  const goToPage = useCallback((pageIndex: number) => {
+    if (!book) return;
+    const validIndex = Math.max(0, Math.min(pageIndex, book.pages.length - 1));
+    setCurrentPageIndex(validIndex);
+    updateReadingProgress(validIndex);
+  }, [book]);
 
-      setBookData(mockBookData);
-      
-      // Load saved reading state
-      if (autoSave) {
-        const savedState = localStorage.getItem(`book-reader-${bookId}`);
-        if (savedState) {
-          const parsed = JSON.parse(savedState);
-          setReaderState(prev => ({ ...prev, ...parsed }));
+  const goToNextPage = useCallback(() => {
+    goToPage(currentPageIndex + 1);
+  }, [currentPageIndex, goToPage]);
+
+  const goToPreviousPage = useCallback(() => {
+    goToPage(currentPageIndex - 1);
+  }, [currentPageIndex, goToPage]);
+
+  const goToFirstPage = useCallback(() => {
+    goToPage(0);
+  }, [goToPage]);
+
+  const goToLastPage = useCallback(() => {
+    if (book) goToPage(book.pages.length - 1);
+  }, [book, goToPage]);
+
+  // Settings
+  const updateSettings = useCallback((newSettings: Partial<ReaderSettings>) => {
+    setSettings(prev => ({ ...prev, ...newSettings }));
+  }, []);
+
+  const increaseFontSize = useCallback(() => {
+    updateSettings({ fontSize: Math.min(settings.fontSize + 2, 24) });
+  }, [settings.fontSize, updateSettings]);
+
+  const decreaseFontSize = useCallback(() => {
+    updateSettings({ fontSize: Math.max(settings.fontSize - 2, 12) });
+  }, [settings.fontSize, updateSettings]);
+
+  const toggleTheme = useCallback(() => {
+    const themes: ReaderSettings['theme'][] = ['light', 'dark', 'sepia'];
+    const currentIndex = themes.indexOf(settings.theme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    updateSettings({ theme: themes[nextIndex] });
+  }, [settings.theme, updateSettings]);
+
+  // Auto-scroll
+  const startAutoScroll = useCallback(() => {
+    if (autoScrollRef.current) clearInterval(autoScrollRef.current);
+    
+    autoScrollRef.current = setInterval(() => {
+      if (readerRef.current) {
+        const scrollAmount = settings.autoScrollSpeed * 2;
+        readerRef.current.scrollTop += scrollAmount;
+        
+        // Auto-advance to next page when reaching bottom
+        const { scrollTop, scrollHeight, clientHeight } = readerRef.current;
+        if (scrollTop + clientHeight >= scrollHeight - 10) {
+          goToNextPage();
         }
       }
-    } catch (err) {
-      setError('Failed to load book');
-      console.error('Error loading book:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [bookId, autoSave]);
+    }, 100);
+  }, [settings.autoScrollSpeed, goToNextPage]);
 
-  // Save reading state
-  const saveReaderState = useCallback((newState: Partial<BookReaderState>) => {
-    if (autoSave) {
-      const stateToSave = { ...readerState, ...newState };
-      localStorage.setItem(`book-reader-${bookId}`, JSON.stringify(stateToSave));
+  const stopAutoScroll = useCallback(() => {
+    if (autoScrollRef.current) {
+      clearInterval(autoScrollRef.current);
+      autoScrollRef.current = undefined;
     }
-  }, [bookId, autoSave, readerState]);
+  }, []);
 
-  // Navigation functions
-  const goToPage = useCallback((pageNumber: number) => {
-    if (!bookData || pageNumber < 1 || pageNumber > bookData.totalPages) return;
-    
-    const newState = {
-      currentPage: pageNumber,
-      lastReadPage: pageNumber,
-      readingProgress: (pageNumber / bookData.totalPages) * 100
+  const toggleAutoScroll = useCallback(() => {
+    if (settings.autoScroll) {
+      stopAutoScroll();
+    } else {
+      startAutoScroll();
+    }
+    updateSettings({ autoScroll: !settings.autoScroll });
+  }, [settings.autoScroll, startAutoScroll, stopAutoScroll, updateSettings]);
+
+  // Annotations
+  const addAnnotation = useCallback((text: string, note?: string) => {
+    if (!currentPage || !selectedText) return;
+
+    const newAnnotation: Annotation = {
+      id: `annotation_${Date.now()}`,
+      pageId: currentPage.id,
+      text: selectedText,
+      note,
+      color: settings.highlightColor,
+      position: { start: 0, end: selectedText.length }, // Simplified
+      createdAt: new Date()
     };
-    
-    setReaderState(prev => ({ ...prev, ...newState }));
-    saveReaderState(newState);
 
-    // Analytics tracking
-    if (enableAnalytics) {
-      // Track page view
-      console.log(`Page view: ${pageNumber} of book ${bookId}`);
+    setAnnotations(prev => [...prev, newAnnotation]);
+    setSelectedText('');
+    setIsAnnotationMode(false);
+  }, [currentPage, selectedText, settings.highlightColor]);
+
+  const removeAnnotation = useCallback((annotationId: string) => {
+    setAnnotations(prev => prev.filter(a => a.id !== annotationId));
+  }, []);
+
+  const getPageAnnotations = useCallback((pageId: string) => {
+    return annotations.filter(a => a.pageId === pageId);
+  }, [annotations]);
+
+  // Bookmarks
+  const addBookmark = useCallback((title?: string) => {
+    if (!currentPage) return;
+
+    const newBookmark: Bookmark = {
+      id: `bookmark_${Date.now()}`,
+      pageId: currentPage.id,
+      pageNumber: currentPage.pageNumber,
+      title: title || `Page ${currentPage.pageNumber}`,
+      createdAt: new Date()
+    };
+
+    setBookmarks(prev => [...prev, newBookmark]);
+  }, [currentPage]);
+
+  const removeBookmark = useCallback((bookmarkId: string) => {
+    setBookmarks(prev => prev.filter(b => b.id !== bookmarkId));
+  }, []);
+
+  const goToBookmark = useCallback((bookmark: Bookmark) => {
+    if (!book) return;
+    const pageIndex = book.pages.findIndex(p => p.id === bookmark.pageId);
+    if (pageIndex !== -1) {
+      goToPage(pageIndex);
+      setShowBookmarks(false);
     }
-  }, [bookData, saveReaderState, enableAnalytics, bookId]);
+  }, [book, goToPage]);
 
-  const nextPage = useCallback(() => {
-    if (bookData && readerState.currentPage < bookData.totalPages) {
-      goToPage(readerState.currentPage + 1);
-    }
-  }, [bookData, readerState.currentPage, goToPage]);
+  // Progress tracking
+  const updateReadingProgress = useCallback((pageIndex: number) => {
+    if (!book) return;
+    const progress = ((pageIndex + 1) / book.pages.length) * 100;
+    setReadingProgress(progress);
+  }, [book]);
 
-  const previousPage = useCallback(() => {
-    if (readerState.currentPage > 1) {
-      goToPage(readerState.currentPage - 1);
-    }
-  }, [readerState.currentPage, goToPage]);
-
-  const firstPage = useCallback(() => goToPage(1), [goToPage]);
-  const lastPage = useCallback(() => {
-    if (bookData) goToPage(bookData.totalPages);
-  }, [bookData, goToPage]);
-
-  // View controls
-  const setZoom = useCallback((zoom: number) => {
-    const clampedZoom = Math.max(50, Math.min(200, zoom));
-    const newState = { zoom: clampedZoom };
-    setReaderState(prev => ({ ...prev, ...newState }));
-    saveReaderState(newState);
-  }, [saveReaderState]);
-
-  const zoomIn = useCallback(() => setZoom(readerState.zoom + 25), [readerState.zoom, setZoom]);
-  const zoomOut = useCallback(() => setZoom(readerState.zoom - 25), [readerState.zoom, setZoom]);
-  const resetZoom = useCallback(() => setZoom(100), [setZoom]);
-
-  const setRotation = useCallback((rotation: number) => {
-    const normalizedRotation = rotation % 360;
-    const newState = { rotation: normalizedRotation };
-    setReaderState(prev => ({ ...prev, ...newState }));
-    saveReaderState(newState);
-  }, [saveReaderState]);
-
-  const rotateLeft = useCallback(() => setRotation(readerState.rotation - 90), [readerState.rotation, setRotation]);
-  const rotateRight = useCallback(() => setRotation(readerState.rotation + 90), [readerState.rotation, setRotation]);
-  const resetRotation = useCallback(() => setRotation(0), [setRotation]);
-
-  const toggleViewMode = useCallback(() => {
-    const newMode = readerState.viewMode === 'single' ? 'double' : 'single';
-    const newState = { viewMode: newMode };
-    setReaderState(prev => ({ ...prev, ...newState }));
-    saveReaderState(newState);
-  }, [readerState.viewMode, saveReaderState]);
-
-  const toggleFullscreen = useCallback(() => {
-    const newState = { isFullscreen: !readerState.isFullscreen };
-    setReaderState(prev => ({ ...prev, ...newState }));
-    
-    if (newState.isFullscreen) {
-      document.documentElement.requestFullscreen?.();
+  // Text selection
+  const handleTextSelection = useCallback(() => {
+    const selection = window.getSelection();
+    if (selection && selection.toString().trim()) {
+      setSelectedText(selection.toString().trim());
     } else {
-      document.exitFullscreen?.();
+      setSelectedText('');
     }
-  }, [readerState.isFullscreen]);
-
-  // Bookmark functions
-  const addBookmark = useCallback((pageNumber: number) => {
-    if (!readerState.bookmarks.includes(pageNumber)) {
-      const newBookmarks = [...readerState.bookmarks, pageNumber].sort((a, b) => a - b);
-      const newState = { bookmarks: newBookmarks };
-      setReaderState(prev => ({ ...prev, ...newState }));
-      saveReaderState(newState);
-    }
-  }, [readerState.bookmarks, saveReaderState]);
-
-  const removeBookmark = useCallback((pageNumber: number) => {
-    const newBookmarks = readerState.bookmarks.filter(p => p !== pageNumber);
-    const newState = { bookmarks: newBookmarks };
-    setReaderState(prev => ({ ...prev, ...newState }));
-    saveReaderState(newState);
-  }, [readerState.bookmarks, saveReaderState]);
-
-  const toggleBookmark = useCallback((pageNumber: number) => {
-    if (readerState.bookmarks.includes(pageNumber)) {
-      removeBookmark(pageNumber);
-    } else {
-      addBookmark(pageNumber);
-    }
-  }, [readerState.bookmarks, addBookmark, removeBookmark]);
-
-  // Reading time tracking
-  useEffect(() => {
-    if (!enableAnalytics) return;
-
-    const interval = setInterval(() => {
-      setReaderState(prev => ({
-        ...prev,
-        readingTime: prev.readingTime + 1
-      }));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [enableAnalytics]);
+  }, []);
 
   // Keyboard shortcuts
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      return; // Don't handle shortcuts in input fields
+    }
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        goToPreviousPage();
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        goToNextPage();
+        break;
+      case 'Home':
+        event.preventDefault();
+        goToFirstPage();
+        break;
+      case 'End':
+        event.preventDefault();
+        goToLastPage();
+        break;
+      case '+':
+      case '=':
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          increaseFontSize();
+        }
+        break;
+      case '-':
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          decreaseFontSize();
+        }
+        break;
+      case 't':
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          toggleTheme();
+        }
+        break;
+      case 'b':
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          addBookmark();
+        }
+        break;
+    }
+  }, [goToPreviousPage, goToNextPage, goToFirstPage, goToLastPage, increaseFontSize, decreaseFontSize, toggleTheme, addBookmark]);
+
+  // Effect for keyboard shortcuts
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case 'ArrowLeft':
-          e.preventDefault();
-          previousPage();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          nextPage();
-          break;
-        case 'Home':
-          e.preventDefault();
-          firstPage();
-          break;
-        case 'End':
-          e.preventDefault();
-          lastPage();
-          break;
-        case 'Escape':
-          if (readerState.isFullscreen) {
-            toggleFullscreen();
-          }
-          break;
-        case '+':
-        case '=':
-          e.preventDefault();
-          zoomIn();
-          break;
-        case '-':
-          e.preventDefault();
-          zoomOut();
-          break;
-        case '0':
-          e.preventDefault();
-          resetZoom();
-          break;
-        case 'r':
-          if (e.ctrlKey) {
-            e.preventDefault();
-            rotateRight();
-          }
-          break;
-        case 'b':
-          if (e.ctrlKey) {
-            e.preventDefault();
-            toggleBookmark(readerState.currentPage);
-          }
-          break;
-        case 'f':
-          if (e.ctrlKey) {
-            e.preventDefault();
-            toggleFullscreen();
-          }
-          break;
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, [handleKeyPress]);
+
+  // Effect for text selection
+  useEffect(() => {
+    document.addEventListener('mouseup', handleTextSelection);
+    return () => document.removeEventListener('mouseup', handleTextSelection);
+  }, [handleTextSelection]);
+
+  // Cleanup auto-scroll on unmount
+  useEffect(() => {
+    return () => {
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current);
       }
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [
-    nextPage, 
-    previousPage, 
-    firstPage, 
-    lastPage, 
-    zoomIn, 
-    zoomOut, 
-    resetZoom, 
-    rotateRight, 
-    toggleBookmark, 
-    toggleFullscreen,
-    readerState.currentPage,
-    readerState.isFullscreen
-  ]);
-
-  // Load book on mount
-  useEffect(() => {
-    loadBook();
-  }, [loadBook]);
+  }, []);
 
   return {
     // Data
-    bookData,
-    loading,
-    error,
+    book,
+    currentPage,
+    currentPageIndex,
+    totalPages: book?.pages?.length || 0,
     
     // State
-    ...readerState,
+    settings,
+    annotations,
+    bookmarks,
+    selectedText,
+    isAnnotationMode,
+    readingProgress,
+    showSettings,
+    showBookmarks,
+    isLoading,
+    
+    // Refs
+    readerRef,
     
     // Navigation
     goToPage,
-    nextPage,
-    previousPage,
-    firstPage,
-    lastPage,
+    goToNextPage,
+    goToPreviousPage,
+    goToFirstPage,
+    goToLastPage,
     
-    // View controls
-    setZoom,
-    zoomIn,
-    zoomOut,
-    resetZoom,
-    setRotation,
-    rotateLeft,
-    rotateRight,
-    resetRotation,
-    toggleViewMode,
-    toggleFullscreen,
+    // Settings
+    updateSettings,
+    increaseFontSize,
+    decreaseFontSize,
+    toggleTheme,
+    toggleAutoScroll,
+    
+    // Annotations
+    addAnnotation,
+    removeAnnotation,
+    getPageAnnotations,
+    setIsAnnotationMode,
     
     // Bookmarks
     addBookmark,
     removeBookmark,
-    toggleBookmark,
+    goToBookmark,
     
-    // Utilities
-    getCurrentPage: () => bookData?.pages.find(p => p.pageNumber === readerState.currentPage),
-    getProgress: () => readerState.readingProgress,
-    getTotalPages: () => bookData?.totalPages || 0,
-    isBookmarked: (pageNumber: number) => readerState.bookmarks.includes(pageNumber),
+    // UI Controls
+    setShowSettings,
+    setShowBookmarks,
     
-    // Actions
-    reload: loadBook
+    // Computed
+    canGoNext: currentPageIndex < (book?.pages?.length || 0) - 1,
+    canGoPrevious: currentPageIndex > 0,
+    currentPageAnnotations: currentPage ? getPageAnnotations(currentPage.id) : [],
+    isBookmarked: currentPage ? bookmarks.some(b => b.pageId === currentPage.id) : false,
   };
-};
-
-export default useBookReader;
+}
