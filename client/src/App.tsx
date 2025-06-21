@@ -11,7 +11,7 @@ import { MobileLanding } from "@/pages/MobileLanding";
 import { Solutions } from "@/pages/Solutions";
 import { CBEOverview } from "@/pages/CBEOverview";
 import { About } from "@/pages/About";
-import { Features } from "@/pages/Features";
+import Features from "@/pages/Features";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import InteractiveSignUp from "@/pages/InteractiveSignUp";

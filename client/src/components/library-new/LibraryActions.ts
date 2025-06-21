@@ -1,9 +1,8 @@
 import { LibraryResource } from "./LibraryTypes";
 import { 
   shouldUseBookViewer, 
-  shouldUseWorksheetViewer, 
+  getViewerType,
   convertResourceToBookConfig, 
-  convertResourceToWorksheetConfig, 
   getBookOpenMessage 
 } from "@/lib/bookViewerConfig";
 
@@ -17,7 +16,7 @@ export const useLibraryActions = (
   user: any
 ) => {
   const handlePreview = (resource: LibraryResource) => {
-    const message = getBookOpenMessage(resource);
+    const message = getBookOpenMessage(resource.type);
     
     // Use enhanced BookViewer for book-type resources
     if (shouldUseBookViewer(resource)) {

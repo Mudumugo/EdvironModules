@@ -7,6 +7,10 @@ import {
 } from './constants';
 import type { BookConfig, ViewerConfig } from './types';
 
+export function shouldUseBookViewer(resourceType: string): boolean {
+  return BOOK_VIEWER_TYPES.includes(resourceType.toLowerCase());
+}
+
 export function getViewerType(resourceType: string, fileExtension?: string): string {
   const lowerType = resourceType.toLowerCase();
   const lowerExt = fileExtension?.toLowerCase();
@@ -142,5 +146,50 @@ export function convertResourceToBookConfig(resource: any): BookConfig {
       trackReadingTime: true,
       trackCompletionRate: true
     }
+  };
+}
+
+export function getBookOpenMessage(resourceType: string): string {
+  const messages = {
+    book: 'Opening book...',
+    ebook: 'Loading e-book...',
+    textbook: 'Opening textbook...',
+    worksheet: 'Loading worksheet...',
+    document: 'Opening document...',
+    pdf: 'Loading PDF...',
+  };
+  
+  return messages[resourceType as keyof typeof messages] || 'Opening resource...';
+}
+
+export function generateBookMetadata(config: BookConfig) {
+  return {
+    title: config.title,
+    author: config.author,
+    pageCount: config.totalPages,
+    language: config.language,
+    subject: config.subject,
+    grade: config.grade,
+    hasInteractivity: config.isInteractive,
+    hasMultimedia: config.hasVideo || config.hasAudio,
+    estimatedReadTime: Math.ceil(config.totalPages * 2), // 2 minutes per page estimate
+  };
+}
+
+export function shouldUseWorksheetViewer(resourceType: string): boolean {
+  return WORKSHEET_VIEWER_TYPES.includes(resourceType.toLowerCase());
+}
+
+export function convertResourceToWorksheetConfig(resource: any) {
+  return {
+    id: resource.id || 0,
+    title: resource.title || 'Untitled Worksheet',
+    type: resource.type || 'worksheet',
+    content: resource.content || '',
+    instructions: resource.instructions || '',
+    exercises: resource.exercises || [],
+    grade: resource.grade || '',
+    subject: resource.subject || '',
+    difficulty: resource.difficulty || 'medium'
   };
 }
