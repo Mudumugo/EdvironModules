@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { CollapsibleDashboardLayout } from "@/components/dashboard/CollapsibleDashboardLayout";
-import { DashboardHeader } from "@/components/dashboard/shared/DashboardHeader";
 import { ModuleGrid } from "@/components/dashboard/shared/ModuleGrid";
 import { Module } from "@/components/dashboard/shared/ModuleCard";
 import { TechTutorCard } from "@/components/dashboard/shared/TechTutorCard";
@@ -183,21 +182,45 @@ export default function TeachersDashboard() {
       subtitle="Comprehensive teaching tools and classroom management"
     >
       <div className="max-w-7xl mx-auto">
-        <DashboardHeader
-          title=""
-          subtitle=""
-          user={user}
-          showSearch={true}
-          showFilters={true}
-          showPlanInfo={true}
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
+        {/* Search and Filter Controls */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search modules..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2 items-center">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {categories.map((category) => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+            <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`px-3 py-2 ${viewMode === "grid" ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
+              >
+                Grid
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`px-3 py-2 ${viewMode === "list" ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
+              >
+                List
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Status Cards Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
