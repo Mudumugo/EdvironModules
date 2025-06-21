@@ -23,7 +23,7 @@ interface WorksheetViewerProps {
   onClose?: () => void;
 }
 
-export function WorksheetViewer({ worksheetData, onClose }: WorksheetViewerProps) {
+export default function WorksheetViewer({ worksheetData, onClose }: WorksheetViewerProps) {
   const {
     currentExercise,
     currentExerciseData,

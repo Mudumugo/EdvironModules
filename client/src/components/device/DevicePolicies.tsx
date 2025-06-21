@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Filter, Shield, Settings, Play, Pause, Trash2 } from "lucide-react";
 
-export function DevicePolicies() {
+export default function DevicePolicies() {
   const {
     selectedPolicy,
     setSelectedPolicy,

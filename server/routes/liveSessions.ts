@@ -1,12 +1,5 @@
-import type { Express } from "express";
-import { WebSocketServer, WebSocket } from "ws";
-import type { Server } from "http";
-import { isAuthenticated } from "../roleMiddleware";
-import { storage } from "../storage";
-import type { AuthenticatedRequest } from "../roleMiddleware";
-import { requirePermission, requireRole } from "../roleMiddleware";
-import { PERMISSIONS, USER_ROLES } from "@shared/schema";
-import { v4 as uuidv4 } from "uuid";
+// Legacy live sessions routes - use modular routes from liveSessions/index.ts
+export { registerLiveSessionRoutes } from "./liveSessions/index";
 
 // WebSocket connection management
 interface ConnectedDevice {
