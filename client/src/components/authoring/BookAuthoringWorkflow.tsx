@@ -81,12 +81,12 @@ export default function BookAuthoringWorkflow() {
   // Create new book project mutation
   const createProjectMutation = useMutation({
     mutationFn: async (projectData: any) => {
-      return apiRequest('/api/authoring/book-projects', {
-        method: 'POST',
-        body: JSON.stringify(projectData),
-      });
+      console.log("Submitting project data:", projectData);
+      const response = await apiRequest("POST", "/api/authoring/book-projects", projectData);
+      return response;
     },
     onSuccess: (newProject) => {
+      console.log("Project created successfully:", newProject);
       queryClient.invalidateQueries({ queryKey: ['/api/authoring/book-projects'] });
       toast({
         title: "Book Project Created",
@@ -97,10 +97,19 @@ export default function BookAuthoringWorkflow() {
       setSelectedTemplate(null);
       setShowEditor(true);
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error("Failed to create project:", error);
+      let errorMessage = "Failed to create book project. Please try again.";
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to create book project. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -665,11 +674,12 @@ export default function BookAuthoringWorkflow() {
                     <Edit3 className="h-4 w-4 mr-2" />
                     Open Editor
                   </Button>
-                  <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Settings className="h-4 w-4" />
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handlePreviewBook(project)}
+                  >
+                    <Play className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
