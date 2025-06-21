@@ -88,10 +88,6 @@ export const libraryItemsRelations = relations(libraryItems, ({ one }) => ({
     fields: [libraryItems.subjectId],
     references: [librarySubjects.id],
   }),
-  category: one(libraryCategories, {
-    fields: [libraryItems.categoryId],
-    references: [libraryCategories.id],
-  }),
   author: one(users, {
     fields: [libraryItems.authorId],
     references: [users.id],
@@ -99,13 +95,9 @@ export const libraryItemsRelations = relations(libraryItems, ({ one }) => ({
 }));
 
 export const assignmentsRelations = relations(assignments, ({ one, many }) => ({
-  teacher: one(users, {
-    fields: [assignments.teacherId],
-    references: [users.id],
-  }),
-  subject: one(librarySubjects, {
-    fields: [assignments.subjectId],
-    references: [librarySubjects.id],
+  class: one(classes, {
+    fields: [assignments.classId],
+    references: [classes.id],
   }),
   submissions: many(assignmentSubmissions),
 }));
@@ -115,9 +107,8 @@ export const assignmentSubmissionsRelations = relations(assignmentSubmissions, (
     fields: [assignmentSubmissions.assignmentId],
     references: [assignments.id],
   }),
-  }),
-  grader: one(users, {
-    fields: [assignmentSubmissions.gradedBy],
+  student: one(users, {
+    fields: [assignmentSubmissions.studentId],
     references: [users.id],
   }),
 }));
@@ -127,12 +118,7 @@ export const notebooksRelations = relations(notebooks, ({ one, many }) => ({
     fields: [notebooks.ownerId],
     references: [users.id],
   }),
-  subject: one(librarySubjects, {
-    fields: [notebooks.subjectId],
-    references: [librarySubjects.id],
-  }),
   sections: many(notebookSections),
-  pages: many(notebookPages),
 }));
 
 export const notebookSectionsRelations = relations(notebookSections, ({ one, many }) => ({
@@ -160,7 +146,7 @@ export const notebookPagesRelations = relations(notebookPages, ({ one }) => ({
 
 export const lockerItemsRelations = relations(lockerItems, ({ one }) => ({
   owner: one(users, {
-    fields: [lockerItems.ownerId],
+    fields: [lockerItems.userId],
     references: [users.id],
   }),
 }));
