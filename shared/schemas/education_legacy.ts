@@ -1,19 +1,5 @@
-import {
-  pgTable,
-  text,
-  varchar,
-  timestamp,
-  integer,
-  boolean,
-  decimal,
-  jsonb,
-  date,
-  serial,
-  unique,
-  index,
-} from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { users } from "./user.schema";
+// Legacy education schema - use modular schemas from education/index.ts
+export * from './education/index';
 
 // Institution management
 export const institutions = pgTable("institutions", {

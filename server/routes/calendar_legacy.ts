@@ -1,9 +1,5 @@
-import type { Express } from "express";
-import { v4 as uuidv4 } from "uuid";
-import { storage } from "../storage";
-import { isAuthenticated } from "../roleMiddleware";
-import { insertCalendarEventSchema, insertEventParticipantSchema, insertEventTemplateSchema, USER_ROLES } from "@shared/schema";
-import type { AuthenticatedRequest } from "../types";
+// Legacy calendar routes - use modular routes from calendar/index.ts  
+export { registerCalendarRoutes } from "./calendar/index";
 
 // Helper function to check if user has permission to manage events
 function requireRole(allowedRoles: string[]) {

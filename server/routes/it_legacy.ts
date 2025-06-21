@@ -1,8 +1,5 @@
-import type { Express, Request, Response, NextFunction } from "express";
-import { isAuthenticated } from "../replitAuth";
-import { requireRole } from "../roleMiddleware";
-
-export function registerITRoutes(app: Express) {
+// Legacy IT routes - use modular routes from it/index.ts
+export { registerITRoutes } from "./it/index";
   // Device management routes
   app.get('/api/it/devices', isAuthenticated, async (req: Request, res: Response) => {
     try {
