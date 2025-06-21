@@ -29,14 +29,19 @@ import {
   topics,
   leads,
   leadActivities,
-  demoRequests
+  demoRequests,
+  pages,
+  stickyNotes
 } from "./schemas/content";
 import {
   notifications,
   events,
   conversations,
   messages,
-  devices
+  devices,
+  calendarEvents,
+  eventParticipants,
+  eventTemplates
 } from "./schemas/system";
 
 // Define relationships

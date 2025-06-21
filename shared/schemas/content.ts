@@ -345,3 +345,30 @@ export type LeadActivity = typeof leadActivities.$inferSelect;
 export type InsertLeadActivity = typeof leadActivities.$inferInsert;
 export type DemoRequest = typeof demoRequests.$inferSelect;
 export type InsertDemoRequest = typeof demoRequests.$inferInsert;
+
+// Legacy alias for notebookPages
+export const pages = notebookPages;
+
+// Additional schema for sticky notes
+export const stickyNotes = pgTable("sticky_notes", {
+  id: varchar("id").primaryKey().notNull(),
+  pageId: varchar("page_id").references(() => notebookPages.id),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  position: jsonb("position").default({}), // x, y coordinates
+  color: varchar("color").default("#ffeb3b"),
+  isVisible: boolean("is_visible").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type StickyNote = typeof stickyNotes.$inferSelect;
+export type InsertStickyNote = typeof stickyNotes.$inferInsert;
+
+// Zod schemas for CRM entities
+export const insertLeadSchema = createInsertSchema(leads);
+export const insertLeadActivitySchema = createInsertSchema(leadActivities);
+export const insertDemoRequestSchema = createInsertSchema(demoRequests);
+export const insertChapterSchema = createInsertSchema(chapters);
+export const insertTopicSchema = createInsertSchema(topics);
+export const insertStickyNoteSchema = createInsertSchema(stickyNotes);

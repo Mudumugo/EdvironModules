@@ -182,3 +182,32 @@ export const insertConversationSchema = createInsertSchema(conversations);
 export const insertMessageSchema = createInsertSchema(messages);
 export const insertAnalyticsEventSchema = createInsertSchema(analyticsEvents);
 export const insertDeviceSchema = createInsertSchema(devices);
+
+// Additional calendar schemas for backward compatibility
+export const calendarEvents = events; // Alias
+export const eventParticipants = pgTable("event_participants", {
+  id: varchar("id").primaryKey().notNull(),
+  eventId: varchar("event_id").references(() => events.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  status: varchar("status").default("pending"), // pending, accepted, declined
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const eventTemplates = pgTable("event_templates", {
+  id: varchar("id").primaryKey().notNull(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  tenantId: varchar("tenant_id").notNull(),
+  templateData: jsonb("template_data").default({}),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type EventParticipant = typeof eventParticipants.$inferSelect;
+export type InsertEventParticipant = typeof eventParticipants.$inferInsert;
+export type EventTemplate = typeof eventTemplates.$inferSelect;
+export type InsertEventTemplate = typeof eventTemplates.$inferInsert;
+
+export const insertCalendarEventSchema = createInsertSchema(events);
+export const insertEventParticipantSchema = createInsertSchema(eventParticipants);
+export const insertEventTemplateSchema = createInsertSchema(eventTemplates);
