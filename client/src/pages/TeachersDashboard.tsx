@@ -177,13 +177,14 @@ export default function TeachersDashboard() {
   }, [searchTerm, selectedCategory, modules]);
 
   return (
-    <CollapsibleDashboardLayout 
-      title="Teachers Dashboard"
-      subtitle="Comprehensive teaching tools and classroom management"
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Search and Filter Controls */}
-        <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+    <div className="min-w-[1280px] overflow-x-auto">
+      <CollapsibleDashboardLayout 
+        title="Teachers Dashboard"
+        subtitle="Comprehensive teaching tools and classroom management"
+      >
+        <div className="max-w-7xl mx-auto">
+        {/* Search and Filter Controls - Desktop Only */}
+        <div className="mb-6 flex flex-row gap-4 items-center justify-between">
           <div className="flex-1 max-w-md">
             <div className="relative">
               <input
@@ -222,41 +223,41 @@ export default function TeachersDashboard() {
           </div>
         </div>
 
-        {/* Status Cards Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+        {/* Status Cards Section - Desktop Grid Only */}
+        <div className="grid grid-cols-4 gap-6 mb-8">
           <TeacherAssignmentStatusCard />
           <TeacherClassOverviewCard />
           <NotificationsCard />
           <TeacherPerformanceCard />
         </div>
 
-        {/* Quick Actions Section */}
+        {/* Quick Actions Section - Desktop Layout */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-            <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <ClipboardList className="h-8 w-8 text-blue-600 mb-2" />
-              <span className="text-sm font-medium text-center">Create Assignment</span>
+          <div className="grid grid-cols-6 gap-4">
+            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <ClipboardList className="h-10 w-10 text-blue-600 mb-3" />
+              <span className="text-base font-medium text-center">Create Assignment</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <Users className="h-8 w-8 text-green-600 mb-2" />
-              <span className="text-sm font-medium text-center">Take Attendance</span>
+            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <Users className="h-10 w-10 text-green-600 mb-3" />
+              <span className="text-base font-medium text-center">Take Attendance</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <BarChart3 className="h-8 w-8 text-purple-600 mb-2" />
-              <span className="text-sm font-medium text-center">View Analytics</span>
+            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <BarChart3 className="h-10 w-10 text-purple-600 mb-3" />
+              <span className="text-base font-medium text-center">View Analytics</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <MessageSquare className="h-8 w-8 text-orange-600 mb-2" />
-              <span className="text-sm font-medium text-center">Message Parents</span>
+            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <MessageSquare className="h-10 w-10 text-orange-600 mb-3" />
+              <span className="text-base font-medium text-center">Message Parents</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <PenTool className="h-8 w-8 text-pink-600 mb-2" />
-              <span className="text-sm font-medium text-center">Create Content</span>
+            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <PenTool className="h-10 w-10 text-pink-600 mb-3" />
+              <span className="text-base font-medium text-center">Create Content</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <Calendar className="h-8 w-8 text-indigo-600 mb-2" />
-              <span className="text-sm font-medium text-center">Schedule Meeting</span>
+            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <Calendar className="h-10 w-10 text-indigo-600 mb-3" />
+              <span className="text-base font-medium text-center">Schedule Meeting</span>
             </div>
           </div>
         </div>
@@ -294,15 +295,16 @@ export default function TeachersDashboard() {
         </div>
 
         {filteredModules.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <BookOpen className="h-12 w-12 mx-auto" />
+          <div className="text-center py-16">
+            <div className="text-gray-400 mb-6">
+              <BookOpen className="h-16 w-16 mx-auto" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No modules found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-xl font-medium text-gray-900 mb-3">No modules found</h3>
+            <p className="text-lg text-gray-600">Try adjusting your search or filter criteria</p>
           </div>
         )}
-      </div>
-    </CollapsibleDashboardLayout>
+        </div>
+      </CollapsibleDashboardLayout>
+    </div>
   );
 }
