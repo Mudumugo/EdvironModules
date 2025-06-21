@@ -115,6 +115,134 @@ export function registerAuthoringRoutes(app: Express) {
     }
   });
 
+  // Book project management endpoints
+  app.get("/api/authoring/book-projects", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projects = [
+        {
+          id: 'proj1',
+          title: 'Advanced Chemistry Textbook',
+          description: 'Comprehensive chemistry textbook for Grade 11-12 students',
+          subject: 'Chemistry',
+          gradeLevel: 'Grade 11-12',
+          targetWords: 50000,
+          currentWords: 12450,
+          deadline: new Date('2024-08-15'),
+          status: 'writing',
+          chaptersCount: 15,
+          collaborators: ['Dr. Sarah Chen', 'Prof. Mike Johnson'],
+          created: new Date('2024-05-01'),
+          modified: new Date('2024-06-18'),
+          templateId: 'textbook',
+          authorId: (req.user as any)?.id
+        },
+        {
+          id: 'proj2',
+          title: 'Introduction to Biology',
+          description: 'Interactive biology textbook with multimedia content',
+          subject: 'Biology',
+          gradeLevel: 'Grade 9-10',
+          targetWords: 35000,
+          currentWords: 8200,
+          status: 'planning',
+          chaptersCount: 12,
+          collaborators: ['Dr. Lisa Wang'],
+          created: new Date('2024-06-10'),
+          modified: new Date('2024-06-17'),
+          templateId: 'interactive',
+          authorId: (req.user as any)?.id
+        }
+      ];
+      
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching book projects:", error);
+      res.status(500).json({ message: "Failed to fetch book projects" });
+    }
+  });
+
+  app.post("/api/authoring/book-projects", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const projectData = req.body;
+      const newProject = {
+        id: `proj_${Date.now()}`,
+        ...projectData,
+        authorId: (req.user as any)?.id,
+        currentWords: 0,
+        status: 'planning',
+        collaborators: [(req.user as any)?.firstName + ' ' + (req.user as any)?.lastName],
+        created: new Date(),
+        modified: new Date()
+      };
+      
+      res.json(newProject);
+    } catch (error) {
+      console.error("Error creating book project:", error);
+      res.status(500).json({ message: "Failed to create book project" });
+    }
+  });
+
+  app.get("/api/authoring/book-templates", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const templates = [
+        {
+          id: 'textbook',
+          name: 'Academic Textbook',
+          description: 'Structured textbook with chapters, exercises, and assessments',
+          structure: [
+            'Table of Contents',
+            'Introduction',
+            'Chapter 1: Fundamentals',
+            'Chapter 2: Core Concepts',
+            'Chapter 3: Applications',
+            'Exercises & Practice',
+            'Assessment Materials',
+            'Glossary',
+            'References'
+          ],
+          targetAudience: 'High School & College',
+          estimatedPages: 200
+        },
+        {
+          id: 'interactive',
+          name: 'Interactive Learning Book',
+          description: 'Modern interactive book with multimedia elements',
+          structure: [
+            'Welcome & Navigation',
+            'Learning Objectives',
+            'Interactive Modules',
+            'Simulations & Labs',
+            'Progress Tracking',
+            'Knowledge Checks',
+            'Resources & Links'
+          ],
+          targetAudience: 'Middle & High School',
+          estimatedPages: 150
+        },
+        {
+          id: 'workbook',
+          name: 'Student Workbook',
+          description: 'Practice-focused workbook with exercises and activities',
+          structure: [
+            'Instructions for Use',
+            'Skill Building Exercises',
+            'Practice Problems',
+            'Review Activities',
+            'Self-Assessment',
+            'Answer Key'
+          ],
+          targetAudience: 'Elementary & Middle School',
+          estimatedPages: 100
+        }
+      ];
+      
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching book templates:", error);
+      res.status(500).json({ message: "Failed to fetch book templates" });
+    }
+  });
+
   // Content review endpoints (for reviewers/editors)
   app.get("/api/authoring/review-queue", isAuthenticated, async (req: Request, res: Response) => {
     try {

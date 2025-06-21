@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -57,6 +60,95 @@ export default function BookAuthoringWorkflow() {
   const [showEditor, setShowEditor] = useState(false);
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    subject: '',
+    gradeLevel: '',
+    targetWords: '',
+    description: ''
+  });
+
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch book projects
+  const { data: projects = [], isLoading: projectsLoading } = useQuery<BookProject[]>({
+    queryKey: ['/api/authoring/book-projects'],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Fetch book templates
+  const { data: templates = [], isLoading: templatesLoading } = useQuery<BookTemplate[]>({
+    queryKey: ['/api/authoring/book-templates'],
+    staleTime: 10 * 60 * 1000,
+  });
+
+  // Create new book project mutation
+  const createProjectMutation = useMutation({
+    mutationFn: async (projectData: any) => {
+      return apiRequest('/api/authoring/book-projects', {
+        method: 'POST',
+        body: JSON.stringify(projectData),
+      });
+    },
+    onSuccess: (newProject) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/authoring/book-projects'] });
+      toast({
+        title: "Book Project Created",
+        description: `"${newProject.title}" has been created successfully.`,
+      });
+      setShowNewProjectDialog(false);
+      setFormData({ title: '', subject: '', gradeLevel: '', targetWords: '', description: '' });
+      setSelectedTemplate(null);
+      setShowEditor(true);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create book project. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleCreateProject = () => {
+    if (!selectedTemplate || !formData.title.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a template and enter a book title.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedTemplateData = templates.find(t => t.id === selectedTemplate);
+    createProjectMutation.mutate({
+      ...formData,
+      templateId: selectedTemplate,
+      targetWords: parseInt(formData.targetWords) || selectedTemplateData?.estimatedPages * 250 || 25000,
+      chaptersCount: selectedTemplateData?.structure.length || 8
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'complete': return 'bg-green-100 text-green-800';
+      case 'review': return 'bg-blue-100 text-blue-800';
+      case 'editing': return 'bg-yellow-100 text-yellow-800';
+      case 'writing': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'complete': return <CheckCircle className="h-4 w-4" />;
+      case 'review': return <Eye className="h-4 w-4" />;
+      case 'editing': return <Edit3 className="h-4 w-4" />;
+      case 'writing': return <FileText className="h-4 w-4" />;
+      default: return <Clock className="h-4 w-4" />;
+    }
+  };
 
   const [projects] = useState<BookProject[]>([
     {
@@ -264,11 +356,16 @@ export default function BookAuthoringWorkflow() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-sm font-medium">Book Title</label>
-                  <Input placeholder="Enter book title..." className="mt-1" />
+                  <Input 
+                    placeholder="Enter book title..." 
+                    className="mt-1"
+                    value={formData.title}
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Subject</label>
-                  <Select>
+                  <Select value={formData.subject} onValueChange={(value) => setFormData({...formData, subject: value})}>
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select subject" />
                     </SelectTrigger>
@@ -280,12 +377,14 @@ export default function BookAuthoringWorkflow() {
                       <SelectItem value="biology">Biology</SelectItem>
                       <SelectItem value="english">English</SelectItem>
                       <SelectItem value="history">History</SelectItem>
+                      <SelectItem value="geography">Geography</SelectItem>
+                      <SelectItem value="computer-science">Computer Science</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-sm font-medium">Grade Level</label>
-                  <Select>
+                  <Select value={formData.gradeLevel} onValueChange={(value) => setFormData({...formData, gradeLevel: value})}>
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select grade level" />
                     </SelectTrigger>
@@ -303,6 +402,8 @@ export default function BookAuthoringWorkflow() {
                     type="number" 
                     placeholder="e.g., 50000" 
                     className="mt-1"
+                    value={formData.targetWords}
+                    onChange={(e) => setFormData({...formData, targetWords: e.target.value})}
                   />
                 </div>
               </div>
@@ -312,6 +413,8 @@ export default function BookAuthoringWorkflow() {
                 <Textarea 
                   placeholder="Describe the book's content and objectives..."
                   className="mt-1 h-24"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
                 />
               </div>
 
@@ -336,19 +439,20 @@ export default function BookAuthoringWorkflow() {
 
               <div className="flex gap-3 pt-4">
                 <Button 
-                  onClick={() => {
-                    setShowNewProjectDialog(false);
-                    setShowEditor(true);
-                  }}
+                  onClick={handleCreateProject}
                   className="flex-1"
-                  disabled={!selectedTemplate}
+                  disabled={!selectedTemplate || !formData.title.trim() || createProjectMutation.isPending}
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
-                  Create & Open Editor
+                  {createProjectMutation.isPending ? 'Creating...' : 'Create & Open Editor'}
                 </Button>
                 <Button 
                   variant="outline" 
-                  onClick={() => setShowNewProjectDialog(false)}
+                  onClick={() => {
+                    setShowNewProjectDialog(false);
+                    setFormData({ title: '', subject: '', gradeLevel: '', targetWords: '', description: '' });
+                    setSelectedTemplate(null);
+                  }}
                 >
                   Cancel
                 </Button>
@@ -358,9 +462,20 @@ export default function BookAuthoringWorkflow() {
         </Dialog>
       </div>
 
+      {/* Loading State */}
+      {projectsLoading && (
+        <div className="flex justify-center py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p className="text-gray-600">Loading book projects...</p>
+          </div>
+        </div>
+      )}
+
       {/* Projects Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map(project => (
+      {!projectsLoading && (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map(project => (
           <Card key={project.id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
@@ -439,8 +554,22 @@ export default function BookAuthoringWorkflow() {
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!projectsLoading && projects.length === 0 && (
+        <div className="text-center py-12">
+          <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No book projects yet</h3>
+          <p className="text-gray-600 mb-6">Create your first book project to get started with authoring.</p>
+          <Button onClick={() => setShowNewProjectDialog(true)}>
+            <BookOpen className="h-4 w-4 mr-2" />
+            Create Your First Book
+          </Button>
+        </div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-4">
