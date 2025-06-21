@@ -1,33 +1,23 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { 
-  BookOpen, 
-  Calendar, 
-  Users, 
-  FolderOpen,
-  FileText,
-  BarChart3,
-  Search,
-  Grid3X3,
-  List,
-  ArrowRight,
-  ChevronRight,
-  Mail,
-  Phone,
-  MapPin,
-  Play,
-  Pause
-} from "lucide-react";
 import { MobileLanding } from "./MobileLanding";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { NavigationTabs } from "@/components/landing/NavigationTabs";
+import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
+import { ContactSection } from "@/components/landing/ContactSection";
+import { useLandingAutoPlay } from "@/hooks/useLandingAutoPlay";
 
 export function Landing() {
-  const [activeTab, setActiveTab] = useState("Educational Modules Dashboard");
   const [isMobile, setIsMobile] = useState(false);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  const navigationTabs = [
+    "Educational Modules Dashboard",
+    "Interactive Digital Library", 
+    "School Managers Tool",
+    "Teacher & Student Lockers",
+    "Academic Calendar & Planning"
+  ];
+
+  const { activeTab, setActiveTab, isAutoPlaying, setIsAutoPlaying } = useLandingAutoPlay(navigationTabs);
 
   // Check if screen is mobile size
   useEffect(() => {
@@ -40,30 +30,30 @@ export function Landing() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Auto-play functionality
-  useEffect(() => {
-    if (!isAutoPlaying) return;
+  // Show mobile version on small screens
+  if (isMobile) {
+    return <MobileLanding />;
+  }
 
-    const interval = setInterval(() => {
-      setActiveTab(currentTab => {
-        const currentIndex = navigationTabs.indexOf(currentTab);
-        const nextIndex = (currentIndex + 1) % navigationTabs.length;
-        return navigationTabs[nextIndex];
-      });
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying]);
-
-  const navigationTabs = [
-    "Educational Modules Dashboard",
-    "Interactive Digital Library", 
-    "School Managers Tool",
-    "Teacher & Student Lockers",
-    "Academic Calendar & Planning"
-  ];
-
-  const modules = [
+  return (
+    <div className="min-h-screen bg-white">
+      <HeroSection 
+        isAutoPlaying={isAutoPlaying}
+        setIsAutoPlaying={setIsAutoPlaying}
+      />
+      
+      <NavigationTabs 
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        navigationTabs={navigationTabs}
+      />
+      
+      <FeatureShowcase activeTab={activeTab} />
+      
+      <ContactSection />
+    </div>
+  );
+}
     {
       title: "Shared Library",
       description: "Access educational resources, documents, and learning materials",
