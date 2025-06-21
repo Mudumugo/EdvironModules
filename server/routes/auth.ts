@@ -63,6 +63,16 @@ const DEMO_USERS = {
     lastName: 'Security',
     isActive: true,
     permissions: []
+  },
+  'demo.author@edvirons.com': {
+    id: 'demo_global_author',
+    email: 'demo.author@edvirons.com',
+    role: 'global_author',
+    tenantId: 'global', // Global tenant for content authors
+    firstName: 'Demo',
+    lastName: 'Author',
+    isActive: true,
+    permissions: ['content_create', 'content_edit', 'content_publish']
   }
 };
 

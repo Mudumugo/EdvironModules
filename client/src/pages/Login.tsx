@@ -43,6 +43,12 @@ const DEMO_ACCOUNTS = [
     email: "demo.school_security@edvirons.com",
     id: "demo_school_security",
     color: "bg-red-500"
+  },
+  {
+    role: "Content Author",
+    email: "demo.author@edvirons.com",
+    id: "demo_global_author",
+    color: "bg-indigo-500"
   }
 ];
 
