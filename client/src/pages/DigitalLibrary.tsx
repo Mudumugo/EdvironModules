@@ -144,7 +144,7 @@ export default function DigitalLibrary() {
 
         {/* Book Viewer Modal */}
         {showBookViewer && currentBook && (
-          <BookViewer
+          <LibraryBookViewer
             bookData={currentBook}
             onClose={() => {
               setShowBookViewer(false);
