@@ -13,6 +13,11 @@ import {
   Activity
 } from 'lucide-react';
 import { contentOptimizer, performanceMonitor } from '@/lib/performance/contentOptimizer';
+import { 
+  bookViewerDebugger, 
+  bookViewerProfiler, 
+  bookViewerMemoryMonitor 
+} from '@/lib/debug/bookViewerDebugger';
 
 interface LibraryBookViewerProps {
   bookData?: {
@@ -48,6 +53,7 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPerformanceStats, setShowPerformanceStats] = useState(false);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
   
   const contentRef = useRef<HTMLDivElement>(null);
   const pageChangeTimeoutRef = useRef<NodeJS.Timeout>();
@@ -79,16 +85,33 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
 
   // Initialize performance monitoring and preloading
   useEffect(() => {
+    bookViewerDebugger.info('lifecycle', 'Book viewer initialized', {
+      bookId: bookData?.id,
+      title: bookData?.title,
+      totalPages,
+      hasPages: !!bookData?.pages
+    });
+
     if (bookData?.pages && bookData.pages.length > 0) {
+      bookViewerProfiler.start('initialPreload');
+      
       // Preload adjacent pages when book opens
       contentOptimizer.preloadAdjacentPages(
         currentPage, 
         totalPages, 
         (pageNum) => bookData.pages[pageNum - 1] || ''
       );
+      
+      bookViewerProfiler.end('initialPreload');
+      bookViewerDebugger.info('preload', 'Initial preload completed', {
+        currentPage,
+        totalPages
+      });
     }
 
     return () => {
+      bookViewerDebugger.info('lifecycle', 'Book viewer unmounting');
+      
       // Cleanup when component unmounts
       if (pageChangeTimeoutRef.current) {
         clearTimeout(pageChangeTimeoutRef.current);
@@ -141,32 +164,60 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
   // Optimized page navigation with performance tracking
   const goToPage = useCallback((page: number) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
+      bookViewerDebugger.info('navigation', `Navigating to page ${page}`, {
+        from: currentPage,
+        to: page,
+        totalPages
+      });
+      
+      bookViewerProfiler.start('pageNavigation', { from: currentPage, to: page });
       performanceMonitor.startTiming('pageNavigation');
       setIsLoading(true);
       
       // Clear previous timeout
       if (pageChangeTimeoutRef.current) {
         clearTimeout(pageChangeTimeoutRef.current);
+        bookViewerDebugger.debug('navigation', 'Cleared previous navigation timeout');
       }
       
       // Debounce page changes for better performance
       pageChangeTimeoutRef.current = setTimeout(() => {
-        setCurrentPage(page);
-        
-        // Cleanup old content and preload adjacent pages
-        contentOptimizer.cleanup(page, 3);
-        
-        if (bookData?.pages) {
-          contentOptimizer.preloadAdjacentPages(
-            page, 
-            totalPages, 
-            (pageNum) => bookData.pages[pageNum - 1] || ''
-          );
+        try {
+          setCurrentPage(page);
+          
+          // Cleanup old content and preload adjacent pages
+          bookViewerProfiler.start('contentCleanup');
+          contentOptimizer.cleanup(page, 3);
+          bookViewerProfiler.end('contentCleanup');
+          
+          if (bookData?.pages) {
+            bookViewerProfiler.start('adjacentPreload');
+            contentOptimizer.preloadAdjacentPages(
+              page, 
+              totalPages, 
+              (pageNum) => bookData.pages[pageNum - 1] || ''
+            );
+            bookViewerProfiler.end('adjacentPreload');
+          }
+          
+          setIsLoading(false);
+          performanceMonitor.endTiming('pageNavigation');
+          bookViewerProfiler.end('pageNavigation');
+          
+          bookViewerDebugger.info('navigation', `Successfully navigated to page ${page}`);
+        } catch (error) {
+          bookViewerDebugger.error('navigation', `Failed to navigate to page ${page}`, error);
+          setIsLoading(false);
         }
-        
-        setIsLoading(false);
-        performanceMonitor.endTiming('pageNavigation');
       }, 100);
+    } else {
+      bookViewerDebugger.warn('navigation', `Invalid page navigation attempt`, {
+        page,
+        currentPage,
+        totalPages,
+        isValid: page >= 1 && page <= totalPages,
+        isDifferent: page !== currentPage
+      });
     }
   }, [currentPage, totalPages, bookData]);
 
@@ -367,16 +418,30 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
                   </div>
                 )}
                 
-                {/* Performance indicator */}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setShowPerformanceStats(!showPerformanceStats)}
-                  className="bg-black bg-opacity-60 hover:bg-opacity-80 text-white border-0 rounded-full w-9 h-9 shadow-lg backdrop-blur-sm"
-                  title="Performance Stats"
-                >
-                  <Activity className="h-4 w-4" />
-                </Button>
+                {/* Debug tools */}
+                <div className="flex items-center space-x-1">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowPerformanceStats(!showPerformanceStats)}
+                    className="bg-black bg-opacity-60 hover:bg-opacity-80 text-white border-0 rounded-full w-9 h-9 shadow-lg backdrop-blur-sm"
+                    title="Performance Stats"
+                  >
+                    <Activity className="h-4 w-4" />
+                  </Button>
+                  
+                  {process.env.NODE_ENV === 'development' && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setShowDebugPanel(!showDebugPanel)}
+                      className={`${showDebugPanel ? 'bg-red-500 bg-opacity-90' : 'bg-black bg-opacity-60'} hover:bg-opacity-80 text-white border-0 rounded-full w-9 h-9 shadow-lg backdrop-blur-sm`}
+                      title="Debug Panel"
+                    >
+                      <Menu className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
             
@@ -509,6 +574,15 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
         <PerformanceStatsModal 
           onClose={() => setShowPerformanceStats(false)}
           currentPage={currentPage}
+        />
+      )}
+      
+      {/* Debug Panel */}
+      {showDebugPanel && process.env.NODE_ENV === 'development' && (
+        <DebugPanel 
+          onClose={() => setShowDebugPanel(false)}
+          currentPage={currentPage}
+          bookData={bookData}
         />
       )}
     </div>
