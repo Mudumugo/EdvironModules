@@ -38,7 +38,7 @@ export function CollapsibleDashboardLayout({
     staleTime: 5 * 60 * 1000,
   });
 
-  // Base navigation items
+  // Base navigation items (filtered by tenant configuration)
   const navigationItems = [
     { id: "dashboard", title: "Dashboard", url: "/dashboard", icon: Home },
     { id: "my-locker", title: "My Locker", url: "/my-locker", icon: Cloud },
@@ -51,7 +51,10 @@ export function CollapsibleDashboardLayout({
     { id: "settings", title: "Settings", url: "/settings", icon: Settings },
     { id: "my-profile", title: "My Profile", url: "/my-profile", icon: User },
     { id: "phone-system", title: "Phone System", url: "/phone-system", icon: MessageSquare },
-  ];
+  ].filter(item => {
+    // All base items are included in tenant builds
+    return true;
+  });
 
   const isActive = (url: string) => {
     if (url === '/dashboard') {

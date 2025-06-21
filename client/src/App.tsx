@@ -59,7 +59,7 @@ import RoleProtectedRoute from "@/components/RoleProtectedRoute";
 import { USER_ROLES } from "@shared/schema";
 import { isRouteIncluded, hasGlobalAuthoringAccess } from "@/config/buildConfig";
 
-// Component mapping for dynamic routing
+// Component mapping for dynamic routing (filtered by build configuration)
 const componentMap: Record<string, any> = {
   'dashboard': Dashboard,
   'my-locker': MyLocker,
@@ -71,7 +71,6 @@ const componentMap: Record<string, any> = {
   'family-controls': FamilyControls,
   'scheduling': Scheduling,
   'analytics': Analytics,
-  'authoring-dashboard': AuthoringDashboard,
   'user-profile': UserProfile,
   'licensing': Licensing,
   'settings': Settings,
@@ -81,10 +80,11 @@ const componentMap: Record<string, any> = {
   'parent-portal-admin': ParentPortalAdmin,
   'apps-hub': AppsHub,
   'teachers-dashboard': TeachersDashboard,
-
   'timetable': TimetableManagement,
   'security-dashboard': SecurityDashboard,
   'admin/communications': Communications,
+  // Global-only components - conditionally included
+  ...(isRouteIncluded('/authoring-dashboard') && {'authoring-dashboard': AuthoringDashboard})
 };
 
 function Router() {
