@@ -27,8 +27,6 @@ export function useDashboardContent() {
     isCustomizing: dashboard.isCustomizing
   };
 }
-    pending: number;
-    overdue: number;
     completed: number;
   };
   classes: {
