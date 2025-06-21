@@ -152,62 +152,154 @@ export default function BookAuthoringWorkflow() {
   };
 
   const generatePreviewContent = (project: any) => {
-    const chapters = [
-      {
-        title: "Introduction",
-        content: `Welcome to ${project.title}. This comprehensive ${project.subject} textbook is designed for ${project.gradeLevel} students. 
+    const totalPages = 15;
+    const pages = [];
 
-This book covers fundamental concepts and advanced topics in ${project.subject}, providing clear explanations, practical examples, and engaging exercises to enhance your learning experience.
+    // Cover page (HTML format like digital library)
+    pages.push(`
+      <div class="p-6 text-center">
+        <h1 class="text-4xl font-bold mb-4 text-gray-800">${project.title}</h1>
+        <p class="text-xl text-gray-600 mb-6">by Digital Learning Team</p>
+        <div class="mb-8">
+          <div class="mx-auto max-w-xs h-48 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-lg shadow-lg flex items-center justify-center">
+            <div class="text-center">
+              <div class="text-6xl mb-2">📚</div>
+              <p class="text-sm text-gray-600">${project.subject}</p>
+            </div>
+          </div>
+        </div>
+        <p class="text-gray-700">${project.description || `A comprehensive ${project.subject} textbook for ${project.gradeLevel} students`}</p>
+        <div class="text-sm text-gray-500 mt-8">Page 1 of ${totalPages}</div>
+      </div>
+    `);
 
-Throughout this book, you'll discover:
-• Key concepts explained in simple terms
-• Real-world applications and examples
-• Practice exercises and assessments
-• Interactive elements and multimedia content
+    // Table of contents (HTML format)
+    pages.push(`
+      <div class="p-6">
+        <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Table of Contents</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between border-b border-gray-200 pb-2">
+            <span class="text-lg">Chapter 1: Introduction to ${project.subject}</span>
+            <span class="text-gray-500">Page 3</span>
+          </div>
+          <div class="flex justify-between border-b border-gray-200 pb-2">
+            <span class="text-lg">Chapter 2: Fundamental Concepts</span>
+            <span class="text-gray-500">Page 5</span>
+          </div>
+          <div class="flex justify-between border-b border-gray-200 pb-2">
+            <span class="text-lg">Chapter 3: Advanced Applications</span>
+            <span class="text-gray-500">Page 8</span>
+          </div>
+          <div class="flex justify-between border-b border-gray-200 pb-2">
+            <span class="text-lg">Interactive Exercises</span>
+            <span class="text-gray-500">Page 11</span>
+          </div>
+          <div class="flex justify-between border-b border-gray-200 pb-2">
+            <span class="text-lg">Practice Problems</span>
+            <span class="text-gray-500">Page 13</span>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500 mt-8">Page 2 of ${totalPages}</div>
+      </div>
+    `);
 
-Let's begin your journey into the fascinating world of ${project.subject}!`
-      },
-      {
-        title: "Chapter 1: Fundamentals",
-        content: `In this chapter, we'll explore the fundamental concepts that form the foundation of ${project.subject}.
+    // Interactive content page
+    pages.push(`
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-6 text-indigo-600">Chapter 1: Introduction to ${project.subject}</h2>
+        <div class="mb-6">
+          <p class="text-base leading-relaxed mb-4">
+            Welcome to your journey in ${project.subject}. This subject is fundamental to understanding
+            many concepts in modern education and real-world applications.
+          </p>
+          
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 class="font-semibold text-blue-800 mb-3">📖 Key Definition</h3>
+            <p class="text-blue-700">
+              ${project.subject} encompasses the study and application of core principles that help us
+              understand and solve complex problems in this field.
+            </p>
+          </div>
+          
+          <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h3 class="font-semibold text-green-800 mb-3">💡 Interactive Example</h3>
+            <p class="text-green-700 mb-3">Try this interactive element:</p>
+            <div class="flex items-center space-x-3">
+              <input type="text" placeholder="Enter your answer" class="flex-1 p-2 border border-gray-300 rounded">
+              <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Check</button>
+            </div>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500">Page 3 of ${totalPages}</div>
+      </div>
+    `);
 
-Learning Objectives:
-By the end of this chapter, you will be able to:
-• Understand basic principles
-• Apply fundamental concepts
-• Solve introductory problems
-• Connect theory to practice
+    // Video/multimedia page
+    pages.push(`
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-6 text-purple-600">Interactive Learning Resources</h2>
+        <div class="mb-6">
+          <div class="bg-gray-100 rounded-lg p-8 text-center mb-6">
+            <div class="bg-purple-500 text-white p-4 rounded-full inline-block mb-4">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8 5v10l7-5-7-5z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Interactive Video: ${project.subject} Explained</h3>
+            <p class="text-gray-600 mb-4">Watch this educational video to understand key concepts</p>
+            <button class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600">
+              ▶ Play Video
+            </button>
+          </div>
+          
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <h3 class="font-semibold text-yellow-800 mb-3">🎯 Learning Outcomes</h3>
+            <ul class="text-yellow-700 space-y-1">
+              <li>• Understand core principles of ${project.subject}</li>
+              <li>• Apply knowledge to practical scenarios</li>
+              <li>• Develop problem-solving skills</li>
+            </ul>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500">Page 4 of ${totalPages}</div>
+      </div>
+    `);
 
-1.1 Basic Concepts
-The study of ${project.subject} begins with understanding core principles...
+    // Quiz page
+    pages.push(`
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-6 text-purple-600">Chapter Quiz</h2>
+        <p class="text-gray-600 mb-6">Test your understanding with these interactive questions.</p>
+        
+        <div class="space-y-6">
+          <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h3 class="font-semibold text-purple-800 mb-3">Question 1: What is the main focus of ${project.subject}?</h3>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="radio" name="q1" class="mr-3">
+                <span>Theoretical concepts only</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="q1" class="mr-3">
+                <span>Practical applications and understanding</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="q1" class="mr-3">
+                <span>Memorization of facts</span>
+              </label>
+            </div>
+          </div>
+          
+          <button class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 w-full">
+            Submit Quiz
+          </button>
+        </div>
+        
+        <div class="text-sm text-gray-500 mt-8">Page 5 of ${totalPages}</div>
+      </div>
+    `);
 
-1.2 Key Terminology
-Before we dive deeper, let's familiarize ourselves with essential terms...
-
-1.3 Practical Applications
-These concepts are used in everyday life in the following ways...`
-      },
-      {
-        title: "Chapter 2: Advanced Topics",
-        content: `Building on the foundations from Chapter 1, we now explore more complex topics in ${project.subject}.
-
-Learning Objectives:
-• Master advanced concepts
-• Analyze complex problems
-• Develop critical thinking skills
-• Apply knowledge creatively
-
-2.1 Complex Theories
-Advanced topics require deeper understanding...
-
-2.2 Problem-Solving Strategies
-When facing challenging problems, consider these approaches...
-
-2.3 Case Studies
-Let's examine real-world examples that demonstrate these concepts...`
-      }
-    ];
-    return chapters;
+    return pages;
   };
 
   if (showEditor) {
@@ -215,150 +307,31 @@ Let's examine real-world examples that demonstrate these concepts...`
   }
 
   if (showPreview && previewProject) {
-    const previewChapters = generatePreviewContent(previewProject);
-    const totalPages = previewChapters.length + 2; // +2 for title page and table of contents
+    const previewPages = generatePreviewContent(previewProject);
+    const totalPages = previewPages.length;
     
     const renderPreviewPage = () => {
-      if (currentPreviewPage === 1) {
-        // Title Page
+      const pageContent = previewPages[currentPreviewPage - 1];
+      
+      if (pageContent) {
         return (
-          <div className="h-full flex flex-col justify-center items-center text-center space-y-8 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-900">
-            <div className="space-y-4">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-                {previewProject.title}
-              </h1>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
-                {previewProject.subject} • {previewProject.gradeLevel}
-              </p>
-              <div className="mt-8 p-4 bg-white/50 dark:bg-black/20 rounded-lg">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {previewProject.description || `A comprehensive ${previewProject.subject} textbook`}
-                </p>
-              </div>
-            </div>
-            <div className="text-center space-y-2">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                EdVirons Educational Content
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Interactive Digital Learning
-              </p>
-            </div>
+          <div className="h-full overflow-auto bg-white dark:bg-gray-900">
+            <div 
+              className="w-full h-full"
+              dangerouslySetInnerHTML={{ __html: pageContent }}
+            />
           </div>
         );
       }
       
-      if (currentPreviewPage === 2) {
-        // Table of Contents
-        return (
-          <div className="h-full p-8 bg-white dark:bg-gray-900">
-            <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">
-              Table of Contents
-            </h2>
-            <div className="space-y-4 max-w-2xl mx-auto">
-              <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
-                <span className="font-medium text-gray-900 dark:text-white">Introduction</span>
-                <span className="text-gray-500 dark:text-gray-400">1</span>
-              </div>
-              {previewChapters.map((chapter, index) => (
-                <div key={index} className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
-                  <span className="font-medium text-gray-900 dark:text-white">{chapter.title}</span>
-                  <span className="text-gray-500 dark:text-gray-400">{index + 2}</span>
-                </div>
-              ))}
-            </div>
+      return (
+        <div className="h-full flex items-center justify-center bg-white dark:bg-gray-900">
+          <div className="text-center">
+            <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600">Page not found</p>
           </div>
-        );
-      }
-      
-      // Chapter Content
-      const chapterIndex = currentPreviewPage - 3;
-      const chapter = previewChapters[chapterIndex];
-      
-      if (chapter) {
-        return (
-          <div className="h-full p-8 bg-white dark:bg-gray-900 overflow-y-auto">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-                {chapter.title}
-              </h2>
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                {chapter.content.split('\n').map((paragraph, index) => {
-                  if (paragraph.includes('•')) {
-                    return (
-                      <ul key={index} className="mb-4 space-y-2">
-                        {paragraph.split('•').filter(item => item.trim()).map((item, i) => (
-                          <li key={i} className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {item.trim()}
-                          </li>
-                        ))}
-                      </ul>
-                    );
-                  }
-                  if (paragraph.includes('Learning Objectives:')) {
-                    return (
-                      <div key={index} className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
-                        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Learning Objectives</h3>
-                      </div>
-                    );
-                  }
-                  if (paragraph.includes('1.1') || paragraph.includes('2.1')) {
-                    return (
-                      <h3 key={index} className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">
-                        {paragraph}
-                      </h3>
-                    );
-                  }
-                  return (
-                    <p key={index} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-                      {paragraph}
-                    </p>
-                  );
-                })}
-              </div>
-              
-              {/* Interactive Elements - HTML5 Features */}
-              <div className="mt-8 space-y-6">
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 p-6 rounded-lg border border-green-200 dark:border-green-700">
-                  <h4 className="font-semibold text-green-800 dark:text-green-200 mb-3 flex items-center">
-                    <Monitor className="h-5 w-5 mr-2" />
-                    Interactive Exercise
-                  </h4>
-                  <p className="text-sm text-green-700 dark:text-green-300 mb-3">
-                    Test your understanding with this interactive quiz:
-                  </p>
-                  <div className="bg-white dark:bg-gray-800 p-4 rounded border">
-                    <p className="font-medium mb-3">Question: Which of the following best describes the key concept?</p>
-                    <div className="space-y-2">
-                      {['Option A: Basic understanding', 'Option B: Advanced application', 'Option C: Practical implementation'].map((option, i) => (
-                        <label key={i} className="flex items-center space-x-2 cursor-pointer">
-                          <input type="radio" name="quiz" className="text-blue-600" />
-                          <span className="text-sm">{option}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-700">
-                  <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-3 flex items-center">
-                    <Globe className="h-5 w-5 mr-2" />
-                    Web-Based Resource
-                  </h4>
-                  <p className="text-sm text-purple-700 dark:text-purple-300 mb-3">
-                    Explore this concept further with interactive simulations and videos.
-                  </p>
-                  <button className="bg-purple-600 text-white px-4 py-2 rounded text-sm hover:bg-purple-700 transition-colors">
-                    Launch Interactive Demo
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      
-      return null;
+        </div>
+      );
     };
 
     return (
