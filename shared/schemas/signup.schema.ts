@@ -1,7 +1,6 @@
 import { pgTable, varchar, text, timestamp, boolean, integer, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { z } from "zod";
 
 // Family accounts table for managing multiple children under one parent account
 export const familyAccounts = pgTable("family_accounts", {
