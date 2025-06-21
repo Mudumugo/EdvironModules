@@ -47,19 +47,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
   // Initialize tracking
   const { trackPageView, trackBookmark, trackInteraction } = useBookTracking(bookData);
 
-  // Handle xAPI messages from interactive content
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'xapi') {
-        trackInteraction(event.data.verb, event.data.object, event.data.result);
-      } else if (event.data?.type === 'navigate') {
-        goToPage(event.data.page);
-      }
-    };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [trackInteraction, goToPage]);
 
   // Initialize controls
   const {
@@ -96,6 +84,20 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     totalPages: bookData?.totalPages || 0,
     onTrackPageView: (page) => trackPageView(page, pageStartTime)
   });
+
+  // Handle xAPI messages from interactive content
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'xapi') {
+        trackInteraction(event.data.verb, event.data.object, event.data.result);
+      } else if (event.data?.type === 'navigate') {
+        goToPage(event.data.page);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [trackInteraction, goToPage]);
 
   // Handle bookmark with tracking
   const handleToggleBookmark = (page: number) => {

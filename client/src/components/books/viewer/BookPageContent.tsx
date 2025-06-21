@@ -188,45 +188,20 @@ export const BookPageContent: React.FC<BookPageContentProps> = ({
     >
       {bookData?.pages && bookData?.pages[currentPage - 1] ? (
         <div className="relative w-full h-full flex items-center justify-center">
-          {bookData?.pages?.[currentPage - 1]?.startsWith('data:text/html') ? (
-            <iframe
-              src={bookData.pages[currentPage - 1]}
-              className="w-full h-full border-0 rounded-lg"
-              style={{ 
-                maxWidth: '100%',
-                maxHeight: '100%'
-              }}
-              title={`Page ${currentPage}`}
-              sandbox="allow-scripts allow-same-origin allow-forms"
-            />
-          ) : bookData?.pages?.[currentPage - 1]?.startsWith('http') || bookData?.pages?.[currentPage - 1]?.startsWith('data:image') ? (
-            <img
-              src={bookData?.pages?.[currentPage - 1] || ''}
-              alt={`Page ${currentPage}`}
-              className="object-contain w-full h-full"
-              style={{ 
-                maxWidth: '100%',
-                maxHeight: '100%'
-              }}
-            />
-          ) : (
-            <div 
-              className="w-full h-full overflow-auto bg-white rounded-lg shadow-inner p-4"
-              style={{ 
-                maxWidth: '100%',
-                maxHeight: '100%'
-              }}
-              dangerouslySetInnerHTML={{ __html: bookData?.pages?.[currentPage - 1] || '' }}
-            />
-          )}
+          <div 
+            className="w-full h-full bg-white rounded-lg shadow-sm overflow-auto"
+            style={{
+              padding: zoom > 150 ? '1rem' : zoom > 100 ? '1.5rem' : '2rem'
+            }}
+            dangerouslySetInnerHTML={{ 
+              __html: bookData.pages[currentPage - 1] || generateDefaultPageContent(currentPage)
+            }}
+          />
           
           {/* Bookmark indicator */}
           {bookmarkPages.includes(currentPage) && (
-            <div className="absolute top-2 right-2 z-10">
-              <div className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-bl-lg text-xs font-semibold">
-                <Bookmark className="h-3 w-3 inline mr-1" />
-                <span className="hidden sm:inline">Bookmarked</span>
-              </div>
+            <div className="absolute top-4 right-4 z-10">
+              <Bookmark className="h-6 w-6 text-yellow-500 fill-current drop-shadow-lg" />
             </div>
           )}
         </div>
