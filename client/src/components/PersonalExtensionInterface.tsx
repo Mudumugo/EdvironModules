@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { usePersonalExtensionInterface } from "@/hooks/usePersonalExtensionInterface";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,10 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { 
   Phone, 
   PhoneCall, 
@@ -21,327 +17,373 @@ import {
   MicOff,
   Clock,
   User,
-  Settings
+  Settings,
+  Download,
+  Trash2,
+  Star,
+  Search
 } from "lucide-react";
 
 export default function PersonalExtensionInterface() {
-  const [callTarget, setCallTarget] = useState("");
-  const [forwardNumber, setForwardNumber] = useState("");
-  const [isCallForwarding, setIsCallForwarding] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(80);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const {
+    activeTab,
+    selectedCategory,
+    searchQuery,
+    sortBy,
+    selectedExtension,
+    showPermissions,
+    availableExtensions,
+    installedExtensions,
+    globalSettings,
+    categories,
+    extensionsLoading,
+    installedLoading,
+    settingsLoading,
+    isInstalling,
+    isUninstalling,
+    isToggling,
+    isUpdatingSettings,
+    setActiveTab,
+    setSelectedCategory,
+    setSearchQuery,
+    setSortBy,
+    setSelectedExtension,
+    setShowPermissions,
+    installExtension,
+    uninstallExtension,
+    toggleExtension,
+    updateExtensionSettings,
+    updateGlobalSettings,
+    getExtensionStatus,
+    getCategoryExtensions,
+    getPopularExtensions,
+    getRecentlyUpdated,
+    activeExtensionsCount,
+    totalInstalledCount,
+    hasActiveExtensions
+  } = usePersonalExtensionInterface();
 
-  // Get user's personal extension based on their ID
-  const userExtension = `10${user?.id?.slice(-2) || '01'}`;
-
-  const { data: extensionData } = useQuery({
-    queryKey: ["/api/pbx/user-extension", userExtension],
-    refetchInterval: 3000,
-  });
-
-  const { data: callLogsData } = useQuery({
-    queryKey: ["/api/pbx/user-call-logs", userExtension],
-    refetchInterval: 5000,
-  });
-
-  const initiateCallMutation = useMutation({
-    mutationFn: async ({ from, to }: { from: string; to: string }) =>
-      apiRequest("POST", "/api/pbx/initiate-call", { from, to }),
-    onSuccess: () => {
-      toast({
-        title: "Call Initiated",
-        description: `Calling ${callTarget}...`,
-      });
-      setCallTarget("");
-      queryClient.invalidateQueries({ queryKey: ["/api/pbx/user-extension"] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Call Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const endCallMutation = useMutation({
-    mutationFn: async (callId: string) =>
-      apiRequest("POST", "/api/pbx/end-call", { callId }),
-    onSuccess: () => {
-      toast({
-        title: "Call Ended",
-        description: "Call has been terminated.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/pbx/user-extension"] });
-    },
-  });
-
-  const forwardCallMutation = useMutation({
-    mutationFn: async ({ extension, forwardTo, enabled }: { extension: string; forwardTo: string; enabled: boolean }) =>
-      apiRequest("POST", "/api/pbx/call-forward", { extension, forwardTo, enabled }),
-    onSuccess: () => {
-      toast({
-        title: isCallForwarding ? "Call Forwarding Disabled" : "Call Forwarding Enabled",
-        description: isCallForwarding ? "Calls will now ring your extension" : `Calls will be forwarded to ${forwardNumber}`,
-      });
-      setIsCallForwarding(!isCallForwarding);
-      queryClient.invalidateQueries({ queryKey: ["/api/pbx/user-extension"] });
-    },
-  });
-
-  const handleMakeCall = () => {
-    if (!callTarget.trim()) {
-      toast({
-        title: "Invalid Number",
-        description: "Please enter a valid extension or phone number",
-        variant: "destructive",
-      });
-      return;
-    }
-    initiateCallMutation.mutate({ from: userExtension, to: callTarget });
-  };
-
-  const handleCallForwarding = () => {
-    if (!isCallForwarding && !forwardNumber.trim()) {
-      toast({
-        title: "Invalid Forward Number",
-        description: "Please enter a valid forwarding number",
-        variant: "destructive",
-      });
-      return;
-    }
-    forwardCallMutation.mutate({
-      extension: userExtension,
-      forwardTo: forwardNumber,
-      enabled: !isCallForwarding
-    });
-  };
-
-  if (!user) return null;
-
-  const extension = extensionData?.extension || {
-    id: userExtension,
-    name: `${user.firstName} ${user.lastName}`,
-    status: 'available',
-    currentCall: null
-  };
-
-  const recentCalls = callLogsData?.callLogs?.slice(0, 5) || [];
+  if (extensionsLoading || installedLoading || settingsLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Phone System</h1>
-          <p className="text-muted-foreground">Your personal extension: {userExtension}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Personal Extensions</h1>
+          <p className="text-gray-600">Customize your EdVirons experience with extensions</p>
         </div>
-        <Badge 
-          variant={extension.status === 'available' ? 'default' : 
-                   extension.status === 'busy' ? 'destructive' : 'secondary'}
-          className="px-3 py-1"
-        >
-          {extension.status === 'available' ? 'Available' :
-           extension.status === 'busy' ? 'On Call' : 'Offline'}
-        </Badge>
+        
+        <div className="flex items-center space-x-4">
+          <Badge variant="outline">
+            {activeExtensionsCount} Active
+          </Badge>
+          <Badge variant="secondary">
+            {totalInstalledCount} Installed
+          </Badge>
+        </div>
       </div>
 
-      {/* Main Interface */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Call Controls */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Phone className="h-5 w-5" />
-              Make a Call
-            </CardTitle>
-            <CardDescription>
-              Enter an extension (1001-1050) or external phone number
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="call-target">Phone Number / Extension</Label>
+      {/* Navigation Tabs */}
+      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+        {[
+          { id: 'discover', label: 'Discover' },
+          { id: 'installed', label: 'Installed' },
+          { id: 'settings', label: 'Settings' }
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === tab.id
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Discover Tab */}
+      {activeTab === 'discover' && (
+        <div className="space-y-6">
+          {/* Search and Filters */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                id="call-target"
-                placeholder="e.g., 1001 or +1234567890"
-                value={callTarget}
-                onChange={(e) => setCallTarget(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleMakeCall()}
+                placeholder="Search extensions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
               />
             </div>
-            <Button 
-              onClick={handleMakeCall}
-              disabled={initiateCallMutation.isPending || extension.status === 'busy'}
-              className="w-full"
-            >
-              <PhoneCall className="mr-2 h-4 w-4" />
-              {initiateCallMutation.isPending ? 'Calling...' : 'Make Call'}
-            </Button>
+            
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map(category => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            {extension.currentCall && (
-              <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-green-800 dark:text-green-200">Active Call</p>
-                    <p className="text-sm text-green-600 dark:text-green-300">
-                      {extension.currentCall.direction === 'outbound' ? 'Calling' : 'Call from'}: {extension.currentCall.number}
-                    </p>
-                    <p className="text-xs text-green-500">
-                      Duration: {extension.currentCall.duration || '00:00'}
-                    </p>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="rating">Rating</SelectItem>
+                <SelectItem value="downloads">Downloads</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="updated">Updated</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Extensions Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {availableExtensions.map((extension) => (
+              <Card key={extension.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">
+                          {extension.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{extension.name}</CardTitle>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <div className="flex items-center">
+                            <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                            <span className="text-xs text-gray-600 ml-1">{extension.rating}</span>
+                          </div>
+                          <span className="text-xs text-gray-400">•</span>
+                          <span className="text-xs text-gray-600">{extension.downloads} downloads</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Badge variant="outline" className="text-xs">
+                      {extension.category}
+                    </Badge>
                   </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => endCallMutation.mutate(extension.currentCall.id)}
-                  >
-                    <PhoneOff className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </CardHeader>
 
-        {/* Extension Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Extension Settings
-            </CardTitle>
-            <CardDescription>
-              Configure your personal phone settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Call Forwarding */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-2">
-                  <PhoneForwarded className="h-4 w-4" />
-                  Call Forwarding
-                </Label>
-                <Badge variant={isCallForwarding ? "default" : "secondary"}>
-                  {isCallForwarding ? "Enabled" : "Disabled"}
-                </Badge>
-              </div>
-              
-              {!isCallForwarding && (
-                <Input
-                  placeholder="Forward to number"
-                  value={forwardNumber}
-                  onChange={(e) => setForwardNumber(e.target.value)}
-                />
-              )}
-              
-              <Button
-                variant={isCallForwarding ? "destructive" : "default"}
-                size="sm"
-                onClick={handleCallForwarding}
-                disabled={forwardCallMutation.isPending}
-                className="w-full"
-              >
-                {isCallForwarding ? "Disable Forwarding" : "Enable Forwarding"}
-              </Button>
+                <CardContent>
+                  <CardDescription className="line-clamp-2 mb-4">
+                    {extension.description}
+                  </CardDescription>
+                  
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">by {extension.author}</p>
+                    
+                    <div className="flex items-center space-x-2">
+                      {getExtensionStatus(extension.id) === 'not_installed' ? (
+                        <Button 
+                          size="sm"
+                          onClick={() => installExtension(extension.id)}
+                          disabled={isInstalling}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Install
+                        </Button>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">
+                          {getExtensionStatus(extension.id) === 'active' ? 'Active' : 'Installed'}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {availableExtensions.length === 0 && (
+            <div className="text-center py-12">
+              <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No extensions found</h3>
+              <p className="text-gray-500">Try adjusting your search criteria or browse different categories.</p>
             </div>
+          )}
+        </div>
+      )}
 
-            {/* Audio Controls */}
-            <div className="space-y-3">
+      {/* Installed Tab */}
+      {activeTab === 'installed' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {installedExtensions.map((extension) => (
+              <Card key={extension.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">
+                          {extension.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{extension.name}</CardTitle>
+                        <p className="text-sm text-gray-600">v{extension.version}</p>
+                      </div>
+                    </div>
+                    
+                    <Badge 
+                      variant={extension.isActive ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {extension.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <CardDescription className="line-clamp-2 mb-4">
+                    {extension.description}
+                  </CardDescription>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        size="sm"
+                        variant={extension.isActive ? "outline" : "default"}
+                        onClick={() => toggleExtension(extension.id, !extension.isActive)}
+                        disabled={isToggling}
+                      >
+                        {extension.isActive ? "Disable" : "Enable"}
+                      </Button>
+                      
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setSelectedExtension(extension)}
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => uninstallExtension(extension.id)}
+                      disabled={isUninstalling}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {installedExtensions.length === 0 && (
+            <div className="text-center py-12">
+              <Download className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No extensions installed</h3>
+              <p className="text-gray-500">Browse the discover tab to find and install extensions.</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Settings Tab */}
+      {activeTab === 'settings' && globalSettings && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Global Extension Settings</CardTitle>
+              <CardDescription>Configure how extensions behave across your account</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-2">
-                  {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                  Microphone
-                </Label>
-                <Button
-                  variant={isMuted ? "destructive" : "default"}
-                  size="sm"
-                  onClick={() => setIsMuted(!isMuted)}
-                >
-                  {isMuted ? "Unmute" : "Mute"}
-                </Button>
+                <div>
+                  <Label htmlFor="notifications">Extension Notifications</Label>
+                  <p className="text-sm text-gray-600">Receive notifications from active extensions</p>
+                </div>
+                <input
+                  id="notifications"
+                  type="checkbox"
+                  checked={globalSettings.notifications}
+                  onChange={(e) => updateGlobalSettings({ notifications: e.target.checked })}
+                  className="w-4 h-4"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="autoUpdate">Auto-update Extensions</Label>
+                  <p className="text-sm text-gray-600">Automatically update extensions when new versions are available</p>
+                </div>
+                <input
+                  id="autoUpdate"
+                  type="checkbox"
+                  checked={globalSettings.autoUpdate}
+                  onChange={(e) => updateGlobalSettings({ autoUpdate: e.target.checked })}
+                  className="w-4 h-4"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  {volume > 0 ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                  Volume: {volume}%
-                </Label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={(e) => setVolume(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
+                <Label htmlFor="theme">Extension Theme</Label>
+                <Select 
+                  value={globalSettings.theme} 
+                  onValueChange={(value) => updateGlobalSettings({ theme: value as any })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="auto">Auto</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
-        {/* Recent Call History */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Recent Calls
-            </CardTitle>
-            <CardDescription>
-              Your call history from the last 24 hours
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {recentCalls.length > 0 ? (
-              <div className="space-y-3">
-                {recentCalls.map((call: any) => (
-                  <div key={call.id} className="flex items-center justify-between p-3 rounded-lg border">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-full ${
-                        call.direction === 'inbound' ? 'bg-green-100 dark:bg-green-900/20' :
-                        call.direction === 'outbound' ? 'bg-blue-100 dark:bg-blue-900/20' :
-                        'bg-red-100 dark:bg-red-900/20'
-                      }`}>
-                        {call.direction === 'inbound' ? 
-                          <PhoneCall className="h-4 w-4 text-green-600 dark:text-green-400" /> :
-                          call.direction === 'outbound' ?
-                          <Phone className="h-4 w-4 text-blue-600 dark:text-blue-400" /> :
-                          <PhoneOff className="h-4 w-4 text-red-600 dark:text-red-400" />
-                        }
-                      </div>
-                      <div>
-                        <p className="font-medium">{call.fromNumber === userExtension ? call.toNumber : call.fromNumber}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {call.direction === 'inbound' ? 'Incoming' : 
-                           call.direction === 'outbound' ? 'Outgoing' : 'Missed'} • {call.duration}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(call.startTime).toLocaleTimeString()}
-                      </p>
-                      <Badge variant={call.status === 'completed' ? 'default' : 'secondary'} className="text-xs">
-                        {call.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Phone className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                <p>No recent calls</p>
-                <p className="text-sm">Your call history will appear here</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {/* Extension Settings Modal */}
+      {selectedExtension && (
+        <Dialog open={!!selectedExtension} onOpenChange={() => setSelectedExtension(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{selectedExtension.name} Settings</DialogTitle>
+              <DialogDescription>
+                Configure settings for this extension
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Extension-specific settings would be displayed here based on the extension's configuration.
+              </p>
+            </div>
+            
+            <DialogFooter>
+              <Button onClick={() => setSelectedExtension(null)}>Close</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -1,8 +1,5 @@
 // Legacy MDM schema - use modular schemas from mdm/index.ts
 export * from './mdm/index';
-
-// Device management
-export const devices = pgTable("devices", {
   id: varchar("id").primaryKey().notNull(),
   userId: varchar("user_id").references(() => users.id),
   institutionId: varchar("institution_id").references(() => institutions.id),
