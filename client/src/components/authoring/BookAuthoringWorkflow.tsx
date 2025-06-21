@@ -26,7 +26,11 @@ import {
   ChevronRight,
   X,
   Monitor,
-  Globe
+  Globe,
+  ZoomIn,
+  ZoomOut,
+  Bookmark,
+  Home
 } from "lucide-react";
 
 interface BookProject {
