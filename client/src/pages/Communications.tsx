@@ -36,48 +36,6 @@ export default function CommunicationsPage() {
     isDeleting,
     isSending
   } = useCommunications();
-  const communicationsByStatus = useMemo(() => {
-    if (!Array.isArray(filteredCommunications)) {
-      return { draft: [], scheduled: [], sent: [], archived: [] };
-    }
-    const grouped = {
-      draft: filteredCommunications.filter(c => c.status === 'draft'),
-      scheduled: filteredCommunications.filter(c => c.status === 'scheduled'),
-      sent: filteredCommunications.filter(c => c.status === 'sent'),
-      archived: filteredCommunications.filter(c => c.status === 'archived')
-    };
-    return grouped;
-  }, [filteredCommunications]);
-
-  // Create/update communication mutation
-  const createCommunicationMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('POST', '/api/communications', data),
-    onSuccess: () => {
-      toast({ title: "Communication created successfully" });
-      queryClient.invalidateQueries({ queryKey: ['/api/communications'] });
-      setShowCreateDialog(false);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error creating communication",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
-  // Send communication mutation
-  const sendCommunicationMutation = useMutation({
-    mutationFn: (id: string) => apiRequest('POST', `/api/communications/${id}/send`),
-    onSuccess: () => {
-      toast({ title: "Communication sent successfully" });
-      queryClient.invalidateQueries({ queryKey: ['/api/communications'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error sending communication",
-        description: error.message,
-        variant: "destructive",
       });
     }
   });

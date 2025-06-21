@@ -1,8 +1,5 @@
-import type { Express, Response, NextFunction } from "express";
-import { isAuthenticated } from "../replitAuth";
-import { requirePermission } from "../roleMiddleware";
-
-export function registerPBXRoutes(app: Express) {
+// Legacy PBX routes - use modular routes from pbx/index.ts
+export { registerPBXRoutes } from "./pbx/index";
   // User-specific extension data
   app.get('/api/pbx/user-extension/:extension', isAuthenticated, async (req: any, res) => {
     try {
