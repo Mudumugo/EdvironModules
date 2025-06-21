@@ -61,6 +61,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
+    // On mobile, only render the sheet overlay
     if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
@@ -85,11 +86,13 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       )
     }
 
+    // On desktop, render the fixed sidebar
     return (
       <div
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-all duration-300 ease-in-out lg:flex",
+          "fixed inset-y-0 z-10 h-svh w-[--sidebar-width] transition-all duration-300 ease-in-out",
           "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]",
+          "hidden lg:flex", // Only show on large screens and above
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
             : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
