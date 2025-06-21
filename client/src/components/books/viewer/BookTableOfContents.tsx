@@ -16,49 +16,67 @@ interface BookTableOfContentsProps {
   onClose: () => void;
 }
 
-const tableOfContents: TableOfContentsData[] = [
-  { 
-    chapter: "Chapter 1", 
-    title: "Introduction to Numbers", 
-    pages: "3-5",
-    topics: [
-      { title: "What are Numbers?", page: 3 },
-      { title: "Counting 1-10", page: 4 },
-      { title: "Number Recognition", page: 5 }
-    ]
-  },
-  { 
-    chapter: "Chapter 2", 
-    title: "Addition and Subtraction", 
-    pages: "6-9",
-    topics: [
-      { title: "Simple Addition", page: 6 },
-      { title: "Adding with Objects", page: 7 },
-      { title: "Basic Subtraction", page: 8 },
-      { title: "Practice Problems", page: 9 }
-    ]
-  },
-  { 
-    chapter: "Chapter 3", 
-    title: "Shapes and Patterns", 
-    pages: "10-12",
-    topics: [
-      { title: "Basic Shapes", page: 10 },
-      { title: "Pattern Recognition", page: 11 },
-      { title: "Creating Patterns", page: 12 }
-    ]
-  },
-  { 
-    chapter: "Chapter 4", 
-    title: "Review and Assessment", 
-    pages: "13-15",
-    topics: [
-      { title: "Chapter Review", page: 13 },
-      { title: "Assessment Quiz", page: 14 },
-      { title: "Additional Practice", page: 15 }
-    ]
-  }
-];
+const generateTableOfContents = (): TableOfContentsData[] => {
+  return [
+    { 
+      chapter: "Cover", 
+      title: "Title Page", 
+      pages: "1",
+      topics: [
+        { title: "Cover Page", page: 1 }
+      ]
+    },
+    { 
+      chapter: "Contents", 
+      title: "Table of Contents", 
+      pages: "2",
+      topics: [
+        { title: "Table of Contents", page: 2 }
+      ]
+    },
+    { 
+      chapter: "Chapter 1", 
+      title: "Introduction", 
+      pages: "3-4",
+      topics: [
+        { title: "Introduction to Subject", page: 3 },
+        { title: "Interactive Learning Resources", page: 4 }
+      ]
+    },
+    { 
+      chapter: "Chapter 2", 
+      title: "Interactive Elements", 
+      pages: "5-8",
+      topics: [
+        { title: "Chapter Quiz", page: 5 },
+        { title: "Advanced Content", page: 6 },
+        { title: "Practice Exercises", page: 7 },
+        { title: "Assessment", page: 8 }
+      ]
+    },
+    { 
+      chapter: "Chapter 3", 
+      title: "Additional Content", 
+      pages: "9-12",
+      topics: [
+        { title: "Extended Learning", page: 9 },
+        { title: "Case Studies", page: 10 },
+        { title: "Real-world Applications", page: 11 },
+        { title: "Summary", page: 12 }
+      ]
+    },
+    { 
+      chapter: "Resources", 
+      title: "References & Index", 
+      pages: "13-15",
+      topics: [
+        { title: "Additional Resources", page: 13 },
+        { title: "Glossary", page: 14 },
+        { title: "Index", page: 15 }
+      ]
+    }
+  ];
+};
 
 export const BookTableOfContents: React.FC<BookTableOfContentsProps> = ({
   isVisible,
@@ -67,10 +85,21 @@ export const BookTableOfContents: React.FC<BookTableOfContentsProps> = ({
 }) => {
   if (!isVisible) return null;
 
+  const tableOfContents = generateTableOfContents();
+
   return (
-    <div className="absolute bottom-full left-0 mb-2 w-80 sm:w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 sm:max-h-96 overflow-y-auto">
+    <div className="absolute bottom-full left-0 mb-2 w-80 sm:w-96 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-80 sm:max-h-96 overflow-y-auto">
       <div className="p-4">
-        <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">Table of Contents</h3>
+        <div className="flex items-center justify-between mb-3 border-b pb-2">
+          <h3 className="font-semibold text-lg">Table of Contents</h3>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            title="Close"
+          >
+            ×
+          </button>
+        </div>
         <div className="space-y-1">
           {tableOfContents.map((chapter, chapterIndex) => (
             <div key={chapterIndex} className="border-b border-gray-100 last:border-b-0">

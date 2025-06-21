@@ -57,6 +57,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
     showControls,
     zoomIn,
     zoomOut,
+    resetZoom,
     toggleBookmark,
     setShowTableOfContents,
     setShowInteractiveMode,
@@ -179,6 +180,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
               onGoToPage={goToPage}
               onZoomIn={zoomIn}
               onZoomOut={zoomOut}
+              onResetZoom={resetZoom}
               onToggleBookmark={handleToggleBookmark}
               onToggleTableOfContents={() => setShowTableOfContents(!showTableOfContents)}
               onToggleInteractiveMode={() => setShowInteractiveMode(!showInteractiveMode)}

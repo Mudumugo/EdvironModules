@@ -10,11 +10,19 @@ export const useBookViewerControls = () => {
   const [controlsTimeout, setControlsTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const zoomIn = useCallback(() => {
-    setZoom(prev => Math.min(prev + 25, 200));
+    setZoom(prev => Math.min(prev + 25, 300));
   }, []);
 
   const zoomOut = useCallback(() => {
-    setZoom(prev => Math.max(prev - 25, 50));
+    setZoom(prev => Math.max(prev - 25, 25));
+  }, []);
+
+  const resetZoom = useCallback(() => {
+    setZoom(100);
+  }, []);
+
+  const setZoomLevel = useCallback((level: number) => {
+    setZoom(Math.max(25, Math.min(300, level)));
   }, []);
 
   const toggleBookmark = useCallback((page: number) => {
@@ -85,6 +93,8 @@ export const useBookViewerControls = () => {
     showControls,
     zoomIn,
     zoomOut,
+    resetZoom,
+    setZoomLevel,
     toggleBookmark,
     setShowTableOfContents,
     setShowInteractiveMode,

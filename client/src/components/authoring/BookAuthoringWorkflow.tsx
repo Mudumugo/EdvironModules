@@ -332,7 +332,7 @@ export default function BookAuthoringWorkflow() {
         return (
           <div className="h-full overflow-auto bg-white dark:bg-gray-900">
             <div 
-              className="w-full h-full"
+              className="w-full h-full p-4"
               dangerouslySetInnerHTML={{ __html: pageContent }}
             />
           </div>

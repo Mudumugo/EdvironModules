@@ -8,7 +8,10 @@ import {
   Bookmark, 
   X,
   List,
-  Monitor
+  Monitor,
+  RotateCcw,
+  Maximize2,
+  BookmarkPlus
 } from 'lucide-react';
 import { BookTableOfContents } from './BookTableOfContents';
 
@@ -27,6 +30,7 @@ interface BookControlsProps {
   onGoToPage: (page: number) => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
+  onResetZoom?: () => void;
   onToggleBookmark: (page: number) => void;
   onToggleTableOfContents: () => void;
   onToggleInteractiveMode: () => void;
@@ -48,6 +52,7 @@ export const BookControls: React.FC<BookControlsProps> = ({
   onGoToPage,
   onZoomIn,
   onZoomOut,
+  onResetZoom,
   onToggleBookmark,
   onToggleTableOfContents,
   onToggleInteractiveMode,
@@ -140,40 +145,83 @@ export const BookControls: React.FC<BookControlsProps> = ({
             variant="ghost" 
             size="sm" 
             onClick={onZoomOut} 
-            disabled={zoom <= 50}
+            disabled={zoom <= 25}
             className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-            title="Zoom Out"
+            title="Zoom Out (Ctrl + -)"
           >
             <ZoomOut className="h-4 w-4" />
           </Button>
+          
+          <div className="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs min-w-[50px] text-center">
+            {zoom}%
+          </div>
           
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onZoomIn} 
-            disabled={zoom >= 200}
+            disabled={zoom >= 300}
             className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-            title="Zoom In"
+            title="Zoom In (Ctrl + +)"
           >
             <ZoomIn className="h-4 w-4" />
           </Button>
+          
+          {onResetZoom && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onResetZoom}
+              className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+              title="Reset Zoom (Ctrl + 0)"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+          )}
         </div>
         
-        {/* Center - Page input */}
-        <div className="bg-black bg-opacity-50 rounded-full px-4 py-2">
-          <input
-            type="number"
-            value={currentPage}
-            onChange={(e) => {
-              const page = parseInt(e.target.value);
-              if (page >= 1 && page <= totalPages) {
-                onGoToPage(page);
-              }
-            }}
-            className="w-16 px-2 py-1 text-center bg-transparent text-white border-0 focus:outline-none text-sm"
-            min="1"
-            max={totalPages}
-          />
+        {/* Center - Page input and quick navigation */}
+        <div className="flex items-center space-x-2">
+          <div className="bg-black bg-opacity-50 rounded-full px-4 py-2 flex items-center space-x-2">
+            <span className="text-white text-sm">Page</span>
+            <input
+              type="number"
+              value={currentPage}
+              onChange={(e) => {
+                const page = parseInt(e.target.value);
+                if (page >= 1 && page <= totalPages) {
+                  onGoToPage(page);
+                }
+              }}
+              className="w-16 px-2 py-1 text-center bg-transparent text-white border-0 focus:outline-none text-sm"
+              min="1"
+              max={totalPages}
+            />
+            <span className="text-white text-sm">of {totalPages}</span>
+          </div>
+          
+          {/* Quick jump buttons */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => onGoToPage(1)}
+            disabled={currentPage === 1}
+            className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+            title="First Page"
+          >
+            <span className="text-xs">First</span>
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => onGoToPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
+            title="Last Page"
+          >
+            <span className="text-xs">Last</span>
+          </Button>
         </div>
         
         {/* Right tools */}
