@@ -388,7 +388,7 @@ export default function BookAuthoringWorkflow() {
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="h-4 w-4 text-gray-500" />
                     <span className="text-gray-600 dark:text-gray-400">
-                      Due: {project.deadline.toLocaleDateString()}
+                      Due: {new Date(project.deadline).toLocaleDateString()}
                     </span>
                   </div>
                 )}

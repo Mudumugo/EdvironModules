@@ -135,12 +135,12 @@ export function registerAuthoringRoutes(app: Express) {
           gradeLevel: 'Grade 11-12',
           targetWords: 50000,
           currentWords: 12450,
-          deadline: new Date('2024-08-15'),
+          deadline: '2024-08-15',
           status: 'writing',
           chaptersCount: 15,
           collaborators: ['Dr. Sarah Chen', 'Prof. Mike Johnson'],
-          created: new Date('2024-05-01'),
-          modified: new Date('2024-06-18'),
+          created: '2024-05-01',
+          modified: '2024-06-18',
           templateId: 'textbook',
           authorId: (req.user as any)?.id
         },
@@ -155,8 +155,8 @@ export function registerAuthoringRoutes(app: Express) {
           status: 'planning',
           chaptersCount: 12,
           collaborators: ['Dr. Lisa Wang'],
-          created: new Date('2024-06-10'),
-          modified: new Date('2024-06-17'),
+          created: '2024-06-10',
+          modified: '2024-06-17',
           templateId: 'interactive',
           authorId: (req.user as any)?.id
         }
@@ -179,8 +179,8 @@ export function registerAuthoringRoutes(app: Express) {
         currentWords: 0,
         status: 'planning',
         collaborators: [(req.user as any)?.firstName + ' ' + (req.user as any)?.lastName],
-        created: new Date(),
-        modified: new Date()
+        created: new Date().toISOString(),
+        modified: new Date().toISOString()
       };
       
       res.json(newProject);
