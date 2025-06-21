@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export const useBookViewerControls = () => {
   const [zoom, setZoom] = useState(100);
@@ -8,6 +8,10 @@ export const useBookViewerControls = () => {
   const [showInteractiveMode, setShowInteractiveMode] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [controlsTimeout, setControlsTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const zoomIn = useCallback(() => {
     setZoom(prev => Math.min(prev + 25, 300));
@@ -19,10 +23,44 @@ export const useBookViewerControls = () => {
 
   const resetZoom = useCallback(() => {
     setZoom(100);
+    setPanOffset({ x: 0, y: 0 });
   }, []);
 
   const setZoomLevel = useCallback((level: number) => {
     setZoom(Math.max(25, Math.min(300, level)));
+    if (level <= 100) {
+      setPanOffset({ x: 0, y: 0 });
+    }
+  }, []);
+
+  // Mouse wheel zoom
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -25 : 25;
+      setZoom(prev => Math.max(25, Math.min(300, prev + delta)));
+    }
+  }, []);
+
+  // Pan functionality for zoomed content
+  const handleMouseDown = useCallback((e: MouseEvent) => {
+    if (zoom > 100) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
+    }
+  }, [zoom, panOffset]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isDragging && zoom > 100) {
+      setPanOffset({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  }, [isDragging, dragStart, zoom]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
   }, []);
 
   const toggleBookmark = useCallback((page: number) => {
@@ -65,24 +103,31 @@ export const useBookViewerControls = () => {
     };
   }, []);
 
-  // Handle mouse movement and touch to show controls
+  // Handle mouse movement, touch, and wheel events
   useEffect(() => {
-    const handleMouseMove = () => {
+    const handleMouseMoveActivity = (e: MouseEvent) => {
       handleUserActivity();
+      handleMouseMove(e);
     };
 
     const handleTouchStart = () => {
       handleUserActivity();
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMoveActivity);
     document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('wheel', handleWheel, { passive: false });
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
     
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousemove', handleMouseMoveActivity);
       document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('wheel', handleWheel);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [handleUserActivity]);
+  }, [handleUserActivity, handleWheel, handleMouseDown, handleMouseMove, handleMouseUp]);
 
   return {
     zoom,
@@ -91,6 +136,9 @@ export const useBookViewerControls = () => {
     showTableOfContents,
     showInteractiveMode,
     showControls,
+    panOffset,
+    isDragging,
+    containerRef,
     zoomIn,
     zoomOut,
     resetZoom,
@@ -98,6 +146,10 @@ export const useBookViewerControls = () => {
     toggleBookmark,
     setShowTableOfContents,
     setShowInteractiveMode,
-    handleUserActivity
+    handleUserActivity,
+    handleWheel,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp
   };
 };

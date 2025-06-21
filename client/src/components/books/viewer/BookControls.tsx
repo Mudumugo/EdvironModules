@@ -64,11 +64,18 @@ export const BookControls: React.FC<BookControlsProps> = ({
       <div className={`absolute top-4 left-4 right-4 flex items-center justify-between z-10 transition-all duration-500 ${
         showControls ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}>
-        <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-          {bookTitle || ''}
+        <div className="bg-black bg-opacity-60 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-sm">
+          {bookTitle || 'Interactive Book'}
         </div>
-        <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-          {currentPage} / {totalPages}
+        <div className="flex items-center space-x-2">
+          <div className="bg-black bg-opacity-60 text-white px-3 py-2 rounded-full text-sm shadow-lg backdrop-blur-sm">
+            Page {currentPage} of {totalPages}
+          </div>
+          {zoom !== 100 && (
+            <div className="bg-blue-500 bg-opacity-80 text-white px-3 py-2 rounded-full text-sm shadow-lg backdrop-blur-sm">
+              {zoom}% zoom
+            </div>
+          )}
         </div>
       </div>
       
@@ -152,7 +159,11 @@ export const BookControls: React.FC<BookControlsProps> = ({
             <ZoomOut className="h-4 w-4" />
           </Button>
           
-          <div className="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs min-w-[50px] text-center">
+          <div 
+            className="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs min-w-[50px] text-center cursor-pointer hover:bg-opacity-70 transition-all"
+            onClick={onResetZoom}
+            title="Click to reset zoom"
+          >
             {zoom}%
           </div>
           
@@ -231,11 +242,18 @@ export const BookControls: React.FC<BookControlsProps> = ({
             variant="ghost" 
             size="sm" 
             onClick={() => onToggleBookmark(currentPage)}
-            className={`${bookmarkPages.includes(currentPage) ? 'bg-yellow-500 bg-opacity-80' : 'bg-black bg-opacity-30'} hover:bg-opacity-50 text-white border-0 rounded-full`}
-            title="Bookmark"
+            className={`${bookmarkPages.includes(currentPage) ? 'bg-yellow-500 bg-opacity-90 shadow-lg' : 'bg-black bg-opacity-30'} hover:bg-opacity-70 text-white border-0 rounded-full transition-all duration-200`}
+            title={bookmarkPages.includes(currentPage) ? 'Remove bookmark' : 'Add bookmark'}
           >
-            <Bookmark className="h-4 w-4" />
+            <Bookmark className={`h-4 w-4 ${bookmarkPages.includes(currentPage) ? 'fill-current' : ''}`} />
           </Button>
+          
+          {/* Bookmarks count indicator */}
+          {bookmarkPages.length > 0 && (
+            <div className="bg-yellow-500 bg-opacity-80 text-white px-2 py-1 rounded-full text-xs shadow-lg">
+              {bookmarkPages.length} saved
+            </div>
+          )}
           
           {/* Close */}
           {onClose && (

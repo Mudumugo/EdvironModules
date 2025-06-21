@@ -9,6 +9,7 @@ interface BookPageContentProps {
   currentPage: number;
   zoom: number;
   rotation: number;
+  panOffset?: { x: number; y: number };
   isPageTurning: boolean;
   pageTransition: 'none' | 'next' | 'prev';
   bookmarkPages: number[];
@@ -22,6 +23,7 @@ export const BookPageContent: React.FC<BookPageContentProps> = ({
   currentPage,
   zoom,
   rotation,
+  panOffset = { x: 0, y: 0 },
   isPageTurning,
   pageTransition,
   bookmarkPages,
@@ -39,8 +41,9 @@ export const BookPageContent: React.FC<BookPageContentProps> = ({
         pageTransition === 'prev' ? 'page-turn-animation-prev' : ''
       }`}
       style={{
-        transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-        transformOrigin: 'center'
+        transform: `scale(${zoom / 100}) rotate(${rotation}deg) translate(${panOffset.x}px, ${panOffset.y}px)`,
+        transformOrigin: 'center center',
+        transition: isPageTurning ? 'none' : 'transform 0.2s ease-out'
       }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
