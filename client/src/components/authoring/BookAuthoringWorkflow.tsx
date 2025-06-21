@@ -52,6 +52,9 @@ export default function BookAuthoringWorkflow() {
   const [showEditor, setShowEditor] = useState(false);
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewProject, setPreviewProject] = useState<any>(null);
+  const [currentPreviewPage, setCurrentPreviewPage] = useState(1);
   const [formData, setFormData] = useState({
     title: '',
     subject: '',
@@ -280,11 +283,75 @@ Let's examine real-world examples that demonstrate these concepts...`
                 {chapter.title}
               </h2>
               <div className="prose prose-lg dark:prose-invert max-w-none">
-                {chapter.content.split('\n').map((paragraph, index) => (
-                  <p key={index} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {paragraph}
+                {chapter.content.split('\n').map((paragraph, index) => {
+                  if (paragraph.includes('•')) {
+                    return (
+                      <ul key={index} className="mb-4 space-y-2">
+                        {paragraph.split('•').filter(item => item.trim()).map((item, i) => (
+                          <li key={i} className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {item.trim()}
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                  }
+                  if (paragraph.includes('Learning Objectives:')) {
+                    return (
+                      <div key={index} className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
+                        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Learning Objectives</h3>
+                      </div>
+                    );
+                  }
+                  if (paragraph.includes('1.1') || paragraph.includes('2.1')) {
+                    return (
+                      <h3 key={index} className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">
+                        {paragraph}
+                      </h3>
+                    );
+                  }
+                  return (
+                    <p key={index} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {paragraph}
+                    </p>
+                  );
+                })}
+              </div>
+              
+              {/* Interactive Elements - HTML5 Features */}
+              <div className="mt-8 space-y-6">
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 p-6 rounded-lg border border-green-200 dark:border-green-700">
+                  <h4 className="font-semibold text-green-800 dark:text-green-200 mb-3 flex items-center">
+                    <Monitor className="h-5 w-5 mr-2" />
+                    Interactive Exercise
+                  </h4>
+                  <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                    Test your understanding with this interactive quiz:
                   </p>
-                ))}
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded border">
+                    <p className="font-medium mb-3">Question: Which of the following best describes the key concept?</p>
+                    <div className="space-y-2">
+                      {['Option A: Basic understanding', 'Option B: Advanced application', 'Option C: Practical implementation'].map((option, i) => (
+                        <label key={i} className="flex items-center space-x-2 cursor-pointer">
+                          <input type="radio" name="quiz" className="text-blue-600" />
+                          <span className="text-sm">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-700">
+                  <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-3 flex items-center">
+                    <Globe className="h-5 w-5 mr-2" />
+                    Web-Based Resource
+                  </h4>
+                  <p className="text-sm text-purple-700 dark:text-purple-300 mb-3">
+                    Explore this concept further with interactive simulations and videos.
+                  </p>
+                  <button className="bg-purple-600 text-white px-4 py-2 rounded text-sm hover:bg-purple-700 transition-colors">
+                    Launch Interactive Demo
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -307,9 +374,12 @@ Let's examine real-world examples that demonstrate these concepts...`
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Page {currentPreviewPage} of {totalPages}
-              </span>
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <Monitor className="h-4 w-4" />
+                <span>HTML5 Interactive Format</span>
+                <span>•</span>
+                <span>Page {currentPreviewPage} of {totalPages}</span>
+              </div>
               <Button
                 variant="outline"
                 size="sm"
