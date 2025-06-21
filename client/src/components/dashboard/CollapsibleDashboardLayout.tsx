@@ -175,19 +175,36 @@ export function CollapsibleDashboardLayout({
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        <Sidebar variant="default" collapsible="icon">
-          <SidebarHeader className="border-b border-sidebar-border">
-            <div className="flex items-center gap-2 px-2 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <GraduationCap className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                <span className="font-semibold">EdVirons</span>
-                <span className="text-xs text-muted-foreground">Learning Portal</span>
-              </div>
+      <div className="flex min-h-screen w-full flex-col">
+        {/* Full-width header */}
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4 z-20">
+          <SidebarTrigger className="-ml-1" />
+          <div className="flex flex-1 items-center gap-2 min-w-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <GraduationCap className="h-4 w-4" />
             </div>
-          </SidebarHeader>
+            <div className="flex flex-col gap-0.5 leading-none">
+              <span className="font-semibold">EdVirons</span>
+              <span className="text-xs text-muted-foreground">Learning Portal</span>
+            </div>
+            <div className="h-6 w-px bg-gray-300 mx-2" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-semibold truncate">{title}</h1>
+              {subtitle && (
+                <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
+              )}
+            </div>
+          </div>
+          {user && (
+            <div className="text-sm text-muted-foreground">
+              {user.firstName} {user.lastName}
+            </div>
+          )}
+        </header>
+
+        <div className="flex flex-1">
+          <Sidebar variant="default" collapsible="icon" className="border-t-0">
+
 
           <SidebarContent>
             <SidebarGroup>
@@ -290,32 +307,15 @@ export function CollapsibleDashboardLayout({
           <SidebarRail />
         </Sidebar>
 
-        <SidebarInset className="flex-1">
-          {/* Header with toggle button */}
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
-            <SidebarTrigger className="-ml-1" />
-            <div className="flex flex-1 items-center gap-2 min-w-0">
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-semibold truncate">{title}</h1>
-                {subtitle && (
-                  <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
-                )}
+          <SidebarInset className="flex-1">
+            {/* Main Content */}
+            <main className="flex-1 overflow-auto">
+              <div className="p-4 lg:p-6">
+                {children}
               </div>
-            </div>
-            {user && (
-              <div className="text-sm text-muted-foreground">
-                {user.firstName} {user.lastName}
-              </div>
-            )}
-          </header>
-
-          {/* Main Content */}
-          <main className="flex-1 overflow-auto">
-            <div className="p-4 lg:p-6">
-              {children}
-            </div>
-          </main>
-        </SidebarInset>
+            </main>
+          </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );
