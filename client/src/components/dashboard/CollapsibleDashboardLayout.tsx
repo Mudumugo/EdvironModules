@@ -175,25 +175,76 @@ export function CollapsibleDashboardLayout({
 
   return (
     <SidebarProvider defaultOpen={true}>
-      {/* Mobile Layout - Completely Separate */}
-      <div className="lg:hidden min-h-screen bg-gray-50">
-        <header className="flex h-16 items-center justify-between bg-white border-b px-4 sticky top-0 z-50">
-          <SidebarTrigger className="h-8 w-8 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md" />
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <GraduationCap className="h-4 w-4" />
+      <div className="flex min-h-screen w-full">
+        <Sidebar variant="default" collapsible="icon">
+          <SidebarHeader className="border-b border-sidebar-border">
+            <div className="flex items-center gap-2 px-2 py-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <GraduationCap className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                <span className="font-semibold">EdVirons</span>
+                <span className="text-xs text-muted-foreground">Learning Portal</span>
+              </div>
             </div>
-            <span className="font-semibold">EdVirons</span>
-          </div>
-          <div className="w-8"></div>
-        </header>
-        <main className="p-4">
-          {children}
-        </main>
-      </div>
+          </SidebarHeader>
+          
+          {/* Mobile Sidebar Overlay */}
+          <Sidebar variant="default" collapsible="offcanvas">
+            <SidebarHeader className="border-b border-sidebar-border p-4">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-semibold">EdVirons</span>
+                  <span className="text-xs text-muted-foreground">Learning Portal</span>
+                </div>
+              </div>
+            </SidebarHeader>
 
-      {/* Desktop Layout - Completely Separate */}
-      <div className="hidden lg:flex min-h-screen">
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {navigationItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <SidebarMenuItem key={item.id}>
+                          <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                            <Link href={item.url}>
+                              <Icon className="h-4 w-4" />
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+
+            <SidebarFooter className="border-t border-sidebar-border p-4">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                  <span className="text-xs font-medium">
+                    {user?.firstName?.[0]}{user?.lastName?.[0]}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-medium">{user?.firstName} {user?.lastName}</span>
+                  <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  <span className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ')}</span>
+                </div>
+              </div>
+            </SidebarFooter>
+          </Sidebar>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex min-h-screen">
         <Sidebar variant="default" collapsible="icon" className="border-r">
           <SidebarHeader className="border-b border-sidebar-border p-4">
             <div className="flex items-center gap-2">
@@ -283,42 +334,44 @@ export function CollapsibleDashboardLayout({
             )}
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-sidebar-border">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/user-profile">
-                    <User className="h-4 w-4" />
-                    <span className="truncate">
-                      {user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email : 'User'}
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/settings">
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+          <SidebarFooter className="border-t border-sidebar-border p-4">
+            <div className="flex items-center gap-2 text-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                <span className="text-xs font-medium">
+                  {user?.firstName?.[0]}{user?.lastName?.[0]}
+                </span>
+              </div>
+              <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                <span className="font-medium">{user?.firstName} {user?.lastName}</span>
+                <span className="text-xs text-muted-foreground">{user?.email}</span>
+                <span className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ')}</span>
+              </div>
+            </div>
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>
 
-        <SidebarInset className="flex-1 transition-all duration-300 ease-in-out lg:ml-[--sidebar-width] lg:w-[calc(100%-var(--sidebar-width))] group-data-[state=collapsed]:lg:ml-[--sidebar-width-icon] group-data-[state=collapsed]:lg:w-[calc(100%-var(--sidebar-width-icon))]">
-          {/* Header with toggle button positioned to align with sidebar */}
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4 transition-all duration-300 ease-in-out fixed top-0 left-0 right-0 z-20 lg:left-[--sidebar-width] group-data-[state=collapsed]:lg:left-[--sidebar-width-icon]">
-            <SidebarTrigger className="mr-2 transition-all duration-200 ease-in-out hover:scale-110 active:scale-95 !flex !visible !opacity-100 h-8 w-8 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md" />
-            <div className="flex flex-1 items-center gap-2 min-w-0">
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-semibold truncate">{title}</h1>
-                {subtitle && (
-                  <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
-                )}
+        <SidebarInset className="flex-1">
+          {/* Mobile Header */}
+          <header className="flex h-16 items-center justify-between bg-white border-b px-4 lg:hidden">
+            <SidebarTrigger className="h-8 w-8 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md" />
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <GraduationCap className="h-4 w-4" />
               </div>
+              <span className="font-semibold">EdVirons</span>
+            </div>
+            <div className="w-8"></div>
+          </header>
+
+          {/* Desktop Header */}
+          <header className="hidden lg:flex h-16 items-center gap-4 border-b bg-white px-6">
+            <SidebarTrigger className="h-8 w-8 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md" />
+            <div className="flex-1">
+              <h1 className="text-lg font-semibold">{title}</h1>
+              {subtitle && (
+                <p className="text-sm text-muted-foreground">{subtitle}</p>
+              )}
             </div>
             {user && (
               <div className="text-sm text-muted-foreground">
@@ -328,10 +381,8 @@ export function CollapsibleDashboardLayout({
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto">
-            <div className="p-4 lg:p-6">
-              {children}
-            </div>
+          <main className="p-4 lg:p-6 bg-gray-50 min-h-[calc(100vh-4rem)]">
+            {children}
           </main>
         </SidebarInset>
       </div>
