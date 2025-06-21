@@ -1,3 +1,8 @@
 // Legacy storage - use new modular storage from storage/index.ts
-export { storage as default, Storage, legacyStorage } from "./storage/index";
-export type { IStorage } from "./storage/index";
+import { storage as storageInstance, Storage as StorageClass, legacyStorage as legacy, type IStorage as IStorageType } from "./storage/index";
+
+export const storage = storageInstance;
+export default storageInstance;
+export const Storage = StorageClass;
+export const legacyStorage = legacy;
+export type IStorage = IStorageType;

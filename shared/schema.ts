@@ -20,7 +20,16 @@ import {
   notebooks,
   notebookSections,
   notebookPages,
-  lockerItems
+  lockerItems,
+  classes,
+  timetableEntries,
+  notebookActivity,
+  subjects,
+  chapters,
+  topics,
+  leads,
+  leadActivities,
+  demoRequests
 } from "./schemas/content";
 import {
   notifications,

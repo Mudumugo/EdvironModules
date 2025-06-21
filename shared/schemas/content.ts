@@ -214,3 +214,134 @@ export const insertNotebookSchema = createInsertSchema(notebooks);
 export const insertNotebookSectionSchema = createInsertSchema(notebookSections);
 export const insertNotebookPageSchema = createInsertSchema(notebookPages);
 export const insertLockerItemSchema = createInsertSchema(lockerItems);
+
+// Additional tables that might be referenced elsewhere
+export const classes = pgTable("classes", {
+  id: varchar("id").primaryKey().notNull(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  teacherId: varchar("teacher_id").references(() => users.id),
+  tenantId: varchar("tenant_id").notNull(),
+  gradeLevel: varchar("grade_level"),
+  subject: varchar("subject"),
+  capacity: integer("capacity").default(30),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const timetableEntries = pgTable("timetable_entries", {
+  id: varchar("id").primaryKey().notNull(),
+  classId: varchar("class_id").references(() => classes.id).notNull(),
+  teacherId: varchar("teacher_id").references(() => users.id).notNull(),
+  tenantId: varchar("tenant_id").notNull(),
+  dayOfWeek: integer("day_of_week").notNull(), // 0-6 (Sunday-Saturday)
+  startTime: varchar("start_time").notNull(), // HH:MM format
+  endTime: varchar("end_time").notNull(), // HH:MM format
+  subject: varchar("subject"),
+  room: varchar("room"),
+  isRecurring: boolean("is_recurring").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Class = typeof classes.$inferSelect;
+export type InsertClass = typeof classes.$inferInsert;
+export type TimetableEntry = typeof timetableEntries.$inferSelect;
+export type InsertTimetableEntry = typeof timetableEntries.$inferInsert;
+
+export const insertClassSchema = createInsertSchema(classes);
+export const insertTimetableEntrySchema = createInsertSchema(timetableEntries);
+
+// Additional schema tables for notebook activity tracking
+export const notebookActivity = pgTable("notebook_activity", {
+  id: varchar("id").primaryKey().notNull(),
+  notebookId: varchar("notebook_id").references(() => notebooks.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  activityType: varchar("activity_type").notNull(), // created, edited, shared, deleted
+  description: text("description"),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type NotebookActivity = typeof notebookActivity.$inferSelect;
+export type InsertNotebookActivity = typeof notebookActivity.$inferInsert;
+export const insertNotebookActivitySchema = createInsertSchema(notebookActivity);
+
+// Legacy alias for backward compatibility
+export const subjects = librarySubjects;
+
+// Additional schema tables for backward compatibility
+export const chapters = pgTable("chapters", {
+  id: varchar("id").primaryKey().notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  subjectId: varchar("subject_id").references(() => librarySubjects.id),
+  notebookId: varchar("notebook_id").references(() => notebooks.id),
+  order: integer("order").default(0),
+  content: jsonb("content").default({}),
+  isPublished: boolean("is_published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone"),
+  company: varchar("company"),
+  source: varchar("source"),
+  status: varchar("status").default("new"),
+  notes: text("notes"),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const leadActivities = pgTable("lead_activities", {
+  id: serial("id").primaryKey(),
+  leadId: integer("lead_id").references(() => leads.id).notNull(),
+  activityType: varchar("activity_type").notNull(),
+  description: text("description"),
+  performedBy: varchar("performed_by"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const demoRequests = pgTable("demo_requests", {
+  id: serial("id").primaryKey(),
+  schoolName: varchar("school_name").notNull(),
+  contactName: varchar("contact_name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone"),
+  status: varchar("status").default("pending"),
+  scheduledDate: timestamp("scheduled_date"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const topics = pgTable("topics", {
+  id: varchar("id").primaryKey().notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  chapterId: varchar("chapter_id").references(() => chapters.id),
+  subjectId: varchar("subject_id").references(() => librarySubjects.id),
+  order: integer("order").default(0),
+  content: jsonb("content").default({}),
+  isPublished: boolean("is_published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Chapter = typeof chapters.$inferSelect;
+export type InsertChapter = typeof chapters.$inferInsert;
+export type Topic = typeof topics.$inferSelect;
+export type InsertTopic = typeof topics.$inferInsert;
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = typeof leads.$inferInsert;
+export type LeadActivity = typeof leadActivities.$inferSelect;
+export type InsertLeadActivity = typeof leadActivities.$inferInsert;
+export type DemoRequest = typeof demoRequests.$inferSelect;
+export type InsertDemoRequest = typeof demoRequests.$inferInsert;
