@@ -116,3 +116,31 @@ export function sanitizeContent(content: string): string {
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
     .replace(/javascript:/gi, '');
 }
+
+export function convertResourceToBookConfig(resource: any): BookConfig {
+  return {
+    id: resource.id || 0,
+    title: resource.title || 'Untitled',
+    author: resource.author || 'Unknown',
+    pages: resource.pages || generateBookPages(resource.content || ''),
+    totalPages: resource.totalPages || resource.pages?.length || 0,
+    thumbnailUrl: resource.thumbnailUrl,
+    description: resource.description || '',
+    grade: resource.grade || '',
+    subject: resource.subject || '',
+    language: resource.language || 'English',
+    type: resource.type || 'book',
+    isInteractive: resource.isInteractive || false,
+    hasVideo: resource.hasVideo || false,
+    hasAudio: resource.hasAudio || false,
+    xapiEnabled: resource.xapiEnabled || false,
+    content: resource.content || '',
+    mediaAssets: resource.mediaAssets || [],
+    interactiveElements: resource.interactiveElements || [],
+    trackingConfig: resource.trackingConfig || {
+      trackPageViews: true,
+      trackReadingTime: true,
+      trackCompletionRate: true
+    }
+  };
+}
