@@ -14,5 +14,8 @@ export {
   ProgressStatusCard
 };
 
+// Aliases for backward compatibility
+export { LibraryStatusCard as LibraryRecommendationsCard } from './LibraryStatusCard';
+
 // Default export for backward compatibility
 export { AssignmentStatusCard as default } from './AssignmentStatusCard';

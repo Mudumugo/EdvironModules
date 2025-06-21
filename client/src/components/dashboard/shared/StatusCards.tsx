@@ -18,20 +18,22 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
-export function AssignmentStatusCard() {
-  return <div>Assignment Status Card</div>;
-}
+// Legacy exports - these are now moved to separate component files
+export { AssignmentStatusCard } from './StatusCards/AssignmentStatusCard';
+export { AttendanceStatusCard } from './StatusCards/AttendanceStatusCard';
+export { GradeStatusCard } from './StatusCards/GradeStatusCard';
+export { LibraryStatusCard } from './StatusCards/LibraryStatusCard';
 
-export function NotificationsCard() {
-  return <div>Notifications Card</div>;
-}
+// Aliases for backward compatibility
+export { LibraryStatusCard as LibraryRecommendationsCard } from './StatusCards/LibraryStatusCard';
 
+// Legacy placeholder exports - TODO: create dedicated components
 export function NextEventCard() {
   return <div>Next Event Card</div>;
 }
 
-export function LibraryRecommendationsCard() {
-  return <div>Library Recommendations Card</div>;
+export function NotificationsCard() {
+  return <div>Notifications Card</div>;
 }
 
 export default function StatusCards() {
