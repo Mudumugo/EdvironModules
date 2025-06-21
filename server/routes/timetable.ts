@@ -2,6 +2,7 @@ import type { Express, Response } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../db";
 import { classes } from "@shared/schemas/education.schema";
+// Note: timetableEntries removed as it's not part of modular schema
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
