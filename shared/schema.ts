@@ -15,24 +15,16 @@ import {
   libraryCategories,
   librarySubjects,
   libraryItems,
-  assignments,
-  assignmentSubmissions,
   notebooks,
   notebookSections,
   notebookPages,
-  lockerItems,
-  classes,
-  timetableEntries,
-  notebookActivity,
-  subjects,
-  chapters,
-  topics,
-  leads,
-  leadActivities,
-  demoRequests,
-  pages,
-  stickyNotes
+  lockerItems
 } from "./schemas/content";
+import {
+  classes,
+  assignments,
+  assignmentSubmissions
+} from "./schemas/education.schema";
 import {
   notifications,
   events,

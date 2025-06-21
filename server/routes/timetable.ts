@@ -1,7 +1,7 @@
 import type { Express, Response } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../db";
-import { timetableEntries, classes } from "@shared/schema";
+import { classes } from "@shared/schemas/education.schema";
 import { isAuthenticated } from "../replitAuth";
 import { requirePermission } from "../roleMiddleware";
 import { PERMISSIONS } from "@shared/schema";
