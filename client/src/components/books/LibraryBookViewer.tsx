@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   ChevronLeft, 
@@ -9,8 +9,10 @@ import {
   X,
   Home,
   BookOpen,
-  Menu
+  Menu,
+  Activity
 } from 'lucide-react';
+import { contentOptimizer, performanceMonitor } from '@/lib/performance/contentOptimizer';
 
 interface LibraryBookViewerProps {
   bookData?: {
@@ -44,6 +46,11 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
   const [bookmarkPages, setBookmarkPages] = useState<number[]>([]);
   const [showControls, setShowControls] = useState(true);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPerformanceStats, setShowPerformanceStats] = useState(false);
+  
+  const contentRef = useRef<HTMLDivElement>(null);
+  const pageChangeTimeoutRef = useRef<NodeJS.Timeout>();
 
   const totalPages = bookData?.totalPages || 15;
 
@@ -69,6 +76,39 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
       window.removeEventListener('touchstart', handleActivity);
     };
   }, []);
+
+  // Initialize performance monitoring and preloading
+  useEffect(() => {
+    if (bookData?.pages && bookData.pages.length > 0) {
+      // Preload adjacent pages when book opens
+      contentOptimizer.preloadAdjacentPages(
+        currentPage, 
+        totalPages, 
+        (pageNum) => bookData.pages[pageNum - 1] || ''
+      );
+    }
+
+    return () => {
+      // Cleanup when component unmounts
+      if (pageChangeTimeoutRef.current) {
+        clearTimeout(pageChangeTimeoutRef.current);
+      }
+    };
+  }, [bookData, currentPage, totalPages]);
+
+  // Monitor memory usage and cleanup if needed
+  useEffect(() => {
+    const memoryCheckInterval = setInterval(() => {
+      const memoryStats = contentOptimizer.getMemoryStats();
+      
+      // If cache is getting full, cleanup more aggressively
+      if (memoryStats.cachedPages > memoryStats.cacheSize * 0.8) {
+        contentOptimizer.cleanup(currentPage, 2);
+      }
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(memoryCheckInterval);
+  }, [currentPage]);
 
   // Handle xAPI messages from interactive content
   useEffect(() => {
@@ -98,11 +138,37 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
     return () => window.removeEventListener('message', handleMessage);
   }, [bookData, currentPage]);
 
-  const goToPage = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  // Optimized page navigation with performance tracking
+  const goToPage = useCallback((page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      performanceMonitor.startTiming('pageNavigation');
+      setIsLoading(true);
+      
+      // Clear previous timeout
+      if (pageChangeTimeoutRef.current) {
+        clearTimeout(pageChangeTimeoutRef.current);
+      }
+      
+      // Debounce page changes for better performance
+      pageChangeTimeoutRef.current = setTimeout(() => {
+        setCurrentPage(page);
+        
+        // Cleanup old content and preload adjacent pages
+        contentOptimizer.cleanup(page, 3);
+        
+        if (bookData?.pages) {
+          contentOptimizer.preloadAdjacentPages(
+            page, 
+            totalPages, 
+            (pageNum) => bookData.pages[pageNum - 1] || ''
+          );
+        }
+        
+        setIsLoading(false);
+        performanceMonitor.endTiming('pageNavigation');
+      }, 100);
     }
-  };
+  }, [currentPage, totalPages, bookData]);
 
   const goToNextPage = () => goToPage(currentPage + 1);
   const goToPreviousPage = () => goToPage(currentPage - 1);
@@ -119,32 +185,41 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
     );
   };
 
-  const renderPageContent = () => {
+  // Optimized content rendering with caching and lazy loading
+  const renderPageContent = useMemo(() => {
     const pageContent = bookData?.pages?.[currentPage - 1];
     
-    if (pageContent) {
+    if (!pageContent) {
       return (
-        <div 
-          className="w-full h-full bg-white rounded-lg shadow-sm overflow-auto"
-          style={{
-            padding: zoom > 150 ? '1rem' : zoom > 100 ? '1.5rem' : '2rem',
-            transform: `scale(${zoom / 100})`,
-            transformOrigin: 'center center'
-          }}
-          dangerouslySetInnerHTML={{ __html: pageContent }}
-        />
+        <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="text-center">
+            <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4 animate-pulse" />
+            <p className="text-gray-600">Loading page {currentPage}...</p>
+          </div>
+        </div>
       );
     }
-    
+
+    performanceMonitor.startTiming('contentOptimization');
+    const optimizedContent = contentOptimizer.optimizeContent(pageContent, currentPage);
+    performanceMonitor.endTiming('contentOptimization');
+
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
-        <div className="text-center">
-          <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">Loading page {currentPage}...</p>
-        </div>
-      </div>
+      <div 
+        ref={contentRef}
+        className={`w-full h-full bg-white rounded-lg shadow-sm overflow-auto transition-opacity duration-200 ${
+          isLoading ? 'opacity-50' : 'opacity-100'
+        }`}
+        style={{
+          padding: zoom > 150 ? '1rem' : zoom > 100 ? '1.5rem' : '2rem',
+          transform: `scale(${zoom / 100})`,
+          transformOrigin: 'center center',
+          transition: 'transform 0.2s ease-out, opacity 0.2s ease-out'
+        }}
+        dangerouslySetInnerHTML={{ __html: optimizedContent }}
+      />
     );
-  };
+  }, [currentPage, bookData?.pages, zoom, isLoading]);
 
   const renderTableOfContents = () => {
     if (!showTableOfContents) return null;
@@ -227,8 +302,17 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
             {/* Book Content Area */}
             <div className="relative w-full h-full overflow-hidden rounded-lg">
               <div className="w-full h-full flex items-center justify-center p-1 sm:p-3 md:p-4 lg:p-6">
-                {renderPageContent()}
+                {renderPageContent}
               </div>
+              
+              {/* Loading overlay */}
+              {isLoading && (
+                <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+                  <div className="bg-black bg-opacity-60 text-white px-4 py-2 rounded-full text-sm shadow-lg">
+                    Loading page {currentPage}...
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* Enhanced Header with Navigation */}
@@ -282,6 +366,17 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
                     {zoom}% zoom
                   </div>
                 )}
+                
+                {/* Performance indicator */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowPerformanceStats(!showPerformanceStats)}
+                  className="bg-black bg-opacity-60 hover:bg-opacity-80 text-white border-0 rounded-full w-9 h-9 shadow-lg backdrop-blur-sm"
+                  title="Performance Stats"
+                >
+                  <Activity className="h-4 w-4" />
+                </Button>
               </div>
             </div>
             
@@ -405,6 +500,99 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
               </div>
             </div>
             
+          </div>
+        </div>
+      </div>
+      
+      {/* Performance Stats Modal */}
+      {showPerformanceStats && (
+        <PerformanceStatsModal 
+          onClose={() => setShowPerformanceStats(false)}
+          currentPage={currentPage}
+        />
+      )}
+    </div>
+  );
+};
+
+// Performance Stats Modal Component
+const PerformanceStatsModal: React.FC<{
+  onClose: () => void;
+  currentPage: number;
+}> = ({ onClose, currentPage }) => {
+  const [stats, setStats] = useState<any>({});
+
+  useEffect(() => {
+    const updateStats = () => {
+      const performanceStats = performanceMonitor.getMetricSummary();
+      const memoryStats = contentOptimizer.getMemoryStats();
+      setStats({ performance: performanceStats, memory: memoryStats });
+    };
+
+    updateStats();
+    const interval = setInterval(updateStats, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[999999] bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Performance Stats</h3>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        
+        <div className="p-4 space-y-4">
+          {/* Memory Stats */}
+          <div>
+            <h4 className="font-medium mb-2">Memory Usage</h4>
+            <div className="text-sm space-y-1">
+              <div>Cached Pages: {stats.memory?.cachedPages || 0}</div>
+              <div>Preloaded Pages: {stats.memory?.preloadedPages || 0}</div>
+              <div>Cache Limit: {stats.memory?.cacheSize || 0}</div>
+            </div>
+          </div>
+          
+          {/* Performance Metrics */}
+          <div>
+            <h4 className="font-medium mb-2">Performance Metrics</h4>
+            <div className="text-sm space-y-1">
+              {Object.entries(stats.performance || {}).map(([key, value]: [string, any]) => (
+                <div key={key} className="flex justify-between">
+                  <span>{key}:</span>
+                  <span>{value.avg.toFixed(2)}ms avg</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Current Status */}
+          <div>
+            <h4 className="font-medium mb-2">Current Status</h4>
+            <div className="text-sm space-y-1">
+              <div>Current Page: {currentPage}</div>
+              <div>Memory: {(performance.memory as any)?.usedJSHeapSize ? 
+                `${Math.round((performance.memory as any).usedJSHeapSize / 1024 / 1024)}MB` : 'N/A'}</div>
+            </div>
+          </div>
+          
+          {/* Actions */}
+          <div className="pt-2 border-t">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                contentOptimizer.clearAllCaches();
+                performanceMonitor.clearMetrics();
+              }}
+              className="w-full"
+            >
+              Clear All Caches
+            </Button>
           </div>
         </div>
       </div>
