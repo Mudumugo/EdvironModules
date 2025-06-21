@@ -33,13 +33,60 @@ export const useBookViewerControls = () => {
     }
   }, []);
 
-  // Mouse wheel zoom
+  // Mouse wheel zoom and touch gestures
   const handleWheel = useCallback((e: WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -25 : 25;
       setZoom(prev => Math.max(25, Math.min(300, prev + delta)));
     }
+  }, []);
+
+  // Touch gesture handling for mobile
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number; distance?: number } | null>(null);
+  const [initialZoom, setInitialZoom] = useState(100);
+
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    if (e.touches.length === 1) {
+      setTouchStart({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      });
+    } else if (e.touches.length === 2) {
+      const distance = Math.sqrt(
+        Math.pow(e.touches[0].clientX - e.touches[1].clientX, 2) +
+        Math.pow(e.touches[0].clientY - e.touches[1].clientY, 2)
+      );
+      setTouchStart({
+        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+        y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        distance
+      });
+      setInitialZoom(zoom);
+    }
+  }, [zoom]);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!touchStart) return;
+
+    if (e.touches.length === 2 && touchStart.distance) {
+      e.preventDefault();
+      const currentDistance = Math.sqrt(
+        Math.pow(e.touches[0].clientX - e.touches[1].clientX, 2) +
+        Math.pow(e.touches[0].clientY - e.touches[1].clientY, 2)
+      );
+      const scale = currentDistance / touchStart.distance;
+      const newZoom = Math.max(25, Math.min(300, initialZoom * scale));
+      setZoom(newZoom);
+    } else if (e.touches.length === 1 && zoom > 100) {
+      const deltaX = e.touches[0].clientX - touchStart.x;
+      const deltaY = e.touches[0].clientY - touchStart.y;
+      setPanOffset({ x: deltaX, y: deltaY });
+    }
+  }, [touchStart, zoom, initialZoom]);
+
+  const handleTouchEnd = useCallback(() => {
+    setTouchStart(null);
   }, []);
 
   // Pan functionality for zoomed content
@@ -115,7 +162,9 @@ export const useBookViewerControls = () => {
     };
 
     document.addEventListener('mousemove', handleMouseMoveActivity);
-    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
     document.addEventListener('wheel', handleWheel, { passive: false });
     document.addEventListener('mousedown', handleMouseDown);
     document.addEventListener('mouseup', handleMouseUp);
@@ -123,11 +172,13 @@ export const useBookViewerControls = () => {
     return () => {
       document.removeEventListener('mousemove', handleMouseMoveActivity);
       document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
       document.removeEventListener('wheel', handleWheel);
       document.removeEventListener('mousedown', handleMouseDown);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [handleUserActivity, handleWheel, handleMouseDown, handleMouseMove, handleMouseUp]);
+  }, [handleUserActivity, handleWheel, handleMouseDown, handleMouseMove, handleMouseUp, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
   return {
     zoom,

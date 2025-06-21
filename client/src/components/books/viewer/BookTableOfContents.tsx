@@ -88,13 +88,13 @@ export const BookTableOfContents: React.FC<BookTableOfContentsProps> = ({
   const tableOfContents = generateTableOfContents();
 
   return (
-    <div className="absolute bottom-full left-0 mb-2 w-80 sm:w-96 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-80 sm:max-h-96 overflow-y-auto">
-      <div className="p-4">
+    <div className="fixed inset-4 sm:absolute sm:bottom-full sm:left-0 sm:inset-auto sm:mb-2 sm:w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-[80vh] sm:max-h-80 md:max-h-96 overflow-y-auto">
+      <div className="p-4 sm:p-4">
         <div className="flex items-center justify-between mb-3 border-b pb-2">
-          <h3 className="font-semibold text-lg">Table of Contents</h3>
+          <h3 className="font-semibold text-lg sm:text-lg">Table of Contents</h3>
           <button 
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors text-2xl sm:text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
             title="Close"
           >
             ×
@@ -103,11 +103,11 @@ export const BookTableOfContents: React.FC<BookTableOfContentsProps> = ({
         <div className="space-y-1">
           {tableOfContents.map((chapter, chapterIndex) => (
             <div key={chapterIndex} className="border-b border-gray-100 last:border-b-0">
-              <div className="p-2 bg-gray-50 rounded-t">
+              <div className="p-3 sm:p-2 bg-gray-50 rounded-t">
                 <div className="flex justify-between items-center">
                   <div>
-                    <div className="font-semibold text-gray-900">{chapter.chapter}</div>
-                    <div className="text-sm text-gray-600">{chapter.title}</div>
+                    <div className="font-semibold text-gray-900 text-base sm:text-sm">{chapter.chapter}</div>
+                    <div className="text-sm sm:text-sm text-gray-600">{chapter.title}</div>
                   </div>
                   <div className="text-sm text-gray-500">Pages {chapter.pages}</div>
                 </div>
@@ -120,11 +120,11 @@ export const BookTableOfContents: React.FC<BookTableOfContentsProps> = ({
                       onGoToPage(topic.page);
                       onClose();
                     }}
-                    className="w-full text-left p-2 pl-4 hover:bg-blue-50 border-l-2 border-transparent hover:border-blue-300 transition-colors"
+                    className="w-full text-left p-3 sm:p-2 pl-4 hover:bg-blue-50 border-l-2 border-transparent hover:border-blue-300 transition-colors touch-manipulation"
                   >
                     <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-700">{topic.title}</div>
-                      <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      <div className="text-base sm:text-sm text-gray-700 pr-2">{topic.title}</div>
+                      <div className="text-sm sm:text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0">
                         Page {topic.page}
                       </div>
                     </div>

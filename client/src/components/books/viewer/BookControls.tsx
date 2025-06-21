@@ -80,7 +80,7 @@ export const BookControls: React.FC<BookControlsProps> = ({
       </div>
       
       {/* Left margin controls - Previous page */}
-      <div className={`absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-500 ${
+      <div className={`absolute left-2 sm:left-4 md:left-2 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-500 ${
         showControls ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
       }`}>
         <Button 
@@ -88,14 +88,14 @@ export const BookControls: React.FC<BookControlsProps> = ({
           size="sm" 
           onClick={onPreviousPage} 
           disabled={currentPage <= 1}
-          className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation"
+          className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-14 h-14 sm:w-12 sm:h-12 md:w-10 md:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
         >
-          <ChevronLeft className="h-6 w-6 sm:h-5 sm:w-5" />
+          <ChevronLeft className="h-7 w-7 sm:h-6 sm:w-6 md:h-5 md:w-5" />
         </Button>
       </div>
       
       {/* Right margin controls - Next page */}
-      <div className={`absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-500 ${
+      <div className={`absolute right-2 sm:right-4 md:right-2 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-500 ${
         showControls ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
       }`}>
         <Button 
@@ -103,170 +103,171 @@ export const BookControls: React.FC<BookControlsProps> = ({
           size="sm" 
           onClick={onNextPage} 
           disabled={currentPage >= totalPages}
-          className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation"
+          className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-14 h-14 sm:w-12 sm:h-12 md:w-10 md:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
         >
-          <ChevronRight className="h-6 w-6 sm:h-5 sm:w-5" />
+          <ChevronRight className="h-7 w-7 sm:h-6 sm:w-6 md:h-5 md:w-5" />
         </Button>
       </div>
       
       {/* Bottom margin controls - Tools and navigation */}
-      <div className={`absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 flex items-center justify-between z-10 transition-all duration-500 ${
+      <div className={`absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 z-10 transition-all duration-500 ${
         showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}>
-        {/* Left tools */}
-        <div className="flex items-center space-x-1 sm:space-x-2">
-          {/* Table of Contents */}
-          <div className="relative">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={onToggleTableOfContents}
-              className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full w-10 h-10 sm:w-8 sm:h-8 touch-manipulation"
-              title="Table of Contents"
-            >
-              <List className="h-5 w-5 sm:h-4 sm:w-4" />
-            </Button>
-            
-            <BookTableOfContents
-              isVisible={showTableOfContents}
-              onGoToPage={onGoToPage}
-              onClose={() => onToggleTableOfContents()}
-            />
-          </div>
-          
-          {/* Interactive Mode Toggle */}
-          {isMultimediaContent && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={onToggleInteractiveMode}
-              className={`${showInteractiveMode ? 'bg-blue-500 bg-opacity-80' : 'bg-black bg-opacity-30'} hover:bg-opacity-50 text-white border-0 rounded-full`}
-              title="Interactive Mode (Press 'I')"
-            >
-              <Monitor className="h-4 w-4" />
-            </Button>
-          )}
-
-          {/* Zoom controls */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onZoomOut} 
-            disabled={zoom <= 25}
-            className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-            title="Zoom Out (Ctrl + -)"
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
-          
-          <div 
-            className="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs min-w-[50px] text-center cursor-pointer hover:bg-opacity-70 transition-all"
-            onClick={onResetZoom}
-            title="Click to reset zoom"
-          >
-            {zoom}%
-          </div>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onZoomIn} 
-            disabled={zoom >= 300}
-            className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-            title="Zoom In (Ctrl + +)"
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
-          
-          {onResetZoom && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={onResetZoom}
-              className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-              title="Reset Zoom (Ctrl + 0)"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
         
-        {/* Center - Page input and quick navigation */}
-        <div className="flex items-center space-x-2">
-          <div className="bg-black bg-opacity-50 rounded-full px-4 py-2 flex items-center space-x-2">
-            <span className="text-white text-sm">Page</span>
-            <input
-              type="number"
-              value={currentPage}
-              onChange={(e) => {
-                const page = parseInt(e.target.value);
-                if (page >= 1 && page <= totalPages) {
-                  onGoToPage(page);
-                }
-              }}
-              className="w-16 px-2 py-1 text-center bg-transparent text-white border-0 focus:outline-none text-sm"
-              min="1"
-              max={totalPages}
-            />
-            <span className="text-white text-sm">of {totalPages}</span>
-          </div>
+        {/* Mobile-first responsive layout */}
+        <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           
-          {/* Quick jump buttons */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => onGoToPage(1)}
-            disabled={currentPage === 1}
-            className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-            title="First Page"
-          >
-            <span className="text-xs">First</span>
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => onGoToPage(totalPages)}
-            disabled={currentPage === totalPages}
-            className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-            title="Last Page"
-          >
-            <span className="text-xs">Last</span>
-          </Button>
-        </div>
-        
-        {/* Right tools */}
-        <div className="flex items-center space-x-2">
-          {/* Bookmark */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => onToggleBookmark(currentPage)}
-            className={`${bookmarkPages.includes(currentPage) ? 'bg-yellow-500 bg-opacity-90 shadow-lg' : 'bg-black bg-opacity-30'} hover:bg-opacity-70 text-white border-0 rounded-full transition-all duration-200`}
-            title={bookmarkPages.includes(currentPage) ? 'Remove bookmark' : 'Add bookmark'}
-          >
-            <Bookmark className={`h-4 w-4 ${bookmarkPages.includes(currentPage) ? 'fill-current' : ''}`} />
-          </Button>
-          
-          {/* Bookmarks count indicator */}
-          {bookmarkPages.length > 0 && (
-            <div className="bg-yellow-500 bg-opacity-80 text-white px-2 py-1 rounded-full text-xs shadow-lg">
-              {bookmarkPages.length} saved
+          {/* Top row on mobile - Page navigation */}
+          <div className="flex items-center justify-center space-x-2 sm:order-2">
+            <div className="bg-black bg-opacity-60 rounded-full px-4 py-3 sm:px-4 sm:py-2 flex items-center space-x-2 shadow-lg backdrop-blur-sm">
+              <span className="text-white text-sm font-medium">Page</span>
+              <input
+                type="number"
+                value={currentPage}
+                onChange={(e) => {
+                  const page = parseInt(e.target.value);
+                  if (page >= 1 && page <= totalPages) {
+                    onGoToPage(page);
+                  }
+                }}
+                className="w-12 sm:w-16 px-2 py-1 text-center bg-transparent text-white border-0 focus:outline-none text-sm font-medium"
+                min="1"
+                max={totalPages}
+              />
+              <span className="text-white text-sm">of {totalPages}</span>
             </div>
-          )}
-          
-          {/* Close */}
-          {onClose && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={onClose}
-              className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white border-0 rounded-full"
-              title="Close"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+            
+            {/* Quick jump buttons - hidden on mobile */}
+            <div className="hidden sm:flex items-center space-x-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => onGoToPage(1)}
+                disabled={currentPage === 1}
+                className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full px-3 py-2 text-xs shadow-lg backdrop-blur-sm"
+                title="First Page"
+              >
+                First
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => onGoToPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full px-3 py-2 text-xs shadow-lg backdrop-blur-sm"
+                title="Last Page"
+              >
+                Last
+              </Button>
+            </div>
+          </div>
+
+          {/* Bottom row on mobile - Tools */}
+          <div className="flex items-center justify-between sm:justify-start sm:space-x-2 sm:order-1">
+            
+            {/* Left tools group */}
+            <div className="flex items-center space-x-2">
+              {/* Table of Contents */}
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onToggleTableOfContents}
+                  className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
+                  title="Table of Contents"
+                >
+                  <List className="h-5 w-5 sm:h-4 sm:w-4" />
+                </Button>
+                
+                <BookTableOfContents
+                  isVisible={showTableOfContents}
+                  onGoToPage={onGoToPage}
+                  onClose={() => onToggleTableOfContents()}
+                />
+              </div>
+              
+              {/* Interactive Mode Toggle */}
+              {isMultimediaContent && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onToggleInteractiveMode}
+                  className={`${showInteractiveMode ? 'bg-blue-500 bg-opacity-80' : 'bg-black bg-opacity-40'} hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm`}
+                  title="Interactive Mode"
+                >
+                  <Monitor className="h-5 w-5 sm:h-4 sm:w-4" />
+                </Button>
+              )}
+
+              {/* Zoom controls */}
+              <div className="flex items-center space-x-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onZoomOut} 
+                  disabled={zoom <= 25}
+                  className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="h-5 w-5 sm:h-4 sm:w-4" />
+                </Button>
+                
+                <div 
+                  className="bg-black bg-opacity-60 text-white px-3 py-2 sm:px-2 sm:py-1 rounded-full text-sm sm:text-xs min-w-[60px] sm:min-w-[50px] text-center cursor-pointer hover:bg-opacity-70 transition-all shadow-lg backdrop-blur-sm"
+                  onClick={onResetZoom}
+                  title="Reset zoom"
+                >
+                  {zoom}%
+                </div>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onZoomIn} 
+                  disabled={zoom >= 300}
+                  className="bg-black bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="h-5 w-5 sm:h-4 sm:w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            {/* Right tools group */}
+            <div className="flex items-center space-x-2">
+              {/* Bookmark */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => onToggleBookmark(currentPage)}
+                className={`${bookmarkPages.includes(currentPage) ? 'bg-yellow-500 bg-opacity-90' : 'bg-black bg-opacity-40'} hover:bg-opacity-70 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm transition-all duration-200`}
+                title={bookmarkPages.includes(currentPage) ? 'Remove bookmark' : 'Add bookmark'}
+              >
+                <Bookmark className={`h-5 w-5 sm:h-4 sm:w-4 ${bookmarkPages.includes(currentPage) ? 'fill-current' : ''}`} />
+              </Button>
+              
+              {/* Bookmarks count indicator - mobile optimized */}
+              {bookmarkPages.length > 0 && (
+                <div className="bg-yellow-500 bg-opacity-90 text-white px-3 py-2 sm:px-2 sm:py-1 rounded-full text-sm sm:text-xs shadow-lg backdrop-blur-sm font-medium">
+                  {bookmarkPages.length}
+                </div>
+              )}
+              
+              {/* Close */}
+              {onClose && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onClose}
+                  className="bg-red-500 bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
+                  title="Close Book"
+                >
+                  <X className="h-5 w-5 sm:h-4 sm:w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </>

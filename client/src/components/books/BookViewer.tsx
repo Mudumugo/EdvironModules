@@ -140,18 +140,18 @@ export const BookViewer: React.FC<BookViewerProps> = ({ bookData, onClose, class
       {/* Flipbook-style Book Container - Full immersive viewport */}
       <div className="relative w-full h-full flex items-center justify-center">
         
-        {/* The Book itself - Responsive dimensions for all devices */}
-        <div className="relative w-full h-full flex items-center justify-center px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4">
+        {/* The Book itself - Mobile-first responsive design */}
+        <div className="relative w-full h-full flex items-center justify-center px-1 sm:px-4 md:px-6 lg:px-8 py-1 sm:py-4">
           
           {/* Book Shadow and 3D Effect */}
-          <div className="relative bg-white rounded-lg shadow-2xl transform transition-all duration-300 w-full h-full max-w-5xl max-h-[95vh] sm:max-h-[90vh]" 
+          <div className="relative bg-white rounded-lg shadow-2xl transform transition-all duration-300 w-full h-full max-w-full sm:max-w-5xl max-h-full sm:max-h-[90vh]" 
                style={{
                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                }}>
             
             {/* Book Content Area */}
             <div className="relative w-full h-full overflow-hidden rounded-lg">
-              <div className="w-full h-full flex items-center justify-center p-2 sm:p-3 md:p-4 lg:p-6">
+              <div className="w-full h-full flex items-center justify-center p-1 sm:p-3 md:p-4 lg:p-6">
                 <BookPageContent
                   bookData={bookData}
                   currentPage={currentPage}
