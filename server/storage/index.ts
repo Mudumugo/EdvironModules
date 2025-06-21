@@ -37,20 +37,20 @@ export const storage = new Storage(pool);
 // Legacy interface support (for backward compatibility)
 export interface IStorage {
   // Core methods
-  createUser: typeof storage.core.createUser;
-  getUserById: typeof storage.core.getUserById;
-  getUserByEmail: typeof storage.core.getUserByEmail;
-  updateUser: typeof storage.core.updateUser;
+  createUser(userData: any): Promise<any>;
+  getUserById(id: string): Promise<any>;
+  getUserByEmail(email: string): Promise<any>;
+  updateUser(id: string, userData: any): Promise<any>;
   
   // Content methods
-  createLibraryItem: typeof storage.content.createLibraryItem;
-  getLibraryItems: typeof storage.content.getLibraryItems;
-  createAssignment: typeof storage.content.createAssignment;
-  getAssignments: typeof storage.content.getAssignments;
+  createLibraryItem(itemData: any): Promise<any>;
+  getLibraryItems(tenantId: string, filters?: any): Promise<any>;
+  createAssignment(assignmentData: any): Promise<any>;
+  getAssignments(tenantId: string, teacherId?: string): Promise<any>;
   
   // System methods
-  createNotification: typeof storage.system.createNotification;
-  getNotifications: typeof storage.system.getNotifications;
+  createNotification(notificationData: any): Promise<any>;
+  getNotifications(userId: string, options?: any): Promise<any>;
 }
 
 // Legacy storage implementation

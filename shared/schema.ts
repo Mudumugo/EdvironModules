@@ -9,7 +9,9 @@ import { relations } from "drizzle-orm";
 import { 
   users, 
   tenants, 
-  userSettings,
+  userSettings
+} from "./schemas/core";
+import {
   libraryCategories,
   librarySubjects,
   libraryItems,
@@ -18,13 +20,15 @@ import {
   notebooks,
   notebookSections,
   notebookPages,
-  lockerItems,
+  lockerItems
+} from "./schemas/content";
+import {
   notifications,
   events,
   conversations,
   messages,
   devices
-} from "./schemas";
+} from "./schemas/system";
 
 // Define relationships
 export const usersRelations = relations(users, ({ one, many }) => ({
