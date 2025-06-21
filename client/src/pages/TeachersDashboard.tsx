@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { CollapsibleDashboardLayout } from "@/components/dashboard/CollapsibleDashboardLayout";
 import { ModuleGrid } from "@/components/dashboard/shared/ModuleGrid";
 import { Module } from "@/components/dashboard/shared/ModuleCard";
 import { TechTutorCard } from "@/components/dashboard/shared/TechTutorCard";
@@ -177,11 +176,43 @@ export default function TeachersDashboard() {
   }, [searchTerm, selectedCategory, modules]);
 
   return (
-    <CollapsibleDashboardLayout 
-      title="Teachers Dashboard"
-      subtitle="Comprehensive teaching tools and classroom management"
-    >
-      <div className="max-w-7xl mx-auto min-w-[1024px]">
+    <div className="min-h-screen bg-gray-50">
+      {/* Top Navigation Bar */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+                <GraduationCap className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col gap-0.5 leading-none">
+                <span className="font-semibold text-gray-900">EdVirons</span>
+                <span className="text-xs text-gray-500">Teachers Portal</span>
+              </div>
+            </div>
+            <div className="h-6 w-px bg-gray-300 mx-2" />
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">Teachers Dashboard</h1>
+              <p className="text-sm text-gray-600">Comprehensive teaching tools and classroom management</p>
+            </div>
+          </div>
+          {user && (
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-gray-600 text-right">
+                <div className="font-medium">{user.firstName} {user.lastName}</div>
+                <div className="text-xs text-gray-500">Teacher</div>
+              </div>
+              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <span className="text-sm font-medium text-blue-600">
+                  {user.firstName?.[0]}{user.lastName?.[0]}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto p-6 min-w-[1024px]">
         {/* Search and Filter Controls - Desktop Only */}
         <div className="mb-6 flex flex-row gap-4 items-center justify-between">
           <div className="flex-1 max-w-md">
@@ -303,6 +334,6 @@ export default function TeachersDashboard() {
           </div>
         )}
       </div>
-    </CollapsibleDashboardLayout>
+    </div>
   );
 }
