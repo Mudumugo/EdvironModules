@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import ScrivenerInspiredEditor from "./ScrivenerInspiredEditor";
 import {
   BookOpen,
@@ -17,18 +16,11 @@ import {
   Target,
   Calendar,
   Users,
-  Archive,
   Settings,
-  Play,
-  Save,
-  Share,
   Eye,
   Edit3,
-  Layers,
-  Bookmark,
   CheckCircle,
   Clock,
-  AlertTriangle
 } from "lucide-react";
 
 interface BookProject {
@@ -150,143 +142,8 @@ export default function BookAuthoringWorkflow() {
     }
   };
 
-  const [projects] = useState<BookProject[]>([
-    {
-      id: 'proj1',
-      title: 'Advanced Chemistry Textbook',
-      description: 'Comprehensive chemistry textbook for Grade 11-12 students',
-      subject: 'Chemistry',
-      gradeLevel: 'Grade 11-12',
-      targetWords: 50000,
-      currentWords: 12450,
-      deadline: new Date('2024-08-15'),
-      status: 'writing',
-      chaptersCount: 15,
-      collaborators: ['Dr. Sarah Chen', 'Prof. Mike Johnson'],
-      created: new Date('2024-05-01'),
-      modified: new Date('2024-06-18')
-    },
-    {
-      id: 'proj2',
-      title: 'Introduction to Biology',
-      description: 'Interactive biology textbook with multimedia content',
-      subject: 'Biology',
-      gradeLevel: 'Grade 9-10',
-      targetWords: 35000,
-      currentWords: 8200,
-      status: 'planning',
-      chaptersCount: 12,
-      collaborators: ['Dr. Lisa Wang'],
-      created: new Date('2024-06-10'),
-      modified: new Date('2024-06-17')
-    }
-  ]);
-
-  const [templates] = useState<BookTemplate[]>([
-    {
-      id: 'science-textbook',
-      name: 'Science Textbook',
-      description: 'Structured for scientific concepts with experiments and examples',
-      structure: [
-        'Introduction & Learning Objectives',
-        'Theoretical Concepts',
-        'Practical Applications',
-        'Laboratory Experiments',
-        'Real-world Examples',
-        'Assessment & Review',
-        'Further Reading'
-      ],
-      targetAudience: 'High School Students',
-      estimatedPages: 200
-    },
-    {
-      id: 'interactive-guide',
-      name: 'Interactive Learning Guide',
-      description: 'Multimedia-rich guide with interactive elements',
-      structure: [
-        'Welcome & Navigation',
-        'Core Concepts',
-        'Interactive Activities',
-        'Case Studies',
-        'Practice Exercises',
-        'Progress Assessment',
-        'Resources & References'
-      ],
-      targetAudience: 'Middle School Students',
-      estimatedPages: 150
-    },
-    {
-      id: 'research-handbook',
-      name: 'Research Handbook',
-      description: 'Comprehensive guide for research and reference',
-      structure: [
-        'Overview & Methodology',
-        'Literature Review',
-        'Research Findings',
-        'Data Analysis',
-        'Conclusions',
-        'Appendices',
-        'Bibliography'
-      ],
-      targetAudience: 'College Students',
-      estimatedPages: 300
-    }
-  ]);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'complete': return 'bg-green-100 text-green-800';
-      case 'review': return 'bg-blue-100 text-blue-800';
-      case 'editing': return 'bg-yellow-100 text-yellow-800';
-      case 'writing': return 'bg-purple-100 text-purple-800';
-      case 'planning': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'complete': return <CheckCircle className="h-4 w-4" />;
-      case 'review': return <Eye className="h-4 w-4" />;
-      case 'editing': return <Edit3 className="h-4 w-4" />;
-      case 'writing': return <FileText className="h-4 w-4" />;
-      case 'planning': return <Target className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
-    }
-  };
-
   if (showEditor) {
-    return (
-      <div className="h-screen">
-        <div className="flex items-center justify-between p-4 border-b bg-white dark:bg-gray-800">
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowEditor(false)}
-            >
-              ← Back to Projects
-            </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <h1 className="text-xl font-semibold">Advanced Chemistry Textbook</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <Save className="h-4 w-4 mr-2" />
-              Save
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-            <Button size="sm">
-              <Play className="h-4 w-4 mr-2" />
-              Preview
-            </Button>
-          </div>
-        </div>
-        <ScrivenerInspiredEditor />
-      </div>
-    );
+    return <ScrivenerInspiredEditor />;
   }
 
   return (
@@ -476,84 +333,84 @@ export default function BookAuthoringWorkflow() {
       {!projectsLoading && (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map(project => (
-          <Card key={project.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{project.title}</CardTitle>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {project.description}
-                  </p>
+            <Card key={project.id} className="hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg">{project.title}</CardTitle>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      {project.description}
+                    </p>
+                  </div>
+                  <Badge className={getStatusColor(project.status)}>
+                    {getStatusIcon(project.status)}
+                    <span className="ml-1 capitalize">{project.status}</span>
+                  </Badge>
                 </div>
-                <Badge className={getStatusColor(project.status)}>
-                  {getStatusIcon(project.status)}
-                  <span className="ml-1 capitalize">{project.status}</span>
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Progress */}
-              <div>
-                <div className="flex justify-between items-center text-sm">
-                  <span>Progress</span>
-                  <span>{project.currentWords.toLocaleString()} / {project.targetWords.toLocaleString()} words</span>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Progress */}
+                <div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Progress</span>
+                    <span>{project.currentWords.toLocaleString()} / {project.targetWords.toLocaleString()} words</span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
+                    <div 
+                      className="h-full bg-blue-500 rounded-full"
+                      style={{ width: `${Math.min((project.currentWords / project.targetWords) * 100, 100)}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
-                  <div 
-                    className="h-full bg-blue-500 rounded-full"
-                    style={{ width: `${Math.min((project.currentWords / project.targetWords) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
 
-              {/* Details */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-600 dark:text-gray-400">Subject:</span>
-                  <div className="font-medium">{project.subject}</div>
+                {/* Details */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Subject:</span>
+                    <div className="font-medium">{project.subject}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Grade:</span>
+                    <div className="font-medium">{project.gradeLevel}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Chapters:</span>
+                    <div className="font-medium">{project.chaptersCount}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Contributors:</span>
+                    <div className="font-medium">{project.collaborators.length}</div>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-gray-600 dark:text-gray-400">Grade:</span>
-                  <div className="font-medium">{project.gradeLevel}</div>
-                </div>
-                <div>
-                  <span className="text-gray-600 dark:text-gray-400">Chapters:</span>
-                  <div className="font-medium">{project.chaptersCount}</div>
-                </div>
-                <div>
-                  <span className="text-gray-600 dark:text-gray-400">Contributors:</span>
-                  <div className="font-medium">{project.collaborators.length}</div>
-                </div>
-              </div>
 
-              {/* Deadline */}
-              {project.deadline && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Due: {project.deadline.toLocaleDateString()}
-                  </span>
-                </div>
-              )}
+                {/* Deadline */}
+                {project.deadline && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Due: {project.deadline.toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
 
-              {/* Actions */}
-              <div className="flex gap-2 pt-2">
-                <Button 
-                  className="flex-1"
-                  onClick={() => setShowEditor(true)}
-                >
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Open Editor
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                {/* Actions */}
+                <div className="flex gap-2 pt-2">
+                  <Button 
+                    className="flex-1"
+                    onClick={() => setShowEditor(true)}
+                  >
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Open Editor
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
@@ -619,9 +476,9 @@ export default function BookAuthoringWorkflow() {
               <Target className="h-8 w-8 text-orange-600" />
               <div>
                 <div className="text-2xl font-bold">
-                  {Math.round(
+                  {projects.length > 0 ? Math.round(
                     projects.reduce((sum, p) => sum + (p.currentWords / p.targetWords), 0) / projects.length * 100
-                  )}%
+                  ) : 0}%
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Avg Progress</div>
               </div>
