@@ -115,12 +115,16 @@ export function MobileLanding() {
             </div>
 
             <div className="flex items-center space-x-2">
-              <Button size="sm" variant="outline" className="text-xs px-2 py-1">
-                Demo
-              </Button>
-              <Button size="sm" className="text-xs px-3 py-1">
-                Login
-              </Button>
+              <Link href="/demo">
+                <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                  Demo
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button size="sm" className="text-xs px-3 py-1">
+                  Login
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"
@@ -507,12 +511,16 @@ export function MobileLanding() {
             Ready to transform learning?
           </h2>
           <div className="space-y-2 sm:space-y-3">
-            <Button className="w-full py-3 text-sm sm:text-base font-medium">
-              Access Portal
-            </Button>
-            <Button variant="outline" className="w-full py-3 text-sm sm:text-base font-medium">
-              Request Demo
-            </Button>
+            <Link href="/dashboard" className="block">
+              <Button className="w-full py-3 text-sm sm:text-base font-medium touch-target active:scale-95 transition-transform">
+                Access Portal
+              </Button>
+            </Link>
+            <Link href="/demo" className="block">
+              <Button variant="outline" className="w-full py-3 text-sm sm:text-base font-medium touch-target active:scale-95 transition-transform">
+                Request Demo
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

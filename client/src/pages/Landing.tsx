@@ -146,7 +146,7 @@ export function Landing() {
               </div>
             </div>
 
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-8">
               <Link href="/features" className="text-gray-600 hover:text-gray-900">
                 Features
               </Link>
@@ -159,9 +159,11 @@ export function Landing() {
               <Link href="/about" className="text-gray-600 hover:text-gray-900">
                 About
               </Link>
-              <Button variant="outline" size="sm">
-                Request Demo
-              </Button>
+              <Link href="/demo">
+                <Button variant="outline" size="sm">
+                  Request Demo
+                </Button>
+              </Link>
               <Link href="/login">
                 <Button size="sm">Login</Button>
               </Link>
@@ -1384,14 +1386,16 @@ export function Landing() {
             Ready to transform your learning experience?
           </h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/login">
+            <Link href="/dashboard">
               <Button size="lg" className="text-lg px-8 py-3">
                 Access Portal
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-3">
-              Request Demo
-            </Button>
+            <Link href="/demo">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-3">
+                Request Demo
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
