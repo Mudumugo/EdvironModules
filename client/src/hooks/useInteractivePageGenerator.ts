@@ -1,56 +1,18 @@
-import { useState } from "react";
+// Re-export from modular page generators
+export * from './pageGenerators/types';
+export { useInteractiveElements } from './pageGenerators/useInteractiveElements';
+export { usePageGeneration } from './pageGenerators/usePageGeneration';
 
-export interface InteractiveElement {
-  id: string;
-  type: 'button' | 'input' | 'slider' | 'quiz' | 'simulation' | 'drawing' | 'calculator';
-  title: string;
-  description?: string;
-  config: Record<string, any>;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
+// Legacy compatibility wrapper
+export function useInteractivePageGenerator() {
+  const pageGeneration = usePageGeneration();
+  
+  return {
+    ...pageGeneration.interactiveElements,
+    generatePage: pageGeneration.generateInteractivePage,
+    isGenerating: pageGeneration.isGenerating
+  };
 }
-
-export interface InteractivePage {
-  id: string;
-  title: string;
-  subject: string;
-  grade: string;
-  elements: InteractiveElement[];
-  background: string;
-  theme: string;
-}
-
-export const INTERACTIVE_ELEMENT_TYPES = [
-  { 
-    type: 'button', 
-    name: 'Interactive Button', 
-    icon: 'MousePointer',
-    description: 'Clickable button that triggers actions'
-  },
-  { 
-    type: 'input', 
-    name: 'Text Input', 
-    icon: 'Type',
-    description: 'Input field for user text entry'
-  },
-  { 
-    type: 'slider', 
-    name: 'Value Slider', 
-    icon: 'Sliders',
-    description: 'Slider for adjusting numeric values'
-  },
-  { 
-    type: 'quiz', 
-    name: 'Quiz Question', 
-    icon: 'HelpCircle',
-    description: 'Multiple choice or fill-in question'
-  },
-  { 
-    type: 'simulation', 
-    name: 'Simulation', 
-    icon: 'Cpu',
-    description: 'Interactive simulation or experiment'
-  },
   { 
     type: 'drawing', 
     name: 'Drawing Canvas', 
