@@ -21,6 +21,12 @@ import {
   Edit3,
   CheckCircle,
   Clock,
+  Play,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Monitor,
+  Globe
 } from "lucide-react";
 
 interface BookProject {
