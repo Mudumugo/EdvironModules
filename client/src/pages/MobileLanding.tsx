@@ -146,26 +146,26 @@ export function MobileLanding() {
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-white py-8 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+      <section className="bg-white py-6 px-4 sm:py-8">
+        <div className="max-w-sm mx-auto text-center sm:max-w-md">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
             EdVirons Learning Ecosystem
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed">
             Education Reimagined: Local Needs, Global Standards.
           </p>
 
           {/* Mobile Tab Navigation */}
-          <div className="flex overflow-x-auto gap-2 mb-6 pb-2">
+          <div className="flex overflow-x-auto gap-2 mb-4 sm:mb-6 pb-2 scrollbar-hide">
             {navigationTabs.map((tab) => (
               <Button
                 key={tab}
                 variant={activeTab === tabMapping[tab] ? "default" : "outline"}
                 onClick={() => {
                   setActiveTab(tabMapping[tab]);
-                  setIsAutoPlaying(false); // Pause auto-play when user manually selects
+                  setIsAutoPlaying(false);
                 }}
-                className="text-xs whitespace-nowrap flex-shrink-0"
+                className="text-xs sm:text-sm whitespace-nowrap flex-shrink-0 px-3 py-2 min-w-fit"
                 size="sm"
               >
                 {tab}
@@ -174,21 +174,21 @@ export function MobileLanding() {
           </div>
 
           {/* Mobile Auto-play Controls */}
-          <div className="flex flex-col items-center gap-3 mb-6">
+          <div className="flex flex-col items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-              className="flex items-center gap-2 text-xs"
+              className="flex items-center gap-2 text-xs sm:text-sm px-4 py-2"
             >
               {isAutoPlaying ? (
                 <>
-                  <Pause className="h-3 w-3" />
+                  <Pause className="h-3 w-3 sm:h-4 sm:w-4" />
                   Pause
                 </>
               ) : (
                 <>
-                  <Play className="h-3 w-3" />
+                  <Play className="h-3 w-3 sm:h-4 sm:w-4" />
                   Play
                 </>
               )}
@@ -501,16 +501,16 @@ export function MobileLanding() {
       </section>
 
       {/* Mobile CTA */}
-      <section className="bg-white py-8 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+      <section className="bg-white py-6 sm:py-8 px-4">
+        <div className="max-w-sm mx-auto text-center sm:max-w-md">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
             Ready to transform learning?
           </h2>
-          <div className="space-y-3">
-            <Button className="w-full">
+          <div className="space-y-2 sm:space-y-3">
+            <Button className="w-full py-3 text-sm sm:text-base font-medium">
               Access Portal
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full py-3 text-sm sm:text-base font-medium">
               Request Demo
             </Button>
           </div>
@@ -518,52 +518,52 @@ export function MobileLanding() {
       </section>
 
       {/* Mobile Footer */}
-      <footer className="bg-white border-t border-gray-200 py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-6">
+      <footer className="bg-white border-t border-gray-200 py-6 sm:py-8 px-4">
+        <div className="max-w-sm mx-auto sm:max-w-md">
+          <div className="text-center mb-4 sm:mb-6">
             <div className="flex items-center justify-center space-x-2 mb-2">
               <div className="w-6 h-6 bg-gray-800 rounded flex items-center justify-center">
                 <span className="text-white font-bold text-xs">E</span>
               </div>
-              <span className="text-lg font-semibold">EdVirons</span>
+              <span className="text-base sm:text-lg font-semibold">EdVirons</span>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
               Empowering education in Kenya through innovative technology.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div>
-              <h3 className="font-semibold mb-3 text-sm">Product</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/features">Features</Link></li>
-                <li><Link href="/digital-library">Digital Library</Link></li>
-                <li><Link href="/school-management">School Management</Link></li>
+              <h3 className="font-semibold mb-2 sm:mb-3 text-xs sm:text-sm">Product</h3>
+              <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600">
+                <li><Link href="/features" className="hover:text-gray-900 transition-colors">Features</Link></li>
+                <li><Link href="/digital-library" className="hover:text-gray-900 transition-colors">Digital Library</Link></li>
+                <li><Link href="/school-management" className="hover:text-gray-900 transition-colors">School Management</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-3 text-sm">Support</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/help">Help Center</Link></li>
-                <li><Link href="/about">About</Link></li>
-                <li><Link href="/contact">Contact</Link></li>
+              <h3 className="font-semibold mb-2 sm:mb-3 text-xs sm:text-sm">Support</h3>
+              <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600">
+                <li><Link href="/help" className="hover:text-gray-900 transition-colors">Help Center</Link></li>
+                <li><Link href="/about" className="hover:text-gray-900 transition-colors">About</Link></li>
+                <li><Link href="/contact" className="hover:text-gray-900 transition-colors">Contact</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="text-center space-y-2 text-sm text-gray-600">
+          <div className="text-center space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
             <div className="flex items-center justify-center">
-              <Mail className="h-4 w-4 mr-2" />
+              <Mail className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               hello@edvirons.com
             </div>
             <div className="flex items-center justify-center">
-              <MapPin className="h-4 w-4 mr-2" />
+              <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Nairobi, Kenya
             </div>
           </div>
           
-          <div className="border-t border-gray-200 mt-6 pt-4 text-center text-xs text-gray-600">
+          <div className="border-t border-gray-200 mt-4 sm:mt-6 pt-3 sm:pt-4 text-center text-xs text-gray-600">
             © 2024 EdVirons Learning Platform. All rights reserved.
           </div>
         </div>

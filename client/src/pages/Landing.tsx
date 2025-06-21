@@ -29,10 +29,10 @@ export function Landing() {
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Check if screen is mobile size
+  // Check if screen is mobile size - improved responsive breakpoint
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024); // Use lg breakpoint for better mobile experience
     };
     
     checkMobile();
