@@ -19,7 +19,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/",
     icon: "BarChart3",
     description: "Main overview and statistics",
-    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security"],
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security", "global_author", "content_admin"],
     isCore: true
   },
   {
@@ -37,7 +37,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/digital-library",
     icon: "BookOpen",
     description: "Access digital books and educational resources",
-    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin"],
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "global_author", "content_admin"],
     isCore: true
   },
   {
@@ -46,7 +46,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/my-locker",
     icon: "CloudDownload",
     description: "Personal storage and saved content",
-    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher"],
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "global_author", "content_admin"],
     isCore: true
   },
   {
@@ -73,7 +73,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/settings",
     icon: "Settings",
     description: "Personal account settings",
-    allowedRoles: ["student", "student_elementary", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security"],
+    allowedRoles: ["student", "student_elementary", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security", "global_author", "content_admin"],
     isCore: true
   },
   {
@@ -122,7 +122,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/authoring-dashboard",
     icon: "PenTool",
     description: "Create and manage educational content for global library",
-    allowedRoles: ["teacher", "tutor", "librarian", "school_admin"],
+    allowedRoles: ["teacher", "tutor", "librarian", "school_admin", "global_author", "content_admin"],
   },
 
   // Administrative modules
@@ -231,7 +231,9 @@ export function hasModuleAccess(userRole: UserRole, moduleId: string): boolean {
     'demo_student_middle': 'student_middle', 
     'demo_student_high': 'student_high',
     'demo_student_college': 'student_college',
-    'demo_teacher': 'teacher'
+    'demo_teacher': 'teacher',
+    'demo_global_author': 'global_author',
+    'demo_school_admin': 'school_admin'
   };
   
   const mappedRole = roleMapping[userRole as string] || userRole;
