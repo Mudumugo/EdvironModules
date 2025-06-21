@@ -134,7 +134,7 @@ const adminBenefits = [
   }
 ];
 
-export function CBEOverview() {
+export default function CBEOverview() {
   return (
     <div className="min-h-screen bg-white">
       <MarketingNav />

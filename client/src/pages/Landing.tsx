@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { MobileLanding } from "./MobileLanding";
+import MobileLanding from "./MobileLanding";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { NavigationTabs } from "@/components/landing/NavigationTabs";
 import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
 import { ContactSection } from "@/components/landing/ContactSection";
 import { useLandingAutoPlay } from "@/hooks/useLandingAutoPlay";
 
-export function Landing() {
+export default function Landing() {
   const [isMobile, setIsMobile] = useState(false);
 
   const navigationTabs = [
