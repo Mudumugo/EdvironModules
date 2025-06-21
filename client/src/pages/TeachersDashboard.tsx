@@ -181,7 +181,6 @@ export default function TeachersDashboard() {
       title="Teachers Dashboard"
       subtitle="Comprehensive teaching tools and classroom management"
     >
-      <div className="max-w-7xl mx-auto min-w-[1024px]">
         {/* Search and Filter Controls - Desktop Only */}
         <div className="mb-6 flex flex-row gap-4 items-center justify-between">
           <div className="flex-1 max-w-md">
@@ -302,7 +301,6 @@ export default function TeachersDashboard() {
             <p className="text-lg text-gray-600">Try adjusting your search or filter criteria</p>
           </div>
         )}
-      </div>
     </CollapsibleDashboardLayout>
   );
 }
