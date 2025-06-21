@@ -12,7 +12,9 @@ import {
   RotateCcw,
   Maximize2,
   BookmarkPlus,
-  Menu
+  Menu,
+  Home,
+  BookOpen
 } from 'lucide-react';
 import { BookTableOfContents } from './BookTableOfContents';
 
@@ -61,13 +63,44 @@ export const BookControls: React.FC<BookControlsProps> = ({
 }) => {
   return (
     <>
-      {/* Top margin controls - Book title and status */}
+      {/* Top header - Enhanced with navigation icons */}
       <div className={`absolute top-4 left-4 right-4 flex items-center justify-between z-10 transition-all duration-500 ${
         showControls ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}>
-        <div className="bg-black bg-opacity-60 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-sm">
-          {bookTitle || 'Interactive Book'}
+        
+        {/* Left side - Navigation icons and book title */}
+        <div className="flex items-center space-x-3">
+          {/* Home icon */}
+          {onClose && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onClose}
+              className="bg-black bg-opacity-60 hover:bg-opacity-80 text-white border-0 rounded-full w-10 h-10 sm:w-9 sm:h-9 touch-manipulation shadow-lg backdrop-blur-sm transition-all duration-200"
+              title="Return to Library"
+            >
+              <Home className="h-5 w-5 sm:h-4 sm:w-4" />
+            </Button>
+          )}
+          
+          {/* Table of Contents icon */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onToggleTableOfContents}
+            className={`${showTableOfContents ? 'bg-blue-500 bg-opacity-90' : 'bg-black bg-opacity-60'} hover:bg-opacity-80 text-white border-0 rounded-full w-10 h-10 sm:w-9 sm:h-9 touch-manipulation shadow-lg backdrop-blur-sm transition-all duration-200`}
+            title="Table of Contents"
+          >
+            <BookOpen className="h-5 w-5 sm:h-4 sm:w-4" />
+          </Button>
+          
+          {/* Book title */}
+          <div className="bg-black bg-opacity-60 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-sm">
+            {bookTitle || 'Interactive Book'}
+          </div>
         </div>
+        
+        {/* Right side - Status indicators */}
         <div className="flex items-center space-x-2">
           <div className="bg-black bg-opacity-60 text-white px-3 py-2 rounded-full text-sm shadow-lg backdrop-blur-sm">
             Page {currentPage} of {totalPages}
@@ -169,18 +202,8 @@ export const BookControls: React.FC<BookControlsProps> = ({
             
             {/* Left tools group */}
             <div className="flex items-center space-x-2">
-              {/* Table of Contents */}
+              {/* Table of Contents - Now positioned in header too */}
               <div className="relative">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={onToggleTableOfContents}
-                  className={`${showTableOfContents ? 'bg-blue-500 bg-opacity-80' : 'bg-black bg-opacity-40'} hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm transition-all duration-200`}
-                  title="Table of Contents (Navigate to chapters)"
-                >
-                  <Menu className="h-5 w-5 sm:h-4 sm:w-4" />
-                </Button>
-                
                 <BookTableOfContents
                   isVisible={showTableOfContents}
                   onGoToPage={onGoToPage}
@@ -256,18 +279,16 @@ export const BookControls: React.FC<BookControlsProps> = ({
                 </div>
               )}
               
-              {/* Close */}
-              {onClose && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={onClose}
-                  className="bg-red-500 bg-opacity-40 hover:bg-opacity-60 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm"
-                  title="Close Book"
-                >
-                  <X className="h-5 w-5 sm:h-4 sm:w-4" />
-                </Button>
-              )}
+              {/* Additional close button in bottom controls */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onToggleTableOfContents}
+                className={`${showTableOfContents ? 'bg-blue-500 bg-opacity-90' : 'bg-black bg-opacity-40'} hover:bg-opacity-70 text-white border-0 rounded-full w-12 h-12 sm:w-10 sm:h-10 touch-manipulation shadow-lg backdrop-blur-sm transition-all duration-200`}
+                title="Table of Contents"
+              >
+                <BookOpen className="h-5 w-5 sm:h-4 sm:w-4" />
+              </Button>
             </div>
           </div>
         </div>

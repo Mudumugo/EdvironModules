@@ -156,7 +156,7 @@ export const BookTableOfContents: React.FC<BookTableOfContentsProps> = ({
   };
 
   return (
-    <div className="fixed inset-4 sm:absolute sm:bottom-full sm:left-0 sm:inset-auto sm:mb-2 sm:w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-[80vh] sm:max-h-80 md:max-h-96 overflow-y-auto">
+    <div className="fixed inset-4 sm:absolute sm:top-full sm:left-0 sm:inset-auto sm:mt-2 sm:w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-[80vh] sm:max-h-80 md:max-h-96 overflow-y-auto">
       <div className="p-4 sm:p-4">
         <div className="flex items-center justify-between mb-4 border-b pb-3">
           <div className="flex items-center space-x-2">
