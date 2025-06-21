@@ -1,18 +1,5 @@
-import {
-  pgTable,
-  text,
-  varchar,
-  timestamp,
-  jsonb,
-  serial,
-  integer,
-  boolean,
-  decimal,
-  date,
-  unique,
-} from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { users } from "./core";
+// Legacy content schema - use modular schemas from content/index.ts
+export * from './content/index';
 
 // Library content tables
 export const libraryCategories = pgTable("library_categories", {

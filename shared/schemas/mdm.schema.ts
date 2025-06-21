@@ -1,16 +1,5 @@
-import {
-  pgTable,
-  text,
-  varchar,
-  timestamp,
-  integer,
-  boolean,
-  jsonb,
-  decimal,
-} from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { users } from "./user.schema";
-import { institutions } from "./education.schema";
+// Legacy MDM schema - use modular schemas from mdm/index.ts
+export * from './mdm/index';
 
 // Device management
 export const devices = pgTable("devices", {
