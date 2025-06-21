@@ -30,18 +30,10 @@ export function registerAuthRoutes(app: Express) {
     });
   });
 
-  // Demo login endpoint for testing with enhanced security
-  app.post('/api/auth/demo-login', 
-    validateInput({
-      email: {
-        required: true,
-        type: 'string',
-        pattern: validationPatterns.email
-      }
-    }),
-    async (req: Request, res: Response) => {
-      try {
-        const { email } = req.body;
+  // Demo login endpoint for testing
+  app.post('/api/auth/demo-login', async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
 
         // Find user by email
         const user = await storage.getUserByEmail(email);
@@ -98,8 +90,7 @@ export function registerAuthRoutes(app: Express) {
           code: 'INTERNAL_ERROR'
         });
       }
-    }
-  );
+    });
 
   // Logout endpoint with security logging (POST)
   app.post('/api/auth/logout', (req: AuthenticatedRequest, res: Response) => {
