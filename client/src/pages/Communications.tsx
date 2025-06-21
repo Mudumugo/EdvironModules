@@ -1,53 +1,41 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Filter } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useCommunications } from "@/hooks/useCommunications";
+import { CommunicationsHeader } from "@/components/communications/CommunicationsHeader";
 import { CommunicationForm } from "@/components/communications/CommunicationForm";
 import { CommunicationList } from "@/components/communications/CommunicationList";
 import { CommunicationStats } from "@/components/communications/CommunicationStats";
 import { CommunicationDetails } from "@/components/communications/CommunicationDetails";
-import { Communication, CommunicationFormData } from "@/components/communications/types";
 
 export default function CommunicationsPage() {
-  const [activeView, setActiveView] = useState<"all" | "draft" | "scheduled" | "sent" | "archived">("all");
-  const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-  const [filterType, setFilterType] = useState<string>('all');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-
   const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Fetch communications
-  const { data: communications = [], isLoading } = useQuery<Communication[]>({
-    queryKey: ['/api/communications'],
-    queryFn: () => apiRequest('GET', '/api/communications'),
-    select: (data) => Array.isArray(data) ? data : [],
-  });
-
-  // Filter communications
-  const filteredCommunications = useMemo(() => {
-    if (!Array.isArray(communications)) return [];
-    return communications.filter(comm => {
-      const matchesType = filterType === 'all' || comm.type === filterType;
-      const matchesStatus = filterStatus === 'all' || comm.status === filterStatus;
-      const matchesSearch = !searchTerm || 
-        comm.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        comm.content.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesType && matchesStatus && matchesSearch;
-    });
-  }, [communications, filterType, filterStatus, searchTerm]);
-
-  // Group communications by status
+  const {
+    activeView,
+    setActiveView,
+    selectedCommunication,
+    setSelectedCommunication,
+    showCreateDialog,
+    setShowCreateDialog,
+    showDetailsDialog,
+    setShowDetailsDialog,
+    filterType,
+    setFilterType,
+    filterStatus,
+    setFilterStatus,
+    searchTerm,
+    setSearchTerm,
+    communications,
+    allCommunications,
+    isLoading,
+    createCommunication,
+    updateCommunication,
+    deleteCommunication,
+    sendCommunication,
+    isCreating,
+    isUpdating,
+    isDeleting,
+    isSending
+  } = useCommunications();
   const communicationsByStatus = useMemo(() => {
     if (!Array.isArray(filteredCommunications)) {
       return { draft: [], scheduled: [], sent: [], archived: [] };

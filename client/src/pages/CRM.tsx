@@ -1,53 +1,39 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Filter } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useCRM } from "@/hooks/useCRM";
+import { CRMHeader } from "@/components/crm/CRMHeader";
 import { LeadForm } from "@/components/crm/LeadForm";
 import { LeadList } from "@/components/crm/LeadList";
 import { CRMStats } from "@/components/crm/CRMStats";
-import { Lead, Activity, DemoRequest } from "@/components/crm/types";
 
 export default function CRM() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [priorityFilter, setPriorityFilter] = useState("all");
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [showLeadForm, setShowLeadForm] = useState(false);
-  const [editingLead, setEditingLead] = useState<Lead | null>(null);
-
-  const queryClient = useQueryClient();
-
-  // Fetch leads
-  const { data: leads = [], isLoading: leadsLoading } = useQuery({
-    queryKey: ["/api/crm/leads"],
-  });
-
-  // Fetch demo requests
-  const { data: demoRequests = [], isLoading: demosLoading } = useQuery({
-    queryKey: ["/api/crm/demo-requests"],
-  });
-
-  // Fetch lead activities
-  const { data: activities = [] } = useQuery({
-    queryKey: ["/api/crm/activities", selectedLead?.id],
-    enabled: !!selectedLead,
-  });
-
-  // Update lead mutation
-  const updateLeadMutation = useMutation({
-    mutationFn: async (data: { id: number; updates: Partial<Lead> }) => {
-      return fetch(`/api/crm/leads/${data.id}`, {
-        method: "PATCH",
-        body: JSON.stringify(data.updates),
-        headers: { 'Content-Type': 'application/json' },
-      }).then(res => res.json());
-    },
-    onSuccess: () => {
+  const {
+    searchTerm,
+    setSearchTerm,
+    statusFilter,
+    setStatusFilter,
+    priorityFilter,
+    setPriorityFilter,
+    selectedLead,
+    setSelectedLead,
+    showLeadForm,
+    setShowLeadForm,
+    editingLead,
+    setEditingLead,
+    leads,
+    allLeads,
+    demoRequests,
+    activities,
+    leadsLoading,
+    demosLoading,
+    createLead,
+    updateLead,
+    deleteLead,
+    addActivity,
+    createDemoRequest,
+    isCreatingLead,
+    isUpdatingLead,
+    isDeletingLead
+  } = useCRM();
       queryClient.invalidateQueries({ queryKey: ["/api/crm/leads"] });
       toast({
         title: "Success",
