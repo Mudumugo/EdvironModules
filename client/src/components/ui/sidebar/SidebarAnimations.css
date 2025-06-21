@@ -1,0 +1,193 @@
+/* Enhanced sidebar micro-interactions */
+
+/* Sidebar container animations */
+[data-sidebar="sidebar"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Menu item stagger animation */
+[data-sidebar="menu"] > [data-sidebar="menu-item"] {
+  opacity: 0;
+  transform: translateX(-10px);
+  animation: slideInFromLeft 0.3s ease-out forwards;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+[data-sidebar="menu"] > [data-sidebar="menu-item"]:nth-child(8) {
+  animation-delay: 0.4s;
+}
+
+/* Keyframe animations */
+@keyframes slideInFromLeft {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  }
+}
+
+/* Trigger button enhanced animations */
+[data-sidebar="trigger"] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-sidebar="trigger"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+[data-sidebar="trigger"]:active::before {
+  width: 40px;
+  height: 40px;
+}
+
+/* Icon rotation animation */
+[data-sidebar="trigger"] svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group[data-state="collapsed"] [data-sidebar="trigger"] svg {
+  transform: rotate(180deg);
+}
+
+/* Menu button enhanced hover effects */
+[data-sidebar="menu-button"] {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-sidebar="menu-button"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+[data-sidebar="menu-button"]:hover::before {
+  left: 100%;
+}
+
+/* Active state with enhanced feedback */
+[data-sidebar="menu-button"][data-active="true"] {
+  background: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  animation: pulseGlow 2s infinite;
+}
+
+/* Group label fade animation */
+[data-sidebar="group-label"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group[data-collapsible="icon"] [data-sidebar="group-label"] {
+  opacity: 0;
+  transform: scale(0.8) translateX(-10px);
+}
+
+/* Content area adjustment animation */
+[data-sidebar="content"] {
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced focus states */
+[data-sidebar="menu-button"]:focus-visible {
+  outline: 2px solid var(--sidebar-ring);
+  outline-offset: 2px;
+  animation: pulseGlow 1s ease-in-out;
+}
+
+/* Smooth width transitions for text elements */
+[data-sidebar="menu-button"] span {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.group[data-collapsible="icon"] [data-sidebar="menu-button"] span {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+/* Loading state animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.sidebar-loading {
+  background: linear-gradient(
+    90deg,
+    var(--sidebar-background) 25%,
+    var(--sidebar-accent) 50%,
+    var(--sidebar-background) 75%
+  );
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
