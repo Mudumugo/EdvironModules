@@ -93,6 +93,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
           "fixed z-10 h-[calc(100vh-4rem)] top-16 w-[--sidebar-width] transition-all duration-300 ease-in-out",
           "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]",
           "hidden lg:flex flex-col", // Only show on large screens and above
+          state === "collapsed" && "lg:w-[--sidebar-width-icon]", // Collapse width on desktop
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
             : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",

@@ -291,10 +291,10 @@ export function CollapsibleDashboardLayout({
           <SidebarRail />
         </Sidebar>
 
-        <SidebarInset className="flex-1 lg:ml-[--sidebar-width] lg:w-[calc(100%-var(--sidebar-width))]">
+        <SidebarInset className="flex-1 transition-all duration-300 ease-in-out lg:ml-[--sidebar-width] lg:w-[calc(100%-var(--sidebar-width))] group-data-[state=collapsed]:lg:ml-[--sidebar-width-icon] group-data-[state=collapsed]:lg:w-[calc(100%-var(--sidebar-width-icon))]">
           {/* Header with toggle button positioned to align with sidebar */}
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4 transition-all duration-300 ease-in-out fixed top-0 left-0 right-0 z-20 lg:left-[--sidebar-width]">
-            <SidebarTrigger className="mr-2 transition-all duration-200 ease-in-out hover:scale-110 active:scale-95" />
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4 transition-all duration-300 ease-in-out fixed top-0 left-0 right-0 z-20 lg:left-[--sidebar-width] group-data-[state=collapsed]:lg:left-[--sidebar-width-icon]">
+            <SidebarTrigger className="mr-2 transition-all duration-200 ease-in-out hover:scale-110 active:scale-95 flex lg:flex" />
             <div className="flex flex-1 items-center gap-2 min-w-0">
               <div className="min-w-0 flex-1">
                 <h1 className="text-lg font-semibold truncate">{title}</h1>
