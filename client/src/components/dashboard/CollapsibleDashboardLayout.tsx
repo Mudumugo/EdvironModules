@@ -179,6 +179,7 @@ export function CollapsibleDashboardLayout({
         <Sidebar variant="default" collapsible="icon">
           <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-2 py-2">
+              <SidebarTrigger className="md:hidden" />
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <GraduationCap className="h-4 w-4" />
               </div>
@@ -291,9 +292,9 @@ export function CollapsibleDashboardLayout({
         </Sidebar>
 
         <SidebarInset className="flex-1">
-          {/* Header with toggle button */}
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
-            <SidebarTrigger className="-ml-1" />
+          {/* Header with toggle button - positioned to not overlap with sidebar */}
+          <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+            <SidebarTrigger className="hidden md:flex -ml-1" />
             <div className="flex flex-1 items-center gap-2 min-w-0">
               <div className="min-w-0 flex-1">
                 <h1 className="text-lg font-semibold truncate">{title}</h1>
