@@ -143,97 +143,178 @@ export default function AppsHub() {
     const isFeatured = variant === "featured";
     
     return (
-      <Card className={`group cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-95 touch-manipulation ${
+      <Card className={`group cursor-pointer transition-all duration-200 hover:shadow-md active:scale-[0.98] touch-manipulation w-full ${
         isFeatured 
           ? "border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 dark:border-blue-800" 
           : "hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800"
       }`}
         onClick={() => handleAppOpen(app)}
       >
-        <CardHeader className={isCompact ? "p-3 pb-2" : "p-4 sm:p-5 pb-2 sm:pb-3"}>
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-              <div className={`${isCompact ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl lg:text-4xl"} flex-shrink-0`}>
+        {/* Mobile/Tablet Layout */}
+        <div className="block md:hidden">
+          <CardHeader className="p-4 pb-2">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="text-3xl flex-shrink-0">
                 {app.icon}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <CardTitle className={`${isCompact ? "text-sm sm:text-base" : "text-base sm:text-lg lg:text-xl"} truncate text-gray-900 dark:text-white`}>
+                  <CardTitle className="text-lg font-semibold truncate text-gray-900 dark:text-white">
                     {app.name}
                   </CardTitle>
-                  {app.internal && (
-                    <Badge variant="secondary" className="text-xs px-2 py-1 hidden sm:inline-flex">Internal</Badge>
-                  )}
-                  {app.premium && (
-                    <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
-                  )}
+                  {app.premium && <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />}
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2 text-sm">
+                <div className="flex items-center gap-2 text-sm">
                   <div className="flex items-center gap-1">
-                    <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
+                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                     <span className="font-medium text-gray-700 dark:text-gray-300">{app.rating}</span>
                   </div>
-                  <span className="text-muted-foreground hidden sm:inline">•</span>
-                  <span className={`font-medium ${getPriceColor(app.price)} truncate`}>
+                  <span className="text-muted-foreground">•</span>
+                  <span className={`font-medium ${getPriceColor(app.price)}`}>
                     {app.price}
                   </span>
-                  <span className="text-muted-foreground hidden lg:inline">•</span>
-                  <span className="text-muted-foreground hidden lg:inline truncate">{app.downloads}</span>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-1 flex-shrink-0">
-              {app.featured && <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />}
-              {app.trending && <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />}
-              {app.essential && <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />}
-            </div>
-          </div>
-        </CardHeader>
-        
-        {!isCompact && (
-          <CardContent className="pt-0 p-4 sm:p-5">
-            <CardDescription className="text-sm sm:text-base mb-3 sm:mb-4 line-clamp-2 leading-relaxed text-gray-600 dark:text-gray-300">
-              {app.description}
-            </CardDescription>
-            
-            <div className="flex flex-wrap gap-1.5 mb-3 sm:mb-4">
-              {app.tags.slice(0, isCompact ? 2 : 3).map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs px-2 py-1">
-                  {tag}
-                </Badge>
-              ))}
-              {app.tags.length > (isCompact ? 2 : 3) && (
-                <Badge variant="outline" className="text-xs px-2 py-1">
-                  +{app.tags.length - (isCompact ? 2 : 3)}
-                </Badge>
-              )}
-            </div>
-            
-            <div className="flex items-center justify-between gap-3">
-              <Button 
-                size="sm" 
-                className="flex items-center gap-2 h-9 sm:h-10 px-4 sm:px-6 text-sm flex-shrink-0 touch-manipulation"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAppOpen(app);
-                }}
-              >
-                {app.internal ? <Eye className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
-                <span>{app.internal ? "Open" : "Launch"}</span>
-              </Button>
-              
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="sm" className="h-9 w-9 sm:h-10 sm:w-10 p-0 touch-manipulation">
-                  <Heart className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm" className="h-9 w-9 sm:h-10 sm:w-10 p-0 touch-manipulation">
-                  <Share2 className="h-4 w-4" />
-                </Button>
+              <div className="flex flex-col items-center gap-1">
+                {app.featured && <Sparkles className="h-4 w-4 text-blue-500" />}
+                {app.trending && <TrendingUp className="h-4 w-4 text-green-500" />}
+                {app.essential && <Zap className="h-4 w-4 text-orange-500" />}
               </div>
             </div>
-          </CardContent>
-        )}
+          </CardHeader>
+          
+          {!isCompact && (
+            <CardContent className="pt-0 p-4">
+              <CardDescription className="text-sm mb-3 line-clamp-2 leading-relaxed text-gray-600 dark:text-gray-300">
+                {app.description}
+              </CardDescription>
+              
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {app.tags.slice(0, 2).map((tag, index) => (
+                  <Badge key={index} variant="outline" className="text-xs px-2 py-1">
+                    {tag}
+                  </Badge>
+                ))}
+                {app.tags.length > 2 && (
+                  <Badge variant="outline" className="text-xs px-2 py-1">
+                    +{app.tags.length - 2}
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="flex items-center justify-between gap-3">
+                <Button 
+                  size="sm" 
+                  className="flex items-center gap-2 h-10 px-6 text-sm flex-1 touch-manipulation"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAppOpen(app);
+                  }}
+                >
+                  {app.internal ? <Eye className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                  <span>{app.internal ? "Open" : "Launch"}</span>
+                </Button>
+                
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" className="h-10 w-10 p-0 touch-manipulation">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-10 w-10 p-0 touch-manipulation">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:block">
+          <CardHeader className={isCompact ? "p-3 pb-2" : "p-4 lg:p-5 pb-2 lg:pb-3"}>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3 lg:gap-4 min-w-0 flex-1">
+                <div className={`${isCompact ? "text-xl lg:text-2xl" : "text-2xl lg:text-3xl xl:text-4xl"} flex-shrink-0`}>
+                  {app.icon}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CardTitle className={`${isCompact ? "text-sm lg:text-base" : "text-base lg:text-lg xl:text-xl"} truncate text-gray-900 dark:text-white`}>
+                      {app.name}
+                    </CardTitle>
+                    {app.internal && (
+                      <Badge variant="secondary" className="text-xs px-2 py-1">Internal</Badge>
+                    )}
+                    {app.premium && (
+                      <Crown className="h-4 w-4 lg:h-5 lg:w-5 text-yellow-500 flex-shrink-0" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 lg:gap-3 mb-1 lg:mb-2 text-sm">
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3 w-3 lg:h-4 lg:w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-medium text-gray-700 dark:text-gray-300">{app.rating}</span>
+                    </div>
+                    <span className="text-muted-foreground">•</span>
+                    <span className={`font-medium ${getPriceColor(app.price)} truncate`}>
+                      {app.price}
+                    </span>
+                    <span className="text-muted-foreground hidden xl:inline">•</span>
+                    <span className="text-muted-foreground hidden xl:inline truncate">{app.downloads}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {app.featured && <Sparkles className="h-4 w-4 lg:h-5 lg:w-5 text-blue-500" />}
+                {app.trending && <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5 text-green-500" />}
+                {app.essential && <Zap className="h-4 w-4 lg:h-5 lg:w-5 text-orange-500" />}
+              </div>
+            </div>
+          </CardHeader>
+          
+          {!isCompact && (
+            <CardContent className="pt-0 p-4 lg:p-5">
+              <CardDescription className="text-sm lg:text-base mb-3 lg:mb-4 line-clamp-2 leading-relaxed text-gray-600 dark:text-gray-300">
+                {app.description}
+              </CardDescription>
+              
+              <div className="flex flex-wrap gap-1.5 mb-3 lg:mb-4">
+                {app.tags.slice(0, isCompact ? 2 : 3).map((tag, index) => (
+                  <Badge key={index} variant="outline" className="text-xs px-2 py-1">
+                    {tag}
+                  </Badge>
+                ))}
+                {app.tags.length > (isCompact ? 2 : 3) && (
+                  <Badge variant="outline" className="text-xs px-2 py-1">
+                    +{app.tags.length - (isCompact ? 2 : 3)}
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="flex items-center justify-between gap-3">
+                <Button 
+                  size="sm" 
+                  className="flex items-center gap-2 h-9 lg:h-10 px-4 lg:px-6 text-sm flex-shrink-0 touch-manipulation"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAppOpen(app);
+                  }}
+                >
+                  {app.internal ? <Eye className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                  <span>{app.internal ? "Open" : "Launch"}</span>
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="sm" className="h-9 w-9 lg:h-10 lg:w-10 p-0 touch-manipulation">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-9 w-9 lg:h-10 lg:w-10 p-0 touch-manipulation">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </div>
       </Card>
     );
   };
@@ -330,7 +411,7 @@ export default function AppsHub() {
             </h2>
             <div className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 snap-x snap-mandatory">
               {trendingApps.map((app) => (
-                <div key={app.id} className="flex-shrink-0 w-72 sm:w-80 md:w-96 snap-start">
+                <div key={app.id} className="flex-shrink-0 w-80 sm:w-96 md:w-[400px] snap-start">
                   <AppCard app={app} variant="compact" />
                 </div>
               ))}
@@ -400,8 +481,8 @@ export default function AppsHub() {
         {/* Apps Grid/List */}
         <div className={
           viewMode === "grid" 
-            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5" 
-            : "space-y-3 sm:space-y-4"
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6" 
+            : "space-y-4 sm:space-y-5"
         }>
           {filteredAndSortedApps.map((app) => (
             <AppCard 
