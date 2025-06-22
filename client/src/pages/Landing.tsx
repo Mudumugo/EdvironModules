@@ -134,56 +134,62 @@ export function Landing() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <LandingNavigation />
-      
-      <LandingHero 
-        activeTab={activeTab}
-        navigationTabs={navigationTabs}
-        onTabChange={setActiveTab}
-        isAutoPlaying={isAutoPlaying}
-        onToggleAutoPlay={() => setIsAutoPlaying(!isAutoPlaying)}
-      />
+      {/* Desktop Navigation */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">E</span>
+                </div>
+                <span className="text-xl font-semibold text-gray-900">EdVirons</span>
+              </div>
+            </div>
 
-      <LandingDashboard 
-        activeTab={activeTab}
-        modules={modules}
-      />
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-600">Demo</span>
+              <Link href="/login">
+                <Button size="sm">Login</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-      <LandingMainContent 
-        activeTab={activeTab}
-        navigationTabs={navigationTabs}
-        onTabChange={setActiveTab}
-        isAutoPlaying={isAutoPlaying}
-        onToggleAutoPlay={() => setIsAutoPlaying(!isAutoPlaying)}
-      />
-
-      {/* Interactive Content Based on Active Tab */}
-      <section className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">EdVirons Learning Portal</h1>
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+      {/* Hero Section */}
+      <section className="bg-white py-12 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            EdVirons Learning Ecosystem
+          </h1>
+          <p className="text-lg text-gray-600 mb-8">
             Education Reimagined: Local Needs, Global Standards.
           </p>
 
           {/* Tab Navigation */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
             {navigationTabs.map((tab) => (
               <Button
                 key={tab}
                 variant={activeTab === tab ? "default" : "outline"}
                 onClick={() => {
                   setActiveTab(tab);
-                  setIsAutoPlaying(false); // Pause auto-play when user manually selects
+                  setIsAutoPlaying(false);
                 }}
                 className="text-sm"
               >
-                {tab}
+                {tab === "Educational Modules Dashboard" ? "Modules" :
+                 tab === "Interactive Digital Library" ? "Library" :
+                 tab === "School Managers Tool" ? "Manager" :
+                 tab === "Teacher & Student Lockers" ? "Lockers" :
+                 tab === "Academic Calendar & Planning" ? "Calendar" : tab}
               </Button>
             ))}
           </div>
 
           {/* Auto-play Controls */}
-          <div className="flex justify-center items-center gap-4 mb-8">
+          <div className="flex flex-col items-center gap-3 mb-8">
             <Button
               variant="outline"
               size="sm"
@@ -193,12 +199,12 @@ export function Landing() {
               {isAutoPlaying ? (
                 <>
                   <Pause className="h-4 w-4" />
-                  Pause Slideshow
+                  Pause
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4" />
-                  Play Slideshow
+                  Play
                 </>
               )}
             </Button>
@@ -218,76 +224,46 @@ export function Landing() {
           </div>
 
           {/* Main Content Section */}
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-6xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-8">
             {activeTab === "Educational Modules Dashboard" && (
               <>
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    Educational Modules Dashboard
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                    Educational Modules
                   </h2>
-                  <p className="text-gray-600 mb-8 max-w-3xl mx-auto">
-                    Navigate through organized educational modules including shared libraries, personal 
-                    lockers, calendars, lesson planning, and interactive learning tools.
+                  <p className="text-gray-600 mb-8">
+                    Navigate through organized educational tools and resources.
                   </p>
                 </div>
 
                 {/* Dashboard Interface */}
                 <div className="bg-gray-50 rounded-lg p-6 mb-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-2xl font-semibold text-gray-900">Good Afternoon, Miss!</h3>
-                      <p className="text-gray-600">Manage your classes and access teaching tools to enhance learning.</p>
-                    </div>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Good Afternoon!</h3>
+                    <p className="text-gray-600">Access your teaching tools</p>
                   </div>
 
-                  {/* Search and Controls */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="relative flex-1 max-w-md">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="Search modules..."
-                        className="pl-10"
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2 ml-4">
-                      <span className="text-sm text-gray-600">All Modules</span>
-                      <Button variant="outline" size="sm">
-                        <Grid3X3 className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <List className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  {/* Search */}
+                  <div className="relative mb-6 max-w-md mx-auto">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search modules..."
+                      className="pl-10"
+                    />
                   </div>
 
                   {/* Modules Grid */}
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {modules.map((module, index) => {
                       const Icon = module.icon;
                       return (
-                        <Card key={index} className="group hover:shadow-md transition-shadow cursor-pointer">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className={`p-3 rounded-lg ${module.color}`}>
-                                <Icon className={`h-6 w-6 ${module.iconColor}`} />
-                              </div>
-                              <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                        <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className={`p-3 rounded-lg ${module.color} mb-3 w-fit`}>
+                              <Icon className={`h-5 w-5 ${module.iconColor}`} />
                             </div>
-                            
-                            <h3 className="font-semibold text-lg text-gray-900 mb-2">{module.title}</h3>
-                            <p className="text-gray-600 text-sm mb-4">{module.description}</p>
-                            
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {module.features.map((feature, featureIndex) => (
-                                <span key={featureIndex} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                                  {feature}
-                                </span>
-                              ))}
-                              {module.moreCount && (
-                                <span className="text-xs text-gray-500">+{module.moreCount} more</span>
-                              )}
-                            </div>
-                            
+                            <h3 className="font-medium text-gray-900 mb-2">{module.title}</h3>
+                            <p className="text-sm text-gray-600 mb-3">{module.description}</p>
                             <Badge variant="secondary" className="text-xs">
                               {module.badge}
                             </Badge>
@@ -295,11 +271,6 @@ export function Landing() {
                         </Card>
                       );
                     })}
-                  </div>
-
-                  {/* Pagination */}
-                  <div className="text-center mt-8">
-                    <span className="text-sm text-gray-500">1 of 5</span>
                   </div>
                 </div>
               </>
