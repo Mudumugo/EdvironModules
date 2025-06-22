@@ -18,6 +18,7 @@ import {
   bookViewerProfiler, 
   bookViewerMemoryMonitor 
 } from '@/lib/debug/bookViewerDebugger';
+import { usePWAContext } from '@/components/PWAProvider';
 
 interface LibraryBookViewerProps {
   bookData?: {
@@ -54,6 +55,8 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showPerformanceStats, setShowPerformanceStats] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  
+  const { cacheBookContent, showNotification } = usePWAContext();
   
   const contentRef = useRef<HTMLDivElement>(null);
   const pageChangeTimeoutRef = useRef<NodeJS.Timeout>();
@@ -102,6 +105,15 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
         (pageNum) => bookData.pages[pageNum - 1] || ''
       );
       
+      // Cache book content for offline access
+      if (bookData) {
+        cacheBookContent(bookData);
+        bookViewerDebugger.info('pwa', 'Book content cached for offline access', {
+          bookId: bookData.id,
+          title: bookData.title
+        });
+      }
+      
       bookViewerProfiler.end('initialPreload');
       bookViewerDebugger.info('preload', 'Initial preload completed', {
         currentPage,
@@ -117,7 +129,7 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
         clearTimeout(pageChangeTimeoutRef.current);
       }
     };
-  }, [bookData, currentPage, totalPages]);
+  }, [bookData, currentPage, totalPages, cacheBookContent]);
 
   // Monitor memory usage and cleanup if needed
   useEffect(() => {
