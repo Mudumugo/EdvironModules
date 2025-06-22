@@ -34,7 +34,7 @@ interface BookViewerControlsProps {
   bookTitle?: string;
 }
 
-export const BookViewerControls: React.FC<BookViewerControlsProps> = ({
+const BookViewerControls: React.FC<BookViewerControlsProps> = ({
   currentPage,
   totalPages,
   zoom,
@@ -177,3 +177,5 @@ export const BookViewerControls: React.FC<BookViewerControlsProps> = ({
     </>
   );
 };
+
+export { BookViewerControls };

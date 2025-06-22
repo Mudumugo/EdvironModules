@@ -1,10 +1,9 @@
 @import './components/ui/sidebar/SidebarAnimations.css';
+@import './styles/adaptive.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './styles/adaptive.css';
 
 /* Custom mobile optimizations */
 @layer utilities {
