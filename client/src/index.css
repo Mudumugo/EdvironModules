@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import adaptive scaling styles */
 @import './styles/adaptive.css';
 
 /* Custom mobile optimizations */
