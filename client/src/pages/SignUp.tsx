@@ -3,11 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { AgeVerificationStep } from "@/components/signup/AgeVerificationStep";
-import { SignupTypeSelector } from "@/components/signup/SignupTypeSelector";
-import { StudentSignupForm } from "@/components/signup/forms/StudentSignupForm";
-import { VerificationStep } from "@/components/signup/VerificationStep";
-import { CompletionStep } from "@/components/signup/CompletionStep";
+import { SignupStepRenderer } from "@/components/signup/SignupStepRenderer";
 import { 
   type AgeVerificationForm,
   type StudentSignupForm as StudentFormData,
