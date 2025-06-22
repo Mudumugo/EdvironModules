@@ -1,27 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  ZoomIn, 
-  ZoomOut, 
-  Bookmark, 
-  X,
-  Home,
-  BookOpen,
-  Menu,
-  Activity
-} from 'lucide-react';
-import { contentOptimizer, performanceMonitor } from '@/lib/performance/contentOptimizer';
-import { 
-  bookViewerDebugger, 
-  bookViewerProfiler, 
-  bookViewerMemoryMonitor 
-} from '@/lib/debug/bookViewerDebugger';
-import { usePWAContext } from '@/components/PWAProvider';
-import { useAdaptiveScaling } from '@/hooks/useAdaptiveScaling';
+import React, { useState } from 'react';
 import { ResponsiveWrapper } from '@/components/adaptive/ResponsiveWrapper';
 import { ScaleControls } from '@/components/adaptive/ScaleControls';
+import { useAdaptiveScaling } from '@/hooks/useAdaptiveScaling';
+import { useBookViewer } from '@/hooks/useBookViewer';
+import { BookViewerCore } from './viewer/BookViewerCore';
+import { BookViewerControls } from './viewer/BookViewerControls';
+import { BookViewerNavigation } from './viewer/BookViewerNavigation';
+import { BookOpen } from 'lucide-react';
 
 interface LibraryBookViewerProps {
   bookData?: {
@@ -50,29 +35,30 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
   onClose, 
   className = '' 
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [zoom, setZoom] = useState(100);
-  const [bookmarkPages, setBookmarkPages] = useState<number[]>([]);
-  const [showControls, setShowControls] = useState(true);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPerformanceStats, setShowPerformanceStats] = useState(false);
-  const [showDebugPanel, setShowDebugPanel] = useState(false);
-  const [showScaleControls, setShowScaleControls] = useState(false);
-  
-  const { cacheBookContent, showNotification } = usePWAContext();
-  const { 
-    deviceInfo, 
-    isCompactMode, 
-    getScaledValue, 
-    adaptiveStyles,
-    scaleFactor 
-  } = useAdaptiveScaling();
-  
-  const contentRef = useRef<HTMLDivElement>(null);
-  const pageChangeTimeoutRef = useRef<NodeJS.Timeout>();
-
+  const { deviceInfo } = useAdaptiveScaling();
   const totalPages = bookData?.totalPages || 15;
+  
+  const {
+    currentPage,
+    zoom,
+    bookmarkPages,
+    showControls,
+    isLoading,
+    showPerformanceStats,
+    showDebugPanel,
+    showScaleControls,
+    contentRef,
+    goToPage,
+    goToNextPage,
+    goToPreviousPage,
+    zoomIn,
+    zoomOut,
+    toggleBookmark,
+    togglePerformanceStats,
+    toggleScaleControls,
+    toggleDebugPanel
+  } = useBookViewer(bookData, totalPages);
 
   // Handle user activity to show/hide controls
   useEffect(() => {
