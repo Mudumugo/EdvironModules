@@ -60,6 +60,8 @@ interface Resource {
 export function AssignmentStatusCard() {
   const { data: assignments = [], isLoading } = useQuery<Assignment[]>({
     queryKey: ['/api/assignments/status'],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const pendingAssignments = assignments.filter(a => a.status === 'pending');
@@ -169,6 +171,8 @@ export function AssignmentStatusCard() {
 export function NotificationsCard() {
   const { data: notifications = [], isLoading } = useQuery<Notification[]>({
     queryKey: ['/api/notifications'],
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    cacheTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -259,6 +263,8 @@ export function NotificationsCard() {
 export function NextEventCard() {
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/calendar/upcoming'],
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    cacheTime: 15 * 60 * 1000, // 15 minutes
   });
 
   const nextEvent = events[0];
@@ -340,6 +346,8 @@ export function NextEventCard() {
 export function LibraryRecommendationsCard() {
   const { data: recommendations = [], isLoading } = useQuery<Resource[]>({
     queryKey: ['/api/library/recommendations'],
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    cacheTime: 60 * 60 * 1000, // 1 hour
   });
 
   const getResourceIcon = (type: string) => {
