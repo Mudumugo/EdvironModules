@@ -365,17 +365,20 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
   };
 
   return (
-    <div 
-      className={`fixed inset-0 z-[999999] bg-gradient-to-br from-gray-800 to-gray-900 ${className}`}
-      style={{ 
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        zIndex: 999999
-      }}
+    <ResponsiveWrapper 
+      className={`fixed inset-0 z-[999999] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden ${className}`}
+      enableScaling={false}
     >
+      <div 
+        style={{ 
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 999999
+        }}
+      >
       {/* Book Container */}
       <div className="relative w-full h-full flex items-center justify-center">
         <div className="relative w-full h-full flex items-center justify-center px-1 sm:px-4 md:px-6 lg:px-8 py-1 sm:py-4">
@@ -648,6 +651,7 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
           bookData={bookData}
         />
       )}
+      </div>
     </ResponsiveWrapper>
   );
 };
