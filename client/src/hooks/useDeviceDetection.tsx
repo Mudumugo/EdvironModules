@@ -14,42 +14,6 @@ interface DeviceInfo {
   isAndroid: boolean;
 }
 
-const getDeviceInfo = (): DeviceInfo => {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const pixelRatio = window.devicePixelRatio || 1;
-  
-  // Device type detection
-  let type: DeviceType = 'desktop';
-  if (width <= 768) {
-    type = 'mobile';
-  } else if (width <= 1024) {
-    type = 'tablet';
-  }
-
-  // Orientation detection
-  const orientation: Orientation = width > height ? 'landscape' : 'portrait';
-
-  // Touch device detection
-  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-  // Platform detection
-  const userAgent = navigator.userAgent.toLowerCase();
-  const isIOS = /iphone|ipad|ipod/.test(userAgent);
-  const isAndroid = /android/.test(userAgent);
-
-  return {
-    type,
-    orientation,
-    screenWidth: width,
-    screenHeight: height,
-    isTouchDevice,
-    pixelRatio,
-    isIOS,
-    isAndroid
-  };
-};
-
 export const useDeviceDetection = () => {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>(() => {
     if (typeof window === 'undefined') {
@@ -68,19 +32,51 @@ export const useDeviceDetection = () => {
     return getDeviceInfo();
   });
 
-  const updateDeviceInfo = (): DeviceInfo => {
-    return getDeviceInfo();
+  const getDeviceInfo = (): DeviceInfo => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const pixelRatio = window.devicePixelRatio || 1;
+    
+    // Device type detection
+    let type: DeviceType = 'desktop';
+    if (width <= 768) {
+      type = 'mobile';
+    } else if (width <= 1024) {
+      type = 'tablet';
+    }
+
+    // Orientation detection
+    const orientation: Orientation = width > height ? 'landscape' : 'portrait';
+
+    // Touch device detection
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // Platform detection
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isAndroid = /android/.test(userAgent);
+
+    return {
+      type,
+      orientation,
+      screenWidth: width,
+      screenHeight: height,
+      isTouchDevice,
+      pixelRatio,
+      isIOS,
+      isAndroid
+    };
   };
 
   useEffect(() => {
     const handleResize = () => {
-      setDeviceInfo(updateDeviceInfo());
+      setDeviceInfo(getDeviceInfo());
     };
 
     const handleOrientationChange = () => {
       // Delay to get accurate dimensions after orientation change
       setTimeout(() => {
-        setDeviceInfo(updateDeviceInfo());
+        setDeviceInfo(getDeviceInfo());
       }, 100);
     };
 

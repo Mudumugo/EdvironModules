@@ -15,7 +15,7 @@ interface BookViewerCoreProps {
   contentRef: React.RefObject<HTMLDivElement>;
 }
 
-const BookViewerCore: React.FC<BookViewerCoreProps> = ({
+export const BookViewerCore: React.FC<BookViewerCoreProps> = ({
   bookData,
   currentPage,
   zoom,
@@ -102,5 +102,3 @@ const BookViewerCore: React.FC<BookViewerCoreProps> = ({
     </div>
   );
 };
-
-export default BookViewerCore;

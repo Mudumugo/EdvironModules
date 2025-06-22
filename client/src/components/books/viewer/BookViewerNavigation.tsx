@@ -11,7 +11,7 @@ interface BookViewerNavigationProps {
   onNextPage: () => void;
 }
 
-const BookViewerNavigation: React.FC<BookViewerNavigationProps> = ({
+export const BookViewerNavigation: React.FC<BookViewerNavigationProps> = ({
   currentPage,
   totalPages,
   showControls,
@@ -90,5 +90,3 @@ const BookViewerNavigation: React.FC<BookViewerNavigationProps> = ({
     </>
   );
 };
-
-export default BookViewerNavigation;

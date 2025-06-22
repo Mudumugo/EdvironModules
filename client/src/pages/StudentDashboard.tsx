@@ -18,8 +18,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { DashboardSwitcher, type EducationLevel } from "@/components/dashboard/DashboardSwitcher";
 import { dashboardContentByLevel } from "@/data/dashboardContent";
-import { LoadingDashboard } from "@/components/dashboard/LoadingDashboard";
-import { Suspense } from "react";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -30,7 +28,6 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
-        <Suspense fallback={<LoadingDashboard />}>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
           <div className="flex-1 min-w-0">
@@ -214,7 +211,6 @@ export default function StudentDashboard() {
             </Card>
           </div>
         </div>
-        </Suspense>
       </div>
     </div>
   );
