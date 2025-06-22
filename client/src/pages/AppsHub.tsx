@@ -451,59 +451,5 @@ export default function AppsHub() {
         )}
       </div>
     </div>
-          
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="h-9 sm:h-10">
-              <SortAsc className="h-3 w-3 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
-              <SelectValue placeholder="Sort" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="featured">Featured</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
-              <SelectItem value="rating">Rating</SelectItem>
-              <SelectItem value="popularity">Popularity</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Apps Grid/List */}
-      <div className={
-        viewMode === "grid" 
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4" 
-          : "space-y-3 sm:space-y-4"
-      }>
-        {filteredAndSortedApps.map((app) => (
-          <AppCard 
-            key={app.id} 
-            app={app} 
-            variant={viewMode === "list" ? "compact" : "default"} 
-          />
-        ))}
-      </div>
-
-      {/* No Results */}
-      {filteredAndSortedApps.length === 0 && (
-        <div className="text-center py-8 sm:py-12 px-4">
-          <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🔍</div>
-          <h3 className="text-base sm:text-lg font-medium mb-2">No apps found</h3>
-          <p className="text-sm sm:text-base text-muted-foreground mb-4 max-w-md mx-auto">
-            Try adjusting your search terms or filters to find what you're looking for
-          </p>
-          <Button 
-            variant="outline"
-            size="sm"
-            className="h-9 sm:h-10 px-4 sm:px-6"
-            onClick={() => {
-              setSearchTerm("");
-              setSelectedCategory("all");
-              setFilterBy("all");
-            }}
-          >
-            Clear Filters
-          </Button>
-        </div>
-      )}
-    </div>
   );
 }
