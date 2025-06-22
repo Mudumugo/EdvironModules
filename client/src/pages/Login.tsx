@@ -12,6 +12,7 @@ import {
   CreditCard,
   QrCode
 } from "lucide-react";
+import { LoginLoadingAnimation } from "@/components/ui/loading-spinner";
 
 const DEMO_ACCOUNTS = [
   {
@@ -75,19 +76,22 @@ export default function Login() {
           title: "Login Successful",
           description: "Welcome back to EdVirons!",
         });
-        // Force a full page reload to ensure authentication state is properly updated
-        window.location.href = "/";
+        
+        // Add delay to show loading animation
+        setTimeout(() => {
+          setIsLoading(false);
+          window.location.href = "/";
+        }, 2000);
       } else {
         throw new Error("Login failed");
       }
     } catch (error) {
+      setIsLoading(false);
       toast({
         title: "Login Failed",
         description: "Invalid email or password. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -105,24 +109,29 @@ export default function Login() {
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        // Force a full page reload to ensure authentication state is properly updated
-        window.location.href = "/";
+        
+        // Add delay to show loading animation
+        setTimeout(() => {
+          setIsLoading(false);
+          window.location.href = "/";
+        }, 2000);
       } else {
         throw new Error("Demo login failed");
       }
     } catch (error) {
+      setIsLoading(false);
       toast({
         title: "Login Failed",
         description: "Unable to log in. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <>
+      <LoginLoadingAnimation isVisible={isLoading} />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -263,7 +272,7 @@ export default function Login() {
           </p>
         </div>
       </div>
-    </div>
+      </div>
     </>
   );
 }
