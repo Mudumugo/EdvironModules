@@ -178,4 +178,4 @@ const BookViewerControls: React.FC<BookViewerControlsProps> = ({
   );
 };
 
-export { BookViewerControls };
+export default BookViewerControls;

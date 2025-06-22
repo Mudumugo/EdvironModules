@@ -91,4 +91,4 @@ const BookViewerNavigation: React.FC<BookViewerNavigationProps> = ({
   );
 };
 
-export { BookViewerNavigation };
+export default BookViewerNavigation;

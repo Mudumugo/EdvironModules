@@ -4,9 +4,9 @@ import { ResponsiveWrapper } from '@/components/adaptive/ResponsiveWrapper';
 import { ScaleControls } from '@/components/adaptive/ScaleControls';
 import { useAdaptiveScaling } from '@/hooks/useAdaptiveScaling';
 import { useBookViewer } from '@/hooks/useBookViewer';
-import { BookViewerCore } from './viewer/BookViewerCore';
-import { BookViewerControls } from './viewer/BookViewerControls';
-import { BookViewerNavigation } from './viewer/BookViewerNavigation';
+import BookViewerCore from './viewer/BookViewerCore';
+import BookViewerControls from './viewer/BookViewerControls';
+import BookViewerNavigation from './viewer/BookViewerNavigation';
 import { BookOpen } from 'lucide-react';
 
 interface LibraryBookViewerProps {

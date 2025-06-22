@@ -124,45 +124,8 @@ export function Landing() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">E</span>
-                </div>
-                <span className="text-xl font-semibold text-gray-900">EdVirons</span>
-              </div>
-            </div>
 
-            <div className="hidden lg:flex items-center space-x-8">
-              <Link href="/features" className="text-gray-600 hover:text-gray-900">
-                Features
-              </Link>
-              <Link href="/solutions" className="text-gray-600 hover:text-gray-900">
-                Solutions
-              </Link>
-              <Link href="/cbe-overview" className="text-gray-600 hover:text-gray-900">
-                CBE Overview
-              </Link>
-              <Link href="/about" className="text-gray-600 hover:text-gray-900">
-                About
-              </Link>
-              <Link href="/demo">
-                <Button variant="outline" size="sm">
-                  Request Demo
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button size="sm">Login</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-      {/* Hero Section */}
+      {/* Interactive Content Based on Active Tab */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">EdVirons Learning Portal</h1>
@@ -1390,6 +1353,7 @@ export function Landing() {
           </div>
         </div>
       </section>
+
       <LandingFooter />
     </div>
   );

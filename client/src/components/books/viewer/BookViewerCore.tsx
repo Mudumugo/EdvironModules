@@ -103,4 +103,4 @@ const BookViewerCore: React.FC<BookViewerCoreProps> = ({
   );
 };
 
-export { BookViewerCore };
+export default BookViewerCore;
