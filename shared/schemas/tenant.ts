@@ -1,30 +1,16 @@
-import { pgTable, text, timestamp, boolean, integer, json } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, json, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const tenants = pgTable("tenants", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  type: text("type").notNull(), // 'school', 'district', 'organization'
-  domain: text("domain"),
-  settings: json("settings").default({}),
-  subscription: json("subscription").default({}),
-  features: text("features").array().default([]),
-  contactEmail: text("contact_email"),
-  contactPhone: text("contact_phone"),
-  address: text("address"),
-  county: text("county"),
-  region: text("region"),
-  country: text("country").default("Kenya"),
-  timezone: text("timezone").default("Africa/Nairobi"),
-  language: text("language").default("en"),
-  currency: text("currency").default("KES"),
-  logoUrl: text("logo_url"),
-  website: text("website"),
-  description: text("description"),
-  studentCapacity: integer("student_capacity"),
-  teacherCapacity: integer("teacher_capacity"),
-  establishedYear: integer("established_year"),
+  id: varchar("id").primaryKey().notNull(),
+  subdomain: varchar("subdomain").unique().notNull(),
+  name: varchar("name").notNull(),
+  logo: varchar("logo"),
+  primaryColor: varchar("primary_color").default("#3B82F6"),
+  customDomain: varchar("custom_domain"),
+  features: text("features").array().default(["dashboard", "settings"]),
+  subscription: varchar("subscription").notNull().default("basic"), // basic, premium, enterprise
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

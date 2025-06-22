@@ -1,53 +1,40 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Link } from "wouter";
-import { 
-  ArrowRight, 
-  ArrowLeft, 
-  BookOpen, 
-  User, 
-  Heart, 
-  School,
-  CheckCircle,
-  MapPin,
-  Phone,
-  Mail,
-  Calendar,
-  Users,
-  GraduationCap
-} from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { InteractiveQuizFlow } from "@/components/signup/InteractiveQuizFlow";
 
 
+
+interface QuizData {
+  userType: "student" | "teacher" | "parent" | "school" | null;
+  age?: number;
+  birthDate?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  county?: string;
+  city?: string;
+  school?: string;
+  gradeLevel?: string;
+  subject?: string;
+  parentEmail?: string;
+  parentPhone?: string;
+  interests?: string[];
+  learningStyle?: string;
+  goals?: string[];
+  organizationName?: string;
+  organizationType?: string;
+  numberOfStudents?: number;
+  adminEmail?: string;
+  adminPhone?: string;
+}
 
 export default function InteractiveSignUp() {
-  const [currentStep, setCurrentStep] = useState<QuizStep>("welcome");
-  const [quizData, setQuizData] = useState<QuizData>({ userType: null });
-  const [progress, setProgress] = useState(0);
   const { toast } = useToast();
-
-  const updateQuizData = (data: Partial<QuizData>) => {
-    setQuizData(prev => ({ ...prev, ...data }));
-  };
-
-  const calculateAge = (birthDate: string) => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
+  const [, setLocation] = useLocation();
 
   const getStepProgress = (step: QuizStep): number => {
     const stepOrder: QuizStep[] = [
