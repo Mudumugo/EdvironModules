@@ -71,34 +71,6 @@ export default function InteractiveSignUp() {
     />
   );
 }
-
-      case "interests":
-        setCurrentStep("review");
-        break;
-      case "review":
-        handleSubmit();
-        break;
-    }
-  };
-
-  const prevStep = () => {
-    switch (currentStep) {
-      case "user-type":
-        setCurrentStep("welcome");
-        break;
-      case "age-check":
-        setCurrentStep("user-type");
-        break;
-      case "student-info":
-        setCurrentStep("age-check");
-        break;
-      case "parent-info":
-        setCurrentStep("user-type");
-        break;
-      case "child-info":
-        setCurrentStep("parent-info");
-        break;
-      case "school-info":
         setCurrentStep("user-type");
         break;
       case "location":

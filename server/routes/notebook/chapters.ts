@@ -1,7 +1,7 @@
 import type { Express, Response } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../../db";
-import { chapters, subjects, notebooks } from "@shared/schema";
+import { chapters, notebookSubjects as subjects, notebooks } from "@shared/schema";
 import { isAuthenticated } from "../../replitAuth";
 
 

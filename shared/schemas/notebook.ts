@@ -79,8 +79,7 @@ export const notebookSubjects = pgTable("notebook_subjects", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Legacy alias for backwards compatibility
-export const subjects = notebookSubjects;
+// Note: Using notebookSubjects instead of subjects to avoid conflicts with education.schema.ts
 
 // Chapters table (for notebook organization)
 export const chapters = pgTable("notebook_chapters", {
@@ -102,6 +101,23 @@ export const topics = pgTable("notebook_topics", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   order: integer("order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Pages table (alias for notebookPages for backwards compatibility)
+export const pages = notebookPages;
+
+// Sticky notes table
+export const stickyNotes = pgTable("sticky_notes", {
+  id: serial("id").primaryKey(),
+  pageId: integer("page_id").notNull().references(() => notebookPages.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  position: json("position").notNull(), // { x: number, y: number }
+  size: json("size").notNull(), // { width: number, height: number }
+  color: varchar("color", { length: 20 }).default("#ffeb3b"),
+  authorId: varchar("author_id", { length: 255 }).notNull(),
+  authorName: varchar("author_name", { length: 255 }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -149,6 +165,12 @@ export const insertTopicSchema = createInsertSchema(topics).omit({
   updatedAt: true,
 });
 
+export const insertStickyNoteSchema = createInsertSchema(stickyNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type Notebook = typeof notebooks.$inferSelect;
 export type InsertNotebook = z.infer<typeof insertNotebookSchema>;
@@ -164,3 +186,5 @@ export type Chapter = typeof chapters.$inferSelect;
 export type InsertChapter = z.infer<typeof insertChapterSchema>;
 export type Topic = typeof topics.$inferSelect;
 export type InsertTopic = z.infer<typeof insertTopicSchema>;
+export type StickyNote = typeof stickyNotes.$inferSelect;
+export type InsertStickyNote = z.infer<typeof insertStickyNoteSchema>;
