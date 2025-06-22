@@ -19,6 +19,9 @@ import {
   bookViewerMemoryMonitor 
 } from '@/lib/debug/bookViewerDebugger';
 import { usePWAContext } from '@/components/PWAProvider';
+import { useAdaptiveScaling } from '@/hooks/useAdaptiveScaling';
+import { ResponsiveWrapper } from '@/components/adaptive/ResponsiveWrapper';
+import { ScaleControls } from '@/components/adaptive/ScaleControls';
 
 interface LibraryBookViewerProps {
   bookData?: {
@@ -55,8 +58,16 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showPerformanceStats, setShowPerformanceStats] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [showScaleControls, setShowScaleControls] = useState(false);
   
   const { cacheBookContent, showNotification } = usePWAContext();
+  const { 
+    deviceInfo, 
+    isCompactMode, 
+    getScaledValue, 
+    adaptiveStyles,
+    scaleFactor 
+  } = useAdaptiveScaling();
   
   const contentRef = useRef<HTMLDivElement>(null);
   const pageChangeTimeoutRef = useRef<NodeJS.Timeout>();
@@ -256,8 +267,10 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
       return (
         <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
           <div className="text-center">
-            <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4 animate-pulse" />
-            <p className="text-gray-600">Loading page {currentPage}...</p>
+            <BookOpen className={`${isCompactMode ? 'h-12 w-12' : 'h-16 w-16'} text-gray-400 mx-auto mb-4 animate-pulse`} />
+            <p className={`text-gray-600 ${isCompactMode ? 'text-sm' : 'text-base'}`}>
+              Loading page {currentPage}...
+            </p>
           </div>
         </div>
       );
@@ -267,6 +280,15 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
     const optimizedContent = contentOptimizer.optimizeContent(pageContent, currentPage);
     performanceMonitor.endTiming('contentOptimization');
 
+    // Adaptive padding based on device and scale
+    const adaptivePadding = getScaledValue(
+      deviceInfo.type === 'mobile' ? 12 : 
+      deviceInfo.type === 'tablet' ? 20 : 24
+    );
+
+    // Combined zoom and adaptive scaling
+    const totalScale = (zoom / 100) * scaleFactor;
+
     return (
       <div 
         ref={contentRef}
@@ -274,15 +296,17 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
           isLoading ? 'opacity-50' : 'opacity-100'
         }`}
         style={{
-          padding: zoom > 150 ? '1rem' : zoom > 100 ? '1.5rem' : '2rem',
-          transform: `scale(${zoom / 100})`,
+          padding: `${adaptivePadding}px`,
+          transform: `scale(${totalScale})`,
           transformOrigin: 'center center',
-          transition: 'transform 0.2s ease-out, opacity 0.2s ease-out'
+          transition: 'transform 0.2s ease-out, opacity 0.2s ease-out',
+          fontSize: adaptiveStyles.fontSize,
+          lineHeight: adaptiveStyles.lineHeight
         }}
         dangerouslySetInnerHTML={{ __html: optimizedContent }}
       />
     );
-  }, [currentPage, bookData?.pages, zoom, isLoading]);
+  }, [currentPage, bookData?.pages, zoom, isLoading, isCompactMode, deviceInfo, getScaledValue, scaleFactor, adaptiveStyles]);
 
   const renderTableOfContents = () => {
     if (!showTableOfContents) return null;
@@ -364,7 +388,14 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
             
             {/* Book Content Area */}
             <div className="relative w-full h-full overflow-hidden rounded-lg">
-              <div className="w-full h-full flex items-center justify-center p-1 sm:p-3 md:p-4 lg:p-6">
+              <div 
+                className={`w-full h-full flex items-center justify-center ${
+                  isCompactMode ? 'p-1' : 'p-1 sm:p-3 md:p-4 lg:p-6'
+                }`}
+                style={{ 
+                  padding: getScaledValue(isCompactMode ? 8 : 16) 
+                }}
+              >
                 {renderPageContent}
               </div>
               
@@ -440,6 +471,16 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
                     title="Performance Stats"
                   >
                     <Activity className="h-4 w-4" />
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowScaleControls(!showScaleControls)}
+                    className={`${showScaleControls ? 'bg-blue-500 bg-opacity-90' : 'bg-black bg-opacity-60'} hover:bg-opacity-80 text-white border-0 rounded-full w-9 h-9 shadow-lg backdrop-blur-sm`}
+                    title="Display Settings"
+                  >
+                    <ZoomIn className="h-4 w-4" />
                   </Button>
                   
                   {process.env.NODE_ENV === 'development' && (
@@ -589,6 +630,16 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
         />
       )}
       
+      {/* Scale Controls */}
+      {showScaleControls && (
+        <div className="fixed top-1/2 right-4 transform -translate-y-1/2 z-[999999]">
+          <ScaleControls 
+            showAdvanced={deviceInfo.type === 'desktop'}
+            onClose={() => setShowScaleControls(false)}
+          />
+        </div>
+      )}
+      
       {/* Debug Panel */}
       {showDebugPanel && process.env.NODE_ENV === 'development' && (
         <DebugPanel 
@@ -597,7 +648,7 @@ export const LibraryBookViewer: React.FC<LibraryBookViewerProps> = ({
           bookData={bookData}
         />
       )}
-    </div>
+    </ResponsiveWrapper>
   );
 };
 

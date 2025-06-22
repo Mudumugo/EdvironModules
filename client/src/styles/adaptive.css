@@ -1,0 +1,207 @@
+/* Adaptive Content Scaling Styles */
+
+/* Base adaptive classes */
+.mobile-layout {
+  --base-font-size: 14px;
+  --compact-spacing: 8px;
+  --touch-target: 44px;
+}
+
+.tablet-layout {
+  --base-font-size: 16px;
+  --compact-spacing: 12px;
+  --touch-target: 48px;
+}
+
+.desktop-layout {
+  --base-font-size: 16px;
+  --compact-spacing: 16px;
+  --touch-target: 40px;
+}
+
+/* Orientation-specific adjustments */
+.portrait-orientation.mobile-layout {
+  --content-max-width: 100%;
+  --side-padding: 16px;
+}
+
+.landscape-orientation.mobile-layout {
+  --content-max-width: 90%;
+  --side-padding: 32px;
+}
+
+.portrait-orientation.tablet-layout {
+  --content-max-width: 85%;
+  --side-padding: 24px;
+}
+
+.landscape-orientation.tablet-layout {
+  --content-max-width: 75%;
+  --side-padding: 48px;
+}
+
+/* Touch device optimizations */
+.touch-device {
+  --min-touch-target: var(--touch-target);
+  --gesture-padding: 16px;
+}
+
+.touch-device .interactive-element {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+  padding: var(--gesture-padding);
+}
+
+.no-touch .interactive-element {
+  min-height: 32px;
+  min-width: 32px;
+  padding: 8px;
+}
+
+/* Compact mode adjustments */
+.compact-mode {
+  --header-height: 48px;
+  --toolbar-height: 40px;
+  --button-size: 36px;
+  --icon-size: 18px;
+}
+
+.expanded-mode {
+  --header-height: 64px;
+  --toolbar-height: 56px;
+  --button-size: 44px;
+  --icon-size: 24px;
+}
+
+/* Responsive typography */
+.adaptive-text {
+  font-size: calc(var(--base-font-size) * var(--scale-factor, 1));
+  line-height: calc(1.4 + (1.6 - 1.4) * ((100vw - 320px) / (1200 - 320)));
+}
+
+.adaptive-heading {
+  font-size: calc(var(--base-font-size) * 1.5 * var(--scale-factor, 1));
+  line-height: 1.3;
+  margin-bottom: calc(var(--compact-spacing) * var(--scale-factor, 1));
+}
+
+.adaptive-subheading {
+  font-size: calc(var(--base-font-size) * 1.25 * var(--scale-factor, 1));
+  line-height: 1.4;
+  margin-bottom: calc(var(--compact-spacing) * 0.75 * var(--scale-factor, 1));
+}
+
+/* Adaptive spacing utilities */
+.adaptive-spacing-xs { margin: calc(4px * var(--scale-factor, 1)); }
+.adaptive-spacing-sm { margin: calc(8px * var(--scale-factor, 1)); }
+.adaptive-spacing-md { margin: calc(16px * var(--scale-factor, 1)); }
+.adaptive-spacing-lg { margin: calc(24px * var(--scale-factor, 1)); }
+.adaptive-spacing-xl { margin: calc(32px * var(--scale-factor, 1)); }
+
+.adaptive-padding-xs { padding: calc(4px * var(--scale-factor, 1)); }
+.adaptive-padding-sm { padding: calc(8px * var(--scale-factor, 1)); }
+.adaptive-padding-md { padding: calc(16px * var(--scale-factor, 1)); }
+.adaptive-padding-lg { padding: calc(24px * var(--scale-factor, 1)); }
+.adaptive-padding-xl { padding: calc(32px * var(--scale-factor, 1)); }
+
+/* Responsive containers */
+.adaptive-container {
+  max-width: var(--content-max-width, 100%);
+  padding-left: var(--side-padding, 16px);
+  padding-right: var(--side-padding, 16px);
+  margin: 0 auto;
+}
+
+/* Button adaptations */
+.adaptive-button {
+  min-height: var(--button-size);
+  padding: calc(var(--compact-spacing) * 0.5) calc(var(--compact-spacing) * 1);
+  font-size: calc(var(--base-font-size) * 0.9);
+  border-radius: calc(var(--button-size) * 0.2);
+}
+
+.adaptive-icon-button {
+  width: var(--button-size);
+  height: var(--button-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adaptive-icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+/* Content scaling animations */
+.scale-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* High DPI adjustments */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .mobile-layout {
+    --base-font-size: 15px;
+  }
+  
+  .tablet-layout {
+    --base-font-size: 17px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+  .mobile-layout {
+    --base-font-size: 13px;
+    --compact-spacing: 6px;
+    --side-padding: 12px;
+  }
+}
+
+/* Large desktop screens */
+@media (min-width: 1440px) {
+  .desktop-layout {
+    --base-font-size: 18px;
+    --compact-spacing: 20px;
+    --side-padding: 64px;
+  }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1920px) {
+  .desktop-layout {
+    --content-max-width: 80%;
+    --side-padding: 120px;
+  }
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .scale-transition {
+    transition: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .adaptive-text {
+    color: #f1f5f9;
+  }
+}
+
+/* Print styles */
+@media print {
+  .mobile-layout,
+  .tablet-layout,
+  .desktop-layout {
+    --base-font-size: 12pt;
+    --scale-factor: 1;
+  }
+  
+  .adaptive-container {
+    max-width: 100%;
+    padding: 0;
+  }
+}
