@@ -1,4 +1,9 @@
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import { 
   BookOpen, 
   Calendar, 
@@ -6,7 +11,12 @@ import {
   FolderOpen,
   FileText,
   BarChart3,
-  Grid3X3
+  Grid3X3,
+  Search,
+  List,
+  Play,
+  Pause,
+  ChevronRight
 } from "lucide-react";
 import { MobileLanding } from "./MobileLanding";
 import { LandingNavigation } from "@/components/landing/LandingNavigation";
@@ -124,6 +134,28 @@ export function Landing() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <LandingNavigation />
+      
+      <LandingHero 
+        activeTab={activeTab}
+        navigationTabs={navigationTabs}
+        onTabChange={setActiveTab}
+        isAutoPlaying={isAutoPlaying}
+        onToggleAutoPlay={() => setIsAutoPlaying(!isAutoPlaying)}
+      />
+
+      <LandingDashboard 
+        activeTab={activeTab}
+        modules={modules}
+      />
+
+      <LandingMainContent 
+        activeTab={activeTab}
+        navigationTabs={navigationTabs}
+        onTabChange={setActiveTab}
+        isAutoPlaying={isAutoPlaying}
+        onToggleAutoPlay={() => setIsAutoPlaying(!isAutoPlaying)}
+      />
 
       {/* Interactive Content Based on Active Tab */}
       <section className="bg-white py-20">
