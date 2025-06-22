@@ -36,56 +36,42 @@ export default function InteractiveSignUp() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
-  const getStepProgress = (step: QuizStep): number => {
-    const stepOrder: QuizStep[] = [
-      "welcome", "user-type", "age-check", "student-info", "parent-info", 
-      "child-info", "school-info", "location", "contact", "interests", "review", "complete"
-    ];
-    return (stepOrder.indexOf(step) / (stepOrder.length - 1)) * 100;
+  const createAccountMutation = useMutation({
+    mutationFn: async (userData: QuizData) => {
+      return await apiRequest("POST", "/api/auth/signup", userData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account created successfully!",
+        description: "Welcome to EdVirons! You can now log in with your new account.",
+      });
+      setLocation("/login");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Account creation failed",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleQuizComplete = (data: QuizData) => {
+    createAccountMutation.mutate(data);
   };
 
-  const nextStep = () => {
-    const currentProgress = getStepProgress(currentStep);
-    setProgress(currentProgress);
+  const handleBackToLogin = () => {
+    setLocation("/login");
+  };
 
-    switch (currentStep) {
-      case "welcome":
-        setCurrentStep("user-type");
-        break;
-      case "user-type":
-        if (quizData.userType === "student") {
-          setCurrentStep("age-check");
-        } else if (quizData.userType === "parent") {
-          setCurrentStep("parent-info");
-        } else if (quizData.userType === "school") {
-          setCurrentStep("school-info");
-        }
-        break;
-      case "age-check":
-        setCurrentStep("student-info");
-        break;
-      case "student-info":
-        setCurrentStep("location");
-        break;
-      case "parent-info":
-        setCurrentStep("child-info");
-        break;
-      case "child-info":
-        setCurrentStep("location");
-        break;
-      case "school-info":
-        setCurrentStep("location");
-        break;
-      case "location":
-        setCurrentStep("contact");
-        break;
-      case "contact":
-        if (quizData.userType === "school") {
-          setCurrentStep("review");
-        } else {
-          setCurrentStep("interests");
-        }
-        break;
+  return (
+    <InteractiveQuizFlow 
+      onComplete={handleQuizComplete}
+      onBack={handleBackToLogin}
+    />
+  );
+}
+
       case "interests":
         setCurrentStep("review");
         break;

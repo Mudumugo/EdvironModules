@@ -9,13 +9,11 @@ export * from './session';
 export * from './calendar';
 export * from './academic';
 
-// Legacy imports for existing schemas - only include if files exist
-// Note: These are commented out as the files may not exist yet
-// export * from './xapi.schema';
-// export * from './education.schema';
-// export * from './mdm.schema';
-// export * from './activity.schema';
-// export * from './signup.schema';
+// Legacy imports for existing schemas
+export * from './education.schema';
+export * from './activity.schema';
+export * from './mdm.schema';
+export * from './signup.schema';
 
 // Additional types and utilities
 export type UserRole = 'student' | 'teacher' | 'parent' | 'admin' | 'super_admin' | 'school_admin' | 'school_it_staff' | 'school_security' | 'global_author';
