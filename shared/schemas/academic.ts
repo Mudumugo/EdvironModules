@@ -59,8 +59,5 @@ export type InsertTimetableEntry = z.infer<typeof insertTimetableEntrySchema>;
 export type AcademicClass = typeof academicClasses.$inferSelect;
 export type InsertAcademicClass = z.infer<typeof insertAcademicClassSchema>;
 
-// Legacy exports for backward compatibility
-export const classes = academicClasses;
-export const insertClassSchema = insertAcademicClassSchema;
-export type Class = AcademicClass;
-export type InsertClass = InsertAcademicClass;
+// Note: Removed legacy 'classes' export to avoid conflicts with education.schema.ts
+// Use 'academicClasses' directly instead

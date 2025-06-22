@@ -8,6 +8,7 @@ export * from './crm';
 export * from './session';
 export * from './calendar';
 export * from './academic';
+export * from './notebook';
 
 // Legacy imports for existing schemas
 export * from './education.schema';
