@@ -1,164 +1,116 @@
-import {
-  pgTable,
-  text,
-  varchar,
-  timestamp,
-  serial,
-  integer,
-  boolean,
-  decimal,
-  date,
-} from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { pgTable, text, timestamp, boolean, integer, json, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { users } from "./users";
-import { tenants } from "./core";
 
-// Library Categories
-export const libraryCategories = pgTable("library_categories", {
+export const books = pgTable("books", {
   id: serial("id").primaryKey(),
-  name: varchar("name").notNull(),
+  title: text("title").notNull(),
+  author: text("author"),
+  isbn: text("isbn"),
   description: text("description"),
-  icon: varchar("icon"),
-  color: varchar("color"),
-  gradeLevel: varchar("grade_level"), // primary, junior_secondary, senior_secondary
-  parentCategoryId: integer("parent_category_id"),
-  isActive: boolean("is_active").default(true),
-  tenantId: varchar("tenant_id"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Library Subjects
-export const librarySubjects = pgTable("library_subjects", {
-  id: serial("id").primaryKey(),
-  name: varchar("name").notNull(),
-  description: text("description"),
-  competency: text("competency"),
-  categoryId: integer("category_id").references(() => libraryCategories.id),
-  gradeLevel: varchar("grade_level"),
-  isActive: boolean("is_active").default(true),
-  tenantId: varchar("tenant_id"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Library Resources
-export const libraryResources = pgTable("library_resources", {
-  id: serial("id").primaryKey(),
-  isbn: varchar("isbn"),
-  title: varchar("title").notNull(),
-  type: varchar("type").notNull(), // book, worksheet, quiz, video, audio, document
-  author: varchar("author"),
-  publisher: varchar("publisher"),
-  publicationYear: integer("publication_year"),
-  edition: varchar("edition"),
-  language: varchar("language").default("English"),
-  description: text("description"),
-  subject: varchar("subject"),
-  category: varchar("category"),
-  keywords: text("keywords").array(),
-  gradeLevel: varchar("grade_level"),
-  difficulty: varchar("difficulty"), // beginner, intermediate, advanced
-  thumbnailUrl: varchar("thumbnail_url"),
-  fileUrl: varchar("file_url"),
+  category: text("category"),
+  subject: text("subject"),
+  gradeLevel: text("grade_level"),
+  language: text("language").default("en"),
+  format: text("format").default("html5"), // 'pdf', 'html5', 'epub', 'video', 'audio'
+  fileUrl: text("file_url"),
+  thumbnailUrl: text("thumbnail_url"),
   fileSize: integer("file_size"),
-  duration: integer("duration"), // for videos/audio in seconds
   pageCount: integer("page_count"),
-  isPublished: boolean("is_published").default(false),
-  isGlobal: boolean("is_global").default(false), // accessible across tenants
-  accessLevel: varchar("access_level").default("public"), // public, restricted, private
+  duration: integer("duration"), // for video/audio content
+  tags: text("tags").array().default([]),
+  keywords: text("keywords").array().default([]),
+  difficulty: text("difficulty"), // 'beginner', 'intermediate', 'advanced'
+  publisher: text("publisher"),
+  publishedDate: timestamp("published_date"),
+  curriculum: text("curriculum").default("CBC"), // CBC, KCSE, etc.
+  isActive: boolean("is_active").default(true),
+  isFeatured: boolean("is_featured").default(false),
+  isPublic: boolean("is_public").default(true),
   downloadCount: integer("download_count").default(0),
   viewCount: integer("view_count").default(0),
-  rating: decimal("rating", { precision: 3, scale: 2 }),
-  ratingCount: integer("rating_count").default(0),
-  tags: text("tags").array(),
-  metadata: text("metadata"), // JSON string for additional metadata
-  uploadedBy: varchar("uploaded_by").references(() => users.id),
-  tenantId: varchar("tenant_id"),
+  rating: integer("rating").default(0),
+  reviews: json("reviews").default([]),
+  metadata: json("metadata").default({}),
+  tenantId: text("tenant_id"),
+  authorId: text("author_id"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Library Resource Access Log
-export const libraryResourceAccess = pgTable("library_resource_access", {
+export const bookCollections = pgTable("book_collections", {
   id: serial("id").primaryKey(),
-  resourceId: integer("resource_id").references(() => libraryResources.id),
-  userId: varchar("user_id").references(() => users.id),
-  accessType: varchar("access_type").notNull(), // view, download, bookmark
-  accessedAt: timestamp("accessed_at").defaultNow(),
-  ipAddress: varchar("ip_address"),
-  userAgent: text("user_agent"),
-  tenantId: varchar("tenant_id"),
+  name: text("name").notNull(),
+  description: text("description"),
+  type: text("type").default("manual"), // 'manual', 'smart', 'curriculum'
+  criteria: json("criteria").default({}),
+  bookIds: integer("book_ids").array().default([]),
+  coverImageUrl: text("cover_image_url"),
+  isPublic: boolean("is_public").default(true),
+  isSystem: boolean("is_system").default(false),
+  tenantId: text("tenant_id"),
+  creatorId: text("creator_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Relations
-export const libraryCategoriesRelations = relations(libraryCategories, ({ many, one }) => ({
-  subjects: many(librarySubjects),
-  resources: many(libraryResources),
-  parentCategory: one(libraryCategories, {
-    fields: [libraryCategories.parentCategoryId],
-    references: [libraryCategories.id],
-  }),
-  childCategories: many(libraryCategories),
-  tenant: one(tenants, {
-    fields: [libraryCategories.tenantId],
-    references: [tenants.id],
-  }),
-}));
+export const userBookmarks = pgTable("user_bookmarks", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  bookId: integer("book_id").notNull(),
+  page: integer("page").default(1),
+  position: json("position").default({}),
+  notes: text("notes"),
+  isPrivate: boolean("is_private").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
-export const librarySubjectsRelations = relations(librarySubjects, ({ one, many }) => ({
-  category: one(libraryCategories, {
-    fields: [librarySubjects.categoryId],
-    references: [libraryCategories.id],
-  }),
-  resources: many(libraryResources),
-  tenant: one(tenants, {
-    fields: [librarySubjects.tenantId],
-    references: [tenants.id],
-  }),
-}));
+export const readingProgress = pgTable("reading_progress", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  bookId: integer("book_id").notNull(),
+  currentPage: integer("current_page").default(1),
+  totalPages: integer("total_pages"),
+  progressPercentage: integer("progress_percentage").default(0),
+  timeSpent: integer("time_spent").default(0), // in minutes
+  lastReadAt: timestamp("last_read_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  bookmarkedPages: integer("bookmarked_pages").array().default([]),
+  notes: json("notes").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
-export const libraryResourcesRelations = relations(libraryResources, ({ one, many }) => ({
-  uploader: one(users, {
-    fields: [libraryResources.uploadedBy],
-    references: [users.id],
-  }),
-  accessLogs: many(libraryResourceAccess),
-  tenant: one(tenants, {
-    fields: [libraryResources.tenantId],
-    references: [tenants.id],
-  }),
-}));
+export const insertBookSchema = createInsertSchema(books).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
-export const libraryResourceAccessRelations = relations(libraryResourceAccess, ({ one }) => ({
-  resource: one(libraryResources, {
-    fields: [libraryResourceAccess.resourceId],
-    references: [libraryResources.id],
-  }),
-  user: one(users, {
-    fields: [libraryResourceAccess.userId],
-    references: [users.id],
-  }),
-  tenant: one(tenants, {
-    fields: [libraryResourceAccess.tenantId],
-    references: [tenants.id],
-  }),
-}));
+export const insertBookCollectionSchema = createInsertSchema(bookCollections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
-// Types
-export type LibraryCategory = typeof libraryCategories.$inferSelect;
-export type InsertLibraryCategory = typeof libraryCategories.$inferInsert;
-export type LibrarySubject = typeof librarySubjects.$inferSelect;
-export type InsertLibrarySubject = typeof librarySubjects.$inferInsert;
-export type LibraryResource = typeof libraryResources.$inferSelect;
-export type InsertLibraryResource = typeof libraryResources.$inferInsert;
-export type LibraryResourceAccess = typeof libraryResourceAccess.$inferSelect;
-export type InsertLibraryResourceAccess = typeof libraryResourceAccess.$inferInsert;
+export const insertUserBookmarkSchema = createInsertSchema(userBookmarks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
-// Zod schemas
-export const insertLibraryCategorySchema = createInsertSchema(libraryCategories);
-export const insertLibrarySubjectSchema = createInsertSchema(librarySubjects);
-export const insertLibraryResourceSchema = createInsertSchema(libraryResources);
-export const insertLibraryResourceAccessSchema = createInsertSchema(libraryResourceAccess);
+export const insertReadingProgressSchema = createInsertSchema(readingProgress).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Book = typeof books.$inferSelect;
+export type InsertBook = z.infer<typeof insertBookSchema>;
+export type BookCollection = typeof bookCollections.$inferSelect;
+export type InsertBookCollection = z.infer<typeof insertBookCollectionSchema>;
+export type UserBookmark = typeof userBookmarks.$inferSelect;
+export type InsertUserBookmark = z.infer<typeof insertUserBookmarkSchema>;
+export type ReadingProgress = typeof readingProgress.$inferSelect;
+export type InsertReadingProgress = z.infer<typeof insertReadingProgressSchema>;
