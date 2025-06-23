@@ -72,6 +72,73 @@ export const userSettings = pgTable("user_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Apps Hub - Educational applications management
+export const appsHub = pgTable("apps_hub", {
+  id: varchar("id").primaryKey().notNull(),
+  name: varchar("name").notNull(),
+  description: text("description").notNull(),
+  category: varchar("category").notNull(),
+  rating: decimal("rating", { precision: 2, scale: 1 }).default("0.0"),
+  downloads: varchar("downloads").default("0"),
+  price: varchar("price").notNull(), // Free, Freemium, Paid, Included
+  icon: varchar("icon").notNull(),
+  url: text("url").notNull(),
+  internal: boolean("internal").default(false),
+  featured: boolean("featured").default(false),
+  trending: boolean("trending").default(false),
+  recommended: boolean("recommended").default(false),
+  popular: boolean("popular").default(false),
+  essential: boolean("essential").default(false),
+  premium: boolean("premium").default(false),
+  tags: text("tags").array().default([]),
+  targetAudience: text("target_audience").array().default([]), // student, teacher, admin
+  gradeLevel: text("grade_level").array().default([]), // elementary, middle, high, college
+  status: varchar("status").default("active"), // active, inactive, pending
+  tenantId: varchar("tenant_id").notNull(),
+  createdBy: varchar("created_by").references(() => users.id),
+  approvedBy: varchar("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// App categories for organization
+export const appCategories = pgTable("app_categories", {
+  id: varchar("id").primaryKey().notNull(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  icon: varchar("icon"),
+  color: varchar("color").default("#3B82F6"),
+  sortOrder: integer("sort_order").default(0),
+  isActive: boolean("is_active").default(true),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// App usage analytics
+export const appUsage = pgTable("app_usage", {
+  id: serial("id").primaryKey(),
+  appId: varchar("app_id").references(() => appsHub.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  action: varchar("action").notNull(), // open, favorite, share, rate
+  metadata: jsonb("metadata").default({}),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Apps Hub schema exports
+export type InsertApp = typeof appsHub.$inferInsert;
+export type App = typeof appsHub.$inferSelect;
+export type InsertAppCategory = typeof appCategories.$inferInsert;
+export type AppCategory = typeof appCategories.$inferSelect;
+export type InsertAppUsage = typeof appUsage.$inferInsert;
+export type AppUsage = typeof appUsage.$inferSelect;
+
+// Insert schemas for validation
+export const insertAppSchema = createInsertSchema(appsHub);
+export const insertAppCategorySchema = createInsertSchema(appCategories);
+
 // Simple schema exports for immediate functionality
 export type InsertTenant = typeof tenants.$inferInsert;
 export type Tenant = typeof tenants.$inferSelect;

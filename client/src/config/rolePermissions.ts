@@ -68,6 +68,15 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     isCore: true
   },
   {
+    id: "apps-hub-admin",
+    name: "Apps Hub Management",
+    path: "/apps-hub-admin",
+    icon: "Settings",
+    description: "Manage educational applications and categories",
+    allowedRoles: ["school_admin", "it_staff"],
+    isCore: false
+  },
+  {
     id: "settings",
     name: "Settings",
     path: "/settings",

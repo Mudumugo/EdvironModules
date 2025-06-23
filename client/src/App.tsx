@@ -79,6 +79,7 @@ const componentMap: Record<string, any> = {
   'parent-portal': ParentPortal,
   'parent-portal-admin': ParentPortalAdmin,
   'apps-hub': AppsHub,
+  'apps-hub-admin': AppsHubAdmin,
   'teachers-dashboard': TeachersDashboard,
   'timetable': TimetableManagement,
   'security-dashboard': SecurityDashboard,
