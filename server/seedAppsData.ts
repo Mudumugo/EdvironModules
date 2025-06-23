@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { appsHub, appCategories } from "@/shared/schema";
+import { globalAppsHub, globalAppCategories } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,7 +8,7 @@ export async function seedAppsData(tenantId: string = "default") {
 
   try {
     // Check if data already exists
-    const existingApps = await db.select().from(appsHub).where(eq(appsHub.tenantId, tenantId)).limit(1);
+    const existingApps = await db.select().from(globalAppsHub).limit(1);
     
     if (existingApps.length > 0) {
       console.log("Apps Hub data already exists, skipping seed");
@@ -91,7 +91,7 @@ export async function seedAppsData(tenantId: string = "default") {
       }
     ];
 
-    await db.insert(appCategories).values(categories);
+    await db.insert(globalAppCategories).values(categories);
     console.log("Seeded app categories");
 
     // Seed apps
@@ -116,8 +116,7 @@ export async function seedAppsData(tenantId: string = "default") {
         tags: ["Education", "Math", "Science", "Free"],
         targetAudience: ["student", "teacher"],
         gradeLevel: ["elementary", "middle", "high"],
-        status: "active",
-        tenantId
+        status: "active"
       },
       {
         id: uuidv4(),
@@ -139,8 +138,7 @@ export async function seedAppsData(tenantId: string = "default") {
         tags: ["Languages", "Learning", "Fun", "Interactive"],
         targetAudience: ["student"],
         gradeLevel: ["elementary", "middle", "high", "college"],
-        status: "active",
-        tenantId
+        status: "active"
       },
       {
         id: uuidv4(),
@@ -282,7 +280,7 @@ export async function seedAppsData(tenantId: string = "default") {
       }
     ];
 
-    await db.insert(appsHub).values(apps);
+    await db.insert(globalAppsHub).values(apps);
     console.log("Seeded apps data");
     console.log("Apps Hub data seeding completed successfully");
 

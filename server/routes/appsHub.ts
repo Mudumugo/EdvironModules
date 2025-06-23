@@ -2,7 +2,7 @@ import { Express } from "express";
 import { isAuthenticated, requireRole } from "../roleMiddleware";
 import { GlobalAppsHubStorage } from "../storage/globalAppsHubStorage";
 import { z } from "zod";
-import { insertGlobalAppSchema, insertGlobalAppCategorySchema } from "@/shared/schema";
+import { insertGlobalAppSchema, insertGlobalAppCategorySchema } from "../../shared/schema";
 import { v4 as uuidv4 } from 'uuid';
 
 const globalAppsStorage = new GlobalAppsHubStorage();

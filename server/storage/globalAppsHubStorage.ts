@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { globalAppsHub, globalAppCategories, tenantAppsAccess, appUsage } from "@/shared/schema";
+import { globalAppsHub, globalAppCategories, tenantAppsAccess, appUsage } from "../../shared/schema";
 import { eq, and, desc, asc, count, sql, ilike, or, inArray } from "drizzle-orm";
 import type { 
   GlobalApp, 
@@ -8,7 +8,7 @@ import type {
   InsertGlobalAppCategory,
   TenantAppAccess,
   InsertTenantAppAccess
-} from "@/shared/schema";
+} from "../../shared/schema";
 
 export class GlobalAppsHubStorage {
   // EdVirons team: Get all global apps with filtering

@@ -41,6 +41,7 @@ import PBXDashboard from "@/pages/PBXDashboard";
 import ParentPortal from "@/pages/ParentPortal";
 import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
 import AppsHub from "@/pages/AppsHub";
+import AppsHubAdmin from "@/pages/AppsHubAdmin";
 
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
