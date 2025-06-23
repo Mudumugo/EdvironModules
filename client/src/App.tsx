@@ -301,6 +301,30 @@ function Router() {
                   <AppsHub />
                 </RoleProtectedRoute>
               </Route>
+              
+              <Route path="/apps-hub-admin">
+                <RoleProtectedRoute moduleId="apps-hub-admin">
+                  <AppsHubAdmin />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/global-support">
+                <RoleProtectedRoute moduleId="global-support">
+                  <GlobalSupport />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/global-licensing">
+                <RoleProtectedRoute moduleId="global-licensing">
+                  <GlobalLicensing />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/tenant-management">
+                <RoleProtectedRoute moduleId="tenant-management">
+                  <TenantManagement />
+                </RoleProtectedRoute>
+              </Route>
 
               {/* Tech Tutor - Students and Teachers */}
               <Route path="/tech-tutor">
