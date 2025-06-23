@@ -103,6 +103,9 @@ Object.entries(DEMO_USERS).forEach(([email, user]) => {
   demoUserCache.set(email, user);
 });
 
+// Debug: Log initialized demo users
+console.log('[DEMO USERS] Initialized demo users:', Object.keys(DEMO_USERS));
+
 export function registerAuthRoutes(app: Express) {
   // Get current user endpoint with session validation
   app.get('/api/auth/user', (req: Request, res: Response) => {
