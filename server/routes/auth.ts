@@ -14,6 +14,38 @@ const demoUserCache = new NodeCache({
 
 // Pre-populate demo user cache for instant login
 const DEMO_USERS = {
+  // EdVirons Global Team
+  'demo.admin@edvirons.com': {
+    id: 'demo_edvirons_admin',
+    email: 'demo.admin@edvirons.com',
+    role: 'edvirons_admin',
+    tenantId: 'edvirons-global',
+    firstName: 'EdVirons',
+    lastName: 'Admin',
+    isActive: true,
+    permissions: ['global_admin', 'apps_management', 'support_management', 'licensing_management', 'tenant_management']
+  },
+  'demo.content@edvirons.com': {
+    id: 'demo_edvirons_content',
+    email: 'demo.content@edvirons.com',
+    role: 'edvirons_content_manager',
+    tenantId: 'edvirons-global',
+    firstName: 'EdVirons',
+    lastName: 'Content Manager',
+    isActive: true,
+    permissions: ['apps_management', 'content_management']
+  },
+  'demo.support@edvirons.com': {
+    id: 'demo_edvirons_support',
+    email: 'demo.support@edvirons.com',
+    role: 'edvirons_support',
+    tenantId: 'edvirons-global',
+    firstName: 'EdVirons',
+    lastName: 'Support',
+    isActive: true,
+    permissions: ['support_management', 'ticket_management']
+  },
+  // School Tenant Users
   'student@edvirons.com': {
     id: 'demo_student_elementary',
     email: 'student@edvirons.com',
@@ -34,13 +66,13 @@ const DEMO_USERS = {
     isActive: true,
     permissions: []
   },
-  'demo.school_admin@edvirons.com': {
+  'demo.school@edvirons.com': {
     id: 'demo_school_admin',
-    email: 'demo.school_admin@edvirons.com',
+    email: 'demo.school@edvirons.com',
     role: 'school_admin',
     tenantId: 'demo_tenant',
     firstName: 'Demo',
-    lastName: 'Admin',
+    lastName: 'School Admin',
     isActive: true,
     permissions: []
   },
@@ -54,25 +86,15 @@ const DEMO_USERS = {
     isActive: true,
     permissions: []
   },
-  'demo.school_security@edvirons.com': {
-    id: 'demo_school_security',
-    email: 'demo.school_security@edvirons.com',
-    role: 'school_security',
-    tenantId: 'demo_tenant',
-    firstName: 'Demo',
-    lastName: 'Security',
-    isActive: true,
-    permissions: []
-  },
   'demo.author@edvirons.com': {
     id: 'demo_global_author',
     email: 'demo.author@edvirons.com',
     role: 'global_author',
-    tenantId: 'global', // Global tenant for content authors
+    tenantId: 'demo_tenant',
     firstName: 'Demo',
     lastName: 'Author',
     isActive: true,
-    permissions: ['content_create', 'content_edit', 'content_publish']
+    permissions: []
   }
 };
 

@@ -125,8 +125,6 @@ export default function Login() {
     setIsLoading(true);
     try {
       const response = await apiRequest("POST", "/api/auth/demo-login", {
-        role: account.id,
-        name: `Demo ${account.role}`,
         email: account.email
       });
 
