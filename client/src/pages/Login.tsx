@@ -14,41 +14,71 @@ import {
 } from "lucide-react";
 
 const DEMO_ACCOUNTS = [
+  // EdVirons Global Team
+  {
+    role: "EdVirons Admin",
+    email: "demo.admin@edvirons.com",
+    id: "demo_edvirons_admin",
+    color: "bg-blue-600",
+    description: "Full global access - Apps, Support, Licensing, Tenants",
+    category: "EdVirons Team"
+  },
+  {
+    role: "Content Manager", 
+    email: "demo.content@edvirons.com",
+    id: "demo_edvirons_content",
+    color: "bg-green-600",
+    description: "Apps management and content curation",
+    category: "EdVirons Team"
+  },
+  {
+    role: "Support Team",
+    email: "demo.support@edvirons.com", 
+    id: "demo_edvirons_support",
+    color: "bg-purple-600",
+    description: "Ticket management and customer support",
+    category: "EdVirons Team"
+  },
+  // School Tenant Accounts
   {
     role: "Student",
     email: "student@edvirons.com",
     id: "demo_demo_student_elementary",
-    color: "bg-blue-500"
+    color: "bg-blue-500",
+    description: "Access coursework and learning materials",
+    category: "School Users"
   },
   {
     role: "Teacher",
     email: "demo.teacher@edvirons.com",
     id: "demo_teacher",
-    color: "bg-green-500"
+    color: "bg-green-500",
+    description: "Manage classes and track student progress",
+    category: "School Users"
   },
   {
     role: "School Administrator",
-    email: "demo.school_admin@edvirons.com",
+    email: "demo.school@edvirons.com",
     id: "demo_school_admin",
-    color: "bg-purple-500"
+    color: "bg-orange-500",
+    description: "School-level administration and management",
+    category: "School Users"
   },
   {
     role: "IT Staff",
     email: "demo.school_it_staff@edvirons.com",
     id: "demo_school_it_staff",
-    color: "bg-orange-500"
-  },
-  {
-    role: "Security Staff",
-    email: "demo.school_security@edvirons.com",
-    id: "demo_school_security",
-    color: "bg-red-500"
+    color: "bg-gray-500",
+    description: "Technical support within school",
+    category: "School Users"
   },
   {
     role: "Content Author",
     email: "demo.author@edvirons.com",
     id: "demo_global_author",
-    color: "bg-indigo-500"
+    color: "bg-indigo-500",
+    description: "Create and manage educational content",
+    category: "School Users"
   }
 ];
 
