@@ -19,7 +19,7 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     path: "/",
     icon: "BarChart3",
     description: "Main overview and statistics",
-    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security", "global_author", "content_admin"],
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security", "global_author", "content_admin", "edvirons_admin", "edvirons_support", "edvirons_developer", "edvirons_content_manager", "edvirons_license_manager"],
     isCore: true
   },
   {

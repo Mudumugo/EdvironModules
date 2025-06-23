@@ -45,6 +45,7 @@ import AppsHubAdmin from "@/pages/AppsHubAdmin";
 import GlobalSupport from "@/pages/GlobalSupport";
 import GlobalLicensing from "@/pages/GlobalLicensing";
 import TenantManagement from "@/pages/TenantManagement";
+import EdVironsAdminDashboard from "@/pages/EdVironsAdminDashboard";
 
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
@@ -133,6 +134,7 @@ function Router() {
                    user?.role === 'teacher' ? <Dashboard /> :
                    user?.role?.includes('student') || user?.role === 'student' ? <StudentDashboard /> :
                    user?.role === 'global_author' || user?.role === 'content_admin' ? <AuthoringDashboard /> :
+                   user?.role?.startsWith('edvirons_') ? <EdVironsAdminDashboard /> :
                    <Dashboard />}
                 </RoleProtectedRoute>
               </Route>
