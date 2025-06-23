@@ -2,6 +2,7 @@ import { UserStorage } from "./userStorage";
 import { LibraryStorage } from "./libraryStorage";
 import { CRMStorage } from "./crmStorage";
 import { SecurityStorage } from "./securityStorage";
+import { AppsHubStorage } from "./appsHubStorage";
 import { IStorage } from "./types";
 
 export class DatabaseStorage implements IStorage {
@@ -9,6 +10,7 @@ export class DatabaseStorage implements IStorage {
   private libraryStorage = new LibraryStorage();
   private crmStorage = new CRMStorage();
   private securityStorage = new SecurityStorage();
+  private appsHubStorage = new AppsHubStorage();
 
   // User operations - delegate to UserStorage
   async getUser(id: string) { return this.userStorage.getUser(id); }
