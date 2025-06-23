@@ -72,8 +72,8 @@ export const userSettings = pgTable("user_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Apps Hub - Educational applications management
-export const appsHub = pgTable("apps_hub", {
+// Global Apps Hub - EdVirons team manages apps globally for all tenants
+export const globalAppsHub = pgTable("global_apps_hub", {
   id: varchar("id").primaryKey().notNull(),
   name: varchar("name").notNull(),
   description: text("description").notNull(),
@@ -93,8 +93,9 @@ export const appsHub = pgTable("apps_hub", {
   tags: text("tags").array().default([]),
   targetAudience: text("target_audience").array().default([]), // student, teacher, admin
   gradeLevel: text("grade_level").array().default([]), // elementary, middle, high, college
-  status: varchar("status").default("active"), // active, inactive, pending
-  tenantId: varchar("tenant_id").notNull(),
+  status: varchar("status").default("active"), // active, inactive, pending, deprecated
+  isGloballyAvailable: boolean("is_globally_available").default(true),
+  minimumPlan: varchar("minimum_plan").default("basic"), // basic, premium, enterprise
   createdBy: varchar("created_by").references(() => users.id),
   approvedBy: varchar("approved_by").references(() => users.id),
   approvedAt: timestamp("approved_at"),
@@ -102,8 +103,26 @@ export const appsHub = pgTable("apps_hub", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// App categories for organization
-export const appCategories = pgTable("app_categories", {
+// Tenant-specific app availability (which global apps are enabled for each tenant)
+export const tenantAppsAccess = pgTable("tenant_apps_access", {
+  id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").notNull(),
+  appId: varchar("app_id").references(() => globalAppsHub.id).notNull(),
+  isEnabled: boolean("is_enabled").default(true),
+  customName: varchar("custom_name"), // Tenant can customize app display name
+  customDescription: text("custom_description"), // Tenant can customize description
+  customIcon: varchar("custom_icon"), // Tenant can customize icon
+  enabledBy: varchar("enabled_by").references(() => users.id),
+  enabledAt: timestamp("enabled_at").defaultNow(),
+  disabledAt: timestamp("disabled_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  unique().on(table.tenantId, table.appId)
+]);
+
+// Global app categories managed by EdVirons team
+export const globalAppCategories = pgTable("global_app_categories", {
   id: varchar("id").primaryKey().notNull(),
   name: varchar("name").notNull(),
   description: text("description"),
@@ -111,15 +130,14 @@ export const appCategories = pgTable("app_categories", {
   color: varchar("color").default("#3B82F6"),
   sortOrder: integer("sort_order").default(0),
   isActive: boolean("is_active").default(true),
-  tenantId: varchar("tenant_id").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// App usage analytics
+// App usage analytics - tracks tenant usage of global apps
 export const appUsage = pgTable("app_usage", {
   id: serial("id").primaryKey(),
-  appId: varchar("app_id").references(() => appsHub.id).notNull(),
+  appId: varchar("app_id").references(() => globalAppsHub.id).notNull(),
   userId: varchar("user_id").references(() => users.id).notNull(),
   action: varchar("action").notNull(), // open, favorite, share, rate
   metadata: jsonb("metadata").default({}),
@@ -127,17 +145,85 @@ export const appUsage = pgTable("app_usage", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Apps Hub schema exports
-export type InsertApp = typeof appsHub.$inferInsert;
-export type App = typeof appsHub.$inferSelect;
-export type InsertAppCategory = typeof appCategories.$inferInsert;
-export type AppCategory = typeof appCategories.$inferSelect;
+// Global support tickets - EdVirons team manages tenant issues
+export const supportTickets = pgTable("support_tickets", {
+  id: serial("id").primaryKey(),
+  ticketNumber: varchar("ticket_number").unique().notNull(),
+  tenantId: varchar("tenant_id").notNull(),
+  submittedBy: varchar("submitted_by").references(() => users.id).notNull(),
+  assignedTo: varchar("assigned_to").references(() => users.id), // EdVirons team member
+  subject: varchar("subject").notNull(),
+  description: text("description").notNull(),
+  category: varchar("category").notNull(), // technical, licensing, apps, billing, general
+  priority: varchar("priority").default("medium"), // low, medium, high, critical
+  status: varchar("status").default("open"), // open, in_progress, resolved, closed
+  resolution: text("resolution"),
+  attachments: jsonb("attachments").default([]),
+  internalNotes: text("internal_notes"), // EdVirons team internal notes
+  lastResponseAt: timestamp("last_response_at"),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Global licensing management - EdVirons controls all licenses
+export const globalLicenses = pgTable("global_licenses", {
+  id: varchar("id").primaryKey().notNull(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  licenseType: varchar("license_type").notNull(), // software, content, service
+  provider: varchar("provider").notNull(),
+  totalSeats: integer("total_seats"),
+  usedSeats: integer("used_seats").default(0),
+  costPerSeat: decimal("cost_per_seat", { precision: 10, scale: 2 }),
+  billingCycle: varchar("billing_cycle").default("annual"), // monthly, annual
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  managedBy: varchar("managed_by").references(() => users.id), // EdVirons team member
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Tenant license allocations - EdVirons assigns licenses to tenants
+export const tenantLicenseAllocations = pgTable("tenant_license_allocations", {
+  id: serial("id").primaryKey(),
+  licenseId: varchar("license_id").references(() => globalLicenses.id).notNull(),
+  tenantId: varchar("tenant_id").notNull(),
+  allocatedSeats: integer("allocated_seats").notNull(),
+  usedSeats: integer("used_seats").default(0),
+  allocatedBy: varchar("allocated_by").references(() => users.id), // EdVirons team member
+  allocatedAt: timestamp("allocated_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  unique().on(table.licenseId, table.tenantId)
+]);
+
+// Global Apps Hub schema exports
+export type InsertGlobalApp = typeof globalAppsHub.$inferInsert;
+export type GlobalApp = typeof globalAppsHub.$inferSelect;
+export type InsertGlobalAppCategory = typeof globalAppCategories.$inferInsert;
+export type GlobalAppCategory = typeof globalAppCategories.$inferSelect;
+export type InsertTenantAppAccess = typeof tenantAppsAccess.$inferInsert;
+export type TenantAppAccess = typeof tenantAppsAccess.$inferSelect;
 export type InsertAppUsage = typeof appUsage.$inferInsert;
 export type AppUsage = typeof appUsage.$inferSelect;
+export type InsertSupportTicket = typeof supportTickets.$inferInsert;
+export type SupportTicket = typeof supportTickets.$inferSelect;
+export type InsertGlobalLicense = typeof globalLicenses.$inferInsert;
+export type GlobalLicense = typeof globalLicenses.$inferSelect;
+export type InsertTenantLicenseAllocation = typeof tenantLicenseAllocations.$inferInsert;
+export type TenantLicenseAllocation = typeof tenantLicenseAllocations.$inferSelect;
 
 // Insert schemas for validation
-export const insertAppSchema = createInsertSchema(appsHub);
-export const insertAppCategorySchema = createInsertSchema(appCategories);
+export const insertGlobalAppSchema = createInsertSchema(globalAppsHub);
+export const insertGlobalAppCategorySchema = createInsertSchema(globalAppCategories);
+export const insertTenantAppAccessSchema = createInsertSchema(tenantAppsAccess);
+export const insertSupportTicketSchema = createInsertSchema(supportTickets);
+export const insertGlobalLicenseSchema = createInsertSchema(globalLicenses);
+export const insertTenantLicenseAllocationSchema = createInsertSchema(tenantLicenseAllocations);
 
 // Simple schema exports for immediate functionality
 export type InsertTenant = typeof tenants.$inferInsert;
@@ -158,12 +244,17 @@ export const USER_ROLES = {
   COUNSELOR: "counselor",
   LIBRARIAN: "librarian",
   
-  // Administrative staff
+  // Tenant-level administrative staff
   SCHOOL_ADMIN: "school_admin",
   SCHOOL_SECURITY: "school_security",
   SCHOOL_IT_STAFF: "school_it_staff",
-  IT_STAFF: "it_staff",
-  SECURITY_STAFF: "security_staff",
+  
+  // EdVirons global team roles
+  EDVIRONS_ADMIN: "edvirons_admin",
+  EDVIRONS_SUPPORT: "edvirons_support",
+  EDVIRONS_DEVELOPER: "edvirons_developer",
+  EDVIRONS_CONTENT_MANAGER: "edvirons_content_manager",
+  EDVIRONS_LICENSE_MANAGER: "edvirons_license_manager",
   
   // Non-teaching staff
   OFFICE_STAFF: "office_staff",

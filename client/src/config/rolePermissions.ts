@@ -72,8 +72,35 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     name: "Apps Hub Management",
     path: "/apps-hub-admin",
     icon: "Settings",
-    description: "Manage educational applications and categories",
-    allowedRoles: ["school_admin", "it_staff"],
+    description: "Manage global educational applications and tenant access",
+    allowedRoles: ["edvirons_admin", "edvirons_content_manager"],
+    isCore: false
+  },
+  {
+    id: "global-support",
+    name: "Global Support",
+    path: "/global-support",
+    icon: "Headphones",
+    description: "Manage support tickets and tenant issues",
+    allowedRoles: ["edvirons_admin", "edvirons_support"],
+    isCore: false
+  },
+  {
+    id: "global-licensing",
+    name: "Global Licensing",
+    path: "/global-licensing",
+    icon: "CreditCard",
+    description: "Manage licenses and tenant allocations",
+    allowedRoles: ["edvirons_admin", "edvirons_license_manager"],
+    isCore: false
+  },
+  {
+    id: "tenant-management",
+    name: "Tenant Management",
+    path: "/tenant-management", 
+    icon: "Building",
+    description: "Manage schools and tenant configurations",
+    allowedRoles: ["edvirons_admin"],
     isCore: false
   },
   {
