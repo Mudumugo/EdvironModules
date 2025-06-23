@@ -230,33 +230,84 @@ export default function Login() {
         </form>
 
         {/* Demo Accounts */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="p-4">
-            <h3 className="font-medium text-gray-900 mb-3 text-sm">Demo Accounts</h3>
-            <div className="space-y-2">
-              {DEMO_ACCOUNTS.map((account) => (
-                <div key={account.id} className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-3 h-3 rounded-full ${account.color}`}></div>
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-900">{account.role}</span>
-                      <div className="text-gray-500 text-xs">{account.email}</div>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDemoLogin(account)}
-                    disabled={isLoading}
-                    className="text-blue-600 border-blue-300 hover:bg-blue-50 px-4 py-1 h-8 font-medium"
-                  >
-                    Use
-                  </Button>
+        <div className="space-y-4">
+          {/* EdVirons Team Accounts - Highlighted */}
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-300">
+            <CardContent className="p-4">
+              <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
+                <div className="w-4 h-4 bg-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">E</span>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                EdVirons Global Team
+              </h3>
+              <p className="text-xs text-gray-600 mb-3">Manage apps, support, licensing, and tenant infrastructure</p>
+              <div className="space-y-2">
+                {DEMO_ACCOUNTS.filter(account => account.category === "EdVirons Team").map((account) => (
+                  <div key={account.id} className="flex items-center justify-between p-3 bg-white rounded-md border-2 border-blue-200 hover:border-blue-400 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-4 h-4 rounded-full ${account.color}`}></div>
+                      <div className="text-sm">
+                        <span className="font-semibold text-gray-900">{account.role}</span>
+                        <div className="text-blue-600 text-xs font-medium">{account.email}</div>
+                        <div className="text-gray-500 text-xs">{account.description}</div>
+                      </div>
+                    </div>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleDemoLogin(account)}
+                      disabled={isLoading}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 h-8 font-medium"
+                    >
+                      Login
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* School Users */}
+          <Card className="bg-green-50 border-green-200">
+            <CardContent className="p-4">
+              <h3 className="font-medium text-gray-900 mb-2 text-sm flex items-center gap-2">
+                <div className="w-4 h-4 bg-green-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">S</span>
+                </div>
+                School Users
+              </h3>
+              <div className="space-y-2">
+                {DEMO_ACCOUNTS.filter(account => account.category === "School Users").map((account) => (
+                  <div key={account.id} className="flex items-center justify-between p-2 bg-white rounded-md border border-green-200 hover:bg-green-50 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${account.color}`}></div>
+                      <div className="text-sm">
+                        <span className="font-medium text-gray-900">{account.role}</span>
+                        <div className="text-gray-500 text-xs">{account.email}</div>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDemoLogin(account)}
+                      disabled={isLoading}
+                      className="text-green-600 border-green-300 hover:bg-green-50 px-3 py-1 h-7 text-xs"
+                    >
+                      Use
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Access Note */}
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-xs text-yellow-800 text-center">
+            <strong>Quick Access:</strong> Use <span className="font-mono bg-yellow-100 px-1 rounded">demo.admin@edvirons.com</span> for full EdVirons management access
+          </p>
+        </div>
 
         {/* Alternative Login Methods */}
         <div className="text-center">
