@@ -86,12 +86,47 @@ export async function setupAuth(app: Express) {
     
     await upsertUser(claims);
     
+    // Determine role based on email domain or specific emails
+    let userRole = "student"; // Default role
+    const email = String(claims["email"] || "");
+    
+    // EdVirons team email patterns
+    if (email.endsWith("@edvirons.com")) {
+      if (email.includes("admin") || email === "admin@edvirons.com") {
+        userRole = "edvirons_admin";
+      } else if (email.includes("support")) {
+        userRole = "edvirons_support";
+      } else if (email.includes("content")) {
+        userRole = "edvirons_content_manager";
+      } else if (email.includes("license")) {
+        userRole = "edvirons_license_manager";
+      } else if (email.includes("dev")) {
+        userRole = "edvirons_developer";
+      } else {
+        userRole = "edvirons_admin"; // Default EdVirons team to admin
+      }
+    }
+    // Demo accounts for testing
+    else if (email === "demo.admin@edvirons.com") {
+      userRole = "edvirons_admin";
+    } else if (email === "demo.content@edvirons.com") {
+      userRole = "edvirons_content_manager";
+    } else if (email === "demo.support@edvirons.com") {
+      userRole = "edvirons_support";
+    }
+    // School admin demo accounts
+    else if (email === "demo.school@edvirons.com") {
+      userRole = "school_admin";
+    } else if (email === "demo.teacher@edvirons.com") {
+      userRole = "teacher";
+    }
+
     // Create SessionUser compatible object
     const sessionUser: SessionUser = {
       id: String(claims["sub"] || ""),
-      email: String(claims["email"] || ""),
-      role: 'student', // Default role, will be updated by database lookup
-      tenantId: 'default-tenant',
+      email: email,
+      role: userRole,
+      tenantId: userRole.startsWith("edvirons_") ? "edvirons-global" : "default-tenant",
       firstName: String(claims["first_name"] || ""),
       lastName: String(claims["last_name"] || ""),
       profileImageUrl: String(claims["profile_image_url"] || ""),

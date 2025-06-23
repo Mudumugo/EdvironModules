@@ -42,6 +42,9 @@ import ParentPortal from "@/pages/ParentPortal";
 import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
 import AppsHub from "@/pages/AppsHub";
 import AppsHubAdmin from "@/pages/AppsHubAdmin";
+import GlobalSupport from "@/pages/GlobalSupport";
+import GlobalLicensing from "@/pages/GlobalLicensing";
+import TenantManagement from "@/pages/TenantManagement";
 
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
