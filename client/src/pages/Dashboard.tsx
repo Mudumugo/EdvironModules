@@ -4,6 +4,7 @@ import { UserRole } from "@shared/schema";
 import ITDashboard from "./ITDashboard";
 import SecurityDashboard from "./SecurityDashboard";
 import { PrimaryDashboard, JuniorDashboard, SeniorDashboard, TeacherDashboard, SchoolAdminDashboard } from "@/components/dashboard/modules";
+import CBEHubCard from "@/components/CBEHubCard";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -53,6 +54,10 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          {/* CBE Hub Card - Persistent for all users */}
+          <div className="mb-6">
+            <CBEHubCard />
+          </div>
           <ITDashboard />
         </div>
       </div>
@@ -63,6 +68,10 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          {/* CBE Hub Card - Persistent for all users */}
+          <div className="mb-6">
+            <CBEHubCard />
+          </div>
           <SecurityDashboard />
         </div>
       </div>
@@ -73,11 +82,21 @@ export default function Dashboard() {
     return <SchoolAdminDashboard user={user} stats={stats} />;
   }
 
-  // Return appropriate dashboard based on academic level
-  if (academicLevel === 'primary') return <PrimaryDashboard user={user} />;
-  if (academicLevel === 'junior') return <JuniorDashboard user={user} stats={stats} />;
-  if (academicLevel === 'teacher') return <TeacherDashboard user={user} stats={stats} />;
-  if (academicLevel === 'senior' || academicLevel === 'college') return <SeniorDashboard user={user} stats={stats} />;
-  
-  return <JuniorDashboard user={user} stats={stats} />; // fallback
+  // Return appropriate dashboard based on academic level with CBE Hub
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        {/* CBE Hub Card - Persistent for all users */}
+        <div className="mb-6">
+          <CBEHubCard />
+        </div>
+        
+        {academicLevel === 'primary' && <PrimaryDashboard user={user} />}
+        {academicLevel === 'junior' && <JuniorDashboard user={user} stats={stats} />}
+        {academicLevel === 'teacher' && <TeacherDashboard user={user} stats={stats} />}
+        {(academicLevel === 'senior' || academicLevel === 'college') && <SeniorDashboard user={user} stats={stats} />}
+        {!['primary', 'junior', 'teacher', 'senior', 'college'].includes(academicLevel) && <JuniorDashboard user={user} stats={stats} />}
+      </div>
+    </div>
+  );
 }

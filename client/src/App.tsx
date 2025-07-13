@@ -46,6 +46,7 @@ import GlobalSupport from "@/pages/GlobalSupport";
 import GlobalLicensing from "@/pages/GlobalLicensing";
 import TenantManagement from "@/pages/TenantManagement";
 import EdVironsAdminDashboard from "@/pages/EdVironsAdminDashboard";
+import CBEHub from "@/pages/CBEHub";
 
 import TimetableManagement from "@/pages/TimetableManagement";
 import AuthoringDashboard from "@/pages/AuthoringDashboard";
@@ -325,6 +326,13 @@ function Router() {
               <Route path="/tenant-management">
                 <RoleProtectedRoute moduleId="tenant-management">
                   <TenantManagement />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* CBE Hub - All authenticated users */}
+              <Route path="/cbe-hub">
+                <RoleProtectedRoute moduleId="cbe-hub">
+                  <CBEHub />
                 </RoleProtectedRoute>
               </Route>
 

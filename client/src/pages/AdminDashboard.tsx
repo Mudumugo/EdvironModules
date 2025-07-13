@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
+import CBEHubCard from "@/components/CBEHubCard";
 
 const quickStats = [
   { title: "Total Users", value: "2,847", change: "+12%", icon: Users, color: "bg-blue-500" },
@@ -65,6 +66,9 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* CBE Hub Card - Persistent for all users */}
+        <CBEHubCard />
+        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
+import CBEHubCard from "@/components/CBEHubCard";
 
 export default function EdVironsAdminDashboard() {
   const { user } = useAuth();
@@ -124,6 +125,9 @@ export default function EdVironsAdminDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* CBE Hub Card - Persistent for all users */}
+      <CBEHubCard />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

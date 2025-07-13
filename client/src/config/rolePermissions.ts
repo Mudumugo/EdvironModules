@@ -23,6 +23,15 @@ export const MODULE_PERMISSIONS: ModulePermission[] = [
     isCore: true
   },
   {
+    id: "cbe-hub",
+    name: "CBE Hub",
+    path: "/cbe-hub",
+    icon: "GraduationCap",
+    description: "Competency-Based Education center for tracking progress and assessments",
+    allowedRoles: ["student", "student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin", "it_staff", "security_staff", "school_it_staff", "school_security", "global_author", "content_admin", "edvirons_admin", "edvirons_support", "edvirons_developer", "edvirons_content_manager", "edvirons_license_manager"],
+    isCore: true
+  },
+  {
     id: "crm",
     name: "CRM",
     path: "/crm",
