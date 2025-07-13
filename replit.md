@@ -1,0 +1,119 @@
+# EdVirons Educational Platform
+
+## Overview
+
+EdVirons is a comprehensive educational technology platform built as a global multi-tenant system. The platform serves multiple school tenants with centralized management by the EdVirons team, offering educational applications, digital libraries, school management tools, and various learning modules.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Multi-Tenant Architecture
+- **Global Management**: EdVirons team manages central app catalog, licensing, support, and tenant provisioning
+- **Tenant Isolation**: Each school operates on isolated infrastructure with dedicated databases and networks  
+- **Subdomain-based Access**: Schools access via `schoolname.edvirons.com` subdomains
+- **Infrastructure as Code**: Automated VM provisioning and scaling based on subscription tiers
+
+### Technology Stack
+- **Frontend**: React + TypeScript with Vite build system
+- **Backend**: Express.js with TypeScript
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Replit Auth with session-based demo accounts
+- **UI Framework**: Tailwind CSS with shadcn/ui components
+- **File Storage**: MinIO for media and document storage
+- **Real-time Features**: WebSocket support for live sessions
+
+## Key Components
+
+### 1. Authentication & Authorization
+- **Multi-tier Role System**: EdVirons global roles (admin, content manager, support) and tenant-specific roles (school admin, teacher, student)
+- **Session Management**: Express sessions with PostgreSQL storage
+- **Demo System**: Pre-configured demo accounts for testing different role levels
+- **Permission-based Access**: Granular permissions for different features and modules
+
+### 2. Apps Hub Management
+- **Global App Catalog**: Centrally managed by EdVirons team
+- **Tenant App Access**: Schools can enable/disable specific apps
+- **Custom Branding**: Per-tenant app customization (names, descriptions, icons)
+- **Categories & Filtering**: Organized app discovery with multiple filter options
+
+### 3. Educational Modules
+- **School Management**: Student records, attendance, timetables, staff management
+- **Digital Library**: CBC-aligned interactive books, videos, and learning resources
+- **Tutor Hub**: Personalized workspace for tutors and teachers
+- **Family Controls**: Parent dashboard for monitoring and controlling child activities
+- **Analytics**: Comprehensive learning and usage analytics
+- **Live Sessions**: Real-time classroom and tutoring sessions with WebSocket support
+
+### 4. Content Management
+- **Authoring Dashboard**: Content creation tools (disabled in tenant builds)
+- **Library Resources**: Categorized by grade level and subject
+- **Media Management**: File upload, processing, and distribution
+- **Locker System**: Personal storage for students and teachers
+
+## Data Flow
+
+### Global to Tenant Data Flow
+1. **App Management**: EdVirons team creates apps in global catalog → Schools enable specific apps → Students/teachers access enabled apps
+2. **Content Distribution**: Global library resources → Tenant-specific access controls → User consumption
+3. **Licensing**: Global license pool → Tenant allocations → User assignments
+4. **Support**: Tenant issues → Global support system → Resolution and tracking
+
+### User Interaction Flow
+1. **Authentication**: User login → Role verification → Permission assignment → Module access
+2. **Learning Path**: Library browsing → Content consumption → Progress tracking → Analytics
+3. **School Operations**: Admin tasks → Student/staff management → Timetabling → Reporting
+
+## External Dependencies
+
+### Core Infrastructure
+- **Neon Database**: PostgreSQL hosting for production
+- **MinIO**: Self-hosted object storage for files and media
+- **Replit Auth**: Authentication provider
+- **SendGrid**: Email delivery service
+- **Stripe**: Payment processing for subscriptions
+
+### Optional Integrations
+- **Notion API**: Documentation and knowledge base
+- **Analytics Services**: Learning analytics and reporting
+- **PBX System**: VoIP integration for school communications
+
+## Deployment Strategy
+
+### Build Configuration
+- **Development Build**: All features enabled including authoring tools
+- **Global Build**: Full EdVirons platform with content authoring capabilities
+- **Tenant Build**: School-specific deployments with authoring features disabled
+
+### Environment Variables
+```bash
+# Database
+DATABASE_URL=postgresql://...
+
+# Authentication  
+SESSION_SECRET=...
+ISSUER_URL=https://replit.com/oidc
+
+# Build Type
+BUILD_TYPE=global|tenant|development
+VITE_BUILD_TYPE=global|tenant
+
+# Storage
+MINIO_ENDPOINT=...
+MINIO_ACCESS_KEY=...
+MINIO_SECRET_KEY=...
+```
+
+### Infrastructure Scaling
+- **Basic Tier**: e2-small VM (1 vCPU, 2GB RAM) for up to 50 users
+- **Premium/Enterprise**: Larger instances with dedicated resources
+- **Auto-provisioning**: Terraform-based infrastructure deployment
+- **Monitoring**: Centralized logging and performance tracking
+
+### Security Considerations
+- **Tenant Isolation**: Complete data separation between schools
+- **Role-based Access**: Granular permissions for all features
+- **Input Validation**: Comprehensive request validation and sanitization
+- **Session Security**: Secure session management with appropriate timeouts
