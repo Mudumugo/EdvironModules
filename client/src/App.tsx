@@ -336,6 +336,11 @@ function Router() {
                 </RoleProtectedRoute>
               </Route>
 
+              {/* CBE Hub - All users */}
+              <Route path="/cbe-hub">
+                <CBEHub />
+              </Route>
+
               {/* Tech Tutor - Students and Teachers */}
               <Route path="/tech-tutor">
                 <RoleProtectedRoute allowedRoles={["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin"]}>
