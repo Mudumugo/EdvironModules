@@ -20,12 +20,11 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  DollarSign
+  DollarSign,
+  Target
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
-import CBEHubCard from "@/components/CBEHubCard";
-
 const quickStats = [
   { title: "Total Users", value: "2,847", change: "+12%", icon: Users, color: "bg-blue-500" },
   { title: "Active Sessions", value: "1,203", change: "+8%", icon: Activity, color: "bg-green-500" },
@@ -40,6 +39,7 @@ const adminActions = [
   { title: "Security Center", description: "Monitor school security and access", icon: Shield, href: "/security-dashboard", color: "bg-red-500" },
   { title: "Teacher Management", description: "Manage faculty and staff accounts", icon: UserCheck, href: "/school-management", color: "bg-indigo-500" },
   { title: "Course Management", description: "Oversee curriculum and courses", icon: GraduationCap, href: "/admin/courses", color: "bg-green-500" },
+  { title: "CBE Hub", description: "Oversee competency frameworks and assessments", icon: Target, href: "/cbe-hub", color: "bg-blue-600" },
   { title: "Digital Library", description: "Manage educational resources", icon: BookOpen, href: "/digital-library", color: "bg-teal-500" },
   { title: "Events & Calendar", description: "Manage school events and schedules", icon: Calendar, href: "/scheduling", color: "bg-yellow-500" },
   { title: "Communications", description: "Manage announcements and messages", icon: MessageSquare, href: "/admin/communications", color: "bg-pink-500" }
@@ -66,9 +66,6 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* CBE Hub Card - Persistent for all users */}
-        <CBEHubCard />
-        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
