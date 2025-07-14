@@ -1,0 +1,198 @@
+Here's a refined and enhanced version of your **CBC Hub Layout** with improved clarity, visual hierarchy, and actionable components:
+
+---
+
+# 🎯 **CBC Hub – Enhanced UX Design**  
+*(For Edvirons Learning Portal)*  
+
+## 🌟 **Key Improvements**  
+✔ **Role-based personalization** with dynamic content loading  
+✔ **Consistent card design system** for better scanability  
+✔ **Added interactive elements** (tooltips, progress trackers)  
+✔ **Enhanced accessibility** (ARIA labels, keyboard nav)  
+
+---
+
+## 🖥️ **Layout Structure**  
+```mermaid
+flowchart TB
+    A[Top Navigation Bar] --> B[CBC Hub Header]
+    B --> C[Role Tabs: Parent|Teacher|Student]
+    C --> D[Role-Specific Card Grid]
+    D --> E[Footer: Quick Links+Support]
+```
+
+---
+
+## 🧩 **Component Breakdown**  
+
+### 1. **Header Section**  
+```jsx
+<header className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
+  <div className="flex items-center gap-4">
+    <Book className="h-10 w-10 text-indigo-600" />
+    <h1 className="text-2xl font-bold text-gray-800">
+      CBC Curriculum Hub
+      <span className="ml-2 text-sm badge bg-indigo-100 text-indigo-800">
+        {userRole} Mode
+      </span>
+    </h1>
+  </div>
+  <p className="mt-2 text-gray-600">
+    Your personalized guide to Kenya's Competency-Based Curriculum
+  </p>
+</header>
+```
+
+---
+
+### 2. **Role Tabs (Enhanced)**  
+```jsx
+<Tabs defaultValue={userRole || "parent"} className="mt-6">
+  <TabsList className="grid w-full grid-cols-3">
+    <TabsTrigger value="parent" className="flex gap-2">
+      <User /> Parents
+    </TabsTrigger>
+    <TabsTrigger value="teacher" className="flex gap-2">
+      <GraduationCap /> Teachers
+    </TabsTrigger>
+    <TabsTrigger value="student" className="flex gap-2">
+      <BookUser /> Students
+    </TabsTrigger>
+  </TabsList>
+</Tabs>
+```
+
+---
+
+### 3. **Card Grid System (Responsive)**  
+```jsx
+<div className="grid gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
+  {roleCards[userRole].map((card) => (
+    <Card key={card.id} className="hover:shadow-lg transition-all">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-full bg-indigo-50">
+            {card.icon}
+          </div>
+          <CardTitle>{card.title}</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-600 mb-4">{card.description}</p>
+        <Button variant="outline" className="w-full">
+          {card.actionText}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+        {card.badge && (
+          <Badge className="mt-3" variant="secondary">
+            {card.badge}
+          </Badge>
+        )}
+      </CardContent>
+    </Card>
+  ))}
+</div>
+```
+
+---
+
+## 🎨 **Sample Card Data Structure**  
+```javascript
+const roleCards = {
+  parent: [
+    {
+      id: "p1",
+      icon: <Compass className="text-indigo-600" />,
+      title: "Pathway Explorer",
+      description: "Interactive tool to compare STEM vs Arts vs Business tracks",
+      actionText: "Start Exploration",
+      badge: "New Feature"
+    },
+    // Additional cards...
+  ],
+  teacher: [
+    // Teacher-specific cards
+  ]
+}
+```
+
+---
+
+## ✨ **Advanced Features Added**  
+
+### **A. Dynamic Progress Trackers**  
+```jsx
+<Progress 
+  value={progress} 
+  className="h-2 mt-2" 
+  indicatorColor="bg-emerald-500"
+/>
+<p className="text-xs mt-1 text-gray-500">
+  {completedModules}/5 modules explored
+</p>
+```
+
+### **B. Contextual Tooltips**  
+```jsx
+<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger>
+      <Info className="h-4 w-4 ml-1" />
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>Pathway selection impacts Grade 10-12 subjects</p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+```
+
+### **C. Quick-Action Floating Button**  
+```jsx
+<div className="fixed bottom-6 right-6">
+  <Button className="rounded-full p-6 shadow-xl">
+    <MessageCircleQuestion className="h-6 w-6" />
+  </Button>
+</div>
+```
+
+---
+
+## 📱 **Mobile Optimization**  
+- **Collapsible sidebar** for smaller screens  
+- **Priority+ pattern** hides secondary content behind "Show More"  
+- **Touch-friendly card sizes** (min-width: 300px)  
+
+---
+
+## 🚀 **Recommended Integrations**  
+1. **xAPI Tracking**  
+   ```javascript
+   function logCardView(cardId) {
+     sendXAPIStatement(
+       `Viewed ${cardId} card`,
+       `navigated-to/${userRole}/${cardId}`
+     );
+   }
+   ```
+
+2. **Strapi CMS Connection**  
+   ```javascript
+   async function loadCards() {
+     const res = await fetch(
+       `${STRAPI_URL}/api/cbc-cards?filters[role][$eq]=${userRole}`
+     );
+     return res.json();
+   }
+   ```
+
+---
+
+## 🎨 **Visual Preview**  
+[![Figma Prototype](https://img.shields.io/badge/View%20Figma%20Prototype-2D2D72?style=for-the-badge&logo=figma)](https://figma.com/proto/example)  
+
+Would you like me to:  
+1. Provide the **complete React component code**  
+2. Generate a **Figma design file**  
+3. Build a **live Next.js demo**  
+4. Add **dark mode support** specs?
