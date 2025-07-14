@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, memo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,11 +44,11 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 
-export default function CBEHub() {
+const CBEHub = memo(function CBEHub() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(user?.role || "parent");
 
-  const competencies = [
+  const competencies = useMemo(() => [
     {
       id: 1,
       title: "Mathematical Reasoning",
@@ -93,9 +93,9 @@ export default function CBEHub() {
       assessments: 3,
       completed: 3
     }
-  ];
+  ], []);
 
-  const portfolioItems = [
+  const portfolioItems = useMemo(() => [
     {
       id: 1,
       title: "Algebra Problem Solving Project",
@@ -123,9 +123,9 @@ export default function CBEHub() {
       competencies: ["Written Communication", "Critical Thinking"],
       status: "in-review"
     }
-  ];
+  ], []);
 
-  const upcomingAssessments = [
+  const upcomingAssessments = useMemo(() => [
     {
       id: 1,
       title: "Mathematical Reasoning Assessment #3",
@@ -142,10 +142,10 @@ export default function CBEHub() {
       competency: "Written Communication",
       duration: "60 minutes"
     }
-  ];
+  ], []);
 
   // Role-based card data structure
-  const roleCards = {
+  const roleCards = useMemo(() => ({
     parent: [
       {
         id: "p1",
@@ -350,9 +350,9 @@ export default function CBEHub() {
         totalModules: 12
       }
     ]
-  };
+  }), []);
 
-  const learningPaths = [
+  const learningPaths = useMemo(() => [
     {
       id: 1,
       title: "Advanced Mathematics Track",
@@ -369,9 +369,9 @@ export default function CBEHub() {
       completed: 7,
       estimatedCompletion: "March 2026"
     }
-  ];
+  ], []);
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = useMemo(() => (status: string) => {
     switch (status) {
       case "completed":
         return <Badge className="bg-green-600 hover:bg-green-700">Completed</Badge>;
@@ -382,7 +382,7 @@ export default function CBEHub() {
       default:
         return <Badge variant="outline">Not Started</Badge>;
     }
-  };
+  }, []);
 
   return (
     <TooltipProvider>
@@ -639,4 +639,6 @@ export default function CBEHub() {
       </div>
     </TooltipProvider>
   );
-}
+});
+
+export default CBEHub;

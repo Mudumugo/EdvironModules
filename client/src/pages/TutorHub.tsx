@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, Star } from "lucide-react";
@@ -150,7 +150,7 @@ export default function TutorHub() {
   const languages = Array.from(new Set(typedTutors.flatMap(tutor => tutor.languages)));
 
   // Filter tutors based on current filter state
-  const filteredTutors = typedTutors.filter((tutor: Tutor) => {
+  const filteredTutors = useMemo(() => typedTutors.filter((tutor: Tutor) => {
     const matchesSearch = searchTerm === "" || 
       tutor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tutor.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -186,17 +186,22 @@ export default function TutorHub() {
       selectedLanguages.some(lang => tutor.languages.includes(lang));
 
     return matchesSearch && matchesSubject && matchesRating && matchesPrice && matchesAvailability && matchesLanguages;
-  });
+  }), [typedTutors, searchTerm, selectedSubject, selectedRating, priceRange, availability, selectedLanguages]);
 
   // Calculate stats
-  const totalTutors = typedTutors.length;
-  const averageRating = typedTutors.length > 0 
-    ? (typedTutors.reduce((sum, tutor) => sum + tutor.rating, 0) / typedTutors.length).toFixed(1)
-    : "0";
-  const totalSessions = typedTutors.reduce((sum, tutor) => sum + tutor.lessonsCompleted, 0);
-  const activeNow = typedTutors.filter(tutor => tutor.availability.includes("now")).length;
+  const stats = useMemo(() => {
+    const totalTutors = typedTutors.length;
+    const averageRating = typedTutors.length > 0 
+      ? (typedTutors.reduce((sum, tutor) => sum + tutor.rating, 0) / typedTutors.length).toFixed(1)
+      : "0";
+    const totalSessions = typedTutors.reduce((sum, tutor) => sum + tutor.lessonsCompleted, 0);
+    const activeNow = typedTutors.filter(tutor => tutor.availability.includes("now")).length;
+    const featuredTutors = typedTutors.filter(tutor => tutor.featured);
+    
+    return { totalTutors, averageRating, totalSessions, activeNow, featuredTutors };
+  }, [typedTutors]);
 
-  const featuredTutors = typedTutors.filter(tutor => tutor.featured);
+  const { totalTutors, averageRating, totalSessions, activeNow, featuredTutors } = stats;
 
   const handleBookSession = (tutorId: string) => {
     const tutor = typedTutors.find(t => t.id === tutorId);

@@ -9,8 +9,57 @@ const app = express();
 // Setup security middleware first
 setupSecurity(app);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Performance middleware
+app.use((req, res, next) => {
+  // Timing
+  const start = Date.now();
+  let headersSent = false;
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (!headersSent && !res.headersSent) {
+      try {
+        res.setHeader('X-Response-Time', `${duration}ms`);
+      } catch (e) {
+        // Headers already sent, ignore
+      }
+    }
+    if (duration > 1000) {
+      console.warn(`Slow request: ${req.method} ${req.url} - ${duration}ms`);
+    }
+  });
+  
+  // Cache control - set early before any response
+  if (!res.headersSent) {
+    if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (req.url.startsWith('/api/')) {
+      res.setHeader('Cache-Control', 'public, max-age=300');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+    }
+  }
+  
+  next();
+});
+
+// Request size limiter
+app.use((req, res, next) => {
+  const contentLength = parseInt(req.headers['content-length'] || '0');
+  const maxSizeBytes = 1024 * 1024; // 1MB
+  
+  if (contentLength > maxSizeBytes) {
+    return res.status(413).json({
+      error: 'Request too large',
+      maxSize: '1MB'
+    });
+  }
+  
+  next();
+});
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 
 // Session configuration will be handled by setupAuth
 

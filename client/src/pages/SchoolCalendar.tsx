@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarHeader, CalendarGrid, CalendarSidebar, EventDetailsDialog } from "@/components/calendar/modules";
 
@@ -102,9 +102,12 @@ export default function SchoolCalendar() {
     console.log('Creating event:', data);
   };
 
-  const upcomingEvents = mockEvents
-    .filter(event => event.date >= new Date())
-    .sort((a, b) => a.date.getTime() - b.date.getTime());
+  const upcomingEvents = useMemo(() => 
+    mockEvents
+      .filter(event => event.date >= new Date())
+      .sort((a, b) => a.date.getTime() - b.date.getTime()),
+    [mockEvents]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
