@@ -84,6 +84,16 @@ export const dashboardContentByLevel: Record<EducationLevel, DashboardContent> =
         isAvailable: true
       },
       {
+        id: 'cbe_hub',
+        name: 'CBE Hub',
+        description: 'Track your learning goals and build your achievement portfolio',
+        icon: '🎯',
+        color: 'bg-blue-500',
+        href: '/cbe-hub',
+        features: ['Learning goals', 'Achievement tracking', 'Fun rewards'],
+        isAvailable: true
+      },
+      {
         id: 'help_center',
         name: 'Help Center',
         description: 'Get assistance and learn how to use the portal',
@@ -183,6 +193,16 @@ export const dashboardContentByLevel: Record<EducationLevel, DashboardContent> =
         color: 'bg-orange-600',
         href: '/tech-tutor',
         features: ['Research skills', 'Digital literacy', 'Online safety'],
+        isAvailable: true
+      },
+      {
+        id: 'cbe_hub',
+        name: 'CBE Hub',
+        description: 'Competency-based learning with skill tracking and assessments',
+        icon: '🎯',
+        color: 'bg-blue-600',
+        href: '/cbe-hub',
+        features: ['Skill assessments', 'Competency tracking', 'Progress portfolios'],
         isAvailable: true
       },
       {
@@ -288,10 +308,20 @@ export const dashboardContentByLevel: Record<EducationLevel, DashboardContent> =
         isAvailable: true
       },
       {
+        id: 'cbe_hub',
+        name: 'CBE Hub',
+        description: 'Advanced competency framework with portfolio and assessment tools',
+        icon: '🎓',
+        color: 'bg-blue-700',
+        href: '/cbe-hub',
+        features: ['Advanced assessments', 'Competency mapping', 'Career portfolios'],
+        isAvailable: true
+      },
+      {
         id: 'help_center',
         name: 'Help Center',
         description: 'Comprehensive academic and technical support services',
-        icon: '🎯',
+        icon: '🆘',
         color: 'bg-gray-700',
         href: '/help',
         features: ['Academic counseling', 'Research support', 'Career guidance'],
