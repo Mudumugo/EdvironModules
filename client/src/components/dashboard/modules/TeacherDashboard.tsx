@@ -46,7 +46,8 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
       "parent-communication": "/parent-portal-admin",
       "grading-center": "/assignments",
       "professional-development": "/apps-hub",
-      "classroom-tools": "/teacher-dashboard"
+      "classroom-tools": "/teacher-dashboard",
+      "cbe-hub": "/cbe-hub"
     };
     return routeMap[moduleId] || "/";
   };
@@ -191,17 +192,17 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
       tag: "Personal"
     },
     {
-      id: "digital-notebooks",
-      title: "Digital Notebooks",
-      description: "Create and share interactive digital notebooks with students",
-      icon: FileText,
-      color: "border-l-teal-500",
-      bgColor: "bg-teal-50",
-      iconColor: "text-teal-600",
-      category: "Teaching",
-      features: ["Interactive Content", "Student Collaboration", "Rich Media"],
-      moreCount: 6,
-      tag: "Collaborative"
+      id: "cbe-hub",
+      title: "CBE Hub",
+      description: "Competency-based education tools for tracking student progress and assessments",
+      icon: GraduationCap,
+      color: "border-l-blue-500",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
+      category: "Assessment",
+      features: ["Competency Tracking", "Performance Assessment", "Portfolio Management"],
+      moreCount: 8,
+      tag: "Assessment"
     },
     {
       id: "teacher-settings",
@@ -276,7 +277,9 @@ export function TeacherDashboard({ user, stats }: TeacherDashboardProps) {
           viewMode={viewMode}
           variant="teacher"
           onModuleClick={(moduleId) => {
-            console.log(`Opening module: ${moduleId}`);
+            const route = getModuleRoute(moduleId);
+            console.log(`Opening module: ${moduleId} -> ${route}`);
+            setLocation(route);
           }}
         />
 
