@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
   const { data: notifications } = useQuery({
     queryKey: ['/api/notifications'],
@@ -50,15 +51,26 @@ export default function Header({ onMenuClick }: HeaderProps) {
       });
       
       if (response.ok) {
-        // Clear any client-side cache
-        window.location.href = "/";
+        // Clear React Query cache completely
+        queryClient.clear();
+        
+        // Clear local storage and session storage
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Force a hard redirect to ensure clean state
+        window.location.replace("/");
       } else {
         console.error("Logout failed");
+        // Fallback - clear cache and redirect anyway
+        queryClient.clear();
+        window.location.replace("/");
       }
     } catch (error) {
       console.error("Logout error:", error);
-      // Fallback - redirect to home anyway
-      window.location.href = "/";
+      // Fallback - clear cache and redirect anyway
+      queryClient.clear();
+      window.location.replace("/");
     }
   };
 
