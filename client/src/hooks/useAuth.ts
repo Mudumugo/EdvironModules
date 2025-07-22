@@ -18,7 +18,8 @@ export function useAuth() {
     queryKey: ["/api/auth/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true, // Enable refetch to detect logout
+    staleTime: 0, // Always consider data stale to force fresh checks
   });
 
   const isAuthenticated = !!user && !error;
