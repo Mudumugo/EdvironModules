@@ -25,7 +25,9 @@ import {
   BookUser,
   Award,
   Printer,
-  GraduationCap
+  GraduationCap,
+  List,
+  Edit
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -411,7 +413,125 @@ export default function AssessmentBook() {
 
         {/* Subjects Tab */}
         <TabsContent value="subjects" className="space-y-4">
-          <SubjectManager />
+          {/* Subject Management Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold">Subject & Strand Management</h2>
+              <p className="text-gray-600">Manage CBC subjects and their learning strands</p>
+            </div>
+            <Button onClick={() => setActiveTab('add-subject')} className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Subject
+            </Button>
+          </div>
+
+          {/* Quick Add CBC Subjects */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Quick Add CBC Subjects
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600 mb-4">Add standard CBC subjects with pre-defined strands:</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { name: "Mathematics", code: "MATH", category: "Core", strands: ["Numbers", "Measurement", "Geometry", "Data Handling", "Money"] },
+                  { name: "English", code: "ENG", category: "Core", strands: ["Listening and Speaking", "Reading", "Writing", "Language Use"] },
+                  { name: "Kiswahili", code: "KIS", category: "Core", strands: ["Kusoma", "Kuandika", "Kusikiliza na Kuzungumza", "Matumizi ya Lugha"] },
+                  { name: "Science & Technology", code: "SCI", category: "Core", strands: ["Living Things", "Non-living Things", "Energy", "Technology"] },
+                  { name: "Social Studies", code: "SST", category: "Core", strands: ["Geography", "History", "Citizenship", "Economics"] },
+                  { name: "CRE", code: "CRE", category: "Religious", strands: ["Biblical Stories", "Christian Values", "Prayer and Worship", "Christian Living"] },
+                  { name: "Home Science", code: "HOME", category: "Practical", strands: ["Food and Nutrition", "Clothing", "Home Management", "Family Life"] },
+                  { name: "Agriculture", code: "AGRI", category: "Practical", strands: ["Crop Production", "Animal Husbandry", "Environmental Conservation", "Farm Tools"] }
+                ].map((subject) => (
+                  <Button
+                    key={subject.code}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // Add subject logic here
+                      console.log('Adding subject:', subject.name);
+                    }}
+                    disabled={subjects.some((s: Subject) => s.code === subject.code)}
+                  >
+                    {subjects.some((s: Subject) => s.code === subject.code) ? "✓ Added" : `+ ${subject.name}`}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Current Subjects Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Current Subjects</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Code</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Strands</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {subjects.map((subject: Subject) => (
+                    <TableRow key={subject.id}>
+                      <TableCell className="font-medium">{subject.name}</TableCell>
+                      <TableCell>{subject.code}</TableCell>
+                      <TableCell>
+                        <Badge variant={subject.category === 'Core' ? 'default' : 'secondary'}>
+                          {subject.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {subject.strands?.slice(0, 3).map((strand: string, index: number) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {strand}
+                            </Badge>
+                          ))}
+                          {subject.strands?.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{subject.strands.length - 3} more
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              console.log('Managing strands for:', subject.name);
+                            }}
+                          >
+                            <List className="h-4 w-4" />
+                            Manage Strands
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              console.log('Editing subject:', subject.name);
+                            }}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Behavior Tab */}
