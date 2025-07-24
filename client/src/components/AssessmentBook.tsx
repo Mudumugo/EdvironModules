@@ -465,23 +465,41 @@ export default function AssessmentBook() {
               <h2 className="text-2xl font-bold">Subject & Strand Management</h2>
               <p className="text-gray-600">Manage CBC subjects and their learning strands</p>
             </div>
-            <Button onClick={() => {
+            <Button onClick={async () => {
               // Show custom subject form
-              const subjectName = prompt('Enter subject name:');
-              const subjectCode = prompt('Enter subject code:');
-              const category = prompt('Enter category (Core/Religious/Practical/Co-curricular):');
+              const subjectName = prompt('Enter subject name (e.g., "Physical Education"):');
+              if (!subjectName) return;
               
-              if (subjectName && subjectCode && category) {
-                fetch('/api/assessment-book/subjects', {
+              const subjectCode = prompt('Enter subject code (e.g., "PE"):');
+              if (!subjectCode) return;
+              
+              const category = prompt('Enter category (core/religious/practical/co-curricular):');
+              if (!category) return;
+              
+              const strandsInput = prompt('Enter learning strands separated by commas (e.g., "Athletics, Team Sports, Health"):');
+              const strands = strandsInput ? strandsInput.split(',').map(s => s.trim()) : [];
+              
+              try {
+                const response = await fetch('/api/assessment-book/subjects', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     name: subjectName,
-                    code: subjectCode,
+                    code: subjectCode.toUpperCase(),
                     category: category.toLowerCase(),
-                    strands: []
+                    strands: strands
                   })
-                }).then(() => window.location.reload()).catch(console.error);
+                });
+                
+                if (response.ok) {
+                  alert(`✅ Subject "${subjectName}" added successfully!`);
+                  window.location.reload();
+                } else {
+                  alert('❌ Failed to add subject. Please try again.');
+                }
+              } catch (error) {
+                console.error('Error adding subject:', error);
+                alert('❌ Error adding subject. Please try again.');
               }
             }} className="bg-blue-600 hover:bg-blue-700">
               <Plus className="h-4 w-4 mr-2" />
