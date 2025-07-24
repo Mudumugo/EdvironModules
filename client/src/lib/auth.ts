@@ -48,6 +48,9 @@ export const logoutUser = async (queryClient: QueryClient) => {
 
 // Force redirect after logout
 export const redirectAfterLogout = () => {
-  // Use replace to prevent back navigation
-  window.location.replace("/");
+  // Add a small delay to ensure cleanup completes
+  setTimeout(() => {
+    // Use replace to prevent back navigation
+    window.location.replace("/");
+  }, 100);
 };
