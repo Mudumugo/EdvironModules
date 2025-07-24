@@ -285,14 +285,14 @@ const CBEHub = memo(function CBEHub() {
       },
       {
         id: "assessment-book",
-        icon: <FileText className="h-6 w-6 text-green-600" />,
+        icon: <BookUser className="h-6 w-6 text-orange-600" />,
         title: "Digital Assessment Book",
-        description: "Create and manage competency-based assessment reports for students",
-        actionText: "Open Report Book",
+        description: "Create and manage competency-based assessment reports for students with CBC grading standards",
+        actionText: "Open Assessment Book",
         badge: "New",
-        progress: 85,
-        completedModules: 42,
-        totalModules: 50
+        progress: 0,
+        completedModules: 0,
+        totalModules: 1
       }
     ],
     student: [
@@ -569,7 +569,7 @@ const CBEHub = memo(function CBEHub() {
 
           {/* Teacher Tab Content */}
           <TabsContent value="teacher" className="space-y-6">
-            <div className="grid gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr min-h-fit">
               {roleCards.teacher.map((card) => (
                 <Card key={card.id} className="hover:shadow-lg transition-all duration-300">
                   <CardHeader>
