@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, getIsLoggingOut } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,8 @@ export function AssignmentStatusCard() {
   const { isAuthenticated } = useAuth();
   const { data: assignments = [], isLoading } = useQuery<Assignment[]>({
     queryKey: ['/api/assignments/status'],
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !getIsLoggingOut(),
+    retry: false,
   });
 
   const pendingAssignments = assignments.filter(a => a.status === 'pending');
@@ -265,7 +266,7 @@ export function NextEventCard() {
   const { isAuthenticated } = useAuth();
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/calendar/upcoming'],
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !getIsLoggingOut(),
     retry: false,
   });
 
@@ -349,7 +350,7 @@ export function LibraryRecommendationsCard() {
   const { isAuthenticated } = useAuth();
   const { data: recommendations = [], isLoading } = useQuery<Resource[]>({
     queryKey: ['/api/library/recommendations'],
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !getIsLoggingOut(),
     retry: false,
   });
 

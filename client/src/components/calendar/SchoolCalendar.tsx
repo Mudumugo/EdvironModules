@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, getIsLoggingOut } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, isSameMonth, isSameDay, parseISO } from "date-fns";
 import { CreateEventDialog } from "@/components/calendar/CreateEventDialog";
@@ -72,19 +72,27 @@ export default function SchoolCalendar() {
   // Fetch events for current month
   const { data: events = [], isLoading, refetch } = useQuery<CalendarEvent[]>({
     queryKey: ['/api/calendar/events', format(currentMonth, 'yyyy-MM')],
-    enabled: !!user,
-    queryFn: () => apiRequest('GET', '/api/calendar/events', {
-      start: format(startOfMonth(currentMonth), 'yyyy-MM-dd'),
-      end: format(endOfMonth(currentMonth), 'yyyy-MM-dd'),
-      view: viewMode
-    }),
+    enabled: !!user && !getIsLoggingOut(),
+    retry: false,
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/calendar/events', {
+        start: format(startOfMonth(currentMonth), 'yyyy-MM-dd'),
+        end: format(endOfMonth(currentMonth), 'yyyy-MM-dd'),
+        view: viewMode
+      });
+      return response.json();
+    },
   });
 
   // Fetch upcoming events for quick view
   const { data: upcomingEvents = [] } = useQuery({
     queryKey: ['/api/calendar/upcoming'],
-    enabled: !!user,
-    queryFn: () => apiRequest('GET', '/api/calendar/upcoming', { limit: 5 }),
+    enabled: !!user && !getIsLoggingOut(),
+    retry: false,
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/calendar/upcoming', { limit: 5 });
+      return response.json();
+    },
   });
 
   // Group events by date

@@ -20,6 +20,8 @@ export const setLoggingOut = (value: boolean) => {
   isLoggingOut = value;
 };
 
+export const getIsLoggingOut = () => isLoggingOut;
+
 export function useAuth() {
   const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/user"],
