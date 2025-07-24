@@ -84,51 +84,80 @@ export default function AssessmentBook() {
   const [academicYear] = useState("2025");
 
   // Fetch students for the teacher
-  const { data: students = [] } = useQuery({
+  const { data: students = [] } = useQuery<Student[]>({
     queryKey: ["/api/assessment-book/students"],
     enabled: user?.role === "teacher",
   });
 
   // Fetch subjects
-  const { data: subjects = [] } = useQuery({
+  const { data: subjects = [] } = useQuery<Subject[]>({
     queryKey: ["/api/assessment-book/subjects", "Grade 6"],
-    queryFn: () => apiRequest("/api/assessment-book/subjects?gradeLevel=Grade 6"),
+    queryFn: async () => {
+      const response = await fetch("/api/assessment-book/subjects?gradeLevel=Grade 6");
+      if (!response.ok) throw new Error('Failed to fetch subjects');
+      return response.json();
+    },
   });
 
   // Fetch assessment book data
-  const { data: assessmentBook } = useQuery({
+  const { data: assessmentBook } = useQuery<any>({
     queryKey: ["/api/assessment-book", selectedStudent?.id, selectedSubject?.id, selectedTerm],
-    queryFn: () => 
-      apiRequest(`/api/assessment-book/${selectedStudent?.id}/${selectedSubject?.id}/${selectedTerm}?academicYear=${academicYear}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/assessment-book/${selectedStudent?.id}/${selectedSubject?.id}/${selectedTerm}?academicYear=${academicYear}`);
+      if (!response.ok) throw new Error('Failed to fetch assessment book');
+      return response.json();
+    },
     enabled: !!selectedStudent && !!selectedSubject,
   });
 
   // Fetch behavior report
-  const { data: behaviorReport } = useQuery({
+  const { data: behaviorReport } = useQuery<BehaviorReport>({
     queryKey: ["/api/assessment-book/behavior", selectedStudent?.id, selectedTerm],
-    queryFn: () =>
-      apiRequest(`/api/assessment-book/behavior/${selectedStudent?.id}/${selectedTerm}?academicYear=${academicYear}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/assessment-book/behavior/${selectedStudent?.id}/${selectedTerm}?academicYear=${academicYear}`);
+      if (!response.ok) throw new Error('Failed to fetch behavior report');
+      return response.json();
+    },
     enabled: !!selectedStudent,
   });
 
   // Fetch assessment summary
-  const { data: assessmentSummary } = useQuery({
+  const { data: assessmentSummary } = useQuery<any>({
     queryKey: ["/api/assessment-book/summary", selectedStudent?.id, selectedTerm],  
-    queryFn: () =>
-      apiRequest(`/api/assessment-book/summary/${selectedStudent?.id}/${selectedTerm}?academicYear=${academicYear}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/assessment-book/summary/${selectedStudent?.id}/${selectedTerm}?academicYear=${academicYear}`);
+      if (!response.ok) throw new Error('Failed to fetch assessment summary');
+      return response.json();
+    },
     enabled: !!selectedStudent,
   });
 
   // Mutations for saving data
   const saveAssessmentEntry = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/assessment-book/entry", { method: "POST", body: data }),
+    mutationFn: async (data: any) => {
+      const response = await fetch("/api/assessment-book/entry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to save assessment entry');
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/assessment-book"] });
     },
   });
 
   const saveBehaviorReport = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/assessment-book/behavior", { method: "POST", body: data }),
+    mutationFn: async (data: any) => {
+      const response = await fetch("/api/assessment-book/behavior", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to save behavior report');
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/assessment-book/behavior"] });
     },
