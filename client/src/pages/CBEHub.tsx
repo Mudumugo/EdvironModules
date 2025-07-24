@@ -229,15 +229,15 @@ const CBEHub = memo(function CBEHub() {
         totalModules: 20
       },
       {
-        id: "t2",
-        icon: <BookOpenCheck className="h-6 w-6 text-emerald-600" />,
-        title: "Assessment Designer",
-        description: "Create authentic assessments that measure real-world competencies",
-        actionText: "Create Assessment",
-        badge: "Popular",
-        progress: 80,
-        completedModules: 16,
-        totalModules: 20
+        id: "assessment-book",
+        icon: <BookUser className="h-6 w-6 text-orange-600" />,
+        title: "Digital Assessment Book",
+        description: "Create and manage competency-based assessment reports for students with CBC grading standards",
+        actionText: "Open Assessment Book",
+        badge: "New",
+        progress: 0,
+        completedModules: 0,
+        totalModules: 1
       },
       {
         id: "t3",
@@ -282,17 +282,6 @@ const CBEHub = memo(function CBEHub() {
         progress: 30,
         completedModules: 6,
         totalModules: 20
-      },
-      {
-        id: "assessment-book",
-        icon: <BookUser className="h-6 w-6 text-orange-600" />,
-        title: "Digital Assessment Book",
-        description: "Create and manage competency-based assessment reports for students with CBC grading standards",
-        actionText: "Open Assessment Book",
-        badge: "New",
-        progress: 0,
-        completedModules: 0,
-        totalModules: 1
       }
     ],
     student: [
