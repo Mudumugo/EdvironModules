@@ -3,11 +3,33 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupSecurity } from "./security/index.js";
+import { 
+  compressionMiddleware, 
+  responseOptimizer, 
+  memoryMonitor, 
+  simpleRateLimit, 
+  cacheHeaders 
+} from "./performance/middleware";
 
 const app = express();
 
+// Setup compression for faster responses
+app.use(compressionMiddleware);
+
 // Setup security middleware first
 setupSecurity(app);
+
+// Performance monitoring - disabled in development to prevent log spam  
+// app.use(memoryMonitor);
+
+// Rate limiting - disabled for development
+// app.use(simpleRateLimit(200, 60000)); // Disabled - was causing 429 errors
+
+// Response optimization
+app.use(responseOptimizer);
+
+// Cache headers
+app.use(cacheHeaders);
 
 // Performance middleware
 app.use((req, res, next) => {
