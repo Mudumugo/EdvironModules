@@ -69,8 +69,14 @@ export const logoutUser = async (queryClient: QueryClient) => {
   }
 };
 
-// Force redirect after logout
+// Force redirect after logout with cleanup
 export const redirectAfterLogout = () => {
-  // Immediate redirect without delay to prevent any API calls
-  window.location.replace("/");
+  // Reset logout states to allow fresh login
+  setLoggingOut(false);
+  setGlobalLogout(false);
+  
+  // Small delay to ensure cleanup completes, then redirect
+  setTimeout(() => {
+    window.location.replace("/");
+  }, 100);
 };

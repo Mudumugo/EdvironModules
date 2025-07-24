@@ -216,10 +216,19 @@ export function registerAuthRoutes(app: Express) {
     }
   );
 
-  // Logout endpoint with security logging (POST)
+  // Logout endpoint with enhanced cleanup (POST)
   app.post('/api/auth/logout', (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id || req.session?.user?.id;
     const userEmail = req.user?.email || req.session?.user?.email;
+    
+    // Enhanced session cleanup for demo accounts
+    if (req.session) {
+      // Clear all session data immediately
+      req.session.user = undefined;
+      (req.session as any).loginTime = null;
+      (req.session as any).lastActivity = null;
+      (req.session as any).lastIP = null;
+    }
     
     req.session.destroy((err) => {
       if (err) {
