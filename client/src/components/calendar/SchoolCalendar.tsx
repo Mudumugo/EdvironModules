@@ -72,6 +72,7 @@ export default function SchoolCalendar() {
   // Fetch events for current month
   const { data: events = [], isLoading, refetch } = useQuery<CalendarEvent[]>({
     queryKey: ['/api/calendar/events', format(currentMonth, 'yyyy-MM')],
+    enabled: !!user,
     queryFn: () => apiRequest('GET', '/api/calendar/events', {
       start: format(startOfMonth(currentMonth), 'yyyy-MM-dd'),
       end: format(endOfMonth(currentMonth), 'yyyy-MM-dd'),
@@ -82,6 +83,7 @@ export default function SchoolCalendar() {
   // Fetch upcoming events for quick view
   const { data: upcomingEvents = [] } = useQuery({
     queryKey: ['/api/calendar/upcoming'],
+    enabled: !!user,
     queryFn: () => apiRequest('GET', '/api/calendar/upcoming', { limit: 5 }),
   });
 

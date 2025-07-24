@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,8 +59,10 @@ interface Resource {
 }
 
 export function AssignmentStatusCard() {
+  const { isAuthenticated } = useAuth();
   const { data: assignments = [], isLoading } = useQuery<Assignment[]>({
     queryKey: ['/api/assignments/status'],
+    enabled: isAuthenticated,
   });
 
   const pendingAssignments = assignments.filter(a => a.status === 'pending');
@@ -167,8 +170,10 @@ export function AssignmentStatusCard() {
 }
 
 export function NotificationsCard() {
+  const { isAuthenticated } = useAuth();
   const { data: notifications = [], isLoading } = useQuery<Notification[]>({
     queryKey: ['/api/notifications'],
+    enabled: isAuthenticated,
   });
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -257,8 +262,10 @@ export function NotificationsCard() {
 }
 
 export function NextEventCard() {
+  const { isAuthenticated } = useAuth();
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/calendar/upcoming'],
+    enabled: isAuthenticated,
   });
 
   const nextEvent = events[0];
@@ -338,8 +345,10 @@ export function NextEventCard() {
 }
 
 export function LibraryRecommendationsCard() {
+  const { isAuthenticated } = useAuth();
   const { data: recommendations = [], isLoading } = useQuery<Resource[]>({
     queryKey: ['/api/library/recommendations'],
+    enabled: isAuthenticated,
   });
 
   const getResourceIcon = (type: string) => {

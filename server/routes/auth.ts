@@ -120,9 +120,9 @@ export function registerAuthRoutes(app: Express) {
     
     // Add session info if available
     const sessionInfo = req.session ? {
-      loginTime: req.session.loginTime,
-      lastActivity: req.session.lastActivity,
-      expiresAt: req.session.loginTime ? req.session.loginTime + (24 * 60 * 60 * 1000) : null
+      loginTime: (req.session as any).loginTime,
+      lastActivity: (req.session as any).lastActivity,
+      expiresAt: (req.session as any).loginTime ? (req.session as any).loginTime + (24 * 60 * 60 * 1000) : null
     } : null;
     
     res.json({
@@ -166,7 +166,7 @@ export function registerAuthRoutes(app: Express) {
         }
 
         // Check if account is active
-        if (user.isActive === false) {
+        if ((user as any).isActive === false) {
           console.warn(`[SECURITY] Demo login attempt for inactive user: ${email} from IP: ${req.ip}`);
           return res.status(423).json({ 
             error: 'Account is locked. Please contact administrator.',
@@ -176,25 +176,25 @@ export function registerAuthRoutes(app: Express) {
 
         // Create optimized session with minimal data
         const sessionUser = {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          tenantId: user.tenantId,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          permissions: user.permissions || []
+          id: (user as any).id,
+          email: (user as any).email,
+          role: (user as any).role,
+          tenantId: (user as any).tenantId,
+          firstName: (user as any).firstName,
+          lastName: (user as any).lastName,
+          permissions: (user as any).permissions || []
         };
 
         // Set session data efficiently
         const currentTime = Date.now();
         req.session.user = sessionUser;
-        req.session.loginTime = currentTime;
-        req.session.lastIP = req.ip;
-        req.session.lastActivity = currentTime;
+        (req.session as any).loginTime = currentTime;
+        (req.session as any).lastIP = req.ip;
+        (req.session as any).lastActivity = currentTime;
 
         // Log successful demo login (async to not block response)
         setImmediate(() => {
-          console.log(`[SECURITY] Demo login successful for user: ${user.email} (${user.id}) from IP: ${req.ip}`);
+          console.log(`[SECURITY] Demo login successful for user: ${(user as any).email} (${(user as any).id}) from IP: ${req.ip}`);
         });
 
         // Send immediate response
