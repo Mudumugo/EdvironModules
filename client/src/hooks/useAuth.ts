@@ -34,3 +34,6 @@ export function useAuth() {
     error
   };
 }
+
+// Dummy logout state for backwards compatibility
+export const isLoggedOut = false;
