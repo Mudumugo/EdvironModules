@@ -126,6 +126,36 @@ export function setupAssessmentBookRoutes(app: Express) {
     }
   });
 
+  // Update subject (handles both basic info and strands)
+  app.patch('/api/assessment-book/subjects/:subjectId', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { subjectId } = req.params;
+      const updateData = req.body;
+      
+      // Check if this is a strands-only update
+      if (updateData.strands && typeof updateData.strands === 'object' && Array.isArray(updateData.strands)) {
+        const updatedSubject = await storage.updateSubjectStrands(
+          parseInt(subjectId), 
+          updateData.strands, 
+          req.user.tenantId
+        );
+        return res.json(updatedSubject);
+      }
+      
+      // Handle general subject update (name, code, category)
+      const updatedSubject = await storage.updateSubject(
+        parseInt(subjectId), 
+        updateData, 
+        req.user.tenantId
+      );
+      
+      res.json(updatedSubject);
+    } catch (error) {
+      console.error('Error updating subject:', error);
+      res.status(500).json({ error: 'Failed to update subject' });
+    }
+  });
+
   // Get strands for a subject
   app.get('/api/assessment-book/strands/:subjectId', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
     try {

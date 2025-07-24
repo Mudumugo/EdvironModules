@@ -84,6 +84,8 @@ export interface IStorage {
   createOrUpdateBehaviorReport(data: any): Promise<any>;
   getSubjectStrands(subjectId: number): Promise<any[]>;
   createSubjectStrand(data: any): Promise<any>;
+  updateSubjectStrands(subjectId: number, strands: string[], tenantId: string): Promise<any>;
+  updateSubject(subjectId: number, updateData: any, tenantId: string): Promise<any>;
   getStudentAssessmentSummary(studentId: number, term: string, academicYear: string, tenantId: string): Promise<any>;
   createSubject(data: any): Promise<any>;
   createSecurityEvent(event: any): Promise<any>;
@@ -993,6 +995,37 @@ export class DatabaseStorage implements IStorage {
   async createSubjectStrand(data: any): Promise<any> {
     console.log("Creating subject strand:", data);
     return { ...data, id: `strand_${Date.now()}` };
+  }
+
+  async updateSubjectStrands(subjectId: number, strands: string[], tenantId: string): Promise<any> {
+    console.log("Updating subject strands:", subjectId, strands);
+    
+    // Find and update the subject in the subjects array
+    const subjectIndex = this.subjects.findIndex(s => s.id === subjectId);
+    if (subjectIndex !== -1) {
+      this.subjects[subjectIndex].strands = strands;
+      return this.subjects[subjectIndex];
+    }
+    
+    throw new Error(`Subject with ID ${subjectId} not found`);
+  }
+
+  async updateSubject(subjectId: number, updateData: any, tenantId: string): Promise<any> {
+    console.log("Updating subject:", subjectId, updateData);
+    
+    // Find and update the subject in the subjects array
+    const subjectIndex = this.subjects.findIndex(s => s.id === subjectId);
+    if (subjectIndex !== -1) {
+      // Update only the provided fields
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] !== undefined) {
+          this.subjects[subjectIndex][key] = updateData[key];
+        }
+      });
+      return this.subjects[subjectIndex];
+    }
+    
+    throw new Error(`Subject with ID ${subjectId} not found`);
   }
 
   async getStudentAssessmentSummary(studentId: number, term: string, academicYear: string, tenantId: string): Promise<any> {

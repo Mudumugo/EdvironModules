@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   BookOpen, 
@@ -27,7 +28,9 @@ import {
   Printer,
   GraduationCap,
   List,
-  Edit
+  Edit,
+  Trash2,
+  X
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -79,6 +82,274 @@ const performanceLevels = [
   { value: "BE", label: "BE - Below Expectations", score: 1, color: "bg-red-500" },
 ];
 
+// SubjectEditor Component
+function SubjectEditor({ subject, isOpen, onClose, onUpdate }: {
+  subject: Subject | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+  const [category, setCategory] = useState("");
+
+  useEffect(() => {
+    if (subject) {
+      setName(subject.name);
+      setCode(subject.code);
+      setCategory(subject.category);
+    }
+  }, [subject]);
+
+  const saveChanges = async () => {
+    if (!subject) return;
+    
+    try {
+      const response = await fetch(`/api/assessment-book/subjects/${subject.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, code, category })
+      });
+      
+      if (response.ok) {
+        onUpdate();
+        onClose();
+      } else {
+        alert('Failed to update subject. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error updating subject:', error);
+      alert('Error updating subject. Please try again.');
+    }
+  };
+
+  if (!subject) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Edit className="h-5 w-5" />
+            Edit Subject
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium mb-2 block">Subject Name</label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter subject name"
+            />
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium mb-2 block">Subject Code</label>
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="Enter subject code"
+            />
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium mb-2 block">Category</label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="core">Core</SelectItem>
+                <SelectItem value="religious">Religious</SelectItem>
+                <SelectItem value="practical">Practical</SelectItem>
+                <SelectItem value="co-curricular">Co-curricular</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={saveChanges} className="bg-blue-600 hover:bg-blue-700">
+              <Save className="h-4 w-4 mr-2" />
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// StrandManager Component
+function StrandManager({ subject, isOpen, onClose, onUpdate }: {
+  subject: Subject | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: () => void;
+}) {
+  const [strands, setStrands] = useState<string[]>([]);
+  const [newStrand, setNewStrand] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingValue, setEditingValue] = useState("");
+
+  useEffect(() => {
+    if (subject) {
+      setStrands(subject.strands || []);
+    }
+  }, [subject]);
+
+  const addStrand = () => {
+    if (newStrand.trim() && !strands.includes(newStrand.trim())) {
+      setStrands([...strands, newStrand.trim()]);
+      setNewStrand("");
+    }
+  };
+
+  const removeStrand = (index: number) => {
+    setStrands(strands.filter((_, i) => i !== index));
+  };
+
+  const startEditing = (index: number) => {
+    setEditingIndex(index);
+    setEditingValue(strands[index]);
+  };
+
+  const saveEdit = () => {
+    if (editingIndex !== null && editingValue.trim()) {
+      const newStrands = [...strands];
+      newStrands[editingIndex] = editingValue.trim();
+      setStrands(newStrands);
+      setEditingIndex(null);
+      setEditingValue("");
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null);
+    setEditingValue("");
+  };
+
+  const saveChanges = async () => {
+    if (!subject) return;
+    
+    try {
+      const response = await fetch(`/api/assessment-book/subjects/${subject.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strands })
+      });
+      
+      if (response.ok) {
+        onUpdate();
+        onClose();
+      } else {
+        alert('Failed to update strands. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error updating strands:', error);
+      alert('Error updating strands. Please try again.');
+    }
+  };
+
+  if (!subject) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <List className="h-5 w-5" />
+            Manage Strands: {subject.name}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          {/* Add New Strand */}
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter new strand name..."
+              value={newStrand}
+              onChange={(e) => setNewStrand(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addStrand()}
+              className="flex-1"
+            />
+            <Button onClick={addStrand} disabled={!newStrand.trim()}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add
+            </Button>
+          </div>
+
+          {/* Current Strands */}
+          <div className="border rounded-lg p-4">
+            <h3 className="font-semibold mb-3">Current Strands ({strands.length})</h3>
+            {strands.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">No strands added yet</p>
+            ) : (
+              <div className="space-y-2">
+                {strands.map((strand, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 border rounded">
+                    {editingIndex === index ? (
+                      <>
+                        <Input
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && saveEdit()}
+                          className="flex-1"
+                          autoFocus
+                        />
+                        <Button size="sm" onClick={saveEdit}>
+                          <CheckCircle className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={cancelEdit}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex-1 font-medium">{strand}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => startEditing(index)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => removeStrand(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={saveChanges} className="bg-blue-600 hover:bg-blue-700">
+              <Save className="h-4 w-4 mr-2" />
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function AssessmentBook() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -89,6 +360,10 @@ export default function AssessmentBook() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [academicYear] = useState("2025");
   const [showReportCard, setShowReportCard] = useState(false);
+  const [manageStrandsSubject, setManageStrandsSubject] = useState<Subject | null>(null);
+  const [showStrandsManager, setShowStrandsManager] = useState(false);
+  const [editSubject, setEditSubject] = useState<Subject | null>(null);
+  const [showEditSubject, setShowEditSubject] = useState(false);
 
   // Fetch students for the teacher
   const { data: students = [] } = useQuery<Student[]>({
@@ -602,7 +877,8 @@ export default function AssessmentBook() {
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              console.log('Managing strands for:', subject.name);
+                              setManageStrandsSubject(subject);
+                              setShowStrandsManager(true);
                             }}
                           >
                             <List className="h-4 w-4" />
@@ -612,7 +888,8 @@ export default function AssessmentBook() {
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              console.log('Editing subject:', subject.name);
+                              setEditSubject(subject);
+                              setShowEditSubject(true);
                             }}
                           >
                             <Edit className="h-4 w-4" />
@@ -807,6 +1084,32 @@ export default function AssessmentBook() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* SubjectEditor Modal */}
+      <SubjectEditor
+        subject={editSubject}
+        isOpen={showEditSubject}
+        onClose={() => {
+          setShowEditSubject(false);
+          setEditSubject(null);
+        }}
+        onUpdate={() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/assessment-book/subjects"] });
+        }}
+      />
+
+      {/* StrandManager Modal */}
+      <StrandManager
+        subject={manageStrandsSubject}
+        isOpen={showStrandsManager}
+        onClose={() => {
+          setShowStrandsManager(false);
+          setManageStrandsSubject(null);
+        }}
+        onUpdate={() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/assessment-book/subjects"] });
+        }}
+      />
     </div>
   );
 }
