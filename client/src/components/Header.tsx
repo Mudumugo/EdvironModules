@@ -47,12 +47,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   const handleLogout = async () => {
     try {
+      // Immediate actions before async logout
+      queryClient.cancelQueries();
+      queryClient.clear();
+      
       await logoutUser(queryClient);
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Always redirect regardless of logout API result
-      redirectAfterLogout();
+      // Always redirect regardless of logout API result - no delay
+      window.location.replace("/");
     }
   };
 

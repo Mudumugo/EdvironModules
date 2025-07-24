@@ -66,7 +66,12 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000, // 5 minutes instead of infinity for better performance
       gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
-      retry: false,
+      retry: (failureCount, error) => {
+        // Never retry during logout
+        if (isGlobalLogout) return false;
+        return false;
+      },
+      enabled: () => !isGlobalLogout, // Globally disable all queries during logout
     },
     mutations: {
       retry: false,
