@@ -1,9 +1,21 @@
 // Authentication utilities
 import { QueryClient } from "@tanstack/react-query";
+import { setLoggingOut } from "@/hooks/useAuth";
 
 export const logoutUser = async (queryClient: QueryClient) => {
   try {
-    // Call the logout API
+    // Set global logout state to prevent all API calls
+    setLoggingOut(true);
+    
+    // Cancel and clear all queries immediately
+    queryClient.cancelQueries();
+    queryClient.clear();
+    
+    // Clear all client storage immediately
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Then call the logout API
     const response = await fetch("/api/auth/logout", {
       method: "POST",
       credentials: "include",
@@ -11,21 +23,6 @@ export const logoutUser = async (queryClient: QueryClient) => {
         "Content-Type": "application/json",
       },
     });
-
-    // Regardless of API response, clear everything
-    await Promise.all([
-      // Invalidate all queries
-      queryClient.invalidateQueries(),
-      // Remove all cached data
-      queryClient.removeQueries(),
-    ]);
-
-    // Clear all client storage
-    localStorage.clear();
-    sessionStorage.clear();
-    
-    // Clear the query client entirely
-    queryClient.clear();
 
     if (response.ok) {
       console.log("[AUTH] Logout successful");
@@ -38,6 +35,7 @@ export const logoutUser = async (queryClient: QueryClient) => {
     console.error("[AUTH] Logout error:", error);
     
     // Still perform cleanup even if API fails
+    queryClient.cancelQueries();
     queryClient.clear();
     localStorage.clear();
     sessionStorage.clear();
@@ -48,9 +46,6 @@ export const logoutUser = async (queryClient: QueryClient) => {
 
 // Force redirect after logout
 export const redirectAfterLogout = () => {
-  // Add a small delay to ensure cleanup completes
-  setTimeout(() => {
-    // Use replace to prevent back navigation
-    window.location.replace("/");
-  }, 100);
+  // Immediate redirect without delay to prevent any API calls
+  window.location.replace("/");
 };

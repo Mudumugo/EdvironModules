@@ -39,14 +39,21 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   const { data: notifications } = useQuery({
     queryKey: ['/api/notifications'],
+    enabled: !!user,
     retry: false,
   });
 
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
   const handleLogout = async () => {
-    await logoutUser(queryClient);
-    redirectAfterLogout();
+    try {
+      await logoutUser(queryClient);
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Always redirect regardless of logout API result
+      redirectAfterLogout();
+    }
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
