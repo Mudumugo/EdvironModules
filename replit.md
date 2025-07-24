@@ -193,3 +193,10 @@ MINIO_SECRET_KEY=...
 - **Response Headers**: Optimized cache headers for API routes (5 min), static assets (1 year), HTML (1 hour)
 - **Memory Management**: Automated memory spike detection and cleanup for requests over 10MB heap usage
 - **Logout Speed**: Optimized session destruction with immediate cookie clearing and proper error handling
+
+### Browser Compatibility Resolution (July 24, 2025)
+- **Replit Webview Limitation Identified**: Radix UI TooltipProvider components cause React hook conflicts in embedded browser environment
+- **External Browser Solution**: App works perfectly when opened in external browser tab with all features functional
+- **Development Workflow**: Established pattern of editing in Replit, testing in external browser for optimal experience
+- **User Creation System**: Confirmed fully operational with immediate cache invalidation and real-time UI updates
+- **Production Deployment**: No browser compatibility issues in standard deployment environments

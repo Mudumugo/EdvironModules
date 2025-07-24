@@ -1,15 +1,12 @@
-// Simple non-hook tooltip components for Replit webview compatibility
-// Completely eliminates React hook usage that causes conflicts in embedded browser
+import React from "react";
 
-// Simple wrapper component that avoids all React hooks
-const TooltipProvider = ({ children }: { children: React.ReactNode }) => children;
+// Replit-safe tooltip components that avoid all React hooks
+export const TooltipProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
-const Tooltip = ({ children }: { children: React.ReactNode }) => children;
+export const Tooltip = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
-const TooltipTrigger = ({ children, asChild }: { children: React.ReactNode; asChild?: boolean }) => {
-  return asChild ? children : <span>{children}</span>;
+export const TooltipTrigger = ({ children, asChild }: { children: React.ReactNode; asChild?: boolean }) => {
+  return asChild ? <>{children}</> : <span>{children}</span>;
 };
 
-const TooltipContent = () => null;
-
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+export const TooltipContent = () => null;
