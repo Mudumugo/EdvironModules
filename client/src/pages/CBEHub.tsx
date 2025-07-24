@@ -234,10 +234,10 @@ const CBEHub = memo(function CBEHub() {
         title: "Digital Assessment Book",
         description: "Create and manage competency-based assessment reports for students with CBC grading standards",
         actionText: "Open Assessment Book",
-        badge: "New",
-        progress: 0,
-        completedModules: 0,
-        totalModules: 1
+        badge: "ACTIVE",
+        progress: 85,
+        completedModules: 17,
+        totalModules: 20
       },
       {
         id: "t3",
