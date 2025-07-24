@@ -485,14 +485,17 @@ export const insertLibraryRecommendationSchema = createInsertSchema(libraryRecom
 
 // Assessment Book Insert Schemas
 export const insertAssessmentBookSchema = createInsertSchema(assessmentBooks).omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 export const insertAssessmentEntrySchema = createInsertSchema(assessmentEntries).omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 export const insertBehaviorReportSchema = createInsertSchema(behaviorReports).omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
