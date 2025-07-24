@@ -1,30 +1,32 @@
-"use client"
+// Dummy tooltip components for Replit webview compatibility
+// These components prevent React hook conflicts while maintaining component interface
 
 import * as React from "react"
-import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
-import { cn } from "@/lib/utils"
+// Simple wrapper that just renders children without any tooltip functionality
+const TooltipProvider = ({ children, ...props }: { children: React.ReactNode, [key: string]: any }) => {
+  return <>{children}</>;
+};
 
-const TooltipProvider = TooltipPrimitive.Provider
+const Tooltip = ({ children, ...props }: { children: React.ReactNode, [key: string]: any }) => {
+  return <>{children}</>;
+};
 
-const Tooltip = TooltipPrimitive.Root
+const TooltipTrigger = React.forwardRef<
+  HTMLElement,
+  React.HTMLAttributes<HTMLElement> & { asChild?: boolean }
+>(({ children, asChild, ...props }, ref) => {
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, { ...props, ref } as any);
+  }
+  return <span {...props} ref={ref as any}>{children}</span>;
+});
 
-const TooltipTrigger = TooltipPrimitive.Trigger
+const TooltipContent = ({ children, ...props }: { children: React.ReactNode, [key: string]: any }) => {
+  return null; // Don't render tooltip content
+};
 
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Content
-    ref={ref}
-    sideOffset={sideOffset}
-    className={cn(
-      "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-tooltip-content-transform-origin]",
-      className
-    )}
-    {...props}
-  />
-))
-TooltipContent.displayName = TooltipPrimitive.Content.displayName
+TooltipTrigger.displayName = "TooltipTrigger";
+TooltipContent.displayName = "TooltipContent";
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
