@@ -49,6 +49,9 @@ const CBEHub = memo(function CBEHub() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(user?.role || "parent");
   const [showAssessmentBook, setShowAssessmentBook] = useState(false);
+  
+  // Debug log to check if component is rendering
+  console.log("CBEHub component rendering, user role:", user?.role, "activeTab:", activeTab);
 
   const competencies = useMemo(() => [
     {
@@ -147,7 +150,9 @@ const CBEHub = memo(function CBEHub() {
   ], []);
 
   // Role-based card data structure
-  const roleCards = useMemo(() => ({
+  const roleCards = useMemo(() => {
+    console.log("Generating role cards for role:", user?.role);
+    return {
     parent: [
       {
         id: "p1",
@@ -352,7 +357,8 @@ const CBEHub = memo(function CBEHub() {
         totalModules: 12
       }
     ]
-  }), []);
+    };
+  }, []);
 
   const learningPaths = useMemo(() => [
     {
@@ -559,7 +565,9 @@ const CBEHub = memo(function CBEHub() {
           {/* Teacher Tab Content */}
           <TabsContent value="teacher" className="space-y-6">
             <div className="grid gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr min-h-fit">
-              {roleCards.teacher.map((card) => (
+              {roleCards.teacher.map((card) => {
+                console.log("Rendering teacher card:", card.id, card.title);
+                return (
                 <Card key={card.id} className="hover:shadow-lg transition-all duration-300">
                   <CardHeader>
                     <div className="flex items-center gap-3">
@@ -604,7 +612,8 @@ const CBEHub = memo(function CBEHub() {
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
           </TabsContent>
 
