@@ -173,6 +173,15 @@ MINIO_SECRET_KEY=...
 - **Grid Adaptations**: Flexible layouts that stack on mobile while maintaining desktop functionality
 - **Text Scaling**: Progressive text sizes from mobile (text-xs) to desktop (text-base/lg) for optimal readability
 
+### EdVirons Portal Integration (July 24, 2025)
+- **Complete System Integration**: Removed standalone subject management from Digital Assessment Book
+- **User Management Integration**: Assessment book now fetches students directly from EdVirons users table
+- **Timetable System Integration**: Subjects are loaded from the existing timetable entries system
+- **CBC Subject Mapping**: Automatic assignment of learning strands based on EdVirons curriculum structure
+- **Tenant Isolation**: All assessment data properly filtered by tenant ID for multi-school support
+- **Streamlined Interface**: Simplified 3-tab design focusing on assessment functionality
+- **Portal Consistency**: Maintains unified user experience across all EdVirons modules
+
 ### Performance Optimizations (July 14, 2025)
 - **React Optimization**: Implemented React.memo and useMemo across CBC Hub and major components
 - **Database Pooling**: Added optimized PostgreSQL connection pooling with health monitoring

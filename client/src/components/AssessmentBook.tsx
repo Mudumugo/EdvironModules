@@ -36,7 +36,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import ReportCard from "./ReportCard";
-import SubjectManager from "./SubjectManager";
+
 
 interface Student {
   id: number;
@@ -618,19 +618,11 @@ export default function AssessmentBook() {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1">
+        <TabsList className="grid w-full grid-cols-3 h-auto p-1">
           <TabsTrigger value="dashboard" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 py-2">
             <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
             <span className="hidden sm:inline">Dashboard</span>
             <span className="sm:hidden">Home</span>
-          </TabsTrigger>
-          <TabsTrigger value="subjects" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 py-2">
-            <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
-            <span className="hidden sm:inline">Subjects</span>
-            <span className="sm:hidden">Subjects</span>
-            <Badge variant="secondary" className="ml-1 text-xs px-1 py-0 hidden md:inline-flex">
-              Manage
-            </Badge>
           </TabsTrigger>
           <TabsTrigger value="behavior" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 py-2">
             <User className="w-3 h-3 md:w-4 md:h-4" />
@@ -655,25 +647,7 @@ export default function AssessmentBook() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <Button 
-                  onClick={() => setActiveTab("subjects")}
-                  className="bg-blue-600 hover:bg-blue-700 w-full justify-start"
-                  size="sm"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Subjects
-                </Button>
-                <Button 
-                  onClick={() => setActiveTab("subjects")}
-                  variant="outline"
-                  className="border-blue-300 text-blue-700 hover:bg-blue-50 w-full justify-start"
-                  size="sm"
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Quick Add CBC Subjects</span>
-                  <span className="sm:hidden">CBC Subjects</span>
-                </Button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <Button 
                   onClick={() => {
                     // Scroll to competency logging section
@@ -683,8 +657,7 @@ export default function AssessmentBook() {
                       element?.scrollIntoView({ behavior: "smooth" });
                     }, 100);
                   }}
-                  variant="outline"
-                  className="border-green-300 text-green-700 hover:bg-green-50 w-full justify-start"
+                  className="bg-green-600 hover:bg-green-700 w-full justify-start"
                   size="sm"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
@@ -700,12 +673,25 @@ export default function AssessmentBook() {
                   <User className="h-4 w-4 mr-2" />
                   Manage Behavior
                 </Button>
+                <Button 
+                  onClick={() => setActiveTab("summary")}
+                  variant="outline"
+                  className="border-blue-300 text-blue-700 hover:bg-blue-50 w-full justify-start"
+                  size="sm"
+                >
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">View Report Card</span>
+                  <span className="sm:hidden">Report Card</span>
+                </Button>
               </div>
-              <p className="text-xs md:text-sm text-gray-600 mt-3">
-                <strong>How to Log Competencies:</strong> 1) Select a student and subject above, 2) Click <strong>"Log Competencies"</strong> to record CBC performance levels (EE, ME, AE, BE) for each learning strand.
-              </p>
-              <div className="mt-2 text-xs text-gray-500">
-                Debug: Student={selectedStudent?.firstName || 'None'}, Subject={selectedSubject?.name || 'None'}
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-xs md:text-sm text-blue-800">
+                    <p className="font-medium mb-1">📚 Integrated with EdVirons Portal</p>
+                    <p>Students and subjects are automatically loaded from your school's management system. Select a student and subject above, then click "Log Competencies" to record CBC performance levels.</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
