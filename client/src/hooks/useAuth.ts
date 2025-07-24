@@ -13,6 +13,10 @@ interface User {
   gradeLevel?: string;
 }
 
+// Dummy exports for backwards compatibility during transition
+export const setLoggingOut = () => {};
+export const getIsLoggingOut = () => false;
+
 export function useAuth() {
   const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/user"],
