@@ -1,12 +1,18 @@
-import React from "react";
+// Completely safe tooltip components for Replit compatibility
+// No React imports or hooks to prevent conflicts
 
-// Replit-safe tooltip components that avoid all React hooks
-export const TooltipProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+export function TooltipProvider({ children }: { children: any }) {
+  return children;
+}
 
-export const Tooltip = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+export function Tooltip({ children }: { children: any }) {
+  return children;
+}
 
-export const TooltipTrigger = ({ children, asChild }: { children: React.ReactNode; asChild?: boolean }) => {
-  return asChild ? <>{children}</> : <span>{children}</span>;
-};
+export function TooltipTrigger({ children, asChild }: { children: any; asChild?: boolean }) {
+  return asChild ? children : children;
+}
 
-export const TooltipContent = () => null;
+export function TooltipContent() {
+  return null;
+}
