@@ -343,9 +343,12 @@ export default function AssessmentBook() {
             <BarChart3 className="w-4 h-4" />
             Dashboard
           </TabsTrigger>
-          <TabsTrigger value="subjects" className="flex items-center gap-2">
+          <TabsTrigger value="subjects" className="flex items-center gap-2 relative">
             <BookOpen className="w-4 h-4" />
             Subjects
+            <Badge variant="secondary" className="ml-1 text-xs px-1 py-0">
+              Manage
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="behavior" className="flex items-center gap-2">
             <User className="w-4 h-4" />
@@ -359,6 +362,46 @@ export default function AssessmentBook() {
 
         {/* Dashboard Tab */}
         <TabsContent value="dashboard" className="space-y-6">
+          {/* Quick Actions Card */}
+          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-blue-800">
+                <Target className="h-5 w-5" />
+                Quick Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                <Button 
+                  onClick={() => setActiveTab("subjects")}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Subjects
+                </Button>
+                <Button 
+                  onClick={() => setActiveTab("subjects")}
+                  variant="outline"
+                  className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Quick Add CBC Subjects
+                </Button>
+                <Button 
+                  onClick={() => setActiveTab("behavior")}
+                  variant="outline"
+                  className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Manage Behavior
+                </Button>
+              </div>
+              <p className="text-sm text-gray-600 mt-3">
+                <strong>Tip:</strong> Use the <strong>Subjects</strong> tab to add new subjects and manage CBC learning strands.
+              </p>
+            </CardContent>
+          </Card>
+
           {selectedStudent && (
             <>
               {/* Student Profile */}
