@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+// import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"; // Disabled for Replit webview compatibility
 import { 
   GraduationCap, 
   Target, 
@@ -395,7 +395,7 @@ const CBEHub = memo(function CBEHub() {
   // Show Assessment Book if selected
   if (showAssessmentBook) {
     return (
-      <TooltipProvider>
+      <div>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <div className="container mx-auto p-4 sm:p-6 space-y-6">
             <div className="flex items-center justify-between">
@@ -410,12 +410,12 @@ const CBEHub = memo(function CBEHub() {
             <AssessmentBook />
           </div>
         </div>
-      </TooltipProvider>
+      </div>
     );
   }
 
   return (
-    <TooltipProvider>
+    <div>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto p-4 sm:p-6 space-y-6">
           {/* Enhanced Header Section */}
@@ -665,20 +665,13 @@ const CBEHub = memo(function CBEHub() {
 
           {/* Quick-Action Floating Button */}
           <div className="fixed bottom-6 right-6">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button className="rounded-full p-6 shadow-xl bg-indigo-600 hover:bg-indigo-700">
+                <Button className="rounded-full p-6 shadow-xl bg-indigo-600 hover:bg-indigo-700" title="Need help with CBC? Click for support">
                   <MessageCircleQuestion className="h-6 w-6" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Need help with CBC? Click for support</p>
-              </TooltipContent>
-            </Tooltip>
           </div>
         </div>
       </div>
-    </TooltipProvider>
+    </div>
   );
 });
 
