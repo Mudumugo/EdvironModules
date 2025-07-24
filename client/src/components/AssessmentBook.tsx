@@ -655,7 +655,7 @@ export default function AssessmentBook() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <Button 
                   onClick={() => setActiveTab("subjects")}
                   className="bg-blue-600 hover:bg-blue-700 w-full justify-start"
@@ -675,16 +675,13 @@ export default function AssessmentBook() {
                   <span className="sm:hidden">CBC Subjects</span>
                 </Button>
                 <Button 
-                  disabled={!selectedStudent || !selectedSubject}
                   onClick={() => {
-                    if (selectedStudent && selectedSubject) {
-                      // Scroll to competency logging section
-                      setActiveTab("dashboard");
-                      setTimeout(() => {
-                        const element = document.getElementById("competency-logging");
-                        element?.scrollIntoView({ behavior: "smooth" });
-                      }, 100);
-                    }
+                    // Scroll to competency logging section
+                    setActiveTab("dashboard");
+                    setTimeout(() => {
+                      const element = document.getElementById("competency-logging");
+                      element?.scrollIntoView({ behavior: "smooth" });
+                    }, 100);
                   }}
                   variant="outline"
                   className="border-green-300 text-green-700 hover:bg-green-50 w-full justify-start"
@@ -707,6 +704,9 @@ export default function AssessmentBook() {
               <p className="text-xs md:text-sm text-gray-600 mt-3">
                 <strong>How to Log Competencies:</strong> 1) Select a student and subject above, 2) Click <strong>"Log Competencies"</strong> to record CBC performance levels (EE, ME, AE, BE) for each learning strand.
               </p>
+              <div className="mt-2 text-xs text-gray-500">
+                Debug: Student={selectedStudent?.firstName || 'None'}, Subject={selectedSubject?.name || 'None'}
+              </div>
             </CardContent>
           </Card>
 
