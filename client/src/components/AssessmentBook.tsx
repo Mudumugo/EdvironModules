@@ -127,37 +127,39 @@ function SubjectEditor({ subject, isOpen, onClose, onUpdate }: {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md mx-4 md:mx-0">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Edit className="h-5 w-5" />
+          <DialogTitle className="flex items-center gap-2 text-base md:text-lg">
+            <Edit className="h-4 w-4 md:h-5 md:w-5" />
             Edit Subject
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Subject Name</label>
+            <label className="text-xs md:text-sm font-medium mb-2 block">Subject Name</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter subject name"
+              className="text-sm"
             />
           </div>
           
           <div>
-            <label className="text-sm font-medium mb-2 block">Subject Code</label>
+            <label className="text-xs md:text-sm font-medium mb-2 block">Subject Code</label>
             <Input
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="Enter subject code"
+              className="text-sm"
             />
           </div>
           
           <div>
-            <label className="text-sm font-medium mb-2 block">Category</label>
+            <label className="text-xs md:text-sm font-medium mb-2 block">Category</label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
+              <SelectTrigger className="text-sm">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -169,11 +171,11 @@ function SubjectEditor({ subject, isOpen, onClose, onUpdate }: {
             </Select>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={onClose} className="order-2 sm:order-1" size="sm">
               Cancel
             </Button>
-            <Button onClick={saveChanges} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={saveChanges} className="bg-blue-600 hover:bg-blue-700 order-1 sm:order-2" size="sm">
               <Save className="h-4 w-4 mr-2" />
               Save Changes
             </Button>
@@ -259,25 +261,25 @@ function StrandManager({ subject, isOpen, onClose, onUpdate }: {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl mx-4 md:mx-0 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <List className="h-5 w-5" />
+          <DialogTitle className="flex items-center gap-2 text-base md:text-lg">
+            <List className="h-4 w-4 md:h-5 md:w-5" />
             Manage Strands: {subject.name}
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           {/* Add New Strand */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               placeholder="Enter new strand name..."
               value={newStrand}
               onChange={(e) => setNewStrand(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && addStrand()}
-              className="flex-1"
+              className="flex-1 text-sm"
             />
-            <Button onClick={addStrand} disabled={!newStrand.trim()}>
+            <Button onClick={addStrand} disabled={!newStrand.trim()} size="sm" className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add
             </Button>
@@ -335,11 +337,11 @@ function StrandManager({ subject, isOpen, onClose, onUpdate }: {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={onClose} className="order-2 sm:order-1" size="sm">
               Cancel
             </Button>
-            <Button onClick={saveChanges} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={saveChanges} className="bg-blue-600 hover:bg-blue-700 order-1 sm:order-2" size="sm">
               <Save className="h-4 w-4 mr-2" />
               Save Changes
             </Button>
@@ -498,40 +500,42 @@ export default function AssessmentBook() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 px-2 md:px-0">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 md:p-6 rounded-lg">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <BookOpen className="w-8 h-8" />
+            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+              <BookOpen className="w-6 h-6 md:w-8 md:h-8" />
               Digital Assessment Book
             </h1>
-            <p className="opacity-90">Competency-Based Education Assessment</p>
+            <p className="opacity-90 text-sm md:text-base">Competency-Based Education Assessment</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             {selectedStudent && (
               <div className="flex items-center gap-3 bg-white/10 backdrop-blur rounded-lg p-3">
-                <Avatar className="w-12 h-12">
+                <Avatar className="w-10 h-10 md:w-12 md:h-12">
                   <AvatarImage src={selectedStudent.profileImageUrl} />
-                  <AvatarFallback className="bg-white/20 text-white">
+                  <AvatarFallback className="bg-white/20 text-white text-sm">
                     {getInitials(selectedStudent.firstName, selectedStudent.lastName)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold">{selectedStudent.firstName} {selectedStudent.lastName}</p>
-                  <p className="text-sm opacity-75">UPI: {selectedStudent.upi}</p>
+                  <p className="font-semibold text-sm md:text-base">{selectedStudent.firstName} {selectedStudent.lastName}</p>
+                  <p className="text-xs md:text-sm opacity-75">UPI: {selectedStudent.upi}</p>
                 </div>
               </div>
             )}
             {selectedStudent && (
               <Button 
                 onClick={() => setShowReportCard(true)}
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30 w-full sm:w-auto"
                 variant="outline"
+                size="sm"
               >
                 <GraduationCap className="h-4 w-4 mr-2" />
-                Generate Report Card
+                <span className="hidden sm:inline">Generate Report Card</span>
+                <span className="sm:hidden">Report Card</span>
               </Button>
             )}
           </div>
@@ -539,12 +543,12 @@ export default function AssessmentBook() {
       </div>
 
       {/* Student and Subject Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Select Student</CardTitle>
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-sm md:text-base">Select Student</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Select 
               value={selectedStudent?.id.toString()} 
               onValueChange={(value) => {
@@ -567,10 +571,10 @@ export default function AssessmentBook() {
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Select Subject</CardTitle>
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-sm md:text-base">Select Subject</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Select
               value={selectedSubject?.id.toString()}
               onValueChange={(value) => {
@@ -593,10 +597,10 @@ export default function AssessmentBook() {
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Select Term</CardTitle>
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-sm md:text-base">Select Term</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Select value={selectedTerm} onValueChange={setSelectedTerm}>
               <SelectTrigger>
                 <SelectValue />
@@ -613,25 +617,29 @@ export default function AssessmentBook() {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard" className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            Dashboard
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1">
+          <TabsTrigger value="dashboard" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 py-2">
+            <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Dashboard</span>
+            <span className="sm:hidden">Home</span>
           </TabsTrigger>
-          <TabsTrigger value="subjects" className="flex items-center gap-2 relative">
-            <BookOpen className="w-4 h-4" />
-            Subjects
-            <Badge variant="secondary" className="ml-1 text-xs px-1 py-0">
+          <TabsTrigger value="subjects" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 py-2">
+            <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Subjects</span>
+            <span className="sm:hidden">Subjects</span>
+            <Badge variant="secondary" className="ml-1 text-xs px-1 py-0 hidden md:inline-flex">
               Manage
             </Badge>
           </TabsTrigger>
-          <TabsTrigger value="behavior" className="flex items-center gap-2">
-            <User className="w-4 h-4" />
-            Behavior
+          <TabsTrigger value="behavior" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 py-2">
+            <User className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Behavior</span>
+            <span className="sm:hidden">Behavior</span>
           </TabsTrigger>
-          <TabsTrigger value="summary" className="flex items-center gap-2">
-            <FileText className="w-4 h-4" />
-            Summary
+          <TabsTrigger value="summary" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 py-2">
+            <FileText className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Summary</span>
+            <span className="sm:hidden">Summary</span>
           </TabsTrigger>
         </TabsList>
 
@@ -646,10 +654,11 @@ export default function AssessmentBook() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-wrap gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <Button 
                   onClick={() => setActiveTab("subjects")}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 w-full justify-start"
+                  size="sm"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Subjects
@@ -657,21 +666,24 @@ export default function AssessmentBook() {
                 <Button 
                   onClick={() => setActiveTab("subjects")}
                   variant="outline"
-                  className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                  className="border-blue-300 text-blue-700 hover:bg-blue-50 w-full justify-start"
+                  size="sm"
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
-                  Quick Add CBC Subjects
+                  <span className="hidden sm:inline">Quick Add CBC Subjects</span>
+                  <span className="sm:hidden">CBC Subjects</span>
                 </Button>
                 <Button 
                   onClick={() => setActiveTab("behavior")}
                   variant="outline"
-                  className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                  className="border-purple-300 text-purple-700 hover:bg-purple-50 w-full justify-start"
+                  size="sm"
                 >
                   <User className="h-4 w-4 mr-2" />
                   Manage Behavior
                 </Button>
               </div>
-              <p className="text-sm text-gray-600 mt-3">
+              <p className="text-xs md:text-sm text-gray-600 mt-3">
                 <strong>Tip:</strong> Use the <strong>Subjects</strong> tab to add new subjects and manage CBC learning strands.
               </p>
             </CardContent>
@@ -684,7 +696,7 @@ export default function AssessmentBook() {
                 <CardHeader>
                   <CardTitle>Student Profile</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-600">Name:</label>
                     <p className="font-semibold">{selectedStudent.firstName} {selectedStudent.lastName}</p>
@@ -735,10 +747,10 @@ export default function AssessmentBook() {
         {/* Subjects Tab */}
         <TabsContent value="subjects" className="space-y-4">
           {/* Subject Management Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-2xl font-bold">Subject & Strand Management</h2>
-              <p className="text-gray-600">Manage CBC subjects and their learning strands</p>
+              <h2 className="text-xl md:text-2xl font-bold">Subject & Strand Management</h2>
+              <p className="text-gray-600 text-sm md:text-base">Manage CBC subjects and their learning strands</p>
             </div>
             <Button onClick={async () => {
               // Show custom subject form
@@ -776,7 +788,7 @@ export default function AssessmentBook() {
                 console.error('Error adding subject:', error);
                 alert('❌ Error adding subject. Please try again.');
               }
-            }} className="bg-blue-600 hover:bg-blue-700">
+            }} className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add Subject
             </Button>
@@ -792,7 +804,7 @@ export default function AssessmentBook() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600 mb-4">Add standard CBC subjects with pre-defined strands:</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {[
                   { name: "Mathematics", code: "MATH", category: "Core", strands: ["Numbers", "Measurement", "Geometry", "Data Handling", "Money"] },
                   { name: "English", code: "ENG", category: "Core", strands: ["Listening and Speaking", "Reading", "Writing", "Language Use"] },
@@ -834,45 +846,46 @@ export default function AssessmentBook() {
           {/* Current Subjects Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Current Subjects</CardTitle>
+              <CardTitle className="text-lg md:text-xl">Current Subjects</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Strands</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[600px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs md:text-sm">Subject</TableHead>
+                      <TableHead className="text-xs md:text-sm">Code</TableHead>
+                      <TableHead className="text-xs md:text-sm">Category</TableHead>
+                      <TableHead className="text-xs md:text-sm">Strands</TableHead>
+                      <TableHead className="text-xs md:text-sm">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
                 <TableBody>
                   {subjects.map((subject: Subject) => (
                     <TableRow key={subject.id}>
-                      <TableCell className="font-medium">{subject.name}</TableCell>
-                      <TableCell>{subject.code}</TableCell>
+                      <TableCell className="font-medium text-xs md:text-sm">{subject.name}</TableCell>
+                      <TableCell className="text-xs md:text-sm">{subject.code}</TableCell>
                       <TableCell>
-                        <Badge variant={subject.category === 'Core' ? 'default' : 'secondary'}>
+                        <Badge variant={subject.category === 'Core' ? 'default' : 'secondary'} className="text-xs">
                           {subject.category}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {subject.strands?.slice(0, 3).map((strand: string, index: number) => (
+                          {subject.strands?.slice(0, 2).map((strand: string, index: number) => (
                             <Badge key={index} variant="outline" className="text-xs">
-                              {strand}
+                              {strand.length > 10 ? strand.substring(0, 10) + '...' : strand}
                             </Badge>
                           ))}
-                          {subject.strands?.length > 3 && (
+                          {subject.strands?.length > 2 && (
                             <Badge variant="outline" className="text-xs">
-                              +{subject.strands.length - 3} more
+                              +{subject.strands.length - 2}
                             </Badge>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
                           <Button
                             size="sm"
                             variant="outline"
@@ -880,9 +893,11 @@ export default function AssessmentBook() {
                               setManageStrandsSubject(subject);
                               setShowStrandsManager(true);
                             }}
+                            className="text-xs px-2 py-1"
                           >
-                            <List className="h-4 w-4" />
-                            Manage Strands
+                            <List className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+                            <span className="hidden sm:inline">Manage Strands</span>
+                            <span className="sm:hidden">Strands</span>
                           </Button>
                           <Button
                             size="sm"
@@ -891,15 +906,19 @@ export default function AssessmentBook() {
                               setEditSubject(subject);
                               setShowEditSubject(true);
                             }}
+                            className="text-xs px-2 py-1"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+                            <span className="hidden sm:inline">Edit</span>
+                            <span className="sm:hidden">Edit</span>
                           </Button>
                         </div>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
