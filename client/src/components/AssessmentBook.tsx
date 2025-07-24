@@ -230,7 +230,7 @@ export default function AssessmentBook() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <BookOpen className="w-8 h-8" />
-              Grade 6 Digital Assessment Book
+              Digital Assessment Book
             </h1>
             <p className="opacity-90">Competency-Based Education Assessment</p>
           </div>
