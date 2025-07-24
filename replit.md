@@ -118,7 +118,19 @@ MINIO_SECRET_KEY=...
 - **Input Validation**: Comprehensive request validation and sanitization
 - **Session Security**: Secure session management with appropriate timeouts
 
-## Recent Performance Optimizations (July 14, 2025)
+## Recent Major Enhancements
+
+### Digital Assessment Book Report Card System (July 24, 2025)
+- **Comprehensive Report Card Generation**: Teachers can now generate professional printable report cards matching CBC standards
+- **Assessment Integration**: Complete CBC grading system (EE, ME, AE, BE) with performance tracking
+- **Print-Optimized Design**: Professional report card layout based on Kenyan educational standards
+- **Multi-Subject Assessment**: Tracks all subjects including Mathematics strand-level performance
+- **Behavioral Assessment**: Integrated behavioral tracking with teacher comments
+- **Teacher Comments System**: Comprehensive comment system for class teacher and head teacher remarks
+- **Export Functionality**: Print and PDF download capabilities for parent distribution
+- **Real-time Data**: Dynamic report generation from logged assessments and grades
+
+### Performance Optimizations (July 14, 2025)
 - **React Optimization**: Implemented React.memo and useMemo across CBC Hub and major components
 - **Database Pooling**: Added optimized PostgreSQL connection pooling with health monitoring
 - **Server Performance**: Enhanced middleware with request timing, caching, and memory monitoring

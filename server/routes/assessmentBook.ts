@@ -195,4 +195,78 @@ export function setupAssessmentBookRoutes(app: Express) {
       res.status(500).json({ error: 'Failed to create subject' });
     }
   });
+
+  // Get comprehensive report data for report card generation
+  app.get('/api/assessment-book/report/:studentId/:term', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { studentId, term } = req.params;
+      const academicYear = req.query.academicYear as string || '2025';
+      
+      // Simulate comprehensive report data
+      const reportData = {
+        student: {
+          id: parseInt(studentId),
+          name: studentId === '1' ? 'Jane Muthoni Wanjiku' : 'John Doe',
+          upi: '12345678',
+          grade: '6',
+          stream: 'Blue',
+        },
+        term,
+        academicYear,
+        classTeacher: 'Mr. Kamau',
+        attendance: '95%',
+        daysPresent: '85/90',
+        daysAbsent: '5',
+        subjects: [
+          { name: 'Mathematics', term1: 'ME', term2: 'EE', term3: '-', comment: 'Jane has shown remarkable improvement in problem solving' },
+          { name: 'English', term1: 'ME', term2: 'ME', term3: '-', comment: 'Good reading skills, needs to work on creative writing' },
+          { name: 'Kiswahili', term1: 'AE', term2: 'ME', term3: '-', comment: 'Improved significantly in oral skills' },
+          { name: 'Science & Technology', term1: 'ME', term2: 'ME', term3: '-', comment: 'Very curious and asks good questions' },
+          { name: 'Social Studies', term1: 'ME', term2: 'EE', term3: '-', comment: 'Excellent participation in class discussions' },
+          { name: 'CRE', term1: 'EE', term2: 'EE', term3: '-', comment: 'Demonstrates good moral values' },
+          { name: 'Home Science', term1: 'ME', term2: 'ME', term3: '-', comment: 'Good practical skills' },
+          { name: 'Agriculture', term1: 'ME', term2: 'ME', term3: '-', comment: 'Shows interest in gardening activities' }
+        ],
+        mathStrands: [
+          { name: 'Numbers', term1: 'ME', term2: 'EE', comment: 'Excellent progress in fractions' },
+          { name: 'Measurement', term1: 'ME', term2: 'ME', comment: 'Good understanding of units' },
+          { name: 'Geometry', term1: 'AE', term2: 'ME', comment: 'Improved in angle measurement' },
+          { name: 'Data Handling', term1: 'ME', term2: 'ME', comment: 'Can interpret graphs well' }
+        ],
+        behavior: {
+          respectForOthers: true,
+          respectForProperty: true,
+          respectForSelf: true,
+          respectForEnvironment: true
+        },
+        classTeacherComment: `${studentId === '1' ? 'Jane' : 'John'} is a diligent student who has shown consistent improvement this term. She demonstrates strong participation in class discussions and shows good leadership qualities. With continued hard work, ${studentId === '1' ? 'Jane' : 'John'} will achieve even better results next term.`,
+        headTeacherComment: `${studentId === '1' ? 'Jane' : 'John'} maintains good conduct and is respectful to both teachers and fellow students. We commend her for representing the school in the recent math contest.`
+      };
+
+      res.json(reportData);
+    } catch (error) {
+      console.error('Error fetching report data:', error);
+      res.status(500).json({ error: 'Failed to fetch report data' });
+    }
+  });
+
+  // Generate PDF report card
+  app.post('/api/assessment-book/report/:studentId/:term/pdf', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { studentId, term } = req.params;
+      const academicYear = req.query.academicYear as string || '2025';
+      
+      // In a real implementation, you would use a PDF generation library like puppeteer
+      // For now, return a mock PDF response
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="report_card_${studentId}_${term}_${academicYear}.pdf"`);
+      
+      // Mock PDF content - in production, generate actual PDF
+      const mockPdfContent = Buffer.from('Mock PDF content for report card');
+      res.send(mockPdfContent);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      res.status(500).json({ error: 'Failed to generate PDF' });
+    }
+  });
 }

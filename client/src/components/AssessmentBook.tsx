@@ -23,10 +23,13 @@ import {
   Star,
   CheckCircle,
   BookUser,
-  Award
+  Award,
+  Printer,
+  GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
+import ReportCard from "./ReportCard";
 
 interface Student {
   id: number;
@@ -82,6 +85,7 @@ export default function AssessmentBook() {
   const [selectedTerm, setSelectedTerm] = useState("term2");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [academicYear] = useState("2025");
+  const [showReportCard, setShowReportCard] = useState(false);
 
   // Fetch students for the teacher
   const { data: students = [] } = useQuery<Student[]>({
@@ -200,6 +204,18 @@ export default function AssessmentBook() {
     );
   }
 
+  // Show report card if requested
+  if (showReportCard && selectedStudent) {
+    return (
+      <ReportCard 
+        student={selectedStudent}
+        term={selectedTerm}
+        academicYear={academicYear}
+        onClose={() => setShowReportCard(false)}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -212,20 +228,32 @@ export default function AssessmentBook() {
             </h1>
             <p className="opacity-90">Competency-Based Education Assessment</p>
           </div>
-          {selectedStudent && (
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur rounded-lg p-3">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={selectedStudent.profileImageUrl} />
-                <AvatarFallback className="bg-white/20 text-white">
-                  {getInitials(selectedStudent.firstName, selectedStudent.lastName)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold">{selectedStudent.firstName} {selectedStudent.lastName}</p>
-                <p className="text-sm opacity-75">UPI: {selectedStudent.upi}</p>
+          <div className="flex items-center gap-4">
+            {selectedStudent && (
+              <div className="flex items-center gap-3 bg-white/10 backdrop-blur rounded-lg p-3">
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src={selectedStudent.profileImageUrl} />
+                  <AvatarFallback className="bg-white/20 text-white">
+                    {getInitials(selectedStudent.firstName, selectedStudent.lastName)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold">{selectedStudent.firstName} {selectedStudent.lastName}</p>
+                  <p className="text-sm opacity-75">UPI: {selectedStudent.upi}</p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+            {selectedStudent && (
+              <Button 
+                onClick={() => setShowReportCard(true)}
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                variant="outline"
+              >
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Generate Report Card
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

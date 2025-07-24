@@ -1,0 +1,613 @@
+# Printable Assessment Report Card Design
+
+Here's a complete HTML/CSS solution for a printable report card that teachers can generate as PDFs to send to parents:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 6 Termly Report Card</title>
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Report Card Container */
+        .report-card {
+            width: 210mm; /* A4 width */
+            min-height: 297mm; /* A4 height */
+            margin: 0 auto;
+            padding: 15mm;
+            box-sizing: border-box;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px double #3498db;
+            padding-bottom: 15px;
+        }
+
+        .school-logo {
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .school-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 5px 0;
+        }
+
+        .report-title {
+            font-size: 20px;
+            color: #3498db;
+            margin: 5px 0;
+        }
+
+        .term-year {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        /* Student Information */
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .student-photo {
+            width: 100px;
+            height: 120px;
+            border: 1px solid #ddd;
+            float: right;
+            margin-left: 15px;
+            object-fit: cover;
+        }
+
+        /* Academic Performance */
+        .performance-section {
+            margin-bottom: 20px;
+        }
+
+        .performance-section h2 {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            margin: 20px 0 10px 0;
+            border-radius: 4px;
+            font-size: 18px;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .grades-table th {
+            background-color: #f2f2f2;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .grades-table td {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+        }
+
+        .grades-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Grading Key */
+        .grading-key {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .grade-box {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .grade-EE { background-color: #e8f5e9; border-color: #a5d6a7; }
+        .grade-ME { background-color: #e3f2fd; border-color: #90caf9; }
+        .grade-AE { background-color: #fff8e1; border-color: #ffe082; }
+        .grade-BE { background-color: #ffebee; border-color: #ef9a9a; }
+
+        /* Comments Section */
+        .comments-section {
+            margin-bottom: 20px;
+        }
+
+        .comment-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .comment-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        /* Footer */
+        .footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 80%;
+            margin: 40px auto 5px auto;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background-color: white;
+            }
+            
+            .report-card {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 15mm;
+                box-shadow: none;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* Print Button */
+        .print-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">Print Report Card</button>
+
+    <div class="report-card">
+        <!-- Header Section -->
+        <div class="header">
+            <img src="https://via.placeholder.com/80x80?text=SCHOOL+LOGO" alt="School Logo" class="school-logo">
+            <div class="school-name">EDVIRONS PRIMARY SCHOOL</div>
+            <div class="report-title">PROGRESS REPORT CARD</div>
+            <div class="term-year">TERM 2, 2023</div>
+        </div>
+
+        <!-- Student Information -->
+        <div class="student-info">
+            <div class="info-card">
+                <h3>Student Details</h3>
+                <div class="info-row">
+                    <div class="info-label">Name:</div>
+                    <div>Jane Muthoni Wanjiku</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">UPI Number:</div>
+                    <div>12345678</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Grade:</div>
+                    <div>6</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Stream:</div>
+                    <div>Blue</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Class Teacher:</div>
+                    <div>Mr. Kamau</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>Term Information</h3>
+                <div class="info-row">
+                    <div class="info-label">Term:</div>
+                    <div>2</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Year:</div>
+                    <div>2023</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Attendance:</div>
+                    <div>95%</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Days Present:</div>
+                    <div>85/90</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Days Absent:</div>
+                    <div>5</div>
+                </div>
+            </div>
+        </div>
+
+        <img src="https://via.placeholder.com/100x120?text=STUDENT+PHOTO" alt="Student Photo" class="student-photo">
+
+        <!-- Grading Key -->
+        <div class="performance-section">
+            <h2>Grading Key</h2>
+            <div class="grading-key">
+                <div class="grade-box grade-EE">
+                    <strong>EE (4)</strong><br>
+                    Exceeds Expectations
+                </div>
+                <div class="grade-box grade-ME">
+                    <strong>ME (3)</strong><br>
+                    Meets Expectations
+                </div>
+                <div class="grade-box grade-AE">
+                    <strong>AE (2)</strong><br>
+                    Approaches Expectations
+                </div>
+                <div class="grade-box grade-BE">
+                    <strong>BE (1)</strong><br>
+                    Below Expectations
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Performance -->
+        <div class="performance-section">
+            <h2>Academic Performance</h2>
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Term 1</th>
+                        <th>Term 2</th>
+                        <th>Term 3</th>
+                        <th>Teacher's Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mathematics</td>
+                        <td>ME</td>
+                        <td>EE</td>
+                        <td>-</td>
+                        <td>Jane has shown remarkable improvement in problem solving</td>
+                    </tr>
+                    <tr>
+                        <td>English</td>
+                        <td>ME</td>
+                        <td>ME</td>
+                        <td>-</td>
+                        <td>Good reading skills, needs to work on creative writing</td>
+                    </tr>
+                    <tr>
+                        <td>Kiswahili</td>
+                        <td>AE</td>
+                        <td>ME</td>
+                        <td>-</td>
+                        <td>Improved significantly in oral skills</td>
+                    </tr>
+                    <tr>
+                        <td>Science & Technology</td>
+                        <td>ME</td>
+                        <td>ME</td>
+                        <td>-</td>
+                        <td>Very curious and asks good questions</td>
+                    </tr>
+                    <tr>
+                        <td>Social Studies</td>
+                        <td>ME</td>
+                        <td>EE</td>
+                        <td>-</td>
+                        <td>Excellent participation in class discussions</td>
+                    </tr>
+                    <tr>
+                        <td>CRE</td>
+                        <td>EE</td>
+                        <td>EE</td>
+                        <td>-</td>
+                        <td>Demonstrates good moral values</td>
+                    </tr>
+                    <tr>
+                        <td>Home Science</td>
+                        <td>ME</td>
+                        <td>ME</td>
+                        <td>-</td>
+                        <td>Good practical skills</td>
+                    </tr>
+                    <tr>
+                        <td>Agriculture</td>
+                        <td>ME</td>
+                        <td>ME</td>
+                        <td>-</td>
+                        <td>Shows interest in gardening activities</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Strand Performance -->
+        <div class="performance-section">
+            <h2>Mathematics Strand Performance</h2>
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>Strand</th>
+                        <th>Term 1</th>
+                        <th>Term 2</th>
+                        <th>Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Numbers</td>
+                        <td>ME</td>
+                        <td>EE</td>
+                        <td>Excellent progress in fractions</td>
+                    </tr>
+                    <tr>
+                        <td>Measurement</td>
+                        <td>ME</td>
+                        <td>ME</td>
+                        <td>Good understanding of units</td>
+                    </tr>
+                    <tr>
+                        <td>Geometry</td>
+                        <td>AE</td>
+                        <td>ME</td>
+                        <td>Improved in angle measurement</td>
+                    </tr>
+                    <tr>
+                        <td>Data Handling</td>
+                        <td>ME</td>
+                        <td>ME</td>
+                        <td>Can interpret graphs well</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Behavior Assessment -->
+        <div class="performance-section">
+            <h2>Behavioral Assessment</h2>
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>Behavior</th>
+                        <th>Assessment</th>
+                        <th>Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Considering for others</td>
+                        <td>S</td>
+                        <td>Very kind to classmates</td>
+                    </tr>
+                    <tr>
+                        <td>Organization</td>
+                        <td>I</td>
+                        <td>Sometimes forgets materials</td>
+                    </tr>
+                    <tr>
+                        <td>Accepts responsibility</td>
+                        <td>S</td>
+                        <td>Owns up to mistakes</td>
+                    </tr>
+                    <tr>
+                        <td>Works independently</td>
+                        <td>I</td>
+                        <td>Needs occasional reminders</td>
+                    </tr>
+                    <tr>
+                        <td>Works well with others</td>
+                        <td>S</td>
+                        <td>Excellent team player</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <h2>Comments</h2>
+            <div class="comment-box">
+                <h3>Class Teacher's Remarks</h3>
+                <p>Jane is a diligent student who has shown consistent improvement this term. She participates actively in class discussions and demonstrates good leadership qualities. With continued effort, she will achieve even better results next term.</p>
+            </div>
+            <div class="comment-box">
+                <h3>Head Teacher's Remarks</h3>
+                <p>Jane maintains good conduct and is respectful to both teachers and fellow students. We commend her for representing the school in the recent math contest.</p>
+            </div>
+        </div>
+
+        <!-- Footer with Signatures -->
+        <div class="footer">
+            <div class="signature-box">
+                <div>Class Teacher</div>
+                <div class="signature-line"></div>
+                <div>Signature/Date</div>
+            </div>
+            <div class="signature-box">
+                <div>Head Teacher</div>
+                <div class="signature-line"></div>
+                <div>Signature/Date</div>
+            </div>
+            <div class="signature-box">
+                <div>Parent's Acknowledgement</div>
+                <div class="signature-line"></div>
+                <div>Signature/Date</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // This would be populated from the database in a real implementation
+        document.addEventListener('DOMContentLoaded', function() {
+            // You could add JavaScript here to populate the report card with actual data
+            // For example:
+            // fetch('/api/report-card/12345678/term2')
+            //   .then(response => response.json())
+            //   .then(data => populateReportCard(data));
+            
+            // Print button functionality
+            document.querySelector('.print-button').addEventListener('click', function() {
+                window.print();
+            });
+        });
+
+        function populateReportCard(data) {
+            // This would populate all the fields with actual data
+            document.querySelector('.school-name').textContent = data.schoolName;
+            document.querySelector('.student-name').textContent = data.studentName;
+            // ... and so on for all fields
+        }
+    </script>
+</body>
+</html>
+```
+
+## Key Features of the Printable Report Card:
+
+1. **Professional Layout**:
+   - Clean, organized A4 format
+   - School branding with logo and header
+   - Balanced use of white space
+
+2. **Complete Student Information**:
+   - Personal details
+   - Attendance records
+   - Term information
+   - Student photo placeholder
+
+3. **Comprehensive Academic Reporting**:
+   - Subject performance across all terms
+   - Strand-specific breakdowns (for subjects like Math)
+   - Teacher comments for each subject
+
+4. **Behavioral Assessment**:
+   - Clear evaluation of social skills
+   - Improvement indicators
+   - Specific feedback
+
+5. **Grading Key**:
+   - Visual representation of grading scale
+   - Color-coded for quick reference
+
+6. **Official Comments**:
+   - Class teacher remarks
+   - Head teacher remarks
+   - Space for parent acknowledgement
+
+7. **Print Optimization**:
+   - Special print media CSS
+   - Removes unnecessary elements when printing
+   - Includes a print button for easy generation
+
+8. **Signature Sections**:
+   - Formal spaces for required signatures
+   - Properly aligned for professional look
+
+## Implementation Options:
+
+1. **PDF Generation**:
+   ```javascript
+   // Using libraries like jsPDF or html2pdf
+   function generatePDF() {
+       const element = document.querySelector('.report-card');
+       html2pdf()
+           .from(element)
+           .save('report-card-term2.pdf');
+   }
+   ```
+
+2. **Server-Side Generation**:
+   - Use PHP (TCPDF, Dompdf) or Node.js (Puppeteer) to generate PDFs
+   - Store generated reports for record-keeping
+   - Email directly to parents
+
+3. **Dynamic Data Integration**:
+   ```javascript
+   // Example API call to populate real data
+   async function loadReportCard(studentId, term) {
+       const response = await fetch(`/api/report-card/${studentId}/${term}`);
+       const data = await response.json();
+       populateReportCard(data);
+   }
+   ```
+
+4. **Customization Options**:
+   - School can modify colors and branding
+   - Add/remove sections as needed
+   - Support for different grading systems
+
+This design maintains all the official requirements from the original assessment book while presenting the information in a more parent-friendly format that's suitable for printing or digital distribution.
