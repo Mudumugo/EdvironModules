@@ -30,7 +30,8 @@ import {
   List,
   Edit,
   Trash2,
-  X
+  X,
+  Info
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -674,6 +675,26 @@ export default function AssessmentBook() {
                   <span className="sm:hidden">CBC Subjects</span>
                 </Button>
                 <Button 
+                  disabled={!selectedStudent || !selectedSubject}
+                  onClick={() => {
+                    if (selectedStudent && selectedSubject) {
+                      // Scroll to competency logging section
+                      setActiveTab("dashboard");
+                      setTimeout(() => {
+                        const element = document.getElementById("competency-logging");
+                        element?.scrollIntoView({ behavior: "smooth" });
+                      }, 100);
+                    }
+                  }}
+                  variant="outline"
+                  className="border-green-300 text-green-700 hover:bg-green-50 w-full justify-start"
+                  size="sm"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Log Competencies</span>
+                  <span className="sm:hidden">Log Skills</span>
+                </Button>
+                <Button 
                   onClick={() => setActiveTab("behavior")}
                   variant="outline"
                   className="border-purple-300 text-purple-700 hover:bg-purple-50 w-full justify-start"
@@ -684,7 +705,7 @@ export default function AssessmentBook() {
                 </Button>
               </div>
               <p className="text-xs md:text-sm text-gray-600 mt-3">
-                <strong>Tip:</strong> Use the <strong>Subjects</strong> tab to add new subjects and manage CBC learning strands.
+                <strong>How to Log Competencies:</strong> 1) Select a student and subject above, 2) Click <strong>"Log Competencies"</strong> to record CBC performance levels (EE, ME, AE, BE) for each learning strand.
               </p>
             </CardContent>
           </Card>
@@ -740,6 +761,143 @@ export default function AssessmentBook() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Competency Logging Section */}
+              {selectedSubject && (
+                <Card id="competency-logging" className="border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-green-800">
+                      <CheckCircle className="h-5 w-5" />
+                      Log Competencies: {selectedSubject.name}
+                    </CardTitle>
+                    <p className="text-sm text-green-700">
+                      Record student performance using CBC standards (EE, ME, AE, BE) for each learning strand
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Learning Strands */}
+                      {selectedSubject.strands && selectedSubject.strands.length > 0 ? (
+                        <div className="grid gap-4">
+                          {selectedSubject.strands.map((strand: string, index: number) => (
+                            <div key={index} className="bg-white p-4 rounded-lg border border-green-100">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-gray-800 mb-1">{strand}</h4>
+                                  <p className="text-xs text-gray-600">
+                                    Learning Strand {index + 1} of {selectedSubject.strands.length}
+                                  </p>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {['EE', 'ME', 'AE', 'BE'].map((level) => (
+                                    <Button
+                                      key={level}
+                                      size="sm"
+                                      variant={
+                                        assessmentBook?.strands?.[strand] === level ? "default" : "outline"
+                                      }
+                                      className={`
+                                        ${level === 'EE' ? 'border-green-500 text-green-700 hover:bg-green-50' : ''}
+                                        ${level === 'ME' ? 'border-blue-500 text-blue-700 hover:bg-blue-50' : ''}
+                                        ${level === 'AE' ? 'border-orange-500 text-orange-700 hover:bg-orange-50' : ''}
+                                        ${level === 'BE' ? 'border-red-500 text-red-700 hover:bg-red-50' : ''}
+                                        ${assessmentBook?.strands?.[strand] === level ? 'bg-gray-800 text-white' : ''}
+                                      `}
+                                      onClick={async () => {
+                                        try {
+                                          const response = await fetch('/api/assessment-book/entries', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                              studentId: selectedStudent.id,
+                                              subjectId: selectedSubject.id,
+                                              term: selectedTerm,
+                                              strand: strand,
+                                              competencyLevel: level,
+                                              assessmentDate: new Date().toISOString(),
+                                              notes: `${level} assessment for ${strand}`
+                                            })
+                                          });
+                                          
+                                          if (response.ok) {
+                                            // Refresh assessment data
+                                            queryClient.invalidateQueries({ 
+                                              queryKey: ["/api/assessment-book", selectedStudent.id, selectedSubject.id, selectedTerm] 
+                                            });
+                                            
+                                            // Show success feedback
+                                            const successMsg = document.createElement('div');
+                                            successMsg.textContent = `✅ Logged ${level} for ${strand}`;
+                                            successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50';
+                                            document.body.appendChild(successMsg);
+                                            setTimeout(() => document.body.removeChild(successMsg), 2000);
+                                          }
+                                        } catch (error) {
+                                          console.error('Error logging competency:', error);
+                                        }
+                                      }}
+                                    >
+                                      {level}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Current Assessment Display */}
+                              {assessmentBook?.strands?.[strand] && (
+                                <div className="mt-3 p-3 bg-gray-50 rounded border-l-4 border-gray-400">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium text-gray-700">
+                                      Current: <span className={`font-bold ${getPerformanceColor(assessmentBook.strands[strand])}`}>
+                                        {assessmentBook.strands[strand]}
+                                      </span>
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {new Date(assessmentBook.lastUpdated || new Date()).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p className="text-sm">No learning strands defined for this subject.</p>
+                          <p className="text-xs mt-1">Go to <strong>Subjects</strong> tab to add strands.</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Competency Guide */}
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                        <Info className="h-4 w-4" />
+                        CBC Performance Levels
+                      </h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-green-500 rounded"></div>
+                          <span><strong>EE:</strong> Exceeds Expectations</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                          <span><strong>ME:</strong> Meets Expectations</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-orange-500 rounded"></div>
+                          <span><strong>AE:</strong> Approaching Expectations</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-red-500 rounded"></div>
+                          <span><strong>BE:</strong> Below Expectations</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </>
           )}
         </TabsContent>
