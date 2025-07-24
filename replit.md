@@ -120,6 +120,22 @@ MINIO_SECRET_KEY=...
 
 ## Recent Major Enhancements
 
+### Authentication & Logout System (July 24, 2025)
+- **Multi-Layer Logout Protection**: Implemented comprehensive 5-layer logout protection system
+- **Global State Management**: Added global logout state checks across all query components
+- **Request Blocking**: Enhanced query client with request blocking during logout at lowest level
+- **Query Cancellation**: Aggressive query cancellation and immediate session clearing
+- **Error Prevention**: Completely eliminated 401 authentication errors during logout process
+- **User Experience**: Clean logout experience with immediate redirect and proper cleanup
+
+### Digital Assessment Book Subject Management (July 24, 2025)
+- **Enhanced Dashboard Navigation**: Added Quick Actions card with prominent subject management buttons
+- **Add Subject Functionality**: Fully tested and working custom subject creation with error handling
+- **CBC Subject Integration**: Quick Add CBC Subjects feature with pre-defined learning strands
+- **API Validation**: Confirmed backend API working perfectly with proper data persistence
+- **User Interface**: Clear navigation from Dashboard to Subjects tab with improved user guidance
+- **Subject Management**: Complete CRUD operations for subjects with strand support
+
 ### Digital Assessment Book Report Card System (July 24, 2025)
 - **Comprehensive Report Card Generation**: Teachers can now generate professional printable report cards matching CBC standards
 - **Assessment Integration**: Complete CBC grading system (EE, ME, AE, BE) with performance tracking
