@@ -274,7 +274,7 @@ function Router() {
 
               {/* Notifications Center */}
               <Route path="/notifications">
-                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college", "security_staff", "it_staff"]}>
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college", "school_security", "school_it_staff"]}>
                   <NotificationsCenter />
                 </RoleProtectedRoute>
               </Route>
@@ -355,7 +355,7 @@ function Router() {
 
               {/* Communication modules - Multiple roles */}
               <Route path="/admin/communications">
-                <RoleProtectedRoute allowedRoles={["school_admin", "admin"]}>
+                <RoleProtectedRoute allowedRoles={["school_admin", "edvirons_admin"]}>
                   <Communications />
                 </RoleProtectedRoute>
               </Route>

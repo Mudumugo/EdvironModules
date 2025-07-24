@@ -648,7 +648,7 @@ export const pageComments = pgTable("page_comments", {
   x: integer("x").default(0), // Position for inline comments
   y: integer("y").default(0),
   isResolved: boolean("is_resolved").default(false),
-  parentCommentId: integer("parent_comment_id").references(() => pageComments.id),
+  parentCommentId: integer("parent_comment_id"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -847,9 +847,7 @@ export const stickyNotesRelations = relations(stickyNotes, ({ one }) => ({
   }),
 }));
 
-// Types
-export type InsertNotebook = typeof notebooks.$inferInsert;
-export type Notebook = typeof notebooks.$inferSelect;
+// Digital Notebooks Types
 export type InsertSubject = typeof subjects.$inferInsert;
 export type Subject = typeof subjects.$inferSelect;
 export type InsertChapter = typeof chapters.$inferInsert;
@@ -886,7 +884,7 @@ export const insertPageCommentSchema = createInsertSchema(pageComments).omit({
   updatedAt: true 
 });
 
-// Type exports
+// Digital Notebooks Type exports
 export type Notebook = typeof notebooks.$inferSelect;
 export type InsertNotebook = z.infer<typeof insertNotebookSchema>;
 export type NotebookSection = typeof notebookSections.$inferSelect;
