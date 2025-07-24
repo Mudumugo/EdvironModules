@@ -874,38 +874,43 @@ export class DatabaseStorage implements IStorage {
     ];
   }
 
+  // Storage for subjects
+  private subjects: any[] = [
+    {
+      id: 1,
+      name: "Mathematics",
+      code: "MATH6",
+      category: "core",
+      strands: ["Numbers", "Algebra", "Geometry", "Statistics"]
+    },
+    {
+      id: 2,
+      name: "English",
+      code: "ENG6", 
+      category: "core",
+      strands: ["Reading", "Writing", "Speaking", "Listening"]
+    },
+    {
+      id: 3,
+      name: "Kiswahili",
+      code: "KIS6",
+      category: "core",
+      strands: ["Kusoma", "Kuandika", "Mazungumzo", "Sarufi"]
+    },
+    {
+      id: 4,
+      name: "Science",
+      code: "SCI6",
+      category: "core", 
+      strands: ["Plants", "Animals", "Matter", "Energy"]
+    }
+  ];
+
   async getSubjectsByGrade(gradeLevel: string, tenantId: string): Promise<any[]> {
-    // Mock data - would query subjects table in production
-    return [
-      {
-        id: 1,
-        name: "Mathematics",
-        code: "MATH6",
-        category: "core",
-        strands: ["Numbers", "Algebra", "Geometry", "Statistics"]
-      },
-      {
-        id: 2,
-        name: "English",
-        code: "ENG6", 
-        category: "core",
-        strands: ["Reading", "Writing", "Speaking", "Listening"]
-      },
-      {
-        id: 3,
-        name: "Kiswahili",
-        code: "KIS6",
-        category: "core",
-        strands: ["Kusoma", "Kuandika", "Mazungumzo", "Sarufi"]
-      },
-      {
-        id: 4,
-        name: "Science",
-        code: "SCI6",
-        category: "core", 
-        strands: ["Plants", "Animals", "Matter", "Energy"]
-      }
-    ];
+    // Return subjects for the specific tenant
+    return this.subjects.filter(subject => 
+      !subject.tenantId || subject.tenantId === tenantId
+    );
   }
 
   async getAssessmentBook(studentId: number, subjectId: number, term: string, academicYear: string, tenantId: string): Promise<any> {
@@ -1006,7 +1011,9 @@ export class DatabaseStorage implements IStorage {
 
   async createSubject(data: any): Promise<any> {
     console.log("Creating subject:", data);
-    return { ...data, id: Date.now() };
+    const newSubject = { ...data, id: Date.now() };
+    this.subjects.push(newSubject);
+    return newSubject;
   }
 }
 

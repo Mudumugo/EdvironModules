@@ -419,7 +419,25 @@ export default function AssessmentBook() {
               <h2 className="text-2xl font-bold">Subject & Strand Management</h2>
               <p className="text-gray-600">Manage CBC subjects and their learning strands</p>
             </div>
-            <Button onClick={() => setActiveTab('add-subject')} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => {
+              // Show custom subject form
+              const subjectName = prompt('Enter subject name:');
+              const subjectCode = prompt('Enter subject code:');
+              const category = prompt('Enter category (Core/Religious/Practical/Co-curricular):');
+              
+              if (subjectName && subjectCode && category) {
+                fetch('/api/assessment-book/subjects', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    name: subjectName,
+                    code: subjectCode,
+                    category: category.toLowerCase(),
+                    strands: []
+                  })
+                }).then(() => window.location.reload()).catch(console.error);
+              }
+            }} className="bg-blue-600 hover:bg-blue-700">
               <Plus className="h-4 w-4 mr-2" />
               Add Subject
             </Button>
@@ -450,9 +468,20 @@ export default function AssessmentBook() {
                     key={subject.code}
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      // Add subject logic here
-                      console.log('Adding subject:', subject.name);
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/assessment-book/subjects', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(subject)
+                        });
+                        if (response.ok) {
+                          // Refresh subjects list
+                          window.location.reload();
+                        }
+                      } catch (error) {
+                        console.error('Error adding subject:', error);
+                      }
                     }}
                     disabled={subjects.some((s: Subject) => s.code === subject.code)}
                   >
