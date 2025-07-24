@@ -309,7 +309,12 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users);
   }
 
-  async getUsersByRole(role: string): Promise<User[]> {
+  async getUsersByRole(role: string, tenantId?: string): Promise<User[]> {
+    if (tenantId) {
+      return await db.select().from(users).where(
+        eq(users.role, role)
+      ).where(eq(users.tenantId, tenantId));
+    }
     return await db.select().from(users).where(eq(users.role, role));
   }
 
@@ -322,7 +327,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUsersByTenant(tenantId: string): Promise<User[]> {
-    return await db.select().from(users).where(eq(users.tenantId, tenantId));
+    console.log(`[STORAGE] Getting users for tenant: ${tenantId}`);
+    const result = await db.select().from(users).where(eq(users.tenantId, tenantId));
+    console.log(`[STORAGE] Found ${result.length} users for tenant ${tenantId}`);
+    return result;
   }
 
   async updateUserGradeLevel(userId: string, gradeLevel: string): Promise<User> {

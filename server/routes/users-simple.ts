@@ -4,10 +4,53 @@ import { isAuthenticated } from "../replitAuth";
 import { USER_ROLES } from "@shared/schema";
 
 export function registerUserRoutes(app: Express) {
+  // Create new user
+  app.post('/api/users', async (req: any, res) => {
+    try {
+      const { firstName, lastName, email, role, gradeLevel, department } = req.body;
+      
+      // Generate unique user ID
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+      
+      const userData = {
+        id: userId,
+        firstName,
+        lastName,
+        email,
+        role: role || USER_ROLES.STUDENT_ELEMENTARY,
+        gradeLevel,
+        department,
+        tenantId: 'default', // Use 'default' tenant
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      console.log('[USER CREATION] Creating user:', userData);
+      const newUser = await storage.upsertUser(userData);
+      console.log('[USER CREATION] User created successfully:', newUser.id);
+      
+      res.json({
+        id: newUser.id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        role: newUser.role,
+        gradeLevel: newUser.gradeLevel,
+        department: newUser.department,
+        isActive: newUser.isActive,
+        createdAt: newUser.createdAt
+      });
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to create user", error: error.message });
+    }
+  });
+
   // Get all users (temporarily bypass auth for testing)
   app.get('/api/users', async (req: any, res) => {
     try {
-      const users = await storage.getUsersByTenant('demo-school');
+      const users = await storage.getUsersByTenant('default'); // Use 'default' tenant
       
       const publicUsers = users.map(user => ({
         id: user.id,
