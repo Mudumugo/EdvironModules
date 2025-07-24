@@ -234,7 +234,7 @@ const CBEHub = memo(function CBEHub() {
         totalModules: 20
       },
       {
-        id: "assessment-book",
+        id: "digital-assessment-book",
         icon: <BookUser className="h-6 w-6 text-orange-600" />,
         title: "Digital Assessment Book",
         description: "Create and manage competency-based assessment reports for students with CBC grading standards",
@@ -602,7 +602,7 @@ const CBEHub = memo(function CBEHub() {
                       variant="outline" 
                       className="w-full"
                       onClick={() => {
-                        if (card.id === "assessment-book") {
+                        if (card.id === "digital-assessment-book") {
                           setShowAssessmentBook(true);
                         }
                       }}
