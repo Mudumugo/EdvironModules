@@ -73,6 +73,19 @@ export interface IStorage {
   getSecurityCameras(): Promise<any[]>;
   createSecurityCamera(camera: any): Promise<any>;
   getSecurityEvents(filters?: any): Promise<any[]>;
+
+  // Assessment Book operations
+  getStudentsByTeacher(teacherId: string, filters?: { grade?: string; className?: string }): Promise<any[]>;
+  getSubjectsByGrade(gradeLevel: string, tenantId: string): Promise<any[]>;
+  getAssessmentBook(studentId: number, subjectId: number, term: string, academicYear: string, tenantId: string): Promise<any>;
+  createOrUpdateAssessmentBook(data: any): Promise<any>;
+  createOrUpdateAssessmentEntry(data: any): Promise<any>;
+  getBehaviorReport(studentId: number, term: string, academicYear: string, tenantId: string): Promise<any>;
+  createOrUpdateBehaviorReport(data: any): Promise<any>;
+  getSubjectStrands(subjectId: number): Promise<any[]>;
+  createSubjectStrand(data: any): Promise<any>;
+  getStudentAssessmentSummary(studentId: number, term: string, academicYear: string, tenantId: string): Promise<any>;
+  createSubject(data: any): Promise<any>;
   createSecurityEvent(event: any): Promise<any>;
   updateSecurityEvent(id: string, updates: any): Promise<any>;
   getVisitorRegistrations(filters?: any): Promise<any[]>;
@@ -830,6 +843,170 @@ export class DatabaseStorage implements IStorage {
       .where(eq(demoRequests.id, id))
       .returning();
     return demo;
+  }
+
+  // Assessment Book Implementation (Mock for now - will integrate with real DB later)
+  async getStudentsByTeacher(teacherId: string, filters?: { grade?: string; className?: string }): Promise<any[]> {
+    // Mock data - in production would query students table based on teacher assignments
+    return [
+      {
+        id: 1,
+        firstName: "Jane",
+        lastName: "Muthoni",
+        admissionNumber: "ADM001",
+        upi: "12345678",
+        gradeLevel: "Grade 6",
+        className: "6A",
+        profileImageUrl: "https://via.placeholder.com/150",
+        age: 12
+      },
+      {
+        id: 2,
+        firstName: "John",
+        lastName: "Kamau",
+        admissionNumber: "ADM002", 
+        upi: "12345679",
+        gradeLevel: "Grade 6",
+        className: "6A",
+        profileImageUrl: "https://via.placeholder.com/150",
+        age: 12
+      }
+    ];
+  }
+
+  async getSubjectsByGrade(gradeLevel: string, tenantId: string): Promise<any[]> {
+    // Mock data - would query subjects table in production
+    return [
+      {
+        id: 1,
+        name: "Mathematics",
+        code: "MATH6",
+        category: "core",
+        strands: ["Numbers", "Algebra", "Geometry", "Statistics"]
+      },
+      {
+        id: 2,
+        name: "English",
+        code: "ENG6", 
+        category: "core",
+        strands: ["Reading", "Writing", "Speaking", "Listening"]
+      },
+      {
+        id: 3,
+        name: "Kiswahili",
+        code: "KIS6",
+        category: "core",
+        strands: ["Kusoma", "Kuandika", "Mazungumzo", "Sarufi"]
+      },
+      {
+        id: 4,
+        name: "Science",
+        code: "SCI6",
+        category: "core", 
+        strands: ["Plants", "Animals", "Matter", "Energy"]
+      }
+    ];
+  }
+
+  async getAssessmentBook(studentId: number, subjectId: number, term: string, academicYear: string, tenantId: string): Promise<any> {
+    // Mock data - would query assessment_books and assessment_entries tables
+    return {
+      id: `book_${studentId}_${subjectId}_${term}`,
+      studentId,
+      subjectId,
+      term,
+      academicYear,
+      entries: [
+        {
+          id: "entry1",
+          strand: "Numbers",
+          subStrand: "Whole Numbers",
+          performanceLevel: "ME",
+          score: 3,
+          teacherComment: "Good understanding of basic concepts"
+        },
+        {
+          id: "entry2", 
+          strand: "Numbers",
+          subStrand: "Fractions",
+          performanceLevel: "AE",
+          score: 2,
+          teacherComment: "Needs more practice with fractions"
+        }
+      ]
+    };
+  }
+
+  async createOrUpdateAssessmentBook(data: any): Promise<any> {
+    console.log("Creating/updating assessment book:", data);
+    return { ...data, id: `book_${Date.now()}` };
+  }
+
+  async createOrUpdateAssessmentEntry(data: any): Promise<any> {
+    console.log("Creating/updating assessment entry:", data);
+    return { ...data, id: `entry_${Date.now()}` };
+  }
+
+  async getBehaviorReport(studentId: number, term: string, academicYear: string, tenantId: string): Promise<any> {
+    return {
+      id: `behavior_${studentId}_${term}`,
+      studentId,
+      term,
+      academicYear,
+      respectForSelf: true,
+      respectForOthers: true,
+      respectForProperty: false,
+      respectForEnvironment: true,
+      teacherComments: "Shows good behavior overall, needs improvement in respecting property."
+    };
+  }
+
+  async createOrUpdateBehaviorReport(data: any): Promise<any> {
+    console.log("Creating/updating behavior report:", data);
+    return { ...data, id: `behavior_${Date.now()}` };
+  }
+
+  async getSubjectStrands(subjectId: number): Promise<any[]> {
+    // Mock strands based on subject
+    const strandsBySubject: { [key: number]: any[] } = {
+      1: [ // Mathematics
+        { id: "strand1", name: "Numbers", description: "Whole numbers, fractions, decimals" },
+        { id: "strand2", name: "Algebra", description: "Basic algebraic concepts" },
+        { id: "strand3", name: "Geometry", description: "Shapes and spatial reasoning" },
+        { id: "strand4", name: "Statistics", description: "Data collection and analysis" }
+      ],
+      2: [ // English  
+        { id: "strand5", name: "Reading", description: "Comprehension and vocabulary" },
+        { id: "strand6", name: "Writing", description: "Creative and formal writing" },
+        { id: "strand7", name: "Speaking", description: "Oral communication" },
+        { id: "strand8", name: "Listening", description: "Comprehension skills" }
+      ]
+    };
+    return strandsBySubject[subjectId] || [];
+  }
+
+  async createSubjectStrand(data: any): Promise<any> {
+    console.log("Creating subject strand:", data);
+    return { ...data, id: `strand_${Date.now()}` };
+  }
+
+  async getStudentAssessmentSummary(studentId: number, term: string, academicYear: string, tenantId: string): Promise<any> {
+    return {
+      studentId,
+      term,
+      academicYear,
+      subjects: [
+        { subjectName: "Mathematics", term1: "ME", term2: "EE", term3: "ME" },
+        { subjectName: "English", term1: "ME", term2: "ME", term3: "EE" },
+        { subjectName: "Kiswahili", term1: "EE", term2: "EE", term3: "EE" },
+        { subjectName: "Science", term1: "AE", term2: "ME", term3: "ME" }
+      ]
+    };
+  }
+
+  async createSubject(data: any): Promise<any> {
+    console.log("Creating subject:", data);
+    return { ...data, id: Date.now() };
   }
 }
 

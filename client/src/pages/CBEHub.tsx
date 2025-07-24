@@ -43,10 +43,12 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
+import AssessmentBook from "@/components/AssessmentBook";
 
 const CBEHub = memo(function CBEHub() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(user?.role || "parent");
+  const [showAssessmentBook, setShowAssessmentBook] = useState(false);
 
   const competencies = useMemo(() => [
     {
@@ -280,6 +282,17 @@ const CBEHub = memo(function CBEHub() {
         progress: 30,
         completedModules: 6,
         totalModules: 20
+      },
+      {
+        id: "assessment-book",
+        icon: <FileText className="h-6 w-6 text-green-600" />,
+        title: "Digital Assessment Book",
+        description: "Create and manage competency-based assessment reports for students",
+        actionText: "Open Report Book",
+        badge: "New",
+        progress: 85,
+        completedModules: 42,
+        totalModules: 50
       }
     ],
     student: [
@@ -383,6 +396,28 @@ const CBEHub = memo(function CBEHub() {
         return <Badge variant="outline">Not Started</Badge>;
     }
   }, []);
+
+  // Show Assessment Book if selected
+  if (showAssessmentBook) {
+    return (
+      <TooltipProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="container mx-auto p-4 sm:p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAssessmentBook(false)}
+                className="mb-4"
+              >
+                ← Back to CBC Hub
+              </Button>
+            </div>
+            <AssessmentBook />
+          </div>
+        </div>
+      </TooltipProvider>
+    );
+  }
 
   return (
     <TooltipProvider>
@@ -566,7 +601,15 @@ const CBEHub = memo(function CBEHub() {
                       </p>
                     </div>
                     
-                    <Button variant="outline" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        if (card.id === "assessment-book") {
+                          setShowAssessmentBook(true);
+                        }
+                      }}
+                    >
                       {card.actionText}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>

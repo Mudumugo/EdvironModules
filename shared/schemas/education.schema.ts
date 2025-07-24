@@ -13,6 +13,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 import { users } from "./user.schema";
 
 // Institution management
@@ -349,6 +350,63 @@ export const libraryRecommendations = pgTable("library_recommendations", {
   tenantId: text("tenant_id").notNull(),
 });
 
+// Assessment Book Tables for Digital Report Book
+export const assessmentBooks = pgTable("assessment_books", {
+  id: varchar("id").primaryKey().notNull(),
+  studentId: integer("student_id").references(() => students.id).notNull(),
+  subjectId: integer("subject_id").references(() => subjects.id).notNull(),
+  teacherId: varchar("teacher_id").references(() => users.id).notNull(),
+  term: varchar("term").notNull(), // term1, term2, term3
+  academicYear: varchar("academic_year").notNull(),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  unique().on(table.studentId, table.subjectId, table.term, table.academicYear)
+]);
+
+export const assessmentEntries = pgTable("assessment_entries", {
+  id: varchar("id").primaryKey().notNull(),
+  assessmentBookId: varchar("assessment_book_id").references(() => assessmentBooks.id).notNull(),
+  strand: varchar("strand").notNull(),
+  subStrand: varchar("sub_strand"),
+  performanceLevel: varchar("performance_level").notNull(), // EE, ME, AE, BE
+  score: integer("score"), // 4, 3, 2, 1
+  teacherComment: text("teacher_comment"),
+  assessmentDate: timestamp("assessment_date").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const behaviorReports = pgTable("behavior_reports", {
+  id: varchar("id").primaryKey().notNull(),
+  studentId: integer("student_id").references(() => students.id).notNull(),
+  teacherId: varchar("teacher_id").references(() => users.id).notNull(),
+  term: varchar("term").notNull(),
+  academicYear: varchar("academic_year").notNull(),
+  respectForSelf: boolean("respect_for_self").default(false),
+  respectForOthers: boolean("respect_for_others").default(false),
+  respectForProperty: boolean("respect_for_property").default(false),
+  respectForEnvironment: boolean("respect_for_environment").default(false),
+  teacherComments: text("teacher_comments"),
+  tenantId: varchar("tenant_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  unique().on(table.studentId, table.term, table.academicYear)
+]);
+
+export const subjectStrands = pgTable("subject_strands", {
+  id: varchar("id").primaryKey().notNull(),
+  subjectId: integer("subject_id").references(() => subjects.id).notNull(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  displayOrder: integer("display_order").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Export types
 export type InsertInstitution = typeof institutions.$inferInsert;
 export type Institution = typeof institutions.$inferSelect;
@@ -385,6 +443,16 @@ export type LibraryAnalytics = typeof libraryAnalytics.$inferSelect;
 export type InsertLibraryRecommendation = typeof libraryRecommendations.$inferInsert;
 export type LibraryRecommendation = typeof libraryRecommendations.$inferSelect;
 
+// Assessment Book Types
+export type InsertAssessmentBook = typeof assessmentBooks.$inferInsert;
+export type AssessmentBook = typeof assessmentBooks.$inferSelect;
+export type InsertAssessmentEntry = typeof assessmentEntries.$inferInsert;
+export type AssessmentEntry = typeof assessmentEntries.$inferSelect;
+export type InsertBehaviorReport = typeof behaviorReports.$inferInsert;
+export type BehaviorReport = typeof behaviorReports.$inferSelect;
+export type InsertSubjectStrand = typeof subjectStrands.$inferInsert;
+export type SubjectStrand = typeof subjectStrands.$inferSelect;
+
 // Insert schemas for validation
 export const insertStudentSchema = createInsertSchema(students);
 export const insertTeacherSchema = createInsertSchema(teachers);
@@ -413,6 +481,24 @@ export const insertLibraryRecommendationSchema = createInsertSchema(libraryRecom
   accepted: true,
   dismissedAt: true,
   createdAt: true,
+});
+
+// Assessment Book Insert Schemas
+export const insertAssessmentBookSchema = createInsertSchema(assessmentBooks).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertAssessmentEntrySchema = createInsertSchema(assessmentEntries).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertBehaviorReportSchema = createInsertSchema(behaviorReports).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertSubjectStrandSchema = createInsertSchema(subjectStrands).omit({
+  createdAt: true,
+  updatedAt: true,
 });
 
 // Parent-Child relationship types

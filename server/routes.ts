@@ -28,6 +28,7 @@ import { registerLiveSessionRoutes } from "./routes/liveSessions";
 import { registerCalendarRoutes } from "./routes/calendar";
 import { registerAssignmentRoutes } from "./routes/assignments";
 import { registerLibraryRoutes } from "./routes/library";
+import { setupAssessmentBookRoutes } from "./routes/assessmentBook";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication first
@@ -58,6 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerNotebookModuleRoutes(app);
   registerAuthoringRoutes(app);
   registerCalendarRoutes(app);
+  setupAssessmentBookRoutes(app);
   
   // Import OneNote-inspired notebook routes
   const { registerNotebookRoutes } = await import('./routes/notebook/notebooks');
