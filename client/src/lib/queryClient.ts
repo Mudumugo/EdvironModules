@@ -1,11 +1,6 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-// Global state to track logout
-let isGlobalLogout = false;
-
-export const setGlobalLogout = (value: boolean) => {
-  isGlobalLogout = value;
-};
+// Simplified query client without aggressive logout blocking
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -19,11 +14,6 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Block API requests during logout
-  if (isGlobalLogout) {
-    throw new Error("Request blocked during logout");
-  }
-
   const res = await fetch(url, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
@@ -41,11 +31,6 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    // Block requests during logout
-    if (isGlobalLogout) {
-      return null;
-    }
-
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
     });
@@ -64,14 +49,9 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes instead of infinity for better performance
+      staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
-      retry: (failureCount, error) => {
-        // Never retry during logout
-        if (isGlobalLogout) return false;
-        return false;
-      },
-      enabled: () => !isGlobalLogout, // Globally disable all queries during logout
+      retry: false,
     },
     mutations: {
       retry: false,
