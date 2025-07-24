@@ -1,11 +1,13 @@
 // Authentication utilities
 import { QueryClient } from "@tanstack/react-query";
 import { setLoggingOut } from "@/hooks/useAuth";
+import { setGlobalLogout } from "@/lib/queryClient";
 
 export const logoutUser = async (queryClient: QueryClient) => {
   try {
-    // Set global logout state to prevent all API calls
+    // Set global logout states to prevent all API calls
     setLoggingOut(true);
+    setGlobalLogout(true);
     
     // Cancel and clear all queries immediately
     queryClient.cancelQueries();

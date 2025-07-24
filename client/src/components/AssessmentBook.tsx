@@ -94,6 +94,7 @@ export default function AssessmentBook() {
   const { data: students = [] } = useQuery<Student[]>({
     queryKey: ["/api/assessment-book/students"],
     enabled: user?.role === "teacher",
+    retry: false,
   });
 
   // Fetch subjects
@@ -104,6 +105,8 @@ export default function AssessmentBook() {
       if (!response.ok) throw new Error('Failed to fetch subjects');
       return response.json();
     },
+    enabled: !!user,
+    retry: false,
   });
 
   // Fetch assessment book data

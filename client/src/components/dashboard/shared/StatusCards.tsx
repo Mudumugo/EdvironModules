@@ -266,6 +266,7 @@ export function NextEventCard() {
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/calendar/upcoming'],
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const nextEvent = events[0];
@@ -349,6 +350,7 @@ export function LibraryRecommendationsCard() {
   const { data: recommendations = [], isLoading } = useQuery<Resource[]>({
     queryKey: ['/api/library/recommendations'],
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const getResourceIcon = (type: string) => {

@@ -1,5 +1,12 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// Global state to track logout
+let isGlobalLogout = false;
+
+export const setGlobalLogout = (value: boolean) => {
+  isGlobalLogout = value;
+};
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -12,6 +19,11 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  // Block API requests during logout
+  if (isGlobalLogout) {
+    throw new Error("Request blocked during logout");
+  }
+
   const res = await fetch(url, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
@@ -29,6 +41,11 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Block requests during logout
+    if (isGlobalLogout) {
+      return null;
+    }
+
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
     });
