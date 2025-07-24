@@ -30,6 +30,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import ReportCard from "./ReportCard";
+import SubjectManager from "./SubjectManager";
 
 interface Student {
   id: number;
@@ -410,79 +411,7 @@ export default function AssessmentBook() {
 
         {/* Subjects Tab */}
         <TabsContent value="subjects" className="space-y-4">
-          {selectedSubject && assessmentBook && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  {selectedSubject.name} Activities - {selectedTerm.toUpperCase()}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Strand/Substrand</TableHead>
-                      <TableHead>Performance Level</TableHead>
-                      <TableHead>Teacher Comment</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {assessmentBook.entries?.map((entry: AssessmentEntry) => (
-                      <TableRow key={entry.id}>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">{entry.strand}</div>
-                            {entry.subStrand && (
-                              <div className="text-sm text-gray-500">{entry.subStrand}</div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Select defaultValue={entry.performanceLevel}>
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {performanceLevels.map((level) => (
-                                <SelectItem key={level.value} value={level.value}>
-                                  {level.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            defaultValue={entry.teacherComment}
-                            placeholder="Enter comment..."
-                            className="w-full"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Button 
-                            size="sm" 
-                            onClick={() => {
-                              saveAssessmentEntry.mutate({
-                                assessmentBookId: assessmentBook.id,
-                                strand: entry.strand,
-                                subStrand: entry.subStrand,
-                                performanceLevel: entry.performanceLevel,
-                                teacherComment: entry.teacherComment
-                              });
-                            }}
-                          >
-                            <Save className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          )}
+          <SubjectManager />
         </TabsContent>
 
         {/* Behavior Tab */}
