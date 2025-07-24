@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
-// import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility
+// // import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility // Disabled for Replit webview compatibility
 import { SIDEBAR_COOKIE_NAME, SIDEBAR_COOKIE_MAX_AGE } from "./SidebarConstants"
 
 export type SidebarContextProps = {

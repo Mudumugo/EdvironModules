@@ -1,32 +1,15 @@
-// Dummy tooltip components for Replit webview compatibility
-// These components prevent React hook conflicts while maintaining component interface
+// Simple non-hook tooltip components for Replit webview compatibility
+// Completely eliminates React hook usage that causes conflicts in embedded browser
 
-import * as React from "react"
+// Simple wrapper component that avoids all React hooks
+const TooltipProvider = ({ children }: { children: React.ReactNode }) => children;
 
-// Simple wrapper that just renders children without any tooltip functionality
-const TooltipProvider = ({ children, ...props }: { children: React.ReactNode, [key: string]: any }) => {
-  return <>{children}</>;
+const Tooltip = ({ children }: { children: React.ReactNode }) => children;
+
+const TooltipTrigger = ({ children, asChild }: { children: React.ReactNode; asChild?: boolean }) => {
+  return asChild ? children : <span>{children}</span>;
 };
 
-const Tooltip = ({ children, ...props }: { children: React.ReactNode, [key: string]: any }) => {
-  return <>{children}</>;
-};
-
-const TooltipTrigger = React.forwardRef<
-  HTMLElement,
-  React.HTMLAttributes<HTMLElement> & { asChild?: boolean }
->(({ children, asChild, ...props }, ref) => {
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, { ...props, ref } as any);
-  }
-  return <span {...props} ref={ref as any}>{children}</span>;
-});
-
-const TooltipContent = ({ children, ...props }: { children: React.ReactNode, [key: string]: any }) => {
-  return null; // Don't render tooltip content
-};
-
-TooltipTrigger.displayName = "TooltipTrigger";
-TooltipContent.displayName = "TooltipContent";
+const TooltipContent = () => null;
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
