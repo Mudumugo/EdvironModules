@@ -46,7 +46,7 @@ async function fetchUserDirectly(): Promise<User | null> {
   }
 }
 
-// Webview-compatible logout with forced state clearing and redirect
+// Webview-compatible logout with server-guided redirect
 export async function logoutDirectly(): Promise<boolean> {
   try {
     console.log('[AUTH] Calling logout API...');
@@ -61,7 +61,8 @@ export async function logoutDirectly(): Promise<boolean> {
     console.log('[AUTH] Logout API response status:', response.status);
     
     if (response.ok) {
-      console.log('[AUTH] Logout API successful, forcing state clear...');
+      const data = await response.json();
+      console.log('[AUTH] Logout response data:', data);
       
       // Aggressively clear global state
       globalAuthState = { user: null, isAuthenticated: false };
@@ -70,32 +71,38 @@ export async function logoutDirectly(): Promise<boolean> {
       try {
         localStorage.clear();
         sessionStorage.clear();
-        console.log('[AUTH] Cleared localStorage and sessionStorage');
+        console.log('[AUTH] Cleared all storage');
       } catch (e) {
         console.log('[AUTH] Storage clear failed:', e);
       }
       
-      // Force immediate redirect without any delays - webview needs this
-      console.log('[AUTH] Forcing immediate redirect...');
-      
-      // Use the most aggressive redirect possible
-      window.location.assign('/');
-      
-      // Backup redirect methods
-      setTimeout(() => {
-        console.log('[AUTH] Backup redirect 1...');
-        window.location.href = '/';
-      }, 50);
-      
-      setTimeout(() => {
-        console.log('[AUTH] Backup redirect 2...');
-        window.location.replace('/');
-      }, 100);
-      
-      setTimeout(() => {
-        console.log('[AUTH] Emergency reload...');
-        window.location.reload();
-      }, 200);
+      // Check if server wants us to redirect
+      if (data.redirect || data.forceReload) {
+        console.log('[AUTH] Server instructed redirect to:', data.redirect);
+        
+        // Multiple aggressive redirect strategies
+        try {
+          // Strategy 1: Direct assignment (most reliable)
+          console.log('[AUTH] Using window.location.assign...');
+          window.location.assign(data.redirect || '/');
+        } catch (e1) {
+          try {
+            // Strategy 2: href assignment
+            console.log('[AUTH] Fallback to window.location.href...');
+            window.location.href = data.redirect || '/';
+          } catch (e2) {
+            try {
+              // Strategy 3: replace
+              console.log('[AUTH] Fallback to window.location.replace...');
+              window.location.replace(data.redirect || '/');
+            } catch (e3) {
+              // Strategy 4: reload as last resort
+              console.log('[AUTH] Final fallback - page reload...');
+              window.location.reload();
+            }
+          }
+        }
+      }
       
       return true;
     }

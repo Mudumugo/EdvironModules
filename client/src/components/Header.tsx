@@ -45,31 +45,29 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
   const handleLogout = async () => {
-    console.log('[AUTH] Header logout button clicked');
-    try {
-      // Clear React Query cache immediately
-      console.log('[AUTH] Clearing React Query cache...');
-      queryClient.cancelQueries();
-      queryClient.clear();
-      
-      // Use webview-compatible direct logout
-      console.log('[AUTH] Calling logoutDirectly...');
-      const success = await logoutDirectly();
-      
-      if (success) {
-        console.log('[AUTH] Logout successful, redirect handled by logoutDirectly');
-        return;
-      }
-    } catch (error) {
-      console.error('[AUTH] Logout error:', error);
-    }
+    console.log('[AUTH] Simple logout - clearing cache and redirecting...');
     
-    // Emergency fallback: force redirect if everything fails
-    console.log('[AUTH] Emergency fallback redirect');
+    // Clear cache immediately
+    queryClient.clear();
+    
     try {
-      window.location.href = "/";
-    } catch (e) {
-      window.location.reload();
+      // Call logout API
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      console.log('[AUTH] Logout API response:', response.status);
+      
+      // Regardless of API response, force redirect immediately
+      console.log('[AUTH] Forcing immediate page redirect...');
+      window.location.href = '/';
+      
+    } catch (error) {
+      // Even if logout fails, redirect anyway
+      console.log('[AUTH] Logout failed, but redirecting anyway');
+      window.location.href = '/';
     }
   };
 

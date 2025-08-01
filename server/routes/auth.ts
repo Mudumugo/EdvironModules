@@ -261,9 +261,19 @@ export function registerAuthRoutes(app: Express) {
       
       res.clearCookie('connect.sid');
       res.clearCookie('edvirons.sid'); // Clear custom session cookie too
+      
+      // Add webview-specific headers to force redirect
+      res.header('X-Logout-Redirect', '/');
+      res.header('X-Force-Reload', 'true');
+      res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.header('Pragma', 'no-cache');
+      res.header('Expires', '0');
+      
       res.json({ 
         success: true,
-        message: 'Logged out successfully'
+        message: 'Logged out successfully',
+        redirect: '/',
+        forceReload: true
       });
     });
   });
