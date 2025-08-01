@@ -45,27 +45,32 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
   const handleLogout = async () => {
-    console.log('[AUTH] Starting logout...');
+    console.log('[AUTH] Header logout button clicked');
     try {
-      // Clear React Query cache
+      // Clear React Query cache immediately
+      console.log('[AUTH] Clearing React Query cache...');
       queryClient.cancelQueries();
       queryClient.clear();
       
       // Use webview-compatible direct logout
+      console.log('[AUTH] Calling logoutDirectly...');
       const success = await logoutDirectly();
-      console.log('[AUTH] Logout successful');
       
       if (success) {
-        // logoutDirectly already handles the redirect
+        console.log('[AUTH] Logout successful, redirect handled by logoutDirectly');
         return;
       }
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('[AUTH] Logout error:', error);
     }
     
-    // Fallback: force redirect if logout API fails
-    console.log('[AUTH] Logout fallback redirect');
-    window.location.href = "/";
+    // Emergency fallback: force redirect if everything fails
+    console.log('[AUTH] Emergency fallback redirect');
+    try {
+      window.location.href = "/";
+    } catch (e) {
+      window.location.reload();
+    }
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {

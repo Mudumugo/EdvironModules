@@ -46,9 +46,10 @@ async function fetchUserDirectly(): Promise<User | null> {
   }
 }
 
-// Webview-compatible logout
+// Webview-compatible logout with multiple redirect strategies
 export async function logoutDirectly(): Promise<boolean> {
   try {
+    console.log('[AUTH] Calling logout API...');
     const response = await fetch('/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
@@ -58,14 +59,40 @@ export async function logoutDirectly(): Promise<boolean> {
     });
     
     if (response.ok) {
+      console.log('[AUTH] Logout API successful, clearing state...');
       globalAuthState = { user: null, isAuthenticated: false };
-      // Force page refresh to clear all state
-      window.location.href = '/';
+      
+      // Multiple redirect strategies for webview compatibility
+      try {
+        // Strategy 1: Force immediate redirect
+        console.log('[AUTH] Attempting window.location.href redirect...');
+        window.location.href = '/';
+        
+        // Strategy 2: Fallback with replace (in case href doesn't work)
+        setTimeout(() => {
+          console.log('[AUTH] Fallback redirect with replace...');
+          window.location.replace('/');
+        }, 100);
+        
+        // Strategy 3: Reload fallback
+        setTimeout(() => {
+          console.log('[AUTH] Final fallback - page reload...');
+          window.location.reload();
+        }, 500);
+        
+      } catch (redirectError) {
+        console.error('[AUTH] Redirect error:', redirectError);
+        // Last resort: force reload
+        window.location.reload();
+      }
+      
       return true;
     }
+    
+    console.error('[AUTH] Logout API failed with status:', response.status);
     return false;
   } catch (error) {
-    console.error('Logout failed:', error);
+    console.error('[AUTH] Logout request failed:', error);
     return false;
   }
 }
