@@ -46,7 +46,7 @@ async function fetchUserDirectly(): Promise<User | null> {
   }
 }
 
-// Webview-compatible logout with multiple redirect strategies
+// Webview-compatible logout with forced state clearing and redirect
 export async function logoutDirectly(): Promise<boolean> {
   try {
     console.log('[AUTH] Calling logout API...');
@@ -58,33 +58,44 @@ export async function logoutDirectly(): Promise<boolean> {
       }
     });
     
+    console.log('[AUTH] Logout API response status:', response.status);
+    
     if (response.ok) {
-      console.log('[AUTH] Logout API successful, clearing state...');
+      console.log('[AUTH] Logout API successful, forcing state clear...');
+      
+      // Aggressively clear global state
       globalAuthState = { user: null, isAuthenticated: false };
       
-      // Multiple redirect strategies for webview compatibility
+      // Clear all possible storage
       try {
-        // Strategy 1: Force immediate redirect
-        console.log('[AUTH] Attempting window.location.href redirect...');
-        window.location.href = '/';
-        
-        // Strategy 2: Fallback with replace (in case href doesn't work)
-        setTimeout(() => {
-          console.log('[AUTH] Fallback redirect with replace...');
-          window.location.replace('/');
-        }, 100);
-        
-        // Strategy 3: Reload fallback
-        setTimeout(() => {
-          console.log('[AUTH] Final fallback - page reload...');
-          window.location.reload();
-        }, 500);
-        
-      } catch (redirectError) {
-        console.error('[AUTH] Redirect error:', redirectError);
-        // Last resort: force reload
-        window.location.reload();
+        localStorage.clear();
+        sessionStorage.clear();
+        console.log('[AUTH] Cleared localStorage and sessionStorage');
+      } catch (e) {
+        console.log('[AUTH] Storage clear failed:', e);
       }
+      
+      // Force immediate redirect without any delays - webview needs this
+      console.log('[AUTH] Forcing immediate redirect...');
+      
+      // Use the most aggressive redirect possible
+      window.location.assign('/');
+      
+      // Backup redirect methods
+      setTimeout(() => {
+        console.log('[AUTH] Backup redirect 1...');
+        window.location.href = '/';
+      }, 50);
+      
+      setTimeout(() => {
+        console.log('[AUTH] Backup redirect 2...');
+        window.location.replace('/');
+      }, 100);
+      
+      setTimeout(() => {
+        console.log('[AUTH] Emergency reload...');
+        window.location.reload();
+      }, 200);
       
       return true;
     }
@@ -93,6 +104,9 @@ export async function logoutDirectly(): Promise<boolean> {
     return false;
   } catch (error) {
     console.error('[AUTH] Logout request failed:', error);
+    // Even if API fails, clear state and redirect
+    globalAuthState = { user: null, isAuthenticated: false };
+    window.location.href = '/';
     return false;
   }
 }
@@ -105,7 +119,7 @@ export function useAuth() {
   const [authState, setAuthState] = useState(globalAuthState);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check authentication on mount
+  // Check authentication on mount and periodically
   useEffect(() => {
     let mounted = true;
     
@@ -120,15 +134,34 @@ export function useAuth() {
 
     checkAuth();
     
+    // Force recheck every 2 seconds to catch logout state changes
+    const interval = setInterval(() => {
+      if (mounted) {
+        checkAuth();
+      }
+    }, 2000);
+    
     return () => {
       mounted = false;
+      clearInterval(interval);
     };
   }, []);
 
-  // Sync with global state
+  // Sync with global state immediately
   useEffect(() => {
     setAuthState(globalAuthState);
-  }, [globalAuthState.isAuthenticated]);
+  }, [globalAuthState.isAuthenticated, globalAuthState.user]);
+
+  // Force logout redirect if no user and currently on authenticated route
+  useEffect(() => {
+    if (!isLoading && !authState.isAuthenticated && !authState.user) {
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/' && currentPath !== '/login' && currentPath !== '/signup') {
+        console.log('[AUTH] No auth detected, forcing redirect from:', currentPath);
+        window.location.href = '/';
+      }
+    }
+  }, [authState.isAuthenticated, authState.user, isLoading]);
 
   return {
     user: authState.user as User | null,
