@@ -37,14 +37,16 @@ export function getSession() {
   return session({
     secret: process.env.SESSION_SECRET || 'demo-session-secret-key',
     store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // Force session save for Replit webview compatibility
+    saveUninitialized: true, // Save uninitialized sessions
     rolling: false, // Don't reset session expiry on every request
+    name: 'edvirons.sid', // Custom session name for better tracking
     cookie: {
-      httpOnly: true,
+      httpOnly: false, // Allow JavaScript access for webview compatibility
       secure: false, // Set to false for development
       maxAge: sessionTtl,
-      sameSite: 'lax'
+      sameSite: 'none', // Required for iframe/webview environments
+      path: '/' // Explicit path for all routes
     },
   });
 }

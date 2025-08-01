@@ -195,13 +195,17 @@ export function registerAuthRoutes(app: Express) {
         (req.session as any).lastIP = req.ip;
         (req.session as any).lastActivity = currentTime;
         
-        // Force session save before responding
+        // Force session save before responding and add webview compatibility headers
         await new Promise<void>((resolve, reject) => {
           req.session.save((err) => {
             if (err) reject(err);
             else resolve();
           });
         });
+        
+        // Add webview compatibility headers
+        res.header('X-Frame-Options', 'SAMEORIGIN');
+        res.header('Access-Control-Allow-Credentials', 'true');
 
         // Log successful demo login (async to not block response)
         setImmediate(() => {
@@ -256,6 +260,7 @@ export function registerAuthRoutes(app: Express) {
       }
       
       res.clearCookie('connect.sid');
+      res.clearCookie('edvirons.sid'); // Clear custom session cookie too
       res.json({ 
         success: true,
         message: 'Logged out successfully'
