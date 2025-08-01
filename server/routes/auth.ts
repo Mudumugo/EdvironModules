@@ -109,6 +109,9 @@ console.log('[DEMO USERS] Initialized demo users:', Object.keys(DEMO_USERS));
 export function registerAuthRoutes(app: Express) {
   // Get current user endpoint with session validation
   app.get('/api/auth/user', (req: Request, res: Response) => {
+    // Debug session state (remove in production)
+    // console.log(`[DEBUG] Session check - sessionID: ${req.sessionID}, user in session: ${!!req.session?.user}, passport user: ${!!req.user}`);
+    
     if (!req.user && !req.session?.user) {
       return res.status(401).json({ 
         error: 'Not authenticated',
@@ -185,12 +188,20 @@ export function registerAuthRoutes(app: Express) {
           permissions: (user as any).permissions || []
         };
 
-        // Set session data efficiently
+        // Set session data efficiently and ensure it's saved
         const currentTime = Date.now();
         req.session.user = sessionUser;
         (req.session as any).loginTime = currentTime;
         (req.session as any).lastIP = req.ip;
         (req.session as any).lastActivity = currentTime;
+        
+        // Force session save before responding
+        await new Promise<void>((resolve, reject) => {
+          req.session.save((err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
 
         // Log successful demo login (async to not block response)
         setImmediate(() => {

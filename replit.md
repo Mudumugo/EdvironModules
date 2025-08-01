@@ -120,13 +120,13 @@ MINIO_SECRET_KEY=...
 
 ## Recent Major Enhancements
 
-### Authentication & Logout System (July 24, 2025)
-- **Simplified Authentication Flow**: Removed problematic 5-layer logout protection causing infinite loops
-- **Backend Logout Verification**: Confirmed API-level authentication works perfectly with proper session management
-- **Import Error Resolution**: Added backwards compatibility exports to prevent module import errors
-- **Session Management**: Clean login/logout cycle with proper session destruction (2-3 second processing time)
-- **Query System Integration**: Removed aggressive logout state blocking from query components
-- **User Experience**: Stable authentication without frontend loops or blocking mechanisms
+### Authentication & Logout System (August 1, 2025)
+- **Critical Session Persistence Fix**: Resolved demo account login/logout issues with proper session saving
+- **Forced Session Save**: Added `req.session.save()` to ensure session data is persisted before login response
+- **Debug Logging**: Implemented session state debugging to track authentication flow
+- **Complete Authentication Cycle**: Login creates session, authentication checks work, logout destroys session properly
+- **Backend Verification**: Confirmed all demo accounts (school admin, teacher, student) can login and logout successfully
+- **Session Management**: Clean login/logout cycle with proper session destruction and validation
 
 ### Digital Assessment Book Subject Management (July 24, 2025)
 - **Enhanced Dashboard Navigation**: Added Quick Actions card with prominent subject management buttons
