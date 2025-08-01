@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { logoutUser, redirectAfterLogout } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, logoutDirectly } from "@/hooks/useAuth";
 
 import { Logo } from "@/components/Logo";
 import { 
@@ -46,18 +45,27 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
   const handleLogout = async () => {
+    console.log('[AUTH] Starting logout...');
     try {
-      // Immediate actions before async logout
+      // Clear React Query cache
       queryClient.cancelQueries();
       queryClient.clear();
       
-      await logoutUser(queryClient);
+      // Use webview-compatible direct logout
+      const success = await logoutDirectly();
+      console.log('[AUTH] Logout successful');
+      
+      if (success) {
+        // logoutDirectly already handles the redirect
+        return;
+      }
     } catch (error) {
       console.error("Logout error:", error);
-    } finally {
-      // Always redirect regardless of logout API result - no delay
-      window.location.replace("/");
     }
+    
+    // Fallback: force redirect if logout API fails
+    console.log('[AUTH] Logout fallback redirect');
+    window.location.href = "/";
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {

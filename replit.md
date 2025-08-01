@@ -121,12 +121,13 @@ MINIO_SECRET_KEY=...
 ## Recent Major Enhancements
 
 ### Authentication & Logout System (August 1, 2025)
-- **Critical Session Persistence Fix**: Resolved demo account login/logout issues with proper session saving
-- **Forced Session Save**: Added `req.session.save()` to ensure session data is persisted before login response
-- **Debug Logging**: Implemented session state debugging to track authentication flow
-- **Complete Authentication Cycle**: Login creates session, authentication checks work, logout destroys session properly
-- **Backend Verification**: Confirmed all demo accounts (school admin, teacher, student) can login and logout successfully
-- **Session Management**: Clean login/logout cycle with proper session destruction and validation
+- **Webview-Compatible Authentication**: Complete rewrite of authentication hooks for Replit webview compatibility
+- **Direct Fetch Implementation**: Bypassed React Query for authentication to avoid iframe conflicts
+- **Global State Management**: Implemented webview-safe global authentication state with direct API calls
+- **Force Page Refresh on Logout**: Added `window.location.href = '/'` to ensure clean logout in webview environment
+- **Session Configuration**: Optimized session settings with `sameSite: 'none'` and `httpOnly: false` for webview
+- **Backend Verification**: All demo accounts tested with 200 status codes for login/logout API endpoints
+- **Header Component Update**: Modified logout button to use new `logoutDirectly()` function bypassing React Query issues
 
 ### Digital Assessment Book Subject Management (July 24, 2025)
 - **Enhanced Dashboard Navigation**: Added Quick Actions card with prominent subject management buttons
