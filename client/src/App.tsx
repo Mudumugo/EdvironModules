@@ -116,8 +116,8 @@ function Router() {
             <Route path="/about" component={About} />
             <Route path="/mobile" component={MobileLanding} />
             <Route>
-              {/* Show mobile landing on phone screens, new landing on desktop */}
-              {isMobile ? <MobileLanding /> : <NewLanding />}
+              {/* Always show NewLanding for all other routes when not authenticated */}
+              <NewLanding />
             </Route>
           </Switch>
         ) : (
