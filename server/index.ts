@@ -83,6 +83,9 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 
+// Serve static assets from attached_assets directory
+app.use('/attached_assets', express.static('attached_assets'));
+
 // Session configuration will be handled by setupAuth
 
 app.use((req, res, next) => {
