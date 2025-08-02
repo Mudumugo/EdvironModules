@@ -4,6 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { NewLanding } from "@/pages/NewLanding";
 import { CBEOverview } from "@/pages/CBEOverview";
+import Features from "@/pages/Features";
+import Solutions from "@/pages/Solutions";
+import About from "@/pages/About";
 import Login from "@/pages/Login";
 import InteractiveSignUp from "@/pages/InteractiveSignUp";
 
@@ -13,7 +16,10 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/signup" component={InteractiveSignUp} />
       <Route path="/demo" component={Login} />
+      <Route path="/features" component={Features} />
+      <Route path="/solutions" component={Solutions} />
       <Route path="/cbe-overview" component={CBEOverview} />
+      <Route path="/about" component={About} />
       <Route>
         <NewLanding />
       </Route>
