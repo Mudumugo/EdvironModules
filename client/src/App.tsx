@@ -103,14 +103,7 @@ function Router() {
     <Switch>
       {/* Show loading state while checking authentication for other routes */}
       <Route>
-        {isLoading ? (
-          <div className="min-h-screen flex items-center justify-center bg-white">
-            <div className="flex flex-col items-center gap-4">
-              <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
-              <p className="text-gray-600 text-sm">Loading EdVirons...</p>
-            </div>
-          </div>
-        ) : !isAuthenticated ? (
+        {!isAuthenticated ? (
           <Switch>
             <Route path="/login" component={Login} />
             <Route path="/signup" component={InteractiveSignUp} />

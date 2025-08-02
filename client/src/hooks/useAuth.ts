@@ -123,59 +123,28 @@ export const setLoggingOut = () => {};
 export const getIsLoggingOut = () => false;
 
 export function useAuth() {
-  const [authState, setAuthState] = useState(globalAuthState);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasInitialCheck, setHasInitialCheck] = useState(false);
+  const [authState, setAuthState] = useState<{ user: User | null; isAuthenticated: boolean }>({ user: null, isAuthenticated: false });
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Check authentication on mount and periodically
+  // Check authentication once on mount - no polling, no redirects
   useEffect(() => {
     let mounted = true;
     
     const checkAuth = async () => {
-      // Only show loading on initial check, not during polling
-      if (!hasInitialCheck) {
-        setIsLoading(true);
-      }
-      
+      setIsLoading(true);
       const user = await fetchUserDirectly();
       if (mounted) {
-        const newState = { user, isAuthenticated: !!user };
-        setAuthState(newState);
-        globalAuthState = newState; // Keep global state in sync
-        
-        if (!hasInitialCheck) {
-          setHasInitialCheck(true);
-          setIsLoading(false);
-        }
+        setAuthState({ user, isAuthenticated: !!user });
+        setIsLoading(false);
       }
     };
 
     checkAuth();
     
-    // COMPLETELY DISABLE ALL POLLING - Authentication only checked once on mount
-    // No intervals, no polling, no automatic checks
-    
     return () => {
       mounted = false;
-      // No cleanup needed - no intervals running
     };
   }, []);
-
-  // Sync with global state immediately
-  useEffect(() => {
-    setAuthState(globalAuthState);
-  }, [globalAuthState.isAuthenticated, globalAuthState.user]);
-
-  // Force logout redirect if no user and currently on authenticated route
-  useEffect(() => {
-    if (!isLoading && !authState.isAuthenticated && !authState.user) {
-      const currentPath = window.location.pathname;
-      if (currentPath !== '/' && currentPath !== '/login' && currentPath !== '/signup') {
-        console.log('[AUTH] No auth detected, forcing redirect from:', currentPath);
-        window.location.href = '/';
-      }
-    }
-  }, [authState.isAuthenticated, authState.user, isLoading]);
 
   return {
     user: authState.user as User | null,
