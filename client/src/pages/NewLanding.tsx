@@ -60,21 +60,12 @@ export function NewLanding() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link href="/about">
-                <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
-                  About
-                </span>
-              </Link>
-              <Link href="/features">
-                <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
-                  Features
-                </span>
-              </Link>
-              <Link href="/solutions">
-                <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
-                  Solutions
-                </span>
-              </Link>
+              <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                Complete Infrastructure Solution
+              </span>
+              <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                End-to-End Learning Support
+              </span>
               <Link href="/cbe-overview">
                 <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
                   CBC Overview
@@ -113,15 +104,8 @@ export function NewLanding() {
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-slate-700 py-4">
               <div className="flex flex-col space-y-2">
-                <Link href="/about">
-                  <span className="block px-3 py-2 text-gray-300 hover:text-orange-400 cursor-pointer">About</span>
-                </Link>
-                <Link href="/features">
-                  <span className="block px-3 py-2 text-gray-300 hover:text-orange-400 cursor-pointer">Features</span>
-                </Link>
-                <Link href="/solutions">
-                  <span className="block px-3 py-2 text-gray-300 hover:text-orange-400 cursor-pointer">Solutions</span>
-                </Link>
+                <span className="block px-3 py-2 text-gray-300 hover:text-orange-400 cursor-pointer">Complete Infrastructure</span>
+                <span className="block px-3 py-2 text-gray-300 hover:text-orange-400 cursor-pointer">Learning Support</span>
                 <Link href="/cbe-overview">
                   <span className="block px-3 py-2 text-gray-300 hover:text-orange-400 cursor-pointer">CBC Overview</span>
                 </Link>
