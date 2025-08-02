@@ -8,10 +8,10 @@ import { Landing } from "@/pages/Landing";
 import { NewLanding } from "@/pages/NewLanding";
 import { TestLanding } from "@/pages/TestLanding";
 import { MobileLanding } from "@/pages/MobileLanding";
-import { Solutions } from "@/pages/Solutions";
-import { CBEOverview } from "@/pages/CBEOverview";
-import { About } from "@/pages/About";
-import { Features } from "@/pages/Features";
+import Solutions from "@/pages/Solutions";
+import CbeOverview from "@/pages/CbeOverview";
+import About from "@/pages/About";
+import Features from "@/pages/Features";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import InteractiveSignUp from "@/pages/InteractiveSignUp";
@@ -30,7 +30,7 @@ function Router() {
       <Route path="/demo" component={Login} />
       <Route path="/features" component={Features} />
       <Route path="/solutions" component={Solutions} />
-      <Route path="/cbe-overview" component={CBEOverview} />
+      <Route path="/cbe-overview" component={CbeOverview} />
       <Route path="/about" component={About} />
       <Route path="/mobile" component={MobileLanding} />
       <Route>
