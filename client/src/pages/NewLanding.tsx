@@ -126,12 +126,13 @@ export function NewLanding() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
         {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url("/attached_assets/edvirons_logo_1754153234855.jpg")'
-          }}
-        ></div>
+        <div className="absolute inset-0">
+          <img 
+            src="/attached_assets/edvirons_logo_1754153234855.jpg" 
+            alt="EdVirons Educational Background" 
+            className="w-full h-full object-cover"
+          />
+        </div>
         
 
         
