@@ -133,9 +133,9 @@ export function NewLanding() {
           }}
         ></div>
         
-        {/* Enhanced Gradient Overlay for better text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-800/50 to-slate-900/70 z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/60 via-transparent to-slate-900/60 z-10"></div>
+        {/* Light Gradient Overlay for better text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-slate-800/20 to-slate-900/40 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/25 via-transparent to-slate-900/25 z-10"></div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
