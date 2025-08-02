@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdVirons Learning Ecosystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { opacity: 1; transition: opacity 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="min-h-screen bg-white fade-in">
+    <!-- Fixed Navigation Header -->
+    <nav class="fixed top-0 w-full bg-slate-900/95 backdrop-blur-md border-b border-slate-700 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center">
+                    <div class="flex items-center space-x-2 cursor-pointer">
+                        <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">E</span>
+                        </div>
+                        <span class="text-xl font-semibold text-white">EdVirons</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <span class="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                        Complete Infrastructure Solution
+                    </span>
+                    <span class="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                        End-to-End Learning Support
+                    </span>
+                    <span class="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                        Computer Lab Transformation
+                    </span>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium transition-colors">
+                        Get Started for Institutions
+                    </button>
+                    <button class="border border-gray-500 text-gray-300 hover:bg-gray-800 px-6 py-2 rounded-md font-medium transition-colors">
+                        Try Free Parent Mode
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
+        <!-- Background Image -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')"></div>
+        
+        <!-- Enhanced Gradient Overlay for better text visibility -->
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-800/60 to-slate-900/80 z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/70 via-transparent to-slate-900/70 z-10"></div>
+        
+        <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                    EdVirons Learning Ecosystem
+                </h1>
+                <h2 class="text-xl md:text-2xl text-orange-400 font-semibold mb-8">
+                    A Complete Learning Ecosystem: Infrastructure, Apps, Security, Content, Data & OS Licensing
+                </h2>
+                <p class="text-lg md:text-xl text-gray-200 mb-12 max-w-3xl mx-auto">
+                    Complete learning ecosystem designed for African learning institutions—aligned to CBE & IGCSE.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                    <button class="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg rounded-md font-medium transition-colors">
+                        Get Started for Institutions
+                    </button>
+                    <button class="border border-gray-400 text-gray-200 hover:bg-gray-800 px-8 py-4 text-lg rounded-md font-medium transition-colors">
+                        ▶ Try Free Parent Mode
+                    </button>
+                </div>
+
+                <!-- Feature Cards Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-6xl mx-auto">
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-center p-4">
+                        <div class="flex flex-col items-center">
+                            <div class="h-8 w-8 text-orange-400 mb-2">🖥️</div>
+                            <h3 class="font-semibold text-white text-sm">Infrastructure</h3>
+                            <p class="text-xs text-gray-300 mt-1">Offline-capable, low-bandwidth environments.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-center p-4">
+                        <div class="flex flex-col items-center">
+                            <div class="h-8 w-8 text-orange-400 mb-2">💻</div>
+                            <h3 class="font-semibold text-white text-sm">Applications</h3>
+                            <p class="text-xs text-gray-300 mt-1">Integrated suite of educational applications.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-center p-4">
+                        <div class="flex flex-col items-center">
+                            <div class="h-8 w-8 text-orange-400 mb-2">🔒</div>
+                            <h3 class="font-semibold text-white text-sm">Security</h3>
+                            <p class="text-xs text-gray-300 mt-1">Enterprise-grade GDPR-compliant security.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-center p-4">
+                        <div class="flex flex-col items-center">
+                            <div class="h-8 w-8 text-orange-400 mb-2">📊</div>
+                            <h3 class="font-semibold text-white text-sm">Data & Analytics</h3>
+                            <p class="text-xs text-gray-300 mt-1">Real-time insights and learning optimization.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-center p-4">
+                        <div class="flex flex-col items-center">
+                            <div class="h-8 w-8 text-orange-400 mb-2">🎧</div>
+                            <h3 class="font-semibold text-white text-sm">Support</h3>
+                            <p class="text-xs text-gray-300 mt-1">24/7 technical support and training.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success message -->
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded fixed bottom-4 right-4 z-50">
+        ✓ EdVirons Landing Page Successfully Loaded with Enhanced Gradient!
+    </div>
+</body>
+</html>
