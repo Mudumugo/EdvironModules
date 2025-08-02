@@ -152,15 +152,12 @@ export function useAuth() {
 
     checkAuth();
     
-    // No automatic polling - only check auth once on mount
-    // For logout detection, we'll use a different strategy
-    let interval: NodeJS.Timeout | null = null;
+    // COMPLETELY DISABLE ALL POLLING - Authentication only checked once on mount
+    // No intervals, no polling, no automatic checks
     
     return () => {
       mounted = false;
-      if (interval) {
-        clearInterval(interval);
-      }
+      // No cleanup needed - no intervals running
     };
   }, []);
 
