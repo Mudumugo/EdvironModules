@@ -46,8 +46,12 @@ export function NewLanding() {
             <div className="flex items-center">
               <Link href="/">
                 <div className="flex items-center space-x-2 cursor-pointer">
-                  <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">E</span>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <img 
+                      src="/attached_assets/edv-main-logo_1754150677721.png" 
+                      alt="EdVirons Logo" 
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                   <span className="text-xl font-semibold text-white">EdVirons</span>
                 </div>
@@ -121,20 +125,110 @@ export function NewLanding() {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")'
-          }}
-        ></div>
+        {/* Learning Institutions Carousel Background */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-full max-w-6xl mx-auto px-4">
+              {/* Institutions Carousel */}
+              <div className="relative">
+                <div className="animate-scroll-institutions flex space-x-12 opacity-10">
+                  {/* First row of institutions */}
+                  <div className="flex space-x-12 min-w-max">
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">BS</span>
+                      </div>
+                      <p className="text-white text-sm">Brookhouse School</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">NP</span>
+                      </div>
+                      <p className="text-white text-sm">Nova Pioneer</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">AKA</span>
+                      </div>
+                      <p className="text-white text-sm">Aga Khan Academy</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">HI</span>
+                      </div>
+                      <p className="text-white text-sm">Hillcrest International</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">SMS</span>
+                      </div>
+                      <p className="text-white text-sm">St. Mary's School</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">ISK</span>
+                      </div>
+                      <p className="text-white text-sm">International School Kenya</p>
+                    </div>
+                  </div>
+                  {/* Duplicate for seamless loop */}
+                  <div className="flex space-x-12 min-w-max">
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">BS</span>
+                      </div>
+                      <p className="text-white text-sm">Brookhouse School</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">NP</span>
+                      </div>
+                      <p className="text-white text-sm">Nova Pioneer</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">AKA</span>
+                      </div>
+                      <p className="text-white text-sm">Aga Khan Academy</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">HI</span>
+                      </div>
+                      <p className="text-white text-sm">Hillcrest International</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">SMS</span>
+                      </div>
+                      <p className="text-white text-sm">St. Mary's School</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-gray-600 font-bold text-lg">ISK</span>
+                      </div>
+                      <p className="text-white text-sm">International School Kenya</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         {/* Enhanced Gradient Overlay for better text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-800/60 to-slate-900/80 z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/70 via-transparent to-slate-900/70 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/90 via-slate-800/80 to-slate-900/90 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-transparent to-slate-900/80 z-10"></div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
+            {/* Trusted by section */}
+            <div className="mb-8">
+              <p className="text-blue-400 text-lg font-medium mb-4">
+                Trusted by leading African learning institutions
+              </p>
+            </div>
+            
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
               EdVirons Learning Ecosystem
             </h1>

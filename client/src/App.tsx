@@ -34,21 +34,8 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/mobile" component={MobileLanding} />
       <Route>
-        {/* Always show a simple working page */}
-        <div className="min-h-screen bg-white p-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            EdVirons Landing Page
-          </h1>
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">E</span>
-            </div>
-            <span className="text-xl font-semibold">EdVirons</span>
-          </div>
-          <p className="text-lg text-gray-600">
-            Logo replacement test - basic page
-          </p>
-        </div>
+        {/* Always show NewLanding for all routes */}
+        <NewLanding />
       </Route>
     </Switch>
   );

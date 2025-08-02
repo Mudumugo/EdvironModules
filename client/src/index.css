@@ -27,6 +27,20 @@
   to { opacity: 1; }
 }
 
+/* Learning Institutions Carousel Animation */
+@keyframes scroll-institutions {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-institutions {
+  animation: scroll-institutions 20s linear infinite;
+}
+
 /* Custom mobile optimizations */
 @layer utilities {
   .scrollbar-hide {
