@@ -152,17 +152,15 @@ export function useAuth() {
 
     checkAuth();
     
-    // Gentle polling only for authenticated users to detect logout
-    const interval = setInterval(() => {
-      if (mounted && globalAuthState.isAuthenticated) {
-        // Only poll if user is authenticated to detect logout
-        checkAuth();
-      }
-    }, 10000); // Reduced frequency: every 10 seconds instead of 2
+    // No automatic polling - only check auth once on mount
+    // For logout detection, we'll use a different strategy
+    let interval: NodeJS.Timeout | null = null;
     
     return () => {
       mounted = false;
-      clearInterval(interval);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
   }, []);
 
