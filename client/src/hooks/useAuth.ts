@@ -125,28 +125,40 @@ export const getIsLoggingOut = () => false;
 export function useAuth() {
   const [authState, setAuthState] = useState(globalAuthState);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasInitialCheck, setHasInitialCheck] = useState(false);
 
   // Check authentication on mount and periodically
   useEffect(() => {
     let mounted = true;
     
     const checkAuth = async () => {
-      setIsLoading(true);
+      // Only show loading on initial check, not during polling
+      if (!hasInitialCheck) {
+        setIsLoading(true);
+      }
+      
       const user = await fetchUserDirectly();
       if (mounted) {
-        setAuthState({ user, isAuthenticated: !!user });
-        setIsLoading(false);
+        const newState = { user, isAuthenticated: !!user };
+        setAuthState(newState);
+        globalAuthState = newState; // Keep global state in sync
+        
+        if (!hasInitialCheck) {
+          setHasInitialCheck(true);
+          setIsLoading(false);
+        }
       }
     };
 
     checkAuth();
     
-    // Force recheck every 2 seconds to catch logout state changes
+    // Gentle polling only for authenticated users to detect logout
     const interval = setInterval(() => {
-      if (mounted) {
+      if (mounted && globalAuthState.isAuthenticated) {
+        // Only poll if user is authenticated to detect logout
         checkAuth();
       }
-    }, 2000);
+    }, 10000); // Reduced frequency: every 10 seconds instead of 2
     
     return () => {
       mounted = false;
