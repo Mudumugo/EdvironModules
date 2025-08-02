@@ -60,15 +60,24 @@ export function NewLanding() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
-                Complete Infrastructure Solution
-              </span>
-              <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
-                End-to-End Learning Support
-              </span>
+              <Link href="/features">
+                <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                  Features
+                </span>
+              </Link>
+              <Link href="/solutions">
+                <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                  Solutions
+                </span>
+              </Link>
               <Link href="/cbe-overview">
                 <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
                   CBC Overview
+                </span>
+              </Link>
+              <Link href="/about">
+                <span className="text-gray-300 hover:text-orange-400 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                  About
                 </span>
               </Link>
             </div>
@@ -795,10 +804,10 @@ export function NewLanding() {
             <div>
               <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Case Studies</a></li>
+                <li><Link href="/features" className="text-gray-400 hover:text-white transition-colors">Features</Link></li>
+                <li><Link href="/solutions" className="text-gray-400 hover:text-white transition-colors">Solutions</Link></li>
+                <li><Link href="/cbe-overview" className="text-gray-400 hover:text-white transition-colors">CBC Overview</Link></li>
+                <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
               </ul>
             </div>
 
@@ -817,7 +826,7 @@ export function NewLanding() {
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
