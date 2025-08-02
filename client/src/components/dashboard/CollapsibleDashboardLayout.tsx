@@ -1,6 +1,8 @@
 import { Link, useLocation } from "wouter";
 import { GraduationCap, Home, BookOpen, Cloud, Smartphone, Settings, User, Calendar, BarChart3, PenTool, Users, Video, Monitor, FileText, MessageSquare, Clock, Shield, Wrench, BookOpenCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
+import { User as UserType } from "@shared/schema";
 import {
   Sidebar,
   SidebarContent,
@@ -31,9 +33,10 @@ export function CollapsibleDashboardLayout({
 }: CollapsibleDashboardLayoutProps) {
   const [location] = useLocation();
 
-  // Get current user
-  const { data: user } = useQuery({
+  // Get current user with 401 handling
+  const { data: user } = useQuery<UserType | null>({
     queryKey: ['/api/auth/user'],
+    queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -101,7 +104,7 @@ export function CollapsibleDashboardLayout({
               </SidebarGroupContent>
             </SidebarGroup>
 
-            {(user?.role?.includes('teacher') || user?.role === 'demo_teacher') && (
+            {user && (user.role?.includes('teacher') || user.role === 'demo_teacher') && (
               <SidebarGroup>
                 <SidebarGroupLabel>Teaching Tools</SidebarGroupLabel>
                 <SidebarGroupContent>
@@ -127,7 +130,7 @@ export function CollapsibleDashboardLayout({
               </SidebarGroup>
             )}
 
-            {(user?.role?.includes('admin') || user?.role === 'demo_school_admin') && (
+            {user && (user.role?.includes('admin') || user.role === 'demo_school_admin') && (
               <SidebarGroup>
                 <SidebarGroupLabel>Administration</SidebarGroupLabel>
                 <SidebarGroupContent>
@@ -159,13 +162,13 @@ export function CollapsibleDashboardLayout({
               <div className="flex items-center gap-2 px-2 py-2 text-sm">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
                   <span className="text-xs font-medium">
-                    {user?.firstName?.[0]}{user?.lastName?.[0]}
+                    {user?.firstName?.[0] || 'G'}{user?.lastName?.[0] || 'U'}
                   </span>
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                  <span className="font-medium">{user?.firstName} {user?.lastName}</span>
-                  <span className="text-xs text-muted-foreground">{user?.email}</span>
-                  <span className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ')}</span>
+                  <span className="font-medium">{user?.firstName || 'Guest'} {user?.lastName || 'User'}</span>
+                  <span className="text-xs text-muted-foreground">{user?.email || 'guest@edvirons.com'}</span>
+                  <span className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ') || 'guest'}</span>
                 </div>
               </div>
             </div>
@@ -186,7 +189,7 @@ export function CollapsibleDashboardLayout({
             </div>
             {user && (
               <div className="text-sm text-muted-foreground">
-                {user.firstName} {user.lastName}
+                {user.firstName || 'Guest'} {user.lastName || 'User'}
               </div>
             )}
           </header>
