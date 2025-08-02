@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
+import { NewLanding } from "@/pages/NewLanding";
 import { MobileLanding } from "@/pages/MobileLanding";
 import { Solutions } from "@/pages/Solutions";
 import { CBEOverview } from "@/pages/CBEOverview";
@@ -119,8 +120,8 @@ function Router() {
             <Route path="/about" component={About} />
             <Route path="/mobile" component={MobileLanding} />
             <Route>
-              {/* Show mobile landing on phone screens, full landing on desktop */}
-              {isMobile ? <MobileLanding /> : <Landing />}
+              {/* Show mobile landing on phone screens, new landing on desktop */}
+              {isMobile ? <MobileLanding /> : <NewLanding />}
             </Route>
           </Switch>
         ) : (
