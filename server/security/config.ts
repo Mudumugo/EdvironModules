@@ -58,19 +58,20 @@ export const rateLimitConfigs = {
 
 // Helmet security configuration
 export const helmetConfig = helmet({
-  contentSecurityPolicy: {
+  // Disable CSP in development to fix Replit webview compatibility
+  contentSecurityPolicy: process.env.NODE_ENV === 'development' ? false : {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Note: unsafe-eval needed for Vite in dev
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://replit.com", "*.replit.com", "*.replit.dev"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
-      connectSrc: ["'self'", "https:", "wss:", "ws:", "http://localhost:*"],
+      connectSrc: ["'self'", "https:", "wss:", "ws:", "http://localhost:*", "*.replit.com", "*.replit.dev"],
       mediaSrc: ["'self'", "blob:", "data:"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],
-      frameAncestors: ["'none'"],
+      frameAncestors: ["'self'", "*.replit.com", "*.replit.dev"],
       scriptSrcAttr: ["'unsafe-inline'"],
       upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
     },
