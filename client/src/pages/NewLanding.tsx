@@ -79,8 +79,8 @@ export function NewLanding() {
                 </Button>
               </Link>
               <Link href="/login">
-                <Button variant="outline" className="border-gray-500 text-gray-300 hover:bg-gray-800">
-                  Try Free Parent Mode
+                <Button variant="outline" className="border-gray-400 text-gray-200 hover:bg-gray-700 px-6">
+                  Sign In
                 </Button>
               </Link>
             </div>
@@ -112,8 +112,8 @@ export function NewLanding() {
                     </Button>
                   </Link>
                   <Link href="/login">
-                    <Button variant="outline" className="w-full border-gray-500 text-gray-300">
-                      Try Free Parent Mode
+                    <Button variant="outline" className="w-full border-gray-400 text-gray-200">
+                      Sign In
                     </Button>
                   </Link>
                 </div>
