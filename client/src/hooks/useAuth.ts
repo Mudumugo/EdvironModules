@@ -18,7 +18,7 @@ interface User {
 export function useAuth() {
   const { data: user, isLoading, error, refetch } = useQuery({
     queryKey: ['/api/auth/user'],
-    queryFn: getQueryFn({ on401: 'ignore' }),
+    queryFn: getQueryFn({ on401: 'returnNull' }),
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

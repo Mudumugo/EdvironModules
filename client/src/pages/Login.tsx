@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
 import { 
   Eye, 
@@ -101,12 +101,16 @@ export default function Login() {
       });
 
       if (response.ok) {
+        // Invalidate auth cache to force refetch
+        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        
         toast({
           title: "Login Successful",
           description: "Welcome back to EdVirons!",
         });
-        // Redirect to dashboard after successful login
-        window.location.href = "/dashboard";
+        
+        // Navigate to dashboard
+        setLocation("/dashboard");
       } else {
         throw new Error("Login failed");
       }
@@ -129,12 +133,16 @@ export default function Login() {
       });
 
       if (response.ok) {
+        // Invalidate auth cache to force refetch
+        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        
         toast({
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        // Redirect to dashboard after successful demo login
-        window.location.href = "/dashboard";
+        
+        // Navigate to dashboard
+        setLocation("/dashboard");
       } else {
         throw new Error("Demo login failed");
       }
