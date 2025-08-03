@@ -23,6 +23,8 @@ export function useAuth() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  console.log('[useAuth] State:', { user: !!user, isLoading, error: !!error, userRole: user?.role });
+
   const logout = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/logout', {

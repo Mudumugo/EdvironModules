@@ -10,6 +10,8 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
 
+  console.log('[ProtectedRoute] Auth state:', { user: !!user, isLoading, userRole: user?.role });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
