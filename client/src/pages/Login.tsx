@@ -101,16 +101,13 @@ export default function Login() {
       });
 
       if (response.ok) {
-        // Invalidate auth cache to force refetch
-        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-        
         toast({
           title: "Login Successful",
           description: "Welcome back to EdVirons!",
         });
         
-        // Navigate to dashboard
-        setLocation("/dashboard");
+        // Force full page reload to ensure session is properly established
+        window.location.href = "/dashboard";
       } else {
         throw new Error("Login failed");
       }
@@ -133,16 +130,13 @@ export default function Login() {
       });
 
       if (response.ok) {
-        // Invalidate auth cache to force refetch
-        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-        
         toast({
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
         
-        // Navigate to dashboard
-        setLocation("/dashboard");
+        // Force full page reload to ensure session is properly established
+        window.location.href = "/dashboard";
       } else {
         throw new Error("Demo login failed");
       }

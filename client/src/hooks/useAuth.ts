@@ -12,18 +12,17 @@ interface User {
   profileImageUrl?: string;
   institutionId?: string;
   gradeLevel?: string;
+  permissions?: string[];
 }
 
 // Authentication hook with real API integration
 export function useAuth() {
-  const { data: user, isLoading, error, refetch } = useQuery({
+  const { data: user, isLoading, error, refetch } = useQuery<User | null>({
     queryKey: ['/api/auth/user'],
     queryFn: getQueryFn({ on401: 'returnNull' }),
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  console.log('[useAuth] State:', { user: !!user, isLoading, error: !!error, userRole: user?.role });
 
   const logout = useCallback(async () => {
     try {
