@@ -98,10 +98,25 @@ const DEMO_USERS = {
   }
 };
 
-// Initialize demo user cache
+// Initialize demo user cache and ensure database sync
 Object.entries(DEMO_USERS).forEach(([email, user]) => {
   demoUserCache.set(email, user);
 });
+
+// Enhanced demo login check to ensure cache reliability  
+function isDemoUserCached(email: string): boolean {
+  const user = demoUserCache.get(email);
+  if (!user) {
+    // Re-cache if missing
+    if (DEMO_USERS[email]) {
+      demoUserCache.set(email, DEMO_USERS[email]);
+      console.log(`[DEMO USERS] Re-cached demo user: ${email}`);
+      return true;
+    }
+    return false;
+  }
+  return true;
+}
 
 // Debug: Log initialized demo users
 console.log('[DEMO USERS] Initialized demo users:', Object.keys(DEMO_USERS));
@@ -147,11 +162,14 @@ export function registerAuthRoutes(app: Express) {
       try {
         const { email } = req.body;
 
-        // Check cache first for demo users (instant response)
-        let user = demoUserCache.get(email);
+        // Enhanced cache check for demo users
+        let user = null;
         
-        if (!user) {
-          // Only hit database for non-demo users
+        // Check if this is a demo user and ensure it's cached
+        if (isDemoUserCached(email)) {
+          user = demoUserCache.get(email) || DEMO_USERS[email];
+        } else {
+          // For non-demo users, check database
           user = await storage.getUserByEmail(email);
           
           // Cache non-demo users temporarily
