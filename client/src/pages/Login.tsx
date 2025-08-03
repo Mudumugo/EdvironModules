@@ -105,8 +105,8 @@ export default function Login() {
           title: "Login Successful",
           description: "Welcome back to EdVirons!",
         });
-        // Force a full page reload to ensure authentication state is properly updated
-        window.location.href = "/";
+        // Redirect to dashboard after successful login
+        window.location.href = "/dashboard";
       } else {
         throw new Error("Login failed");
       }
@@ -133,8 +133,8 @@ export default function Login() {
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        // Force a full page reload to ensure authentication state is properly updated
-        window.location.href = "/";
+        // Redirect to dashboard after successful demo login
+        window.location.href = "/dashboard";
       } else {
         throw new Error("Demo login failed");
       }
