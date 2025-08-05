@@ -26,6 +26,8 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     try {
+      console.log('Starting logout process...');
+      
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
@@ -34,17 +36,20 @@ export function useAuth() {
         }
       });
       
-      // Clear the query cache and force refetch
+      console.log('Logout response:', response.status, response.ok);
+      
+      // Clear the query cache and force refetch regardless of response
+      await queryClient.clear();
       await queryClient.invalidateQueries();
       
-      if (response.ok) {
-        // Redirect to landing page after logout
-        window.location.href = '/';
-        return true;
-      }
-      return false;
+      // Force redirect to landing page
+      window.location.replace('/');
+      return true;
     } catch (error) {
       console.error('Logout failed:', error);
+      // Even if logout fails, clear cache and redirect
+      await queryClient.clear();
+      window.location.replace('/');
       return false;
     }
   }, []);

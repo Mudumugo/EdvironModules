@@ -34,14 +34,13 @@ function LogoutButton() {
   const { toast } = useToast();
 
   const handleLogout = async () => {
-    const success = await logout();
-    if (!success) {
-      toast({
-        variant: "destructive",
-        title: "Logout Failed",
-        description: "There was an error logging out. Please try again.",
-      });
-    }
+    toast({
+      title: "Logging out...",
+      description: "Please wait while we log you out.",
+    });
+    
+    // Always attempt logout - even if it fails, we'll clear local state
+    await logout();
   };
 
   return (
