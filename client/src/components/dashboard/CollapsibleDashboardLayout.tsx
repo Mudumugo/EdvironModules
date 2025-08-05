@@ -1,8 +1,11 @@
 import { Link, useLocation } from "wouter";
-import { GraduationCap, Home, BookOpen, Cloud, Smartphone, Settings, User, Calendar, BarChart3, PenTool, Users, Video, Monitor, FileText, MessageSquare, Clock, Shield, Wrench, BookOpenCheck } from "lucide-react";
+import { GraduationCap, Home, BookOpen, Cloud, Smartphone, Settings, User, Calendar, BarChart3, PenTool, Users, Video, Monitor, FileText, MessageSquare, Clock, Shield, Wrench, BookOpenCheck, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 import { User as UserType } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import {
   Sidebar,
   SidebarContent,
@@ -24,6 +27,34 @@ interface CollapsibleDashboardLayoutProps {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
+}
+
+function LogoutButton() {
+  const { logout } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    const success = await logout();
+    if (!success) {
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "There was an error logging out. Please try again.",
+      });
+    }
+  };
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={handleLogout}
+      className="w-full mt-2 group-data-[collapsible=icon]:hidden"
+    >
+      <LogOut className="h-4 w-4 mr-2" />
+      Logout
+    </Button>
+  );
 }
 
 export function CollapsibleDashboardLayout({ 
@@ -171,6 +202,7 @@ export function CollapsibleDashboardLayout({
                   <span className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ') || 'guest'}</span>
                 </div>
               </div>
+              <LogoutButton />
             </div>
           </SidebarFooter>
           <SidebarRail />

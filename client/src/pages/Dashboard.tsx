@@ -5,6 +5,7 @@ import ITDashboard from "./ITDashboard";
 import SecurityDashboard from "./SecurityDashboard";
 import { PrimaryDashboard, JuniorDashboard, SeniorDashboard, TeacherDashboard, SchoolAdminDashboard } from "@/components/dashboard/modules";
 import CBEHubCard from "@/components/CBEHubCard";
+import { CollapsibleDashboardLayout } from "@/components/dashboard/CollapsibleDashboardLayout";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -49,54 +50,61 @@ export default function Dashboard() {
 
   const academicLevel = getAcademicLevel();
 
-  // Render specialized dashboards for specific roles with responsive containers
-  if (user?.role === "school_it_staff") {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          {/* CBE Hub Card - Persistent for all users */}
+  // Get dashboard title based on user role
+  const getDashboardTitle = () => {
+    if (user?.role === "school_it_staff") return "IT Dashboard";
+    if (user?.role === "school_security") return "Security Dashboard";
+    if (user?.role === "school_admin" || user?.role === "demo_school_admin") return "School Administration";
+    if (academicLevel === 'teacher') return "Teacher Dashboard";
+    return "Dashboard";
+  };
+
+  // Render content based on role
+  const renderContent = () => {
+    if (user?.role === "school_it_staff") {
+      return (
+        <>
           <div className="mb-6">
             <CBEHubCard />
           </div>
           <ITDashboard />
-        </div>
-      </div>
-    );
-  }
-  
-  if (user?.role === "school_security") {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          {/* CBE Hub Card - Persistent for all users */}
+        </>
+      );
+    }
+    
+    if (user?.role === "school_security") {
+      return (
+        <>
           <div className="mb-6">
-            <CBEHubCard />
+            <CBEHubCard />  
           </div>
           <SecurityDashboard />
-        </div>
-      </div>
-    );
-  }
+        </>
+      );
+    }
 
-  if (user?.role === "school_admin" || user?.role === "demo_school_admin") {
-    return <SchoolAdminDashboard user={user} stats={stats} />;
-  }
+    if (user?.role === "school_admin" || user?.role === "demo_school_admin") {
+      return <SchoolAdminDashboard user={user} stats={stats} />;
+    }
 
-  // Return appropriate dashboard based on academic level with CBE Hub
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        {/* CBE Hub Card - Persistent for all users */}
+    // Return appropriate dashboard based on academic level with CBE Hub
+    return (
+      <>
         <div className="mb-6">
           <CBEHubCard />
         </div>
-        
         {academicLevel === 'primary' && <PrimaryDashboard user={user} />}
         {academicLevel === 'junior' && <JuniorDashboard user={user} stats={stats} />}
         {academicLevel === 'teacher' && <TeacherDashboard user={user} stats={stats} />}
-        {(academicLevel === 'senior' || academicLevel === 'college') && <SeniorDashboard user={user} stats={stats} />}
-        {!['primary', 'junior', 'teacher', 'senior', 'college'].includes(academicLevel) && <JuniorDashboard user={user} stats={stats} />}
-      </div>
-    </div>
+        {academicLevel === 'senior' && <SeniorDashboard user={user} stats={stats} />}
+        {!['primary', 'junior', 'teacher', 'senior'].includes(academicLevel) && <JuniorDashboard user={user} stats={stats} />}
+      </>
+    );
+  };
+
+  return (
+    <CollapsibleDashboardLayout title={getDashboardTitle()}>
+      {renderContent()}
+    </CollapsibleDashboardLayout>
   );
 }
