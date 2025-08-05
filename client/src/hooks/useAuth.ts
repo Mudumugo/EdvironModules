@@ -26,30 +26,38 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     try {
-      console.log('Starting logout process...');
+      console.log('Force logout - clearing all data...');
       
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        }
+      // Clear all browser storage first
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Clear all cookies
+      document.cookie.split(";").forEach(cookie => {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
       });
       
-      console.log('Logout response:', response.status, response.ok);
+      // Clear query cache
+      queryClient.clear();
       
-      // Clear the query cache and force refetch regardless of response
-      await queryClient.clear();
-      await queryClient.invalidateQueries();
+      // Call logout endpoint (don't wait for response)
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      }).catch(() => {}); // Ignore errors
       
-      // Force redirect to landing page
-      window.location.replace('/');
+      // Force immediate redirect
+      window.location.href = '/';
+      setTimeout(() => window.location.reload(), 100);
+      
       return true;
     } catch (error) {
-      console.error('Logout failed:', error);
-      // Even if logout fails, clear cache and redirect
-      await queryClient.clear();
-      window.location.replace('/');
+      console.error('Logout error:', error);
+      window.location.href = '/';
       return false;
     }
   }, []);

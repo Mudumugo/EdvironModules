@@ -6,6 +6,7 @@ import { User as UserType } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { ForceLogoutButton } from "@/components/ForceLogoutButton";
 import {
   Sidebar,
   SidebarContent,
@@ -204,6 +205,7 @@ export function CollapsibleDashboardLayout({
                 </div>
               </div>
               <LogoutButton />
+              <ForceLogoutButton />
             </div>
           </SidebarFooter>
           <SidebarRail />
