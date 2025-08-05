@@ -13,7 +13,7 @@ const demoUserCache = new NodeCache({
 });
 
 // Pre-populate demo user cache for instant login
-const DEMO_USERS = {
+const DEMO_USERS: Record<string, any> = {
   // EdVirons Global Team
   'demo.admin@edvirons.com': {
     id: 'demo_edvirons_admin',
@@ -108,8 +108,8 @@ function isDemoUserCached(email: string): boolean {
   const user = demoUserCache.get(email);
   if (!user) {
     // Re-cache if missing
-    if (DEMO_USERS[email]) {
-      demoUserCache.set(email, DEMO_USERS[email]);
+    if ((DEMO_USERS as any)[email]) {
+      demoUserCache.set(email, (DEMO_USERS as any)[email]);
       console.log(`[DEMO USERS] Re-cached demo user: ${email}`);
       return true;
     }
@@ -167,7 +167,7 @@ export function registerAuthRoutes(app: Express) {
         
         // Check if this is a demo user and ensure it's cached
         if (isDemoUserCached(email)) {
-          user = demoUserCache.get(email) || DEMO_USERS[email];
+          user = demoUserCache.get(email) || (DEMO_USERS as any)[email];
         } else {
           // For non-demo users, check database
           user = await storage.getUserByEmail(email);

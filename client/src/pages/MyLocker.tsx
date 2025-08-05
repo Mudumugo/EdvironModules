@@ -1,7 +1,7 @@
 import { CollapsibleDashboardLayout } from "@/components/dashboard/CollapsibleDashboardLayout";
 
 export default function MyLocker() {
-  console.log('MyLocker component rendering');
+
   
   return (
     <CollapsibleDashboardLayout title="My Locker" subtitle="Your personal cloud storage">

@@ -64,7 +64,7 @@ export function CollapsibleDashboardLayout({
 }: CollapsibleDashboardLayoutProps) {
   const [location] = useLocation();
   
-  console.log('CollapsibleDashboardLayout rendering:', { title, subtitle });
+
 
   // Get current user with 401 handling
   const { data: user } = useQuery<UserType | null>({
