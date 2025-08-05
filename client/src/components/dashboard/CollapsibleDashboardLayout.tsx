@@ -49,10 +49,10 @@ function LogoutButton() {
       variant="outline"
       size="sm"
       onClick={handleLogout}
-      className="w-full mt-2 group-data-[collapsible=icon]:hidden"
+      className="w-full mt-2"
     >
-      <LogOut className="h-4 w-4 mr-2" />
-      Logout
+      <LogOut className="h-4 w-4 mr-2 group-data-[collapsible=icon]:mr-0" />
+      <span className="group-data-[collapsible=icon]:hidden">Logout</span>
     </Button>
   );
 }
