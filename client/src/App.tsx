@@ -161,9 +161,9 @@ function Router() {
                    user?.role === 'security_staff' || user?.role === 'school_security' ? <SecurityDashboard /> : 
                    user?.role === 'it_staff' || user?.role === 'school_it_staff' ? <ITDashboard /> : 
                    user?.role === 'teacher' ? <Dashboard /> :
-                   user?.role?.includes('student') || user?.role === 'student' ? <StudentDashboard /> :
+                   user?.role?.includes('student') || user?.role === 'student' || user?.role === 'student_elementary' ? <StudentDashboard /> :
                    user?.role === 'global_author' || user?.role === 'content_admin' ? <AuthoringDashboard /> :
-                   user?.role?.startsWith('edvirons_') ? <EdVironsAdminDashboard /> :
+                   user?.role?.startsWith('edvirons_') || user?.role === 'edvirons_admin' ? <EdVironsAdminDashboard /> :
                    <Dashboard />}
                 </RoleProtectedRoute>
               </Route>
