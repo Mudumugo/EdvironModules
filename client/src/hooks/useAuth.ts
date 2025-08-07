@@ -124,14 +124,14 @@ export const setLoggingOut = () => {};
 export const getIsLoggingOut = () => false;
 
 export function useAuth() {
-  // Use React Query for auth with aggressive refresh to catch login state changes
+  // Use React Query for auth with very aggressive refresh to catch login state changes immediately
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['/api/auth/user'],
     queryFn: getQueryFn({ on401: "returnNull" }),
-    staleTime: 0, // Always fresh
+    staleTime: 0, // Always fresh - no caching
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    refetchInterval: 1000, // Check every second for demo
+    refetchInterval: 500, // Check every 500ms for immediate login detection
     retry: 0,
   });
 

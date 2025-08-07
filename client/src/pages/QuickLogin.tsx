@@ -22,8 +22,10 @@ export default function QuickLogin() {
       
       if (response.ok && data.success) {
         console.log(`Login successful for ${email}, redirecting...`);
-        // Force immediate page reload
-        window.location.href = '/';
+        // Wait a moment for the session to be established, then reload
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
       } else {
         console.error('Login failed:', data);
         alert(`Login failed: ${data.error || 'Unknown error'}`);
