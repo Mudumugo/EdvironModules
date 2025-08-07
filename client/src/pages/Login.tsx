@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
 import { 
   Eye, 
@@ -137,11 +137,14 @@ export default function Login() {
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        console.log(`Demo login successful for ${account.email}, forcing page reload...`);
+        console.log(`Demo login successful for ${account.email}, invalidating cache and redirecting...`);
+        // Invalidate auth cache to force refetch
+        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        
         // Force a complete page reload to ensure auth state is updated
         setTimeout(() => {
           window.location.replace("/");
-        }, 500); // Small delay to let toast show
+        }, 100); // Minimal delay
       } else {
         throw new Error(data.error || "Demo login failed");
       }
