@@ -135,17 +135,9 @@ export function NewLanding() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background with gradient overlay */}
         <div className="absolute inset-0">
-          <div 
-            className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900"
-            style={{
-              backgroundImage: `url('/api/placeholder/1920/1080')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
-            }}
-          />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-blue-800/20 to-indigo-900/30" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900" />
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.1)_50%,transparent_75%,transparent_100%)] bg-[length:250px_250px]" />
         </div>
 
         {/* Hero Content */}
