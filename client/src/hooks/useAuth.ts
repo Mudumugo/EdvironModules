@@ -1,3 +1,4 @@
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 import { useState, useEffect, useCallback } from "react";
@@ -124,16 +125,50 @@ export const setLoggingOut = () => {};
 export const getIsLoggingOut = () => false;
 
 export function useAuth() {
-  // Use React Query for auth with very aggressive refresh to catch login state changes immediately
-  const { data: user, isLoading, error } = useQuery({
-    queryKey: ['/api/auth/user'],
-    queryFn: getQueryFn({ on401: "returnNull" }),
-    staleTime: 0, // Always fresh - no caching
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-    refetchInterval: 500, // Check every 500ms for immediate login detection
-    retry: 0,
-  });
+  // Simplified direct fetch approach - bypass React Query caching issues
+  const [user, setUser] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  const checkAuth = React.useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/user', {
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+        setError(null);
+      } else {
+        setUser(null);
+        setError(null);
+      }
+    } catch (err) {
+      setUser(null);
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    checkAuth();
+    // Check auth every 500ms to catch login state changes
+    const interval = setInterval(checkAuth, 500);
+    return () => clearInterval(interval);
+  }, [checkAuth]);
+
+  // Also check on window focus
+  React.useEffect(() => {
+    const handleFocus = () => checkAuth();
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [checkAuth]);
 
   return {
     user: user || null,
