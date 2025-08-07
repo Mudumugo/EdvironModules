@@ -46,76 +46,77 @@ async function fetchUserDirectly(): Promise<User | null> {
   }
 }
 
-// Webview-compatible logout with server-guided redirect
+// Ultimate webview-compatible logout with maximum compatibility
 export async function logoutDirectly(): Promise<boolean> {
+  console.log('[AUTH] ULTIMATE LOGOUT - Starting complete logout process...');
+  
+  // Step 1: Immediately clear global state
+  globalAuthState = { user: null, isAuthenticated: false };
+  console.log('[AUTH] Global state cleared');
+  
+  // Step 2: Clear all storage immediately
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+    console.log('[AUTH] All storage cleared');
+  } catch (e) {
+    console.log('[AUTH] Storage clear failed:', e);
+  }
+  
+  // Step 3: Call logout API
   try {
     console.log('[AUTH] Calling logout API...');
     const response = await fetch('/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      }
+      headers: { 'Content-Type': 'application/json' }
     });
     
     console.log('[AUTH] Logout API response status:', response.status);
     
     if (response.ok) {
       const data = await response.json();
-      console.log('[AUTH] Logout response data:', data);
-      
-      // Aggressively clear global state
-      globalAuthState = { user: null, isAuthenticated: false };
-      
-      // Clear all possible storage
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-        console.log('[AUTH] Cleared all storage');
-      } catch (e) {
-        console.log('[AUTH] Storage clear failed:', e);
-      }
-      
-      // Check if server wants us to redirect
-      if (data.redirect || data.forceReload) {
-        console.log('[AUTH] Server instructed redirect to:', data.redirect);
-        
-        // Multiple aggressive redirect strategies
-        try {
-          // Strategy 1: Direct assignment (most reliable)
-          console.log('[AUTH] Using window.location.assign...');
-          window.location.assign(data.redirect || '/');
-        } catch (e1) {
-          try {
-            // Strategy 2: href assignment
-            console.log('[AUTH] Fallback to window.location.href...');
-            window.location.href = data.redirect || '/';
-          } catch (e2) {
-            try {
-              // Strategy 3: replace
-              console.log('[AUTH] Fallback to window.location.replace...');
-              window.location.replace(data.redirect || '/');
-            } catch (e3) {
-              // Strategy 4: reload as last resort
-              console.log('[AUTH] Final fallback - page reload...');
-              window.location.reload();
-            }
-          }
-        }
-      }
-      
-      return true;
+      console.log('[AUTH] Logout API successful:', data);
     }
-    
-    console.error('[AUTH] Logout API failed with status:', response.status);
-    return false;
   } catch (error) {
-    console.error('[AUTH] Logout request failed:', error);
-    // Even if API fails, clear state and redirect
-    globalAuthState = { user: null, isAuthenticated: false };
-    window.location.href = '/';
-    return false;
+    console.log('[AUTH] Logout API error (continuing anyway):', error);
   }
+  
+  // Step 4: Force redirect using ALL possible methods
+  console.log('[AUTH] FORCING REDIRECT - Using all strategies...');
+  
+  // Immediate redirects
+  setTimeout(() => {
+    console.log('[AUTH] Strategy 1: window.location.assign');
+    try { window.location.assign('/'); } catch (e) { console.log('[AUTH] assign failed'); }
+  }, 0);
+  
+  setTimeout(() => {
+    console.log('[AUTH] Strategy 2: window.location.href');
+    try { window.location.href = '/'; } catch (e) { console.log('[AUTH] href failed'); }
+  }, 50);
+  
+  setTimeout(() => {
+    console.log('[AUTH] Strategy 3: window.location.replace');
+    try { window.location.replace('/'); } catch (e) { console.log('[AUTH] replace failed'); }
+  }, 100);
+  
+  setTimeout(() => {
+    console.log('[AUTH] Strategy 4: window.location.reload');
+    try { window.location.reload(); } catch (e) { console.log('[AUTH] reload failed'); }
+  }, 200);
+  
+  // Emergency fallback
+  setTimeout(() => {
+    console.log('[AUTH] EMERGENCY: Final reload attempt');
+    try { 
+      window.location.href = window.location.protocol + '//' + window.location.host + '/';
+    } catch (e) { 
+      window.location.reload(); 
+    }
+  }, 500);
+  
+  return true;
 }
 
 // Dummy exports for backwards compatibility during transition

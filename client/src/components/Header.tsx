@@ -45,12 +45,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
   const handleLogout = async () => {
-    console.log('[AUTH] Simple logout - clearing cache and redirecting...');
-    
-    // Clear cache immediately
-    queryClient.clear();
+    console.log('[AUTH] Starting logout process...');
     
     try {
+      // Clear cache immediately
+      queryClient.clear();
+      console.log('[AUTH] Cache cleared');
+      
       // Call logout API
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
@@ -60,15 +61,46 @@ export default function Header({ onMenuClick }: HeaderProps) {
       
       console.log('[AUTH] Logout API response:', response.status);
       
-      // Regardless of API response, force redirect immediately
-      console.log('[AUTH] Forcing immediate page redirect...');
-      window.location.href = '/';
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[AUTH] Logout successful, data:', data);
+      }
       
     } catch (error) {
-      // Even if logout fails, redirect anyway
-      console.log('[AUTH] Logout failed, but redirecting anyway');
-      window.location.href = '/';
+      console.log('[AUTH] Logout API error:', error);
     }
+    
+    // Force multiple redirect strategies regardless of API response
+    console.log('[AUTH] Executing multiple redirect strategies...');
+    
+    // Strategy 1: Immediate redirect
+    try {
+      window.location.assign('/');
+    } catch (e1) {
+      console.log('[AUTH] assign failed, trying href');
+      try {
+        window.location.href = '/';
+      } catch (e2) {
+        console.log('[AUTH] href failed, trying replace');
+        try {
+          window.location.replace('/');
+        } catch (e3) {
+          console.log('[AUTH] replace failed, trying reload');
+          window.location.reload();
+        }
+      }
+    }
+    
+    // Strategy 2: Delayed backup redirects
+    setTimeout(() => {
+      console.log('[AUTH] Backup redirect 1');
+      try { window.location.href = '/'; } catch (e) { }
+    }, 100);
+    
+    setTimeout(() => {
+      console.log('[AUTH] Backup redirect 2');
+      try { window.location.reload(); } catch (e) { }
+    }, 500);
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
