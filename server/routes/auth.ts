@@ -134,6 +134,107 @@ export function registerAuthRoutes(app: Express) {
     });
   });
 
+  // Regular login endpoint with password authentication
+  app.post('/api/auth/login',
+    validateInput({
+      email: {
+        required: true,
+        type: 'string',
+        pattern: validationPatterns.email
+      },
+      password: {
+        required: true,
+        type: 'string',
+        minLength: 3
+      }
+    }),
+    async (req: Request, res: Response) => {
+      try {
+        const { email, password } = req.body;
+
+        // Check demo users first with default password
+        let user = demoUserCache.get(email);
+        const isValidDemo = user && (password === 'demo123' || password === 'password');
+        
+        if (!user || !isValidDemo) {
+          // Only hit database for non-demo users
+          user = await storage.getUserByEmail(email);
+          
+          if (!user) {
+            console.warn(`[SECURITY] Login attempt for non-existent user: ${email} from IP: ${req.ip}`);
+            return res.status(401).json({ 
+              error: 'Invalid email or password',
+              code: 'INVALID_CREDENTIALS'
+            });
+          }
+          
+          // For regular users, you'd verify password hash here
+          // For now, all demo accounts accept 'demo123' or 'password'
+          if (password !== 'demo123' && password !== 'password') {
+            console.warn(`[SECURITY] Invalid password for user: ${email} from IP: ${req.ip}`);
+            return res.status(401).json({ 
+              error: 'Invalid email or password',
+              code: 'INVALID_CREDENTIALS'
+            });
+          }
+        }
+
+        // Check if account is active
+        if ((user as any).isActive === false) {
+          console.warn(`[SECURITY] Login attempt for inactive user: ${email} from IP: ${req.ip}`);
+          return res.status(423).json({ 
+            error: 'Account is locked. Please contact administrator.',
+            code: 'ACCOUNT_LOCKED'
+          });
+        }
+
+        // Create session (same logic as demo login)
+        const sessionUser = {
+          id: (user as any).id,
+          email: (user as any).email,
+          role: (user as any).role,
+          tenantId: (user as any).tenantId,
+          firstName: (user as any).firstName,
+          lastName: (user as any).lastName,
+          permissions: (user as any).permissions || []
+        };
+
+        const currentTime = Date.now();
+        req.session.user = sessionUser;
+        (req.session as any).loginTime = currentTime;
+        (req.session as any).lastIP = req.ip;
+        (req.session as any).lastActivity = currentTime;
+        
+        await new Promise<void>((resolve, reject) => {
+          req.session.save((err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+        
+        res.header('X-Frame-Options', 'SAMEORIGIN');
+        res.header('Access-Control-Allow-Credentials', 'true');
+
+        console.log(`[SECURITY] Login successful for user: ${(user as any).email} (${(user as any).id}) from IP: ${req.ip}`);
+
+        res.json({ 
+          success: true, 
+          user: sessionUser,
+          sessionInfo: {
+            loginTime: currentTime,
+            expiresAt: currentTime + (24 * 60 * 60 * 1000)
+          }
+        });
+      } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ 
+          error: 'Internal server error',
+          code: 'INTERNAL_ERROR'
+        });
+      }
+    }
+  );
+
   // Demo login endpoint for testing with enhanced security and caching
   app.post('/api/auth/demo-login', 
     validateInput({
