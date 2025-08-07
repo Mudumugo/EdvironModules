@@ -39,7 +39,8 @@ export default function LiveSessionControl({ sessionId, onClose }: LiveSessionCo
 
   const { data: screenSharing = { isActive: false, quality: 'auto', viewers: [] } } = useQuery({
     queryKey: ['/api/live-sessions', sessionId, 'screen-sharing'],
-    refetchInterval: 2000,
+    refetchInterval: false, // Disabled to prevent unnecessary polling
+    enabled: false, // Temporarily disabled
   });
 
   const { isConnected } = useWebSocketConnection(sessionId, {
