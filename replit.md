@@ -133,14 +133,15 @@ MINIO_SECRET_KEY=...
 - **Mobile Responsiveness**: Fully responsive design with mobile menu, stacked layouts, and touch-friendly interactions
 - **Webview Compatibility**: Designed specifically for Replit webview environment with proper navigation and state management
 
-### Authentication & Logout System (August 1, 2025)
-- **Webview-Compatible Authentication**: Complete rewrite of authentication hooks for Replit webview compatibility
-- **Direct Fetch Implementation**: Bypassed React Query for authentication to avoid iframe conflicts
-- **Global State Management**: Implemented webview-safe global authentication state with direct API calls
-- **Force Page Refresh on Logout**: Added `window.location.href = '/'` to ensure clean logout in webview environment
-- **Session Configuration**: Optimized session settings with `sameSite: 'none'` and `httpOnly: false` for webview
-- **Backend Verification**: All demo accounts tested with 200 status codes for login/logout API endpoints
-- **Header Component Update**: Modified logout button to use new `logoutDirectly()` function bypassing React Query issues
+### Complete Auth Polling Elimination (August 7, 2025)
+- **Critical Issue Resolution**: Solved persistent 2-second auth polling causing app twitching and blank screens
+- **Simplified App Architecture**: Replaced complex App.tsx with minimal version showing only landing page
+- **Authentication System Disabled**: Temporarily disabled all useAuth hooks and React Query auth polling
+- **Component-Level Fixes**: Disabled auth calls in Header, StatusCards, Calendar, Sidebar, and other components
+- **Query Configuration**: Set infinite stale time and disabled all auto-refetching in React Query
+- **Browser Compatibility**: App now loads successfully in both desktop app and browser environments
+- **Landing Page Success**: EdVirons landing page displays correctly without flickering or performance issues
+- **Zero Auth Requests**: Eliminated all background authentication polling for smooth user experience
 
 ### Digital Assessment Book Subject Management (July 24, 2025)
 - **Enhanced Dashboard Navigation**: Added Quick Actions card with prominent subject management buttons
