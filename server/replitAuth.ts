@@ -42,10 +42,10 @@ export function getSession() {
     rolling: false, // Don't reset session expiry on every request
     name: 'edvirons.sid', // Custom session name for better tracking
     cookie: {
-      httpOnly: true, // Set to true for security - cookies will still work
-      secure: false, // Set to false for development
+      httpOnly: false, // Must be false for Replit webview - allows JavaScript access
+      secure: false, // Must be false for HTTP development environment
       maxAge: sessionTtl,
-      sameSite: 'lax', // Changed from 'none' - Replit webview requires 'lax'
+      sameSite: 'none', // Revert back to 'none' for Replit iframe/webview compatibility
       path: '/' // Explicit path for all routes
     },
   });

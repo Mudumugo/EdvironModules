@@ -139,10 +139,8 @@ export default function Login() {
         });
         console.log(`Demo login successful for ${account.email}, forcing immediate reload...`);
         
-        // Wait a moment for the session to be established, then reload
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 500);
+        // Force immediate navigation without delay
+        window.location.href = "/";
       } else {
         throw new Error(data.error || "Demo login failed");
       }
