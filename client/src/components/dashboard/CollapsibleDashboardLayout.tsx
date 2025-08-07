@@ -31,11 +31,12 @@ export function CollapsibleDashboardLayout({
 }: CollapsibleDashboardLayoutProps) {
   const [location] = useLocation();
 
-  // Get current user
+  // Get current user (disabled to prevent twitching - using auth hook instead)
   const { data: user } = useQuery({
     queryKey: ['/api/auth/user'],
+    enabled: false, // Disable this query completely
     retry: false,
-    staleTime: 5 * 60 * 1000,
+    staleTime: Infinity,
   });
 
   // Base navigation items (filtered by tenant configuration)

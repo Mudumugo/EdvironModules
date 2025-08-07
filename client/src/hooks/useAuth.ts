@@ -127,7 +127,7 @@ export function useAuth() {
   const [authState, setAuthState] = useState(globalAuthState);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check authentication on mount and periodically
+  // Check authentication on mount only - no periodic checks to prevent twitching
   useEffect(() => {
     let mounted = true;
     
@@ -142,22 +142,17 @@ export function useAuth() {
 
     checkAuth();
     
-    // Force recheck every 10 seconds to catch logout state changes (reduced frequency for performance)
-    const interval = setInterval(() => {
-      if (mounted) {
-        checkAuth();
-      }
-    }, 10000);
-    
     return () => {
       mounted = false;
-      clearInterval(interval);
     };
   }, []);
 
-  // Sync with global state immediately
+  // Sync with global state immediately (debounced to prevent twitching)
   useEffect(() => {
-    setAuthState(globalAuthState);
+    const timeoutId = setTimeout(() => {
+      setAuthState(globalAuthState);
+    }, 100);
+    return () => clearTimeout(timeoutId);
   }, [globalAuthState.isAuthenticated, globalAuthState.user]);
 
   // Force logout redirect if no user and currently on authenticated route
