@@ -32,7 +32,7 @@ export default function PersonalExtensionInterface() {
   const [volume, setVolume] = useState(80);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const user = null; // Disabled auth polling to prevent twitching
 
   // Get user's personal extension based on their ID
   const userExtension = `10${user?.id?.slice(-2) || '01'}`;

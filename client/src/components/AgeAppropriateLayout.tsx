@@ -9,7 +9,7 @@ interface AgeAppropriateLayoutProps {
 }
 
 export default function AgeAppropriateLayout({ children }: AgeAppropriateLayoutProps) {
-  const { user } = useAuth();
+  const user = null; // Disabled auth polling to prevent twitching
 
   // Determine academic level based on user profile
   const getAcademicLevel = () => {

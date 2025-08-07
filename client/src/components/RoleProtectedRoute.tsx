@@ -19,7 +19,8 @@ export default function RoleProtectedRoute({
   redirectTo = "/",
   customAccessCheck
 }: RoleProtectedRouteProps) {
-  const { user, isLoading } = useAuth();
+  const user = null; // Disabled auth polling to prevent twitching
+  const isLoading = false;
   const [, setLocation] = useLocation();
 
   useEffect(() => {

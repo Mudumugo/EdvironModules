@@ -13,7 +13,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
-  const { user } = useAuth();
+  const user = null; // Disabled auth polling to prevent twitching
   
   if (!user || !user.role) return null;
   
