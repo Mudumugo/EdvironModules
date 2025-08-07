@@ -137,14 +137,10 @@ export default function Login() {
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        console.log(`Demo login successful for ${account.email}, invalidating cache and redirecting...`);
-        // Invalidate auth cache to force refetch
-        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        console.log(`Demo login successful for ${account.email}, forcing immediate reload...`);
         
-        // Force a complete page reload to ensure auth state is updated
-        setTimeout(() => {
-          window.location.replace("/");
-        }, 100); // Minimal delay
+        // Force immediate page reload - bypass all caching and state issues
+        window.location.href = "/";
       } else {
         throw new Error(data.error || "Demo login failed");
       }

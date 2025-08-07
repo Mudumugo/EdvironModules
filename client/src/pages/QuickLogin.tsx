@@ -22,8 +22,8 @@ export default function QuickLogin() {
       
       if (response.ok && data.success) {
         console.log(`Login successful for ${email}, redirecting...`);
-        // Force a complete page reload to ensure auth state updates
-        window.location.replace('/');
+        // Force immediate page reload
+        window.location.href = '/';
       } else {
         console.error('Login failed:', data);
         alert(`Login failed: ${data.error || 'Unknown error'}`);
