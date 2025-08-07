@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 // // import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility; // Temporarily disabled for Replit webview compatibility
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth"; // Disabled to prevent twitching
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
@@ -96,7 +96,10 @@ const componentMap: Record<string, any> = {
 };
 
 function Router() {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  // Disabled auth to prevent twitching - all users are not authenticated
+  const isAuthenticated = false;
+  const isLoading = false;
+  const user = null;
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (

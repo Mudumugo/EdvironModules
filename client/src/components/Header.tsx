@@ -4,7 +4,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useAuth, logoutDirectly } from "@/hooks/useAuth";
+// import { useAuth, logoutDirectly } from "@/hooks/useAuth"; // Disabled to prevent twitching
+import { logoutDirectly } from "@/hooks/useAuth";
 
 import { Logo } from "@/components/Logo";
 import { 
@@ -31,7 +32,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onMenuClick }: HeaderProps) {
-  const { user } = useAuth();
+  const user = null; // Disabled auth polling to prevent twitching
   const [searchTerm, setSearchTerm] = useState("");
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();

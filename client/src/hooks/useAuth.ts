@@ -124,52 +124,14 @@ export const setLoggingOut = () => {};
 export const getIsLoggingOut = () => false;
 
 export function useAuth() {
-  const [authState, setAuthState] = useState(globalAuthState);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Check authentication on mount only - no periodic checks to prevent twitching
-  useEffect(() => {
-    let mounted = true;
-    
-    const checkAuth = async () => {
-      setIsLoading(true);
-      const user = await fetchUserDirectly();
-      if (mounted) {
-        setAuthState({ user, isAuthenticated: !!user });
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-    
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // Sync with global state immediately (debounced to prevent twitching)
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setAuthState(globalAuthState);
-    }, 100);
-    return () => clearTimeout(timeoutId);
-  }, [globalAuthState.isAuthenticated, globalAuthState.user]);
-
-  // Force logout redirect if no user and currently on authenticated route
-  useEffect(() => {
-    if (!isLoading && !authState.isAuthenticated && !authState.user) {
-      const currentPath = window.location.pathname;
-      if (currentPath !== '/' && currentPath !== '/login' && currentPath !== '/signup') {
-        console.log('[AUTH] No auth detected, forcing redirect from:', currentPath);
-        window.location.href = '/';
-      }
-    }
-  }, [authState.isAuthenticated, authState.user, isLoading]);
+  // Static auth state to prevent twitching - no polling
+  const [authState] = useState({ user: null, isAuthenticated: false });
+  const [isLoading] = useState(false);
 
   return {
-    user: authState.user as User | null,
-    isAuthenticated: authState.isAuthenticated,
-    isLoading,
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
     error: null
   };
 }
