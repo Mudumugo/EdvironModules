@@ -1,12 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { GraduationCap, Home, BookOpen, Cloud, Smartphone, Settings, User, Calendar, BarChart3, PenTool, Users, Video, Monitor, FileText, MessageSquare, Clock, Shield, Wrench, BookOpenCheck, LogOut } from "lucide-react";
+import { GraduationCap, Home, BookOpen, Cloud, Smartphone, Settings, User, Calendar, BarChart3, PenTool, Users, Video, Monitor, FileText, MessageSquare, Clock, Shield, Wrench, BookOpenCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getQueryFn } from "@/lib/queryClient";
-import { User as UserType } from "@shared/schema";
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { ForceLogoutButton } from "@/components/ForceLogoutButton";
 import {
   Sidebar,
   SidebarContent,
@@ -30,46 +24,16 @@ interface CollapsibleDashboardLayoutProps {
   subtitle?: string;
 }
 
-function LogoutButton() {
-  const { logout } = useAuth();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    toast({
-      title: "Logging out...",
-      description: "Please wait while we log you out.",
-    });
-    
-    // Always attempt logout - even if it fails, we'll clear local state
-    await logout();
-  };
-
-  return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={handleLogout}
-      className="w-full mt-2"
-    >
-      <LogOut className="h-4 w-4 mr-2 group-data-[collapsible=icon]:mr-0" />
-      <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-    </Button>
-  );
-}
-
 export function CollapsibleDashboardLayout({ 
   children, 
   title = "Dashboard",
   subtitle 
 }: CollapsibleDashboardLayoutProps) {
   const [location] = useLocation();
-  
 
-
-  // Get current user with 401 handling
-  const { data: user } = useQuery<UserType | null>({
+  // Get current user
+  const { data: user } = useQuery({
     queryKey: ['/api/auth/user'],
-    queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -137,7 +101,7 @@ export function CollapsibleDashboardLayout({
               </SidebarGroupContent>
             </SidebarGroup>
 
-            {user && (user.role?.includes('teacher') || user.role === 'demo_teacher') && (
+            {(user?.role?.includes('teacher') || user?.role === 'demo_teacher') && (
               <SidebarGroup>
                 <SidebarGroupLabel>Teaching Tools</SidebarGroupLabel>
                 <SidebarGroupContent>
@@ -163,7 +127,7 @@ export function CollapsibleDashboardLayout({
               </SidebarGroup>
             )}
 
-            {user && (user.role?.includes('admin') || user.role === 'demo_school_admin') && (
+            {(user?.role?.includes('admin') || user?.role === 'demo_school_admin') && (
               <SidebarGroup>
                 <SidebarGroupLabel>Administration</SidebarGroupLabel>
                 <SidebarGroupContent>
@@ -195,17 +159,15 @@ export function CollapsibleDashboardLayout({
               <div className="flex items-center gap-2 px-2 py-2 text-sm">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
                   <span className="text-xs font-medium">
-                    {user?.firstName?.[0] || 'G'}{user?.lastName?.[0] || 'U'}
+                    {user?.firstName?.[0]}{user?.lastName?.[0]}
                   </span>
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                  <span className="font-medium">{user?.firstName || 'Guest'} {user?.lastName || 'User'}</span>
-                  <span className="text-xs text-muted-foreground">{user?.email || 'guest@edvirons.com'}</span>
-                  <span className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ') || 'guest'}</span>
+                  <span className="font-medium">{user?.firstName} {user?.lastName}</span>
+                  <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  <span className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ')}</span>
                 </div>
               </div>
-              <LogoutButton />
-              <ForceLogoutButton />
             </div>
           </SidebarFooter>
           <SidebarRail />
@@ -224,7 +186,7 @@ export function CollapsibleDashboardLayout({
             </div>
             {user && (
               <div className="text-sm text-muted-foreground">
-                {user.firstName || 'Guest'} {user.lastName || 'User'}
+                {user.firstName} {user.lastName}
               </div>
             )}
           </header>

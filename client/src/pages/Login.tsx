@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
 import { 
   Eye, 
@@ -105,9 +105,8 @@ export default function Login() {
           title: "Login Successful",
           description: "Welcome back to EdVirons!",
         });
-        
-        // Force full page reload to ensure session is properly established
-        window.location.href = "/dashboard";
+        // Force a full page reload to ensure authentication state is properly updated
+        window.location.href = "/";
       } else {
         throw new Error("Login failed");
       }
@@ -134,9 +133,8 @@ export default function Login() {
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        
-        // Force full page reload to ensure session is properly established
-        window.location.href = "/dashboard";
+        // Force a full page reload to ensure authentication state is properly updated
+        window.location.href = "/";
       } else {
         throw new Error("Demo login failed");
       }

@@ -13,34 +13,6 @@
   --hero-gradient: linear-gradient(135deg, hsl(220, 100%, 25%) 0%, hsl(240, 100%, 35%) 50%, hsl(260, 100%, 45%) 100%);
 }
 
-/* Smooth transitions to prevent flickering */
-.transition-opacity {
-  transition: opacity 0.3s ease-in-out;
-}
-
-.fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Learning Institutions Carousel Animation */
-@keyframes scroll-institutions {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-scroll-institutions {
-  animation: scroll-institutions 20s linear infinite;
-}
-
 /* Custom mobile optimizations */
 @layer utilities {
   .scrollbar-hide {

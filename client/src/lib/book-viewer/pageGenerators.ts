@@ -317,6 +317,22 @@ function generateReadingPageContent(pageNumber: number, resource: any): string {
     </div>
   `;
 }
+  pages.push(generateVideoPage());
+  pages.push(generateCalculatorPage());
+  pages.push(generateGraphPage());
+  pages.push(generateQuizPage(totalPages));
+
+  // Generate remaining content pages
+  for (let i = 8; i <= totalPages; i++) {
+    if (i === totalPages) {
+      pages.push(generateSummaryPage(i, totalPages));
+    } else {
+      pages.push(generateChapterPage(i, totalPages));
+    }
+  }
+
+  return pages;
+}
 
 function generateInteractivePage(): string {
   return `
