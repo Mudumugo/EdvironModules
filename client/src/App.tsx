@@ -3,13 +3,14 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { SimpleApp } from "@/components/SimpleApp";
-// // import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility; // Temporarily disabled for Replit webview compatibility
-// import { useAuth } from "@/hooks/useAuth"; // Disabled to prevent twitching
+// // import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility
+import { useAuth } from "@/hooks/useAuth";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
 import { NewLanding } from "@/pages/NewLanding";
 import { MobileLanding } from "@/pages/MobileLanding";
+import QuickLogin from "@/pages/QuickLogin";
 import { Solutions } from "@/pages/Solutions";
 import { CBEOverview } from "@/pages/CBEOverview";
 import { About } from "@/pages/About";
@@ -97,10 +98,8 @@ const componentMap: Record<string, any> = {
 };
 
 function Router() {
-  // Disabled auth to prevent twitching - all users are not authenticated
-  const isAuthenticated = false;
-  const isLoading = false;
-  const user = null;
+  // Enable authentication for proper login functionality
+  const { isAuthenticated, isLoading, user } = useAuth();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
@@ -117,10 +116,11 @@ function Router() {
         ) : !isAuthenticated ? (
           <Switch>
             <Route path="/login" component={Login} />
+            <Route path="/quick-login" component={QuickLogin} />
             <Route path="/signup" component={InteractiveSignUp} />
             <Route path="/interactive-signup" component={InteractiveSignUp} />
             <Route path="/old-signup" component={SignUp} />
-            <Route path="/demo" component={Login} />
+            <Route path="/demo" component={QuickLogin} />
             <Route path="/features" component={Features} />
             <Route path="/solutions" component={Solutions} />
             <Route path="/cbe-overview" component={CBEOverview} />

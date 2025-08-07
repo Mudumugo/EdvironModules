@@ -124,15 +124,21 @@ export const setLoggingOut = () => {};
 export const getIsLoggingOut = () => false;
 
 export function useAuth() {
-  // Static auth state to prevent twitching - no polling
-  const [authState] = useState({ user: null, isAuthenticated: false });
-  const [isLoading] = useState(false);
+  // Use React Query for auth with reasonable settings
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ['/api/auth/user'],
+    queryFn: getQueryFn({ on401: "returnNull" }),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    retry: 0,
+  });
 
   return {
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null
+    user: user || null,
+    isAuthenticated: !!user,
+    isLoading,
+    error
   };
 }
 
