@@ -104,8 +104,11 @@ function Router() {
       {/* Show loading state while checking authentication for other routes */}
       <Route>
         {isLoading ? (
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
+            <div className="text-center">
+              <div className="animate-spin w-12 h-12 border-4 border-white border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-white text-lg">Loading EdVirons...</p>
+            </div>
           </div>
         ) : !isAuthenticated ? (
           <Switch>
@@ -121,7 +124,27 @@ function Router() {
             <Route path="/mobile" component={MobileLanding} />
             <Route>
               {/* Show mobile landing on phone screens, new landing on desktop */}
-              {isMobile ? <MobileLanding /> : <NewLanding />}
+              {(() => {
+                try {
+                  return isMobile ? <MobileLanding /> : <NewLanding />;
+                } catch (error) {
+                  console.error('Landing page error:', error);
+                  return (
+                    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <h1 className="text-4xl font-bold mb-4">EdVirons</h1>
+                        <p className="text-xl mb-8">Educational Platform Loading...</p>
+                        <button 
+                          onClick={() => window.location.reload()} 
+                          className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold"
+                        >
+                          Reload
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+              })()}
             </Route>
           </Switch>
         ) : (

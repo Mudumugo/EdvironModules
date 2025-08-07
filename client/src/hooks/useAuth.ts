@@ -142,12 +142,12 @@ export function useAuth() {
 
     checkAuth();
     
-    // Force recheck every 2 seconds to catch logout state changes
+    // Force recheck every 10 seconds to catch logout state changes (reduced frequency for performance)
     const interval = setInterval(() => {
       if (mounted) {
         checkAuth();
       }
-    }, 2000);
+    }, 10000);
     
     return () => {
       mounted = false;
