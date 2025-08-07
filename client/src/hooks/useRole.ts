@@ -11,7 +11,7 @@ import {
 import { type Permission, type UserRole } from "@shared/schema";
 
 export function useRole() {
-  const user = null; // Disabled auth polling to prevent twitching
+  const { user } = useAuth();
 
   return {
     user,

@@ -6,7 +6,7 @@ import { isStudent } from "@/lib/roleUtils";
 import { GraduationCap, BookOpen, Clock, Award, Target, TrendingUp } from "lucide-react";
 
 export function AcademicTab() {
-  const user = null; // Disabled auth polling to prevent twitching
+  const { user } = useAuth();
 
   if (!user || !isStudent(user.role)) {
     return (

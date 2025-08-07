@@ -1,200 +1,426 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { 
-  GraduationCap, 
-  BookOpen, 
-  Users, 
-  Shield, 
-  Globe, 
-  ArrowRight, 
-  Play,
-  ChevronDown,
-  Star,
-  Check
-} from "lucide-react";
+import { Switch, Route } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { SimpleApp } from "@/components/SimpleApp";
+// // import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility; // Temporarily disabled for Replit webview compatibility
+// import { useAuth } from "@/hooks/useAuth"; // Disabled to prevent twitching
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useEffect, useState } from "react";
+import { Landing } from "@/pages/Landing";
+import { NewLanding } from "@/pages/NewLanding";
+import { MobileLanding } from "@/pages/MobileLanding";
+import { Solutions } from "@/pages/Solutions";
+import { CBEOverview } from "@/pages/CBEOverview";
+import { About } from "@/pages/About";
+import { Features } from "@/pages/Features";
+import Login from "@/pages/Login";
+import SignUp from "@/pages/SignUp";
+import InteractiveSignUp from "@/pages/InteractiveSignUp";
+import Dashboard from "@/pages/Dashboard";
+import LearningDashboard from "@/pages/LearningDashboard";
+import AdminDashboard from "@/pages/AdminDashboard";
+import SchoolManagement from "@/pages/SchoolManagement";
+import DigitalLibrary from "@/pages/DigitalLibrary";
+import DigitalLibraryNew from "@/pages/DigitalLibraryNew";
+import SecurityDashboard from "@/pages/SecurityDashboard";
+import ITDashboard from "@/pages/ITDashboard";
+import TutorHub from "@/pages/TutorHub";
+import FamilyControls from "@/pages/FamilyControls";
+import Scheduling from "@/pages/Scheduling";
+import SchoolCalendar from "@/pages/SchoolCalendar";
+import Calendar from "@/pages/Calendar";
+import Analytics from "@/pages/Analytics";
+import Licensing from "@/pages/Licensing";
+import Settings from "@/pages/Settings";
+import CRM from "@/pages/CRM";
+import MyLocker from "@/pages/MyLocker";
+import DeviceManagement from "@/pages/DeviceManagement";
 
-// Completely minimal App that only shows landing page
-// No routing, no auth, no queries - just static content
-export default function App() {
-  const handleDemoLogin = async () => {
-    try {
-      const response = await fetch('/api/auth/demo-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'demo.teacher@edvirons.com' })
-      });
-      
-      if (response.ok) {
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error('Demo login failed:', error);
-    }
-  };
+import StudentDashboard from "@/pages/StudentDashboard";
+import UserManagement from "@/pages/UserManagement-simple";
+import PBXDashboard from "@/pages/PBXDashboard";
+import ParentPortal from "@/pages/ParentPortal";
+import ParentPortalAdmin from "@/pages/ParentPortalAdmin";
+import AppsHub from "@/pages/AppsHub";
+import AppsHubAdmin from "@/pages/AppsHubAdmin";
+import GlobalSupport from "@/pages/GlobalSupport";
+import GlobalLicensing from "@/pages/GlobalLicensing";
+import TenantManagement from "@/pages/TenantManagement";
+import EdVironsAdminDashboard from "@/pages/EdVironsAdminDashboard";
+import CBEHub from "@/pages/CBEHub";
+
+import TimetableManagement from "@/pages/TimetableManagement";
+import AuthoringDashboard from "@/pages/AuthoringDashboard";
+import ClassManagement from "@/pages/ClassManagement";
+import LessonPlanning from "@/pages/LessonPlanning";
+import DigitalNotebooks from "@/pages/DigitalNotebooks";
+import NotificationsCenter from "@/pages/NotificationsCenter";
+import Communications from "@/pages/Communications";
+import UserProfile from "@/pages/UserProfile";
+import TechTutor from "@/pages/TechTutor";
+import Help from "@/pages/Help";
+import TeachersDashboard from "@/pages/TeachersDashboard";
+import Layout from "@/components/Layout";
+import NotFound from "@/pages/not-found";
+import RoleProtectedRoute from "@/components/RoleProtectedRoute";
+import { USER_ROLES } from "@shared/schema";
+import { isRouteIncluded, hasGlobalAuthoringAccess } from "@/config/buildConfig";
+
+// Component mapping for dynamic routing (filtered by build configuration)
+const componentMap: Record<string, any> = {
+  'dashboard': Dashboard,
+  'my-locker': MyLocker,
+  'school-management': SchoolManagement,
+  'device-management': DeviceManagement,
+  'digital-library': DigitalLibrary,
+  'tutor-hub': TutorHub,
+  'teacher-dashboard': Dashboard,
+  'family-controls': FamilyControls,
+  'scheduling': Scheduling,
+  'analytics': Analytics,
+  'user-profile': UserProfile,
+  'licensing': Licensing,
+  'settings': Settings,
+  'users': UserManagement,
+  'pbx': PBXDashboard,
+  'parent-portal': ParentPortal,
+  'parent-portal-admin': ParentPortalAdmin,
+  'apps-hub': AppsHub,
+  'apps-hub-admin': AppsHubAdmin,
+  'teachers-dashboard': TeachersDashboard,
+  'timetable': TimetableManagement,
+  'security-dashboard': SecurityDashboard,
+  'admin/communications': Communications,
+  // Global-only components - conditionally included
+  ...(isRouteIncluded('/authoring-dashboard') && {'authoring-dashboard': AuthoringDashboard})
+};
+
+function Router() {
+  // Disabled auth to prevent twitching - all users are not authenticated
+  const isAuthenticated = false;
+  const isLoading = false;
+  const user = null;
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Fixed Navigation Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <GraduationCap className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">EdVirons</span>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                Features
-              </Button>
-              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                Pricing
-              </Button>
-              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                Contact
-              </Button>
-              <Button 
-                onClick={handleDemoLogin}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Demo Login
-              </Button>
+    <Switch>
+      {/* Show loading state while checking authentication for other routes */}
+      <Route>
+        {isLoading ? (
+          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
+            <div className="text-center">
+              <div className="animate-spin w-12 h-12 border-4 border-white border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-white text-lg">Loading EdVirons...</p>
             </div>
           </div>
-        </div>
-      </header>
+        ) : !isAuthenticated ? (
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={InteractiveSignUp} />
+            <Route path="/interactive-signup" component={InteractiveSignUp} />
+            <Route path="/old-signup" component={SignUp} />
+            <Route path="/demo" component={Login} />
+            <Route path="/features" component={Features} />
+            <Route path="/solutions" component={Solutions} />
+            <Route path="/cbe-overview" component={CBEOverview} />
+            <Route path="/about" component={About} />
+            <Route path="/mobile" component={MobileLanding} />
+            <Route>
+              {/* Show mobile landing on phone screens, new landing on desktop */}
+              {(() => {
+                try {
+                  return isMobile ? <MobileLanding /> : <NewLanding />;
+                } catch (error) {
+                  console.error('Landing page error:', error);
+                  return (
+                    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <h1 className="text-4xl font-bold mb-4">EdVirons</h1>
+                        <p className="text-xl mb-8">Educational Platform Loading...</p>
+                        <button 
+                          onClick={() => window.location.reload()} 
+                          className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold"
+                        >
+                          Reload
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+              })()}
+            </Route>
+          </Switch>
+        ) : (
+          <Layout>
+            <Switch>
+              {/* Core modules - available to all authenticated users */}
+              <Route path="/">
+                <RoleProtectedRoute moduleId="dashboard">
+                  {user?.role === 'school_admin' ? <AdminDashboard /> : 
+                   user?.role === 'security_staff' || user?.role === 'school_security' ? <SecurityDashboard /> : 
+                   user?.role === 'it_staff' || user?.role === 'school_it_staff' ? <ITDashboard /> : 
+                   user?.role === 'teacher' ? <Dashboard /> :
+                   user?.role?.includes('student') || user?.role === 'student' ? <StudentDashboard /> :
+                   user?.role === 'global_author' || user?.role === 'content_admin' ? <AuthoringDashboard /> :
+                   user?.role?.startsWith('edvirons_') ? <EdVironsAdminDashboard /> :
+                   <Dashboard />}
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/learning-dashboard">
+                <RoleProtectedRoute moduleId="dashboard">
+                  <LearningDashboard />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/settings">
+                <RoleProtectedRoute moduleId="settings">
+                  <Settings />
+                </RoleProtectedRoute>
+              </Route>
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="mb-8">
-            <div className="inline-flex items-center bg-white/10 backdrop-blur rounded-full px-4 py-2 text-sm font-medium border border-white/20">
-              <Star className="h-4 w-4 mr-2 text-yellow-400" />
-              Trusted by 10,000+ schools worldwide
-            </div>
-          </div>
+              <Route path="/user-profile">
+                <RoleProtectedRoute moduleId="user-profile">
+                  <UserProfile />
+                </RoleProtectedRoute>
+              </Route>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-            EdVirons Learning
-            <span className="block text-yellow-400">Ecosystem</span>
-          </h1>
-          
-          <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-blue-100">
-            Education Reimagined. Local Needs, Global Standards.
-            <br />
-            Comprehensive digital platform connecting students, teachers, and parents.
-          </p>
+              {/* Student and Teacher modules */}
+              <Route path="/digital-library">
+                <RoleProtectedRoute moduleId="digital-library">
+                  <DigitalLibrary />
+                </RoleProtectedRoute>
+              </Route>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg">
-              Get Started Free
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Watch Demo
-            </Button>
-          </div>
+              <Route path="/my-locker">
+                <RoleProtectedRoute moduleId="my-locker">
+                  <MyLocker />
+                </RoleProtectedRoute>
+              </Route>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            <div className="bg-white/10 backdrop-blur rounded-lg p-6 border border-white/20">
-              <Shield className="h-8 w-8 text-green-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Secure & Compliant</h3>
-              <p className="text-blue-100 text-sm">Enterprise-grade security with full data privacy compliance</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-6 border border-white/20">
-              <Globe className="h-8 w-8 text-blue-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Global Standards</h3>
-              <p className="text-blue-100 text-sm">Aligned with international educational frameworks</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-6 border border-white/20">
-              <Users className="h-8 w-8 text-purple-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Multi-Tenant</h3>
-              <p className="text-blue-100 text-sm">Scalable platform serving multiple institutions</p>
-            </div>
-          </div>
+              {/* Teacher-only modules */}
+              <Route path="/teacher-dashboard">
+                <RoleProtectedRoute moduleId="teacher-dashboard">
+                  <Dashboard />
+                </RoleProtectedRoute>
+              </Route>
 
-          <div className="flex justify-center">
-            <div className="animate-bounce">
-              <ChevronDown className="h-6 w-6 text-white/60" />
-            </div>
-          </div>
-        </div>
-      </section>
+              <Route path="/tutor-hub">
+                <RoleProtectedRoute moduleId="tutor-hub">
+                  <TutorHub />
+                </RoleProtectedRoute>
+              </Route>
 
-      {/* Features Section */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Comprehensive Educational Platform
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to transform your educational institution with cutting-edge technology.
-            </p>
-          </div>
+              <Route path="/scheduling">
+                <RoleProtectedRoute moduleId="scheduling">
+                  <Scheduling />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/school-calendar">
+                <RoleProtectedRoute moduleId="scheduling">
+                  <SchoolCalendar />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/calendar">
+                <RoleProtectedRoute moduleId="scheduling">
+                  <Calendar />
+                </RoleProtectedRoute>
+              </Route>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-blue-200">
-              <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <GraduationCap className="h-6 w-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-xl font-bold">CBC Hub</CardTitle>
-                <CardDescription>
-                  Complete Competency-Based Curriculum management with digital assessment tools.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+              {/* Administrative modules - School Admin only */}
+              <Route path="/users">
+                <RoleProtectedRoute moduleId="users">
+                  <UserManagement />
+                </RoleProtectedRoute>
+              </Route>
 
-            <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-green-200">
-              <CardHeader>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="h-6 w-6 text-green-600" />
-                </div>
-                <CardTitle className="text-xl font-bold">Digital Library</CardTitle>
-                <CardDescription>
-                  Interactive digital resources aligned with curriculum standards.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+              <Route path="/school-management">
+                <RoleProtectedRoute moduleId="school-management">
+                  <SchoolManagement />
+                </RoleProtectedRoute>
+              </Route>
 
-            <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-purple-200">
-              <CardHeader>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-purple-600" />
-                </div>
-                <CardTitle className="text-xl font-bold">School Management</CardTitle>
-                <CardDescription>
-                  Comprehensive administrative tools for student records and operations.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </section>
+              <Route path="/analytics">
+                <RoleProtectedRoute moduleId="analytics">
+                  <Analytics />
+                </RoleProtectedRoute>
+              </Route>
 
-      {/* Simple Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <GraduationCap className="h-8 w-8 text-blue-400" />
-            <span className="text-2xl font-bold">EdVirons</span>
-          </div>
-          <p className="text-gray-400 mb-4">
-            Transforming education through technology
-          </p>
-          <p className="text-sm text-gray-500">
-            © 2025 EdVirons. All rights reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
+              <Route path="/licensing">
+                <RoleProtectedRoute moduleId="licensing">
+                  <Licensing />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Technical modules - IT Staff + School Admin */}
+              <Route path="/device-management">
+                <RoleProtectedRoute moduleId="device-management">
+                  <DeviceManagement />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Authoring module - Global content creators only */}
+              {isRouteIncluded('/authoring-dashboard') && (
+                <Route path="/authoring-dashboard">
+                  <RoleProtectedRoute 
+                    moduleId="authoring-dashboard"
+                    customAccessCheck={(user) => hasGlobalAuthoringAccess(user?.role)}
+                  >
+                    <AuthoringDashboard />
+                  </RoleProtectedRoute>
+                </Route>
+              )}
+
+              {/* Class Management - Teachers */}
+              <Route path="/class-management">
+                <RoleProtectedRoute moduleId="class-management">
+                  <ClassManagement />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Teacher-specific modules */}
+              <Route path="/teachers-dashboard">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin"]}>
+                  <TeachersDashboard />
+                </RoleProtectedRoute>
+              </Route>
+
+              <Route path="/lesson-planning">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin"]}>
+                  <LessonPlanning />
+                </RoleProtectedRoute>
+              </Route>
+
+              <Route path="/digital-notebooks">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college"]}>
+                  <DigitalNotebooks />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Notifications Center */}
+              <Route path="/notifications">
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college", "school_security", "school_it_staff"]}>
+                  <NotificationsCenter />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Security modules - Security Staff + School Admin */}
+              <Route path="/security-dashboard">
+                <RoleProtectedRoute moduleId="security-dashboard">
+                  <SecurityDashboard />
+                </RoleProtectedRoute>
+              </Route>
+
+              <Route path="/crm">
+                <RoleProtectedRoute moduleId="crm">
+                  <CRM />
+                </RoleProtectedRoute>
+              </Route>
+
+              <Route path="/family-controls">
+                <RoleProtectedRoute moduleId="family-controls">
+                  <FamilyControls />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Apps Hub - Multiple roles */}
+              <Route path="/apps-hub">
+                <RoleProtectedRoute moduleId="apps-hub">
+                  <AppsHub />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/apps-hub-admin">
+                <RoleProtectedRoute moduleId="apps-hub-admin">
+                  <AppsHubAdmin />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/global-support">
+                <RoleProtectedRoute moduleId="global-support">
+                  <GlobalSupport />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/global-licensing">
+                <RoleProtectedRoute moduleId="global-licensing">
+                  <GlobalLicensing />
+                </RoleProtectedRoute>
+              </Route>
+              
+              <Route path="/tenant-management">
+                <RoleProtectedRoute moduleId="tenant-management">
+                  <TenantManagement />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* CBE Hub - All authenticated users */}
+              <Route path="/cbe-hub">
+                <RoleProtectedRoute moduleId="cbe-hub">
+                  <CBEHub />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* CBE Hub - All users */}
+              <Route path="/cbe-hub">
+                <CBEHub />
+              </Route>
+
+              {/* Tech Tutor - Students and Teachers */}
+              <Route path="/tech-tutor">
+                <RoleProtectedRoute allowedRoles={["student_elementary", "student_middle", "student_high", "student_college", "teacher", "school_admin"]}>
+                  <TechTutor />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Help Center - All users */}
+              <Route path="/help">
+                <Help />
+              </Route>
+
+              {/* Communication modules - Multiple roles */}
+              <Route path="/admin/communications">
+                <RoleProtectedRoute allowedRoles={["school_admin", "edvirons_admin"]}>
+                  <Communications />
+                </RoleProtectedRoute>
+              </Route>
+
+              <Route path="/pbx">
+                <RoleProtectedRoute moduleId="pbx">
+                  <PBXDashboard />
+                </RoleProtectedRoute>
+              </Route>
+
+              {/* Parent modules - Parent role only */}
+              <Route path="/parent-portal">
+                <RoleProtectedRoute moduleId="parent-portal">
+                  <ParentPortal />
+                </RoleProtectedRoute>
+              </Route>
+
+              <Route component={NotFound} />
+            </Switch>
+          </Layout>
+        )}
+      </Route>
+    </Switch>
   );
 }
+
+
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="min-h-screen">
+        <Router />
+        <Toaster />
+      </div>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
