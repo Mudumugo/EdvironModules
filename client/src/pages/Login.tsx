@@ -124,21 +124,29 @@ export default function Login() {
   const handleDemoLogin = async (account: typeof DEMO_ACCOUNTS[0]) => {
     setIsLoading(true);
     try {
+      console.log(`Attempting demo login for ${account.email}...`);
       const response = await apiRequest("POST", "/api/auth/demo-login", {
         email: account.email
       });
 
-      if (response.ok) {
+      const data = await response.json();
+      console.log('Demo login response:', data);
+
+      if (response.ok && data.success) {
         toast({
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        // Force a full page reload to ensure authentication state is properly updated
-        window.location.href = "/";
+        console.log(`Demo login successful for ${account.email}, forcing page reload...`);
+        // Force a complete page reload to ensure auth state is updated
+        setTimeout(() => {
+          window.location.replace("/");
+        }, 500); // Small delay to let toast show
       } else {
-        throw new Error("Demo login failed");
+        throw new Error(data.error || "Demo login failed");
       }
     } catch (error) {
+      console.error('Demo login error:', error);
       toast({
         title: "Login Failed",
         description: "Unable to log in. Please try again.",

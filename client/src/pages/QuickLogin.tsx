@@ -9,20 +9,28 @@ export default function QuickLogin() {
   const handleDemoLogin = async (email: string, role: string) => {
     setLoading(role);
     try {
+      console.log(`Attempting login for ${email}...`);
       const response = await fetch('/api/auth/demo-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
+        credentials: 'include'
       });
       
-      if (response.ok) {
-        // Immediate redirect after successful login
-        window.location.href = '/';
+      const data = await response.json();
+      console.log('Login response:', data);
+      
+      if (response.ok && data.success) {
+        console.log(`Login successful for ${email}, redirecting...`);
+        // Force a complete page reload to ensure auth state updates
+        window.location.replace('/');
       } else {
-        console.error('Login failed:', await response.text());
+        console.error('Login failed:', data);
+        alert(`Login failed: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Login error:', error);
+      alert(`Login error: ${error.message}`);
     } finally {
       setLoading(null);
     }
