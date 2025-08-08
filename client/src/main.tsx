@@ -1,3 +1,4 @@
+import React from "react";
 import { createRoot } from "react-dom/client";
 import "./lib/react-fix"; // Import React fix first
 import App from "./App";

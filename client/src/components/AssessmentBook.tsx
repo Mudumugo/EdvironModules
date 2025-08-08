@@ -354,7 +354,7 @@ function StrandManager({ subject, isOpen, onClose, onUpdate }: {
 }
 
 export default function AssessmentBook() {
-  const user = null; // Disabled auth polling to prevent twitching
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
