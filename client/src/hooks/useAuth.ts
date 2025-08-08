@@ -22,7 +22,7 @@ export function useAuth() {
     queryKey: ["/api/auth/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
-    staleTime: 0, // Always consider data stale to force fresh checks
+    staleTime: 30000, // Cache auth status for 30 seconds to prevent infinite polling
   });
 
   const isAuthenticated = !!user && !error;
