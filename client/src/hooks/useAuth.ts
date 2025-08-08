@@ -132,6 +132,7 @@ export function useAuth() {
 
   const checkAuth = React.useCallback(async () => {
     try {
+      console.log('[useAuth] Checking authentication...');
       const response = await fetch('/api/auth/user', {
         credentials: 'include',
         headers: {
@@ -142,13 +143,16 @@ export function useAuth() {
       
       if (response.ok) {
         const userData = await response.json();
+        console.log('[useAuth] User authenticated:', userData);
         setUser(userData);
         setError(null);
       } else {
+        console.log('[useAuth] User not authenticated, status:', response.status);
         setUser(null);
         setError(null);
       }
     } catch (err) {
+      console.error('[useAuth] Auth check failed:', err);
       setUser(null);
       setError(err as Error);
     } finally {
