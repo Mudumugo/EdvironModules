@@ -125,12 +125,22 @@ export default function Login() {
     setIsLoading(true);
     try {
       console.log(`Attempting demo login for ${account.email}...`);
-      const response = await apiRequest("POST", "/api/auth/demo-login", {
-        email: account.email
+      
+      // Use direct fetch instead of apiRequest to avoid issues
+      const response = await fetch('/api/auth/demo-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: account.email
+        })
       });
 
+      console.log('Demo login response status:', response.status);
       const data = await response.json();
-      console.log('Demo login response:', data);
+      console.log('Demo login response data:', data);
 
       if (response.ok && data.success) {
         toast({
@@ -142,13 +152,16 @@ export default function Login() {
         // Force immediate navigation without delay
         window.location.href = "/";
       } else {
-        throw new Error(data.error || "Demo login failed");
+        const errorMessage = data.error || `Login failed with status ${response.status}`;
+        console.error('Demo login failed:', errorMessage);
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('Demo login error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       toast({
         title: "Login Failed",
-        description: "Unable to log in. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

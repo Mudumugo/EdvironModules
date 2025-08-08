@@ -150,7 +150,7 @@ export function useAuth() {
       }
     } catch (err) {
       setUser(null);
-      setError(err);
+      setError(err as Error);
     } finally {
       setIsLoading(false);
     }
