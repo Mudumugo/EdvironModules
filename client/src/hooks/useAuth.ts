@@ -158,8 +158,8 @@ export function useAuth() {
 
   React.useEffect(() => {
     checkAuth();
-    // Check auth every 500ms to catch login state changes
-    const interval = setInterval(checkAuth, 500);
+    // Check auth every 2 seconds to catch login state changes (reduced from 500ms)
+    const interval = setInterval(checkAuth, 2000);
     return () => clearInterval(interval);
   }, [checkAuth]);
 

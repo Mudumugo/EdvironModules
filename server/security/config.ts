@@ -22,10 +22,22 @@ export const rateLimitConfigs = {
   // API endpoints - moderate limits
   api: rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // 100 requests per window
+    max: 500, // 500 requests per window (increased for polling)
     message: {
       error: 'Too many API requests, please slow down.',
       code: 'RATE_LIMIT_API'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+
+  // Auth check endpoint - very permissive for user state polling
+  authCheck: rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 200, // 200 requests per minute (allows frequent polling)
+    message: {
+      error: 'Too many authentication checks, please slow down.',
+      code: 'RATE_LIMIT_AUTH_CHECK'
     },
     standardHeaders: true,
     legacyHeaders: false,
