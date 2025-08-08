@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { GraduationCap, Home, BookOpen, Cloud, Smartphone, Settings, User, Calendar, BarChart3, PenTool, Users, Video, Monitor, FileText, MessageSquare, Clock, Shield, Wrench, BookOpenCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Sidebar,
   SidebarContent,
@@ -31,13 +32,7 @@ export function CollapsibleDashboardLayout({
 }: CollapsibleDashboardLayoutProps) {
   const [location] = useLocation();
 
-  // Get current user (disabled to prevent twitching - using auth hook instead)
-  const { data: user } = useQuery({
-    queryKey: ['/api/auth/user'],
-    enabled: false, // Disable this query completely
-    retry: false,
-    staleTime: Infinity,
-  });
+  const { user } = useAuth();
 
   // Base navigation items (filtered by tenant configuration)
   const navigationItems = [

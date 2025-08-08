@@ -52,7 +52,7 @@ export function EventDetailsDialog({
   onEdit, 
   onRSVP 
 }: EventDetailsDialogProps) {
-  const user = null; // Disabled auth polling to prevent twitching
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 

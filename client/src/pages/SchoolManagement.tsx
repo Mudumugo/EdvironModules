@@ -10,9 +10,7 @@ import { SchoolStatistics } from "@/components/school/SchoolStatistics";
 import { SearchAndFilter } from "@/components/school/SearchAndFilter";
 
 export default function SchoolManagement() {
-  const user = null; // Disabled auth polling to prevent twitching
-  const isAuthenticated = false;
-  const isLoading = false;
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("");
   const [classes, setClasses] = useState<any[]>([]);

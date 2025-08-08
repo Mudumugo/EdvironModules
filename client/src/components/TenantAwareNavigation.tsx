@@ -12,7 +12,7 @@ interface NavigationItem {
 }
 
 export function useTenantAwareNavigation() {
-  const user = null; // Disabled auth polling to prevent twitching
+  const { user } = useAuth();
   
   const navigationItems = useMemo(() => {
     if (!user) return [];
