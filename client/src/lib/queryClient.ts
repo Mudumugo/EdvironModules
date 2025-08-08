@@ -43,21 +43,18 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
-// Re-enabled with sensible defaults to prevent excessive polling
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: 'return401' }),
-      refetchInterval: false, // No automatic polling
-      refetchOnWindowFocus: false, // No focus refetching
-      refetchOnMount: true, // Allow mount queries
-      refetchOnReconnect: false, // No reconnect refetching
+      queryFn: getQueryFn({ on401: "throw" }),
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
-      retry: 1, // Only retry once
+      gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
+      retry: false,
     },
     mutations: {
-      retry: 1,
+      retry: false,
     },
   },
 });

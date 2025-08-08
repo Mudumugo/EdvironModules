@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
 import { 
   Eye, 
@@ -124,73 +124,24 @@ export default function Login() {
   const handleDemoLogin = async (account: typeof DEMO_ACCOUNTS[0]) => {
     setIsLoading(true);
     try {
-      console.log(`[DEMO LOGIN] Starting login for ${account.email}...`);
-      
-      // Use direct fetch with timeout and better error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
-      const response = await fetch('/api/auth/demo-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: account.email
-        }),
-        signal: controller.signal
+      const response = await apiRequest("POST", "/api/auth/demo-login", {
+        email: account.email
       });
-      
-      clearTimeout(timeoutId);
-      console.log(`[DEMO LOGIN] Response status: ${response.status}`);
-      
-      if (!response.ok) {
-        if (response.status === 429) {
-          throw new Error('Too many login attempts. Please wait a moment and try again.');
-        }
-        const errorText = await response.text();
-        console.error(`[DEMO LOGIN] HTTP Error ${response.status}:`, errorText);
-        throw new Error(`Login failed: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      console.log(`[DEMO LOGIN] Response data:`, data);
 
-      if (data.success) {
-        console.log(`[DEMO LOGIN] Success! Redirecting...`);
+      if (response.ok) {
         toast({
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        
-        // Give a brief moment for the toast to show, then redirect
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 500);
+        // Force a full page reload to ensure authentication state is properly updated
+        window.location.href = "/";
       } else {
-        const errorMessage = data.error || 'Login failed - no success flag';
-        console.error(`[DEMO LOGIN] Backend error:`, errorMessage);
-        throw new Error(errorMessage);
+        throw new Error("Demo login failed");
       }
     } catch (error) {
-      console.error(`[DEMO LOGIN] Caught error:`, error);
-      
-      let errorMessage = 'Unknown error occurred';
-      
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = 'Login timed out. Please try again.';
-        } else {
-          errorMessage = error.message;
-        }
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-      
       toast({
         title: "Login Failed",
-        description: errorMessage,
+        description: "Unable to log in. Please try again.",
         variant: "destructive",
       });
     } finally {

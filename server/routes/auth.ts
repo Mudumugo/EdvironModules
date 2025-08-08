@@ -107,24 +107,8 @@ Object.entries(DEMO_USERS).forEach(([email, user]) => {
 console.log('[DEMO USERS] Initialized demo users:', Object.keys(DEMO_USERS));
 
 export function registerAuthRoutes(app: Express) {
-  // Debug endpoint to check demo user cache
-  app.get('/api/debug/demo-users', (req: Request, res: Response) => {
-    const keys = demoUserCache.keys();
-    const users = keys.map(key => ({
-      email: key,
-      user: demoUserCache.get(key)
-    }));
-    
-    res.json({
-      totalUsers: keys.length,
-      users: users
-    });
-  });
   // Get current user endpoint with session validation
   app.get('/api/auth/user', (req: Request, res: Response) => {
-    // Debug session state (remove in production)
-    // console.log(`[DEBUG] Session check - sessionID: ${req.sessionID}, user in session: ${!!req.session?.user}, passport user: ${!!req.user}`);
-    
     if (!req.user && !req.session?.user) {
       return res.status(401).json({ 
         error: 'Not authenticated',
@@ -146,107 +130,6 @@ export function registerAuthRoutes(app: Express) {
       sessionInfo
     });
   });
-
-  // Regular login endpoint with password authentication
-  app.post('/api/auth/login',
-    validateInput({
-      email: {
-        required: true,
-        type: 'string',
-        pattern: validationPatterns.email
-      },
-      password: {
-        required: true,
-        type: 'string',
-        minLength: 3
-      }
-    }),
-    async (req: Request, res: Response) => {
-      try {
-        const { email, password } = req.body;
-
-        // Check demo users first with default password
-        let user = demoUserCache.get(email);
-        const isValidDemo = user && (password === 'demo123' || password === 'password');
-        
-        if (!user || !isValidDemo) {
-          // Only hit database for non-demo users
-          user = await storage.getUserByEmail(email);
-          
-          if (!user) {
-            console.warn(`[SECURITY] Login attempt for non-existent user: ${email} from IP: ${req.ip}`);
-            return res.status(401).json({ 
-              error: 'Invalid email or password',
-              code: 'INVALID_CREDENTIALS'
-            });
-          }
-          
-          // For regular users, you'd verify password hash here
-          // For now, all demo accounts accept 'demo123' or 'password'
-          if (password !== 'demo123' && password !== 'password') {
-            console.warn(`[SECURITY] Invalid password for user: ${email} from IP: ${req.ip}`);
-            return res.status(401).json({ 
-              error: 'Invalid email or password',
-              code: 'INVALID_CREDENTIALS'
-            });
-          }
-        }
-
-        // Check if account is active
-        if ((user as any).isActive === false) {
-          console.warn(`[SECURITY] Login attempt for inactive user: ${email} from IP: ${req.ip}`);
-          return res.status(423).json({ 
-            error: 'Account is locked. Please contact administrator.',
-            code: 'ACCOUNT_LOCKED'
-          });
-        }
-
-        // Create session (same logic as demo login)
-        const sessionUser = {
-          id: (user as any).id,
-          email: (user as any).email,
-          role: (user as any).role,
-          tenantId: (user as any).tenantId,
-          firstName: (user as any).firstName,
-          lastName: (user as any).lastName,
-          permissions: (user as any).permissions || []
-        };
-
-        const currentTime = Date.now();
-        req.session.user = sessionUser;
-        (req.session as any).loginTime = currentTime;
-        (req.session as any).lastIP = req.ip;
-        (req.session as any).lastActivity = currentTime;
-        
-        await new Promise<void>((resolve, reject) => {
-          req.session.save((err) => {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
-        
-        res.header('X-Frame-Options', 'SAMEORIGIN');
-        res.header('Access-Control-Allow-Credentials', 'true');
-
-        console.log(`[SECURITY] Login successful for user: ${(user as any).email} (${(user as any).id}) from IP: ${req.ip}`);
-
-        res.json({ 
-          success: true, 
-          user: sessionUser,
-          sessionInfo: {
-            loginTime: currentTime,
-            expiresAt: currentTime + (24 * 60 * 60 * 1000)
-          }
-        });
-      } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ 
-          error: 'Internal server error',
-          code: 'INTERNAL_ERROR'
-        });
-      }
-    }
-  );
 
   // Demo login endpoint for testing with enhanced security and caching
   app.post('/api/auth/demo-login', 
@@ -302,24 +185,12 @@ export function registerAuthRoutes(app: Express) {
           permissions: (user as any).permissions || []
         };
 
-        // Set session data efficiently and ensure it's saved
+        // Set session data efficiently
         const currentTime = Date.now();
         req.session.user = sessionUser;
         (req.session as any).loginTime = currentTime;
         (req.session as any).lastIP = req.ip;
         (req.session as any).lastActivity = currentTime;
-        
-        // Force session save before responding and add webview compatibility headers
-        await new Promise<void>((resolve, reject) => {
-          req.session.save((err) => {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
-        
-        // Add webview compatibility headers
-        res.header('X-Frame-Options', 'SAMEORIGIN');
-        res.header('Access-Control-Allow-Credentials', 'true');
 
         // Log successful demo login (async to not block response)
         setImmediate(() => {
@@ -374,20 +245,9 @@ export function registerAuthRoutes(app: Express) {
       }
       
       res.clearCookie('connect.sid');
-      res.clearCookie('edvirons.sid'); // Clear custom session cookie too
-      
-      // Add webview-specific headers to force redirect
-      res.header('X-Logout-Redirect', '/');
-      res.header('X-Force-Reload', 'true');
-      res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.header('Pragma', 'no-cache');
-      res.header('Expires', '0');
-      
       res.json({ 
         success: true,
-        message: 'Logged out successfully',
-        redirect: '/',
-        forceReload: true
+        message: 'Logged out successfully'
       });
     });
   });

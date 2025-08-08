@@ -26,7 +26,6 @@ export function setupSecurity(app: Express) {
   app.use('/api', validateSession);
 
   // Rate limiting for authentication endpoints
-  app.use('/api/auth/user', rateLimitConfigs.authCheck); // Permissive rate limiting for auth checks
   app.use('/api/auth/login', rateLimitConfigs.auth);
   app.use('/api/auth/signup', rateLimitConfigs.auth);
   app.use('/api/auth/reset-password', rateLimitConfigs.sensitive);

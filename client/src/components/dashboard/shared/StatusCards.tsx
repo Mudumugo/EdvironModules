@@ -59,7 +59,7 @@ interface Resource {
 }
 
 export function AssignmentStatusCard() {
-  const isAuthenticated = false; // Disabled auth polling to prevent twitching
+  const { isAuthenticated } = useAuth();
   const { data: assignments = [], isLoading } = useQuery<Assignment[]>({
     queryKey: ['/api/assignments/status'],
     enabled: isAuthenticated,
@@ -171,7 +171,7 @@ export function AssignmentStatusCard() {
 }
 
 export function NotificationsCard() {
-  const isAuthenticated = false; // Disabled auth polling to prevent twitching
+  const { isAuthenticated } = useAuth();
   const { data: notifications = [], isLoading } = useQuery<Notification[]>({
     queryKey: ['/api/notifications'],
     enabled: isAuthenticated,
@@ -263,7 +263,7 @@ export function NotificationsCard() {
 }
 
 export function NextEventCard() {
-  const isAuthenticated = false; // Disabled auth polling to prevent twitching
+  const { isAuthenticated } = useAuth();
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/calendar/upcoming'],
     enabled: isAuthenticated,
@@ -347,7 +347,7 @@ export function NextEventCard() {
 }
 
 export function LibraryRecommendationsCard() {
-  const isAuthenticated = false; // Disabled auth polling to prevent twitching
+  const { isAuthenticated } = useAuth();
   const { data: recommendations = [], isLoading } = useQuery<Resource[]>({
     queryKey: ['/api/library/recommendations'],
     enabled: isAuthenticated,

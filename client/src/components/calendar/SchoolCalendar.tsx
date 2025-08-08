@@ -65,7 +65,7 @@ export default function SchoolCalendar() {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
 
-  const user = null; // Disabled auth polling to prevent twitching
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 

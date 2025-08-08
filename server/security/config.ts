@@ -22,22 +22,10 @@ export const rateLimitConfigs = {
   // API endpoints - moderate limits
   api: rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500, // 500 requests per window (increased for polling)
+    max: 100, // 100 requests per window
     message: {
       error: 'Too many API requests, please slow down.',
       code: 'RATE_LIMIT_API'
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-  }),
-
-  // Auth check endpoint - very permissive for user state polling
-  authCheck: rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 200, // 200 requests per minute (allows frequent polling)
-    message: {
-      error: 'Too many authentication checks, please slow down.',
-      code: 'RATE_LIMIT_AUTH_CHECK'
     },
     standardHeaders: true,
     legacyHeaders: false,
@@ -75,7 +63,7 @@ export const helmetConfig = helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "blob:", "data:"], // Note: unsafe-eval needed for Vite in dev
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Note: unsafe-eval needed for Vite in dev
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       connectSrc: ["'self'", "https:", "wss:", "ws:", "http://localhost:*"],
       mediaSrc: ["'self'", "blob:", "data:"],

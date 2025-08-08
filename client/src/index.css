@@ -5,14 +5,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Landing Page Brand Colors */
-:root {
-  --brand-primary: hsl(220, 100%, 40%);
-  --brand-secondary: hsl(220, 100%, 60%);
-  --accent: hsl(25, 100%, 50%);
-  --hero-gradient: linear-gradient(135deg, hsl(220, 100%, 25%) 0%, hsl(240, 100%, 35%) 50%, hsl(260, 100%, 45%) 100%);
-}
-
 /* Custom mobile optimizations */
 @layer utilities {
   .scrollbar-hide {

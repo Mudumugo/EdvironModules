@@ -19,14 +19,6 @@ import {
 } from "./live-session";
 
 export default function LiveSessionControl({ sessionId, onClose }: LiveSessionControlProps) {
-  // Component temporarily disabled to prevent TypeScript errors
-  return (
-    <div className="p-4 text-center">
-      <p>Live Session Control temporarily disabled for maintenance</p>
-    </div>
-  );
-  
-  /* Original component disabled to fix TypeScript errors:
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
   const { toast } = useToast();
@@ -47,8 +39,7 @@ export default function LiveSessionControl({ sessionId, onClose }: LiveSessionCo
 
   const { data: screenSharing = { isActive: false, quality: 'auto', viewers: [] } } = useQuery({
     queryKey: ['/api/live-sessions', sessionId, 'screen-sharing'],
-    refetchInterval: false, // Disabled to prevent unnecessary polling
-    enabled: false, // Temporarily disabled
+    refetchInterval: 2000,
   });
 
   const { isConnected } = useWebSocketConnection(sessionId, {

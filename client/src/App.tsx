@@ -2,15 +2,12 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { SimpleApp } from "@/components/SimpleApp";
-// // import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility
+// // import { TooltipProvider } from "@/components/ui/tooltip" // Disabled for Replit webview compatibility; // Temporarily disabled for Replit webview compatibility
 import { useAuth } from "@/hooks/useAuth";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEffect, useState } from "react";
 import { Landing } from "@/pages/Landing";
-import { NewLanding } from "@/pages/NewLanding";
 import { MobileLanding } from "@/pages/MobileLanding";
-import QuickLogin from "@/pages/QuickLogin";
 import { Solutions } from "@/pages/Solutions";
 import { CBEOverview } from "@/pages/CBEOverview";
 import { About } from "@/pages/About";
@@ -98,7 +95,6 @@ const componentMap: Record<string, any> = {
 };
 
 function Router() {
-  // Enable authentication for proper login functionality
   const { isAuthenticated, isLoading, user } = useAuth();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
@@ -107,48 +103,24 @@ function Router() {
       {/* Show loading state while checking authentication for other routes */}
       <Route>
         {isLoading ? (
-          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
-            <div className="text-center">
-              <div className="animate-spin w-12 h-12 border-4 border-white border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-white text-lg">Loading EdVirons...</p>
-            </div>
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
           </div>
         ) : !isAuthenticated ? (
           <Switch>
             <Route path="/login" component={Login} />
-            <Route path="/quick-login" component={QuickLogin} />
             <Route path="/signup" component={InteractiveSignUp} />
             <Route path="/interactive-signup" component={InteractiveSignUp} />
             <Route path="/old-signup" component={SignUp} />
-            <Route path="/demo" component={QuickLogin} />
+            <Route path="/demo" component={Login} />
             <Route path="/features" component={Features} />
             <Route path="/solutions" component={Solutions} />
             <Route path="/cbe-overview" component={CBEOverview} />
             <Route path="/about" component={About} />
             <Route path="/mobile" component={MobileLanding} />
             <Route>
-              {/* Show mobile landing on phone screens, new landing on desktop */}
-              {(() => {
-                try {
-                  return isMobile ? <MobileLanding /> : <NewLanding />;
-                } catch (error) {
-                  console.error('Landing page error:', error);
-                  return (
-                    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center">
-                      <div className="text-center text-white">
-                        <h1 className="text-4xl font-bold mb-4">EdVirons</h1>
-                        <p className="text-xl mb-8">Educational Platform Loading...</p>
-                        <button 
-                          onClick={() => window.location.reload()} 
-                          className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold"
-                        >
-                          Reload
-                        </button>
-                      </div>
-                    </div>
-                  );
-                }
-              })()}
+              {/* Show mobile landing on phone screens, full landing on desktop */}
+              {isMobile ? <MobileLanding /> : <Landing />}
             </Route>
           </Switch>
         ) : (
@@ -161,9 +133,9 @@ function Router() {
                    user?.role === 'security_staff' || user?.role === 'school_security' ? <SecurityDashboard /> : 
                    user?.role === 'it_staff' || user?.role === 'school_it_staff' ? <ITDashboard /> : 
                    user?.role === 'teacher' ? <Dashboard /> :
-                   user?.role?.includes('student') || user?.role === 'student' || user?.role === 'student_elementary' ? <StudentDashboard /> :
+                   user?.role?.includes('student') || user?.role === 'student' ? <StudentDashboard /> :
                    user?.role === 'global_author' || user?.role === 'content_admin' ? <AuthoringDashboard /> :
-                   user?.role?.startsWith('edvirons_') || user?.role === 'edvirons_admin' ? <EdVironsAdminDashboard /> :
+                   user?.role?.startsWith('edvirons_') ? <EdVironsAdminDashboard /> :
                    <Dashboard />}
                 </RoleProtectedRoute>
               </Route>
@@ -302,7 +274,7 @@ function Router() {
 
               {/* Notifications Center */}
               <Route path="/notifications">
-                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college", "school_security", "school_it_staff"]}>
+                <RoleProtectedRoute allowedRoles={["teacher", "school_admin", "student_elementary", "student_middle", "student_high", "student_college", "security_staff", "it_staff"]}>
                   <NotificationsCenter />
                 </RoleProtectedRoute>
               </Route>
@@ -383,7 +355,7 @@ function Router() {
 
               {/* Communication modules - Multiple roles */}
               <Route path="/admin/communications">
-                <RoleProtectedRoute allowedRoles={["school_admin", "edvirons_admin"]}>
+                <RoleProtectedRoute allowedRoles={["school_admin", "admin"]}>
                   <Communications />
                 </RoleProtectedRoute>
               </Route>

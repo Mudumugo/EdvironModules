@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { logoutUser, redirectAfterLogout } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-// import { useAuth, logoutDirectly } from "@/hooks/useAuth"; // Disabled to prevent twitching
-import { logoutDirectly } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 import { Logo } from "@/components/Logo";
 import { 
@@ -32,7 +32,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onMenuClick }: HeaderProps) {
-  const user = null; // Disabled auth polling to prevent twitching
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -46,62 +46,18 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
 
   const handleLogout = async () => {
-    console.log('[AUTH] Starting logout process...');
-    
     try {
-      // Clear cache immediately
+      // Immediate actions before async logout
+      queryClient.cancelQueries();
       queryClient.clear();
-      console.log('[AUTH] Cache cleared');
       
-      // Call logout API
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      console.log('[AUTH] Logout API response:', response.status);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('[AUTH] Logout successful, data:', data);
-      }
-      
+      await logoutUser(queryClient);
     } catch (error) {
-      console.log('[AUTH] Logout API error:', error);
+      console.error("Logout error:", error);
+    } finally {
+      // Always redirect regardless of logout API result - no delay
+      window.location.replace("/");
     }
-    
-    // Force multiple redirect strategies regardless of API response
-    console.log('[AUTH] Executing multiple redirect strategies...');
-    
-    // Strategy 1: Immediate redirect
-    try {
-      window.location.assign('/');
-    } catch (e1) {
-      console.log('[AUTH] assign failed, trying href');
-      try {
-        window.location.href = '/';
-      } catch (e2) {
-        console.log('[AUTH] href failed, trying replace');
-        try {
-          window.location.replace('/');
-        } catch (e3) {
-          console.log('[AUTH] replace failed, trying reload');
-          window.location.reload();
-        }
-      }
-    }
-    
-    // Strategy 2: Delayed backup redirects
-    setTimeout(() => {
-      console.log('[AUTH] Backup redirect 1');
-      try { window.location.href = '/'; } catch (e) { }
-    }, 100);
-    
-    setTimeout(() => {
-      console.log('[AUTH] Backup redirect 2');
-      try { window.location.reload(); } catch (e) { }
-    }, 500);
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {

@@ -35,55 +35,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { setupAuth } = await import("./replitAuth");
   await setupAuth(app);
   
-  // Simple admin login test page
-  app.get('/admin-test', (req, res) => {
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Admin Login Test</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 40px; background: #1e40af; color: white; text-align: center; }
-          button { background: #059669; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; margin: 10px; }
-          button:hover { background: #047857; }
-          .status { margin: 20px 0; font-size: 16px; }
-        </style>
-      </head>
-      <body>
-        <h1>EdVirons Admin Login Test</h1>
-        <div class="status" id="status">Click button to login as admin</div>
-        <button onclick="loginAdmin()">Login as Admin</button>
-        <div id="result"></div>
-        
-        <script>
-          async function loginAdmin() {
-            document.getElementById('status').textContent = 'Logging in...';
-            try {
-              const response = await fetch('/api/auth/demo-login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ email: 'demo.admin@edvirons.com' })
-              });
-              
-              const data = await response.json();
-              
-              if (data.success) {
-                document.getElementById('status').textContent = 'Login successful! Redirecting...';
-                window.location.href = '/';
-              } else {
-                document.getElementById('status').textContent = 'Login failed: ' + (data.error || 'Unknown error');
-              }
-            } catch (error) {
-              document.getElementById('status').textContent = 'Error: ' + error.message;
-            }
-          }
-        </script>
-      </body>
-      </html>
-    `);
-  });
-
   // Register all modularized routes
   await registerAuthRoutes(app);
   registerXapiRoutes(app);
