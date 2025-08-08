@@ -43,22 +43,21 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
-// TEMPORARILY DISABLE ALL REACT QUERY TO STOP 500MS POLLING
+// Re-enabled with sensible defaults to prevent excessive polling
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      enabled: false, // Disable ALL queries globally
-      queryFn: () => null, // Return null for all queries
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false, // Disable mount queries
-      refetchOnReconnect: false,
-      staleTime: Infinity,
-      gcTime: 0,
-      retry: false,
+      queryFn: getQueryFn({ on401: 'redirect' }),
+      refetchInterval: false, // No automatic polling
+      refetchOnWindowFocus: false, // No focus refetching
+      refetchOnMount: true, // Allow mount queries
+      refetchOnReconnect: false, // No reconnect refetching
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: 1, // Only retry once
     },
     mutations: {
-      retry: false,
+      retry: 1,
     },
   },
 });

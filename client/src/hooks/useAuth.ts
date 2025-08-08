@@ -161,11 +161,8 @@ export function useAuth() {
   }, []);
 
   React.useEffect(() => {
-    // TEMPORARY: Completely disable auth checking to stop the 500ms polling
-    // checkAuth();
-    // Only check once on mount - no polling to prevent rate limiting
-    console.log('[useAuth] Auth checking is disabled to stop polling');
-    setIsLoading(false);
+    // Check auth once on mount - no polling to prevent rate limiting
+    checkAuth();
   }, []); // Empty dependency array to run only once on mount
 
   // Removed focus checking to prevent any additional polling
