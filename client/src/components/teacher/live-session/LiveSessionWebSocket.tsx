@@ -14,7 +14,8 @@ export function useWebSocketConnection({ sessionId, onMessage, onConnectionChang
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws/live-sessions`;
+    const host = window.location.host || 'localhost:5000'; // Fix for undefined host
+    const wsUrl = `${protocol}//${host}/ws/live-sessions`;
     
     const websocket = new WebSocket(wsUrl);
     wsRef.current = websocket;

@@ -126,9 +126,9 @@ export const getIsLoggingOut = () => false;
 
 export function useAuth() {
   // Simplified direct fetch approach - bypass React Query caching issues
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState(null);
+  const [error, setError] = React.useState<Error | null>(null);
 
   const checkAuth = React.useCallback(async () => {
     try {
@@ -158,24 +158,10 @@ export function useAuth() {
 
   React.useEffect(() => {
     checkAuth();
-    // Check auth every 10 seconds to prevent rate limiting (will fix login state detection separately)
-    const interval = setInterval(checkAuth, 10000);
-    return () => clearInterval(interval);
+    // Only check once on mount - no polling to prevent rate limiting
   }, [checkAuth]);
 
-  // Also check on window focus (but throttled)
-  React.useEffect(() => {
-    let lastFocusCheck = 0;
-    const handleFocus = () => {
-      const now = Date.now();
-      if (now - lastFocusCheck > 5000) { // Only check once per 5 seconds
-        lastFocusCheck = now;
-        checkAuth();
-      }
-    };
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [checkAuth]);
+  // Removed focus checking to prevent any additional polling
 
   return {
     user: user || null,

@@ -1,0 +1,95 @@
+From the screenshot, you have multiple **JavaScript console errors and warnings** in your browser's DevTools.
+Let’s break them down:
+
+---
+
+### **1. `429 (Too Many Requests)`**
+
+* **Meaning:** The server is rate-limiting you. You’ve made too many requests in a short time.
+* **Cause:** API or asset requests to
+
+  ```
+  https://01fe57a4-0d24-4bc6-b9f2-93faaeb5779-00-ckwpng0kqtl...
+  ```
+
+  are hitting a request-per-minute/hour limit.
+* **Fix:**
+
+  * Reduce request frequency (debounce/throttle).
+  * Use server-side caching.
+  * Check API provider’s rate limit policy.
+
+---
+
+### **2. Invalid Sandbox Attribute**
+
+```
+allow-downloads-without-user-activation is an invalid sandbox flag
+```
+
+* **Meaning:** The `sandbox` attribute in your `<iframe>` tag has a flag that is not allowed.
+* **Fix:** Remove `allow-downloads-without-user-activation` — modern browsers don’t support it.
+
+---
+
+### **3. "Unrecognized feature" Warnings**
+
+* Example:
+
+  ```
+  Unrecognized feature: 'ambient-light-sensor'
+  Unrecognized feature: 'battery'
+  ```
+* **Meaning:** The `Feature-Policy` or `Permissions-Policy` HTTP header (or `<iframe>` allow attribute) contains features not recognized by the current browser.
+* **Fix:** Remove unsupported features from the policy, or check compatibility tables (e.g., MDN).
+
+---
+
+### **4. Allow Attribute Precedence**
+
+```
+Allow attribute will take precedence over 'allowfullscreen'
+```
+
+* **Meaning:** The `allow` attribute on an `<iframe>` overrides older fullscreen/paymentrequest permissions.
+* **Fix:** This is just informational — no action needed unless the wrong permission is applied.
+
+---
+
+### **5. WebSocket Connection Failed**
+
+```
+WebSocket connection to 'wss://01fe57a4-... failed
+```
+
+and
+
+```
+Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/...' is invalid.
+```
+
+* **Meaning:**
+
+  * First error: Couldn’t connect to the remote WebSocket server (possibly blocked by rate-limiting or CORS).
+  * Second error: Your WebSocket URL is malformed (`localhost:undefined` means the port is missing).
+* **Fix:**
+
+  * Ensure your WebSocket URL is valid: `wss://localhost:PORT` or correct remote endpoint.
+  * Pass the correct `PORT` value from environment/config.
+  * Check server is running and reachable.
+
+---
+
+### **Summary Table**
+
+| Error Type                                  | Cause                                    | Fix                             |
+| ------------------------------------------- | ---------------------------------------- | ------------------------------- |
+| **429 Too Many Requests**                   | Hitting API rate limit                   | Throttle requests, caching      |
+| **Invalid Sandbox Flag**                    | Unsupported iframe flag                  | Remove from HTML                |
+| **Unrecognized Feature**                    | Browser doesn’t support declared feature | Remove/replace features         |
+| **Allow Attribute Precedence**              | `allow` overrides older permission       | No action unless incorrect      |
+| **WebSocket URL Invalid / Connection Fail** | Port missing or endpoint unreachable     | Fix URL & ensure server is live |
+
+---
+
+If you want, I can **go through the exact lines in your code and show how to fix each one** so the console clears up completely. That way, your app will stop spamming errors and will load faster.
