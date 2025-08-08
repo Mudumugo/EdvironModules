@@ -47,7 +47,7 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: 'redirect' }),
+      queryFn: getQueryFn({ on401: 'return401' }),
       refetchInterval: false, // No automatic polling
       refetchOnWindowFocus: false, // No focus refetching
       refetchOnMount: true, // Allow mount queries

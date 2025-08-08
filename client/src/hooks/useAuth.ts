@@ -125,29 +125,28 @@ export const setLoggingOut = () => {};
 export const getIsLoggingOut = () => false;
 
 export function useAuth() {
-  // Simplified direct fetch approach - bypass React Query caching issues
+  // Fixed: Direct authentication check that works properly
   const [user, setUser] = React.useState<User | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | null>(null);
+  const [hasChecked, setHasChecked] = React.useState(false);
 
   const checkAuth = React.useCallback(async () => {
+    if (hasChecked) return; // Prevent multiple calls
+    
     try {
-      console.log('[useAuth] Checking authentication...');
+      console.log('[useAuth] Single auth check starting...');
       const response = await fetch('/api/auth/user', {
-        credentials: 'include',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+        credentials: 'include'
       });
       
       if (response.ok) {
         const userData = await response.json();
-        console.log('[useAuth] User authenticated:', userData);
+        console.log('[useAuth] ✅ User authenticated:', userData.email, userData.role);
         setUser(userData);
         setError(null);
       } else {
-        console.log('[useAuth] User not authenticated, status:', response.status);
+        console.log('[useAuth] ❌ User not authenticated, status:', response.status);
         setUser(null);
         setError(null);
       }
@@ -157,21 +156,25 @@ export function useAuth() {
       setError(err as Error);
     } finally {
       setIsLoading(false);
+      setHasChecked(true);
     }
-  }, []);
+  }, [hasChecked]);
 
   React.useEffect(() => {
-    // Check auth once on mount - no polling to prevent rate limiting
+    // Check auth only ONCE on mount
     checkAuth();
-  }, []); // Empty dependency array to run only once on mount
-
-  // Removed focus checking to prevent any additional polling
+  }, []); // Empty dependency array - run only once
 
   return {
     user: user || null,
     isAuthenticated: !!user,
     isLoading,
-    error
+    error,
+    refetch: () => {
+      setHasChecked(false);
+      setIsLoading(true);
+      checkAuth();
+    }
   };
 }
 
