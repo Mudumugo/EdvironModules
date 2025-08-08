@@ -31,13 +31,14 @@ export function CollapsibleDashboardLayout({
 }: CollapsibleDashboardLayoutProps) {
   const [location] = useLocation();
 
-  // Get current user (disabled to prevent twitching - using auth hook instead)
-  const { data: user } = useQuery({
-    queryKey: ['/api/auth/user'],
-    enabled: false, // Disable this query completely
-    retry: false,
-    staleTime: Infinity,
-  });
+  // COMPLETELY REMOVE AUTH QUERY - This may be the source of 500ms polling
+  // const { data: user } = useQuery({
+  //   queryKey: ['/api/auth/user'],
+  //   enabled: false, // Disable this query completely
+  //   retry: false,
+  //   staleTime: Infinity,
+  // });
+  const user = null; // Temporarily disable user data to stop potential polling
 
   // Base navigation items (filtered by tenant configuration)
   const navigationItems = [
