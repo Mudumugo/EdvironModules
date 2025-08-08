@@ -124,9 +124,12 @@ export default function Login() {
   const handleDemoLogin = async (account: typeof DEMO_ACCOUNTS[0]) => {
     setIsLoading(true);
     try {
-      console.log(`Attempting demo login for ${account.email}...`);
+      console.log(`[DEMO LOGIN] Starting login for ${account.email}...`);
       
-      // Use direct fetch instead of apiRequest to avoid issues
+      // Use direct fetch with timeout and better error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch('/api/auth/demo-login', {
         method: 'POST',
         headers: {
@@ -135,30 +138,56 @@ export default function Login() {
         credentials: 'include',
         body: JSON.stringify({
           email: account.email
-        })
+        }),
+        signal: controller.signal
       });
-
-      console.log('Demo login response status:', response.status);
+      
+      clearTimeout(timeoutId);
+      console.log(`[DEMO LOGIN] Response status: ${response.status}`);
+      
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('Too many login attempts. Please wait a moment and try again.');
+        }
+        const errorText = await response.text();
+        console.error(`[DEMO LOGIN] HTTP Error ${response.status}:`, errorText);
+        throw new Error(`Login failed: ${response.status} ${response.statusText}`);
+      }
+      
       const data = await response.json();
-      console.log('Demo login response data:', data);
+      console.log(`[DEMO LOGIN] Response data:`, data);
 
-      if (response.ok && data.success) {
+      if (data.success) {
+        console.log(`[DEMO LOGIN] Success! Redirecting...`);
         toast({
           title: "Login Successful",
           description: `Logged in as ${account.role}`,
         });
-        console.log(`Demo login successful for ${account.email}, forcing immediate reload...`);
         
-        // Force immediate navigation without delay
-        window.location.href = "/";
+        // Give a brief moment for the toast to show, then redirect
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 500);
       } else {
-        const errorMessage = data.error || `Login failed with status ${response.status}`;
-        console.error('Demo login failed:', errorMessage);
+        const errorMessage = data.error || 'Login failed - no success flag';
+        console.error(`[DEMO LOGIN] Backend error:`, errorMessage);
         throw new Error(errorMessage);
       }
     } catch (error) {
-      console.error('Demo login error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error(`[DEMO LOGIN] Caught error:`, error);
+      
+      let errorMessage = 'Unknown error occurred';
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Login timed out. Please try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       toast({
         title: "Login Failed",
         description: errorMessage,

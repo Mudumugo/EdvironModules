@@ -158,14 +158,21 @@ export function useAuth() {
 
   React.useEffect(() => {
     checkAuth();
-    // Check auth every 2 seconds to catch login state changes (reduced from 500ms)
-    const interval = setInterval(checkAuth, 2000);
+    // Check auth every 10 seconds to prevent rate limiting (will fix login state detection separately)
+    const interval = setInterval(checkAuth, 10000);
     return () => clearInterval(interval);
   }, [checkAuth]);
 
-  // Also check on window focus
+  // Also check on window focus (but throttled)
   React.useEffect(() => {
-    const handleFocus = () => checkAuth();
+    let lastFocusCheck = 0;
+    const handleFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusCheck > 5000) { // Only check once per 5 seconds
+        lastFocusCheck = now;
+        checkAuth();
+      }
+    };
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, [checkAuth]);
