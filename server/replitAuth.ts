@@ -45,7 +45,7 @@ export function getSession() {
       httpOnly: false, // Allow JavaScript access for webview compatibility
       secure: false, // Set to false for development
       maxAge: sessionTtl,
-      sameSite: 'none', // Required for iframe/webview environments
+      sameSite: 'lax', // Use lax for localhost development
       path: '/' // Explicit path for all routes
     },
   });
